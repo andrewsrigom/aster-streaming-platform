@@ -33,7 +33,7 @@ test("playable acceptance cannot omit its browser, replay or scoped cleanup", as
     "playable_compose up --build --wait --wait-timeout 180 web",
     "personalized_compose down --volumes --timeout 10",
     "playable_compose logs --no-color --tail 1 playable-seed | grep '\"changed\":false'",
-  ]) {
+  ] as const) {
     assert.ok(source.includes(original));
     assert.ok(
       validateWorkflowPolicy(source.replace(original, "true")).some(({ detail }) =>
@@ -55,7 +55,7 @@ test("personalized playable acceptance cannot skip its story or leave initializa
     "--file infra/compose/events.yml",
     "personalized_compose logs --no-color --tail 1 playable-seed | grep '\"changed\":false'",
     "personalized_compose logs --no-color --tail 1 playable-generate | grep 'generated_hls_reused'",
-  ]) {
+  ] as const) {
     assert.ok(source.includes(original), original);
     assert.ok(
       validateWorkflowPolicy(source.replace(original, "true")).some(({ detail }) =>
@@ -357,7 +357,7 @@ test("rejects removal or expansion of the owner-approved Federation license set"
     source.replace(", Elastic-2.0", ""),
     source.replace("0BSD, ", ""),
     source.replace(", MIT, MITNFA", ", MIT, MITNFA, GPL-3.0-only"),
-  ]) {
+  ] as const) {
     assert.ok(validateWorkflowPolicy(changed).some(({ rule }) => rule === "commands"));
   }
 });
@@ -379,6 +379,24 @@ test("Web tooling cannot broaden the package-specific license exceptions", async
   ]) {
     assert.notEqual(changed, source);
     assert.ok(validateWorkflowPolicy(changed).some(({ rule }) => rule === "commands"));
+  }
+});
+
+test("trusted-operation enforcement proof cannot be omitted or weakened", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const [before, after] of [
+    ["node ./tools/verify-trusted-operations.mjs", "true"],
+    ["--metrics < tools/verify-trusted-operations.mjs", "--metrics < tools/unreviewed.mjs"],
+    ["--no-deps --force-recreate --wait --wait-timeout 60 router", "router"],
+    ["--file infra/compose/graphql-security-proof.yml", ""],
+  ] as const) {
+    const weakened = source.replaceAll(before, after);
+    assert.notEqual(weakened, source);
+    assert.ok(
+      validateWorkflowPolicy(weakened).some(({ detail }) =>
+        detail.toLowerCase().includes("trusted-operation"),
+      ),
+    );
   }
 });
 

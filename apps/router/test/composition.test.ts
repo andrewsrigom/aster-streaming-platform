@@ -10,7 +10,7 @@ import { readGitBaseline } from "../src/baseline.js";
 import { fileURLToPath } from "node:url";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { Kind, parse } from "graphql";
+import { Kind, parse, print } from "graphql";
 
 const root = new URL("../../../../", import.meta.url);
 const sources = {
@@ -21,21 +21,10 @@ const sources = {
   playback: readFileSync(new URL("infra/router/generated/playback.graphql", root), "utf8"),
 };
 const operations = readFileSync(new URL("infra/router/known-operations.graphql", root), "utf8");
-const routerPolicy = readFileSync(new URL("infra/router/main.rhai", root), "utf8");
-
-test("every known operation has a finite Router telemetry label", () => {
-  for (const definition of parse(operations).definitions) {
-    if (definition.kind === Kind.OPERATION_DEFINITION) {
-      assert.ok(definition.name);
-      assert.match(routerPolicy, new RegExp(`"${definition.name.value}"`, "u"));
-    }
-  }
-});
-
 test("five owner schemas compose deterministically, retain entity ownership and validate all known operations", () => {
   const first = composeLocalSupergraph(sources, operations);
   assert.deepEqual(composeLocalSupergraph(sources, operations), first);
-  assert.equal(Object.keys(first).length, 8);
+  assert.equal(Object.keys(first).length, 10);
   assert.match(first["supergraph.graphql"] ?? "", /http:\/\/identity:3100\/graphql/u);
   assert.match(first["supergraph.graphql"] ?? "", /http:\/\/catalog:3200\/graphql/u);
   assert.match(first["supergraph.graphql"] ?? "", /http:\/\/playback:3300\/graphql/u);
@@ -51,6 +40,41 @@ test("five owner schemas compose deterministically, retain entity ownership and 
     first["api.graphql"] ?? "",
     /_entities|_service|join__|reviewedBy|sourceChecksum/u,
   );
+});
+
+test("every first-party operation has one exact Apollo manifest entry and finite Router matcher", () => {
+  const artifacts = composeLocalSupergraph(sources, operations);
+  const persisted = JSON.parse(artifacts["persisted-query-manifest.json"] ?? "null") as {
+    format: string;
+    version: number;
+    operations: { body: string; id: string; name: string; type: string }[];
+  };
+  assert.equal(persisted.format, "apollo-persisted-query-manifest");
+  assert.equal(persisted.version, 1);
+  assert.equal(persisted.operations.length, 25);
+  assert.deepEqual(
+    persisted.operations.map(({ name }) => name),
+    persisted.operations.map(({ name }) => name).toSorted((a, b) => a.localeCompare(b, "en")),
+  );
+  const matcher = artifacts["trusted-operations.rhai"] ?? "";
+  for (const definition of parse(operations).definitions) {
+    if (definition.kind !== Kind.OPERATION_DEFINITION) {
+      continue;
+    }
+    assert.ok(definition.name);
+    const entry = persisted.operations.find(({ name }) => name === definition.name?.value);
+    assert.deepEqual(entry, {
+      body: print(definition),
+      id: sha256(print(definition)),
+      name: definition.name.value,
+      type: definition.operation,
+    });
+    assert.match(matcher, new RegExp(`name == "${definition.name.value}"`, "u"));
+    assert.match(matcher, new RegExp(entry.id, "u"));
+    assert.notEqual(sha256(entry.body + "\n"), entry.id);
+  }
+  assert.match(matcher, /"unknown"/u);
+  assert.doesNotMatch(matcher, /query |mutation |subscription |variables/u);
 });
 
 test("an ownership collision or mismatched type fails composition", () => {

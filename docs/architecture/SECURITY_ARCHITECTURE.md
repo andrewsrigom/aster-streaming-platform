@@ -58,6 +58,15 @@ Threats include:
 
 Controls are layered at edge, router, schema, resolver, application, and dependency levels.
 
+The public Router now compares the exact name and SHA-256 document of every
+request with source-generated first-party artifacts. Hosted `enforce` mode
+rejects missing, unknown and altered operations before planning; explicit
+local/integration `audit` mode preserves bounded development queries. Only the
+finite match result enters telemetry. This reduces the public document surface
+but does not authorize a user or replace owner-side identifier, role and profile
+checks. Shape, cost, rate, cache-scope and N+1 verification remain separate
+Phase 13 layers.
+
 ## Media threat model
 
 Threats include:

@@ -2,6 +2,14 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0045](../docs/adr/0045-source-owned-trusted-operations.md) generates one
+Apollo manifest and finite Rhai matcher from the bounded first-party operation
+source. Exact name plus raw-document SHA-256 is required. Local/integration audit
+mode preserves explicit development queries; staging/production require enforce
+and reject non-matches before planning. Only matched/unknown/missing enters
+telemetry. Owner authorization remains authoritative and no GraphOS credential,
+service or data migration is introduced.
+
 [ADR-0044](../docs/adr/0044-bounded-local-trace-diagnostics.md) resolves the
 trace-backend portion of the Phase 12 deferral with unmodified, digest-pinned
 Tempo 3.0.0 in one disposable diagnostics-only profile. The Collector exports
@@ -217,7 +225,7 @@ Resolved Phase 02 persistence selection: retain pg 8.23.0, explicit parameterize
 
 | Decision | Resolution phase | Required evidence | Safe behavior before resolution | Blocks |
 |---|---:|---|---|---|
-| Additional trace/log backends | 12 | P12-R10 supplies the concrete trace-search requirement; ADR-0044 bounds Tempo resources, isolated networks, privacy, retention and cleanup. Loki still requires a concrete ingestion/label/retention contract | Tempo is implemented only in the disposable diagnostic candidate; corrected protected three-scenario acceptance is pending and no log backend or hosted capacity guarantee is claimed | P12-R10 candidate and `evidence/phase-12/failure-diagnosis.md` |
+| Additional log backend | 14 | ADR-0044 and released P12-R10 resolve bounded local trace search with Tempo. Loki still requires a concrete ingestion, finite-label, retention, deletion and query contract | Use released disposable Tempo diagnostics plus bounded source logs; no unified log backend or hosted capacity guarantee is claimed | Hosted observability decision |
 | Player-control component strategy | 07 | HLS.js and React compatibility, SSR boundary, captions, quality, keyboard and screen-reader behavior, browser coverage, bundle impact, maintenance, customization ownership, and license | Native media controls remain the early technical fallback; Media Chrome is the preferred candidate | Phase 07 verification |
 | Hosted compute and deployment controller | 14 | Capacity, operational fit, cost, rollback, and artifact requirements | Local and integration environments only | Hosted release |
 | Hosted PostgreSQL provider | 14 | Version support, backup/restore, connection limits, observability, migration, and cost | PostgreSQL-compatible ports and local containers | Hosted release |

@@ -155,7 +155,11 @@ Historical stashes are superseded.
 | 60 | Define executable SLIs, initial SLOs and error budgets | P12-R05 | DONE |
 | 61 | Provision a bounded three-layer operational overview | P12-R12 | DONE |
 | 62 | Implement multi-window SLO burn-rate alerts linked to runbooks | P12-R07 | DONE |
-| 63 | Diagnose three injected failures from telemetry and close Phase 12 | P12-R10 | IN_PROGRESS |
+| 63 | Diagnose three injected failures from telemetry and close Phase 12 | P12-R10 | DONE |
+| 64 | Generate trusted operations, enforce the environment rollout and document safe schema delivery (also P13-R02/R12) | P13-R01 | IN_PROGRESS |
+| 65 | Enforce GraphQL parser, shape, list, cost and introspection controls (also P13-R04/R05/R10) | P13-R03 | READY |
+| 66 | Enforce execution, concurrency, identity-rate and cache-scope controls (also P13-R11) | P13-R06 | READY |
+| 67 | Prove N+1/query counts and owner authorization; close Phase 13 (also P13-R08/R09) | P13-R07 | READY |
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head
@@ -307,6 +311,19 @@ Corrected source `089f656`, tree `d9abb88`, passed protected run `33344001503`,
 including the selected diagnostic job and aggregate protection. Discussions
 `3890928257`/`3890928260` are answered and resolved. Final evidence publication,
 blocking-boundary confirmation and release remain.
+
+Final correction `b646e496d0946262a688f34a118a896f6c40ebda`, tree
+`789007d5f48d4a16c0a1b47b8e2554e1ee0e294a`, immediately observes the
+diagnostic request and disruption promises. Protected run `33346575787`
+attempt 2 passed the complete three-scenario runtime, source quality and
+aggregate protection; discussion `3891065894` is answered and resolved, and
+the final confirmation reported no blocker. PR51 squash-merged as tree-identical
+main `2b77a32f43a87fcdfc5032faf856f369de183998`. Exact-main run
+`33348247619` passed every required job, including the diagnostic runtime and
+Docker-only playable demo. Item63 and Phase12 are released. Item64 starts from
+that exact main on `feat/p13-trusted-operations`; it owns the source-generated
+trusted-operation manifest, explicit local/integration audit workflow,
+staging/production enforcement and safe schema/client rollout sequence.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

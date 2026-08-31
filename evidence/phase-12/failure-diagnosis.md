@@ -1,6 +1,6 @@
 # P12-R10 Trace-led Failure Diagnosis Evidence
 
-Status: **implemented; protected runtime remediation in progress**
+Status: **released**
 
 ## Acceptance contract
 
@@ -328,7 +328,7 @@ TraceQL boundary becomes visible and applies the raw/escaped canary assertion to
 that full stored trace. It also routes `pnpm-lock.yaml` through diagnostic CI
 with an exact single-path test. Focused tests pass 23/23 and the affected gate
 passes 73/73 with 63 cached in 44.855 seconds. Protected runtime acceptance for
-this changed proof remains pending. Published `bf10756` and protected run
+this changed proof was pending at that checkpoint. Published `bf10756` and protected run
 `33341130651` reached the first real complete-trace read. Local-platform job
 `99336871735` failed because Tempo's OTLP JSON spans encode `traceId` as Base64
 bytes, so the hexadecimal request ID is not present verbatim; the exact project
@@ -405,18 +405,19 @@ the repeated affected gate pass 73/73 with 63 cached in 53.89 seconds. Because
 scenario orchestration changed, the written heavyweight trigger requires one
 new protected three-scenario run before release.
 
-## Remaining release work
+## Released result
 
-Before release:
+Final source `b646e496d0946262a688f34a118a896f6c40ebda`, tree
+`789007d5f48d4a16c0a1b47b8e2554e1ee0e294a`, passed protected workflow
+`33346575787` attempt 2. It repeated the complete stored-trace privacy proof,
+all three diagnoses and recoveries, exact project cleanup, source quality and
+the Docker-only playable demo. Corrected confirmation found no remaining
+blocking boundary. PR51 squash main
+`2b77a32f43a87fcdfc5032faf856f369de183998` retained the exact source tree;
+exact-main workflow `33348247619` passed every required job.
 
-1. inspect and, if present, remove only the exact interrupted project above
-   when that same local engine is reachable;
-2. publish the request-observation remediation and repeat exact-head protected
-   three-scenario acceptance;
-3. resolve discussion `3891065894` and obtain one corrected confirmation;
-4. squash merge PR51 and verify
-   exact-main CI;
-5. record the released source/tree and close Phase 12.
-
-No Phase 12 closeout or released trace-backend claim is valid before the
-remaining release steps pass.
+The historical interrupted local project remains conditional cleanup only if
+that exact engine and exact labelled project reappear. It did not exist in the
+protected projects and does not weaken their zero-resource postconditions. The
+released local profile proves the documented diagnostic behavior, not hosted
+retention, authentication, capacity or availability.

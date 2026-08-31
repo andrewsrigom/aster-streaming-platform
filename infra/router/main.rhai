@@ -1,5 +1,19 @@
+import "trusted-operations" as trusted;
+
 fn deny(status) {
     throw #{status: status, message: "Request rejected."};
+}
+
+fn trusted_mode() {
+    let environment = env::get("ASTER_ENV");
+    let mode = env::get("ASTER_ROUTER_TRUSTED_OPERATIONS_MODE");
+    if !(environment in ["local", "integration", "staging", "production"]) ||
+       !(mode in ["audit", "enforce"]) ||
+       (mode == "audit" && !(environment in ["local", "integration"])) ||
+       (environment in ["staging", "production"] && mode != "enforce") {
+        throw "Invalid trusted-operation environment or mode.";
+    }
+    mode
 }
 
 fn guard(request) {
@@ -57,10 +71,29 @@ fn router_service(service) {
 }
 
 fn operation(request) {
+    let mode = trusted_mode();
     let name = request.body.operation_name;
-    let known = ["TitlesWithEngagement", "ProfileWithEngagement", "Viewer", "Profiles", "Profile", "DemoSignIn", "SignOut", "CreateProfile", "UpdateProfile", "DeleteProfile", "SelectProfile", "Browse", "TitleDetail", "ViewerAndTitle", "StartPlayback", "PlayerProgress", "RecordProgress", "ProgressHistory", "ContinueWatching", "SetWatchlist", "WatchlistMembership", "Watchlist", "SearchTitles", "HomePublic", "HomePersonalized"];
-    request.context["aster.operation"] = if name in known { name } else { "other" };
+    let query = request.body.query;
+    let result = if name == () || query == () || name.len == 0 || query.len == 0 {
+        "missing"
+    } else {
+        trusted::match_operation(name, sha256::digest(query))
+    };
+    request.context["aster.trusted_operation"] = result;
+    request.context["aster.operation"] = if result == "matched" { name } else { "other" };
     request.context["aster.started_ms"] = unix_ms_now();
+    if mode == "enforce" && result != "matched" {
+        request.context["aster.outcome"] = "rejected";
+        throw #{
+            status: 400,
+            body: #{
+                errors: [#{
+                    message: "GraphQL operation failed.",
+                    extensions: #{code: "TRUSTED_OPERATION_REQUIRED"}
+                }]
+            }
+        };
+    }
 }
 
 fn public_response(response) {
@@ -73,8 +106,8 @@ fn public_response(response) {
     let failed = false;
     for error in response.body.errors {
         let code = error.extensions?.code;
-        let allowed = ["UNAUTHENTICATED", "FORBIDDEN", "INVALID_INPUT", "UNAVAILABLE", "CANCELLED", "LIMIT_EXCEEDED", "GRAPHQL_VALIDATION_FAILED", "GRAPHQL_PARSE_FAILED", "SUBGRAPH_ERROR", "SUBREQUEST_HTTP_ERROR", "GATEWAY_TIMEOUT", "REQUEST_TIMEOUT"];
-        if code in ["UNAUTHENTICATED", "FORBIDDEN", "INVALID_INPUT", "LIMIT_EXCEEDED", "GRAPHQL_VALIDATION_FAILED", "GRAPHQL_PARSE_FAILED"] {
+        let allowed = ["UNAUTHENTICATED", "FORBIDDEN", "INVALID_INPUT", "UNAVAILABLE", "CANCELLED", "LIMIT_EXCEEDED", "TRUSTED_OPERATION_REQUIRED", "GRAPHQL_VALIDATION_FAILED", "GRAPHQL_PARSE_FAILED", "SUBGRAPH_ERROR", "SUBREQUEST_HTTP_ERROR", "GATEWAY_TIMEOUT", "REQUEST_TIMEOUT"];
+        if code in ["UNAUTHENTICATED", "FORBIDDEN", "INVALID_INPUT", "LIMIT_EXCEEDED", "TRUSTED_OPERATION_REQUIRED", "GRAPHQL_VALIDATION_FAILED", "GRAPHQL_PARSE_FAILED"] {
             rejected = true;
         } else {
             failed = true;
@@ -88,6 +121,7 @@ fn public_response(response) {
 }
 
 fn supergraph_service(service) {
+    trusted_mode();
     service.map_request(Fn("operation"));
     service.map_response(Fn("public_response"));
 }

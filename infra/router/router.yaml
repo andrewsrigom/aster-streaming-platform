@@ -125,6 +125,9 @@ telemetry:
             aster.outcome:
               response_context: aster.outcome
               default: failed
+            aster.trusted_operation:
+              response_context: aster.trusted_operation
+              default: missing
     events:
       supergraph:
         aster.router.operation:
@@ -137,6 +140,9 @@ telemetry:
               default: rejected
             duration_ms:
               response_context: aster.duration_ms
+            aster.trusted_operation:
+              response_context: aster.trusted_operation
+              default: missing
             graphql_error:
               on_graphql_error: true
       subgraph:
@@ -178,7 +184,7 @@ telemetry:
             aggregation:
               histogram:
                 buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.3, 0.5, 1, 2.5, 3, 5]
-            allowed_attribute_keys: [aster.operation, aster.outcome]
+            allowed_attribute_keys: [aster.operation, aster.outcome, aster.trusted_operation]
       prometheus:
         enabled: true
         listen: 0.0.0.0:9091

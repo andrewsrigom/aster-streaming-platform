@@ -1,0 +1,5 @@
+services:
+  router:
+    environment:
+      ASTER_ENV: integration
+      ASTER_ROUTER_TRUSTED_OPERATIONS_MODE: enforce

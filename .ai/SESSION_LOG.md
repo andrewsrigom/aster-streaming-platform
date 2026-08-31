@@ -4,6 +4,55 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-30 — Trusted-operation candidate implemented
+
+### Completed
+
+- P13-R01/R02/R12 now generate a deterministic Apollo manifest and finite Rhai
+  matcher for all 25 reviewed operations, package both with Router and enforce
+  exact name/raw-document hashes under explicit audit/enforce configuration.
+- Added finite matched/unknown/missing telemetry, 19-document Web compatibility,
+  adverse source/packaging/CI policy and one disposable integration/enforce
+  proof for the pinned Router.
+- Focused Router tests pass 10/10, Web 117/117, Router/SLO policy 11/11 and CI
+  policy 37/37. The affected gate passes 49/49 tasks, 35 cached, in 52.315
+  seconds; the included secret scan has zero findings.
+
+### Evidence
+
+- `evidence/phase-13/trusted-operations.txt`, generated manifest/matcher,
+  ADR-0045 and the rollout/configuration documentation.
+- Local Docker was unavailable at the single bounded check; no host restart or
+  loop followed. Protected CI owns the packaged Rhai/runtime metric proof.
+
+### Next action
+
+- Commit and publish item64 once, pass protected packaged acceptance, complete
+  initial/confirmation review, squash merge and verify exact-main before item65.
+
+## 2026-08-30 — Phase 12 release and Phase 13 activation
+
+### Completed
+
+- P12-R10 source `b646e49`, tree `789007d5`, passed protected run
+  `33346575787` attempt 2 and clean confirmation. PR51 squash main `2b77a32`
+  retained the tree; exact-main run `33348247619` passed every required job.
+- Phase 12 is released. Activated Phase 13 item64 on
+  `feat/p13-trusted-operations` for P13-R01/R02/R12.
+- Accepted ADR-0045: generate an Apollo manifest and finite Rhai matcher from the
+  25 bounded first-party operations; local/integration audit remains explicit,
+  staging/production require enforce, and owner authorization is unchanged.
+
+### Evidence
+
+- Protected and exact-main run IDs above; active implementation plan is
+  `.ai/CHANGE_PLAN.md`.
+
+### Next action
+
+- Complete source policy and disposable real-Router enforcement proof, then run
+  the affected candidate gate and publish item64.
+
 ## 2026-08-30 — Final diagnostic request-observation correction
 
 ### Completed
@@ -1429,17 +1478,3 @@ Published one coherent progress candidate. Initial review and protected CI 33178
 ### Next action
 
 Publish the verified correction batch, confirm only blocking boundaries, merge/prove post-merge. P08-R06 history implementation, GraphQL and 25-row keyset SQL evidence are preserved in exact stash 678ccde78146453011ed7e9941d29afdad26111d on feat/p08-history; rebase/restore once after predecessor. No CPU/media loop.
-
-## 2026-08-28 — Frozen candidate and read-side continuation
-
-### Completed
-
-Published one coherent [PR 26](https://github.com/andrewsrigom/aster-streaming-platform/pull/26) at 319ce4e7f4c02ce5991c9637200421d02b8f13cc. P08-R01 is WAITING_EXTERNAL; activated only dependent P08-R06 on feat/p08-history.
-
-### Evidence
-
-[Frozen candidate](../evidence/phase-08/progress-candidate.md) records 67 passing tasks, real federated proof, manifest, rollback and exact external conditions. Retained media/Windows processes unchanged.
-
-### Next action
-
-Implement bounded history/continue-watching while CI/review runs. Publish predecessor first; preserve/rebase dependent work if its source changes. No CPU loop.

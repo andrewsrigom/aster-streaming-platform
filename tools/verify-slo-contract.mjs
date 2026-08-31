@@ -416,7 +416,7 @@ export function validateSloContract(sources) {
     "response_context: aster.operation\n",
     "response_context: aster.outcome\n",
     "cardinality_limit: 128\n",
-    "allowed_attribute_keys: [aster.operation, aster.outcome]\n",
+    "allowed_attribute_keys: [aster.operation, aster.outcome, aster.trusted_operation]\n",
   ]) {
     if (!routerConfig.includes(required)) {
       reject(`Router SLI metric boundary missing: ${required.trim()}`);
@@ -443,7 +443,8 @@ export function validateSloContract(sources) {
 
   const routerPolicy = sources.routerPolicy ?? "";
   for (const required of [
-    'request.context["aster.operation"] = if name in known { name } else { "other" }',
+    'request.context["aster.operation"] = if result == "matched" { name } else { "other" }',
+    'request.context["aster.trusted_operation"] = result',
     'response.context["aster.outcome"] = if failed { "failed" } else if rejected { "rejected" } else { "completed" }',
     '"GRAPHQL_VALIDATION_FAILED", "GRAPHQL_PARSE_FAILED"',
   ]) {

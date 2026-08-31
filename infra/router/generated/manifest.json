@@ -9,7 +9,9 @@
     "discovery.graphql": "377e15c64c895e6c24b86841348d3a3094774be510007f1a68dd2920264b2c48",
     "engagement.graphql": "c34b826f95b91d61621915646f2734ecf4efc43ba9db02bbce789481be16d35a",
     "identity.graphql": "48bad454871ee9b28e51e1fed48cf0f177d0afe9c9b5478211dee0acb6eb04eb",
-    "playback.graphql": "46dead26e0830a8c6f8d8df7c93d5c9f9ca562c00b23652f12f2e4a6d891293a"
+    "playback.graphql": "46dead26e0830a8c6f8d8df7c93d5c9f9ca562c00b23652f12f2e4a6d891293a",
+    "persisted-query-manifest.json": "f4a3f1b014ea3004fcfebe6df86043e184e18ed1fa880841ba5b3f7e888e3a12",
+    "trusted-operations.rhai": "b31bea6e76e4adfb9dd2af3ce030b6808ceec0dcae6630333a96083d3ba721d6"
   },
   "subgraphs": [
     {

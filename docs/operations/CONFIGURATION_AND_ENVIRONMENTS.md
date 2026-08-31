@@ -112,6 +112,22 @@ including its canonical request digest,
 charges the shared v2 bucket once across replicas; PostgreSQL remains the receipt
 and effect authority.
 
+## Router trusted-operation runtime
+
+Apollo Router requires `ASTER_ENV` plus
+`ASTER_ROUTER_TRUSTED_OPERATIONS_MODE` before it installs the GraphQL request
+policy. The environment is one of `local`, `integration`, `staging` or
+`production`; the mode is `audit` or `enforce`. Audit is accepted only in local
+and integration environments. Staging and production require enforce. Missing,
+unknown or contradictory values stop Router startup before readiness.
+
+The base Compose file explicitly uses `local`/`audit`, so diagnostic and learning
+queries remain possible. The disposable security proof uses
+`integration`/`enforce`. A hosted deployment must use `enforce`; it cannot copy
+the local default. Neither variable is a secret. Operation bodies, hashes and
+variables are never configuration or telemetry labels. The complete generated
+manifest and matcher deploy with the same Router image.
+
 ## Configuration classes
 
 ### Build-time public

@@ -1,0 +1,42 @@
+P13-R01/R02/R12 trusted-operation evidence
+Date: 2026-08-30
+Status: implementation and affected candidate gate pass; packaged runtime/release pending
+
+Environment
+- Branch: feat/p13-trusted-operations
+- Base main: 2b77a32f43a87fcdfc5032faf856f369de183998
+- Node.js: 24.19.0
+- pnpm: 11.24.0
+- Runtime target: Apollo Router Core 2.17.0, explicit integration/enforce proof
+
+Implemented contract
+- 25 named operations generate Apollo persisted-query manifest version 1.
+- IDs are SHA-256 of the exact GraphQL printer body.
+- One generated Rhai matcher returns only matched or unknown; main policy adds missing.
+- Local/integration may explicitly audit. Staging/production require enforce.
+- Enforce rejects missing, unknown and altered documents before query planning.
+- Web's 19 runtime documents exactly match entries in the deployed manifest.
+- Query text, hashes and variables are excluded from telemetry.
+
+Focused commands and results
+- pnpm schema:update: pass; 5 subgraphs, 10 artifacts, compatibility base 2b77a32.
+- pnpm --filter @aster/router test: pass; 10/10.
+- pnpm --filter @aster/web test: pass; 117/117.
+- node --test tools/verify-router-runtime.test.mjs tools/verify-slo-contract.test.mjs: pass; 11/11.
+- CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm
+  check:changed: pass; 49/49 tasks, 35 cached, 52.315 seconds.
+- pnpm typecheck and pnpm ci:test: pass; CI policy 37/37.
+- pnpm security:check (inside the candidate gate): pass; zero findings.
+
+Pending acceptance
+- Record the exact candidate source/tree.
+- Protected CI must build the Router, accept canonical Browse, reject altered,
+  unknown and missing operations, expose matched/unknown/missing metric labels,
+  preserve the playable demo and clean the Compose project.
+
+Interpretation and limitations
+The focused results prove deterministic source generation, current Web document
+compatibility and adverse repository policy. They do not prove the Rhai script
+loads in the pinned binary or that rejected-operation metrics reach the packaged
+Prometheus endpoint. The protected real-Router lane owns that proof because the
+bounded local Docker check found no engine; no host restart or retry loop is used.
