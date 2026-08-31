@@ -9,9 +9,9 @@ Phases00–12 are released. P12-R10 final source
 `2b77a32f43a87fcdfc5032faf856f369de183998` retained the tree; exact-main run
 `33348247619` passed every required job.
 
-Item64 (P13-R01/R02/R12) is the sole `IN_PROGRESS` item on
-`feat/p13-trusted-operations`, based exactly on that main. Its active plan is
-`.ai/CHANGE_PLAN.md`. PR52 is open. Initial protected run `33350909056` failed
+Item64 (P13-R01/R02/R12) is frozen as `WAITING_EXTERNAL` on
+`feat/p13-trusted-operations` at exact head `a4e849f`. PR52 is open and protected
+run `33406328754` is active. Initial protected run `33350909056` failed
 and its complete initial review produced four blockers. Their correction passed
 protected run `33352310376`; confirmation then found one CI-classification gap.
 That correction passed run `33354040239`; blocker-focused confirmation found
@@ -27,9 +27,12 @@ Source `64fa64e`, tree `35817101`, corrected it. Protected run `33360643657`
 attempt2 passed after attempt1's transient TraceQL indexing timeout and the
 discussion is resolved. Blocker-focused discussion `3895588146` then found the
 runtime verifier could select a retained `Browse` body with current variables.
-Source `2286c7f`, tree `d253a5e`, corrected that join; evidence head `a4e849f`
-passed protected run `33406328754` and the discussion is resolved. Final audit
-then found the delivery manifest itself indexed both retained and current hashes.
+Source `2286c7f`, tree `d253a5e`, corrects it; platform92/92 and gate49/49 pass.
+
+Item65 (P13-R03/R04/R05/R10) is the sole `IN_PROGRESS` dependent on
+`feat/p13-graphql-demand-controls`, based on exact frozen head `a4e849f`. Its
+active plan is `.ai/CHANGE_PLAN.md`. It cannot publish, merge or release before
+item64 passes exact-main CI.
 
 ## Current behavior
 
@@ -80,13 +83,7 @@ then found the delivery manifest itself indexed both retained and current hashes
   `2286c7f71a82011c2eb083cdf52de07dc7301f51`, tree
   `d253a5e8e69abf18c29e8dd432b3c4225958aa73`, joins the persisted entry to the
   unique current schema-manifest hash and fails closed otherwise. Platform92/92
-  and gate49/49 with33 cached in98.949 seconds pass. Evidence head `a4e849f`
-  passed protected run `33406328754`; discussion `3895588146` is resolved.
-- Source `a353164b36a7124c1721915ee07be09ca561de78`, tree
-  `f69257780d003d75ef575101a8e3c358fd9923cb`, keeps the current/retained union
-  in the Apollo manifest and Router matcher but indexes exactly one current hash
-  per name in the delivery manifest. Router11/11, verifier2/2, docs and
-  gate49/49 with36 cached in99.305 seconds pass.
+  and gate49/49 with33 cached in98.949 seconds pass.
 
 ## Accepted design and implementation
 
@@ -103,14 +100,18 @@ then found the delivery manifest itself indexed both retained and current hashes
 - Local development stays in explicit audit mode; CI contains one disposable
   enforce-mode real-Router proof.
 - Both generated artifacts are packaged; APQ remains disabled.
+- Item65 will upgrade Federation links only as needed for standard `@cost` and
+  `@listSize`, calculate deterministic trusted-operation demand at build time,
+  fail excessive/missing metadata, emit one bounded calibration artifact and
+  prove early Router rejection. This is planned, not implemented.
 
 ## Exact next actions
 
-1. Commit the current-index evidence checkpoint and push the correction once.
-2. Require exact-head protected CI, including the real two-version-safe proof.
-3. Confirm every thread remains resolved, then obtain the permitted
-   blocker-focused confirmation for the current exact head.
-4. Squash merge, verify exact-main CI, close item64 and activate item65.
+1. Draft ADR-0046 and implement item65's smallest source-owned analyzer slice
+   locally without publishing.
+2. Observe item64 run `33406328754`; when green, answer/resolve discussion
+   `3895588146`, obtain confirmation, squash merge and verify exact main.
+3. Rebase item65 onto released main, repeat affected gates, then publish it.
 
 ## Execution boundary
 
@@ -129,7 +130,7 @@ projects.
 
 ## Do not do yet
 
-Do not implement the later shape/cost/rate/N+1/authorization slices concurrently.
+Do not implement item66 rate/cache or item67 N+1/authorization concurrently.
 Do not add GraphOS credentials, a paid plan, APQ registration, a new proxy/service,
 hosted resources or client IDs presented as authorization. Phase14 owns hosted
 provider and deployment decisions.

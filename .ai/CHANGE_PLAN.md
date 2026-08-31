@@ -1,188 +1,180 @@
-# Work Item: Trusted First-Party GraphQL Operations
+# Work Item: Bounded GraphQL Demand Controls
 
 - Status: IN_PROGRESS
 - Owner: Platform
 - Phase: 13
-- Requirement IDs: P13-R01, P13-R02, P13-R12
-- Created: 2026-08-30
-- Updated: 2026-08-30
+- Requirement IDs: P13-R03, P13-R04, P13-R05, P13-R10
+- Created: 2026-08-31
+- Updated: 2026-08-31
 
 ## Outcome
 
-Aster produces one deterministic, versioned manifest for every reviewed
-first-party GraphQL operation and packages an exact matcher with Apollo Router.
-Explicit local and integration audit mode preserves development, while enforce
-mode rejects missing, unknown or altered operations before query planning.
-Staging and production cannot start in audit mode. A documented rollout orders
-manifest, Router, schema and client changes without breaking active clients.
+Aster rejects oversized and parser-hostile requests before expensive work and
+admits in hosted environments only reviewed first-party operations whose depth,
+aliases, roots, selections, list expansion and backend-weighted cost fit one
+source-controlled budget. Owner pagination remains authoritative. Batching,
+introspection and public error detail stay disabled. The policy is reproducible
+without credentials or a hosted control plane and emits a finite calibration
+report.
 
 ## Current behavior
 
-Apollo Router 2.17.0 Core composes five owner schemas and accepts 25 named
-operations from `infra/router/known-operations.graphql`. Composition validates
-those operations and records their hashes in the general schema manifest. The
-Router uses a finite operation-name vocabulary for telemetry, but a request can
-reuse a known name with a different valid document. APQ and introspection are
-disabled. Owners still enforce authorization and bounded product inputs.
+Item64 source `2286c7f71a82011c2eb083cdf52de07dc7301f51`, tree
+`d253a5e8e69abf18c29e8dd432b3c4225958aa73`, plus evidence head
+`a4e849f7c1f23ce7a9326f132a157fd04cd3c047` are frozen in PR52. Protected run
+`33406328754` and exact-head confirmation are pending. This dependent item is
+local only and cannot publish, merge or release first.
 
-Phase12 is released through PR51 main
-`2b77a32f43a87fcdfc5032faf856f369de183998`; exact-main run `33348247619`
-passed every required job. Item64 starts from that exact main.
+The Router already enforces 32 KiB bodies, 2,000 parser tokens, recursion32,
+512 recursive selections, three-second execution, concurrency8 and a finite
+global burst. Introspection, APQ, sandbox, homepage, batching and subgraph error
+detail are disabled. Exact trusted-operation admission prevents arbitrary
+hosted shapes. Owners enforce finite page/input bounds. Composition does not yet
+calculate depth, aliases, roots, list expansion or backend-weighted cost for a
+new reviewed operation, nor produce the required calibration and adverse proof.
 
 ## Proposed behavior
 
-Generate an Apollo persisted-query-manifest v1 document and a bounded Rhai
-module from the same parsed operation definitions used by composition. Each
-entry contains the canonical printed body, operation name/type and SHA-256 ID.
-The generated module exposes only finite name and exact name/hash matching.
+Upgrade subgraph Federation links to the supported version that defines standard
+`@cost` and `@listSize`. Annotate resolver work and every selected list with
+finite owner-backed weights and sizes. A deterministic build analyzer consumes
+the composed public schema and the exact trusted-operation body/hash set,
+expands fragments once under explicit bounds, resolves variable/default page
+sizes conservatively and records depth, aliases, roots, selections, maximum list
+expansion and static cost.
 
-At Router startup, validate `ASTER_ENV` and
-`ASTER_ROUTER_TRUSTED_OPERATIONS_MODE`. `audit` is valid only for `local` and
-`integration`; `enforce` is valid for all four environments and mandatory for
-`staging` and `production`. Missing or invalid configuration stops startup.
-For every supergraph request, require a name and query, hash the raw query bytes
-and classify the result as `matched`, `unknown` or `missing`. Enforce mode
-rejects non-matches with one sanitized response. Audit mode executes them but
-retains the finite classification. Neither mode logs query text or hashes.
+Composition fails on missing/invalid metadata, overflow, unresolved sizing or an
+operation above any reviewed maximum. It emits one bounded versioned demand
+manifest beside the trusted manifest. Because hosted admission accepts only the
+same exact hashes after the analyzer passes, over-budget operations cannot reach
+planning. Local/integration audit remains a development path protected by the
+existing parser, owner and execution bounds. Protected CI sends oversized,
+token-heavy, batched and introspection requests to the pinned packaged Router
+and retains the playable journey.
 
 ## Boundaries
 
-- Owning context: Platform owns edge admission and generated operation artifacts; each bounded context retains schema fields, product decisions and authorization.
-- Affected services/packages: `@aster/router`, Apollo Router Rhai/configuration/image, local Compose, CI/runtime verification, GraphQL/security/release documentation and Phase13 evidence.
-- Authoritative data: owner PostgreSQL stores remain authoritative; the manifest is a source-derived delivery contract, not product data.
-- Read models/caches: no product read model or cache changes; the Router query-plan cache remains bounded and APQ remains disabled.
-- Trust boundaries: browser-supplied operation name, document, variables and environment configuration are untrusted.
-- External dependencies: existing unmodified Apollo Router 2.17.0 Core and existing GraphQL/composition dependencies; no new package, service, account or paid feature.
+- Owning context: Platform owns public demand admission and generated evidence;
+  each bounded context owns resolver work, pagination and authorization.
+- Affected code: five owner SDL contracts, `@aster/router`, generated artifacts,
+  Router/runtime proof, CI policy and GraphQL/security/operations documentation.
+- Authoritative data: owner PostgreSQL stores remain authoritative; generated
+  demand metadata is source-derived policy only.
+- Read models/caches: no product cache/read-model change; Router plan cache stays
+  bounded and APQ stays disabled.
+- Trust boundaries: request bytes, tokens/documents/variables, operation sources
+  and schema annotations are untrusted until validated.
+- External dependencies: existing pinned Apollo composition, Router and GraphQL
+  packages only; no account, key, paid resource, new service or package.
 
 ## Invariants
 
-- A known operation name alone never authorizes an altered document in enforce mode.
-- Missing name/query, unknown name, name/hash mismatch and multi-operation documents fail closed in enforce mode.
-- Audit mode is impossible in staging or production and is always explicit.
-- Operation hashes, documents, variables, identifiers and credentials never enter telemetry.
-- Owner-side authorization remains authoritative after edge admission.
-- APQ stays disabled because runtime registration conflicts with a safelist.
-- Generated artifacts are deterministic, bounded and stale-output checked.
-- Schema/client rollout publishes every required operation before enforcing a client that uses it.
+- Network body/parser limits run before query planning and subgraph work.
+- Hosted shape/cost enforcement cannot be bypassed because only exact analyzed
+  trusted hashes are admitted.
+- Every list reachable from a trusted operation has a finite owner-backed size;
+  owner pagination rejects the same or a stricter maximum at runtime.
+- Weights distinguish scalar/in-memory shape, owner I/O, mutation work and
+  federated fan-out; cost supplements dependency bounds.
+- Missing/conflicting metadata, excessive demand or stale artifacts fail the
+  build rather than choosing an implicit safe-looking default.
+- Batching, introspection, sandbox and detailed upstream errors stay disabled.
+- Query text, variables, hashes, identifiers and raw numeric cost never enter
+  metric labels or public errors.
+- Item64 merges and passes exact-main CI before this item publishes.
 
 ## Failure behavior
 
-| Failure | Expected behavior | Telemetry |
-|---|---|---|
-| Missing/invalid environment or mode | Router startup fails before readiness | sanitized startup failure only |
-| Missing operation name or query | enforce rejects; audit executes only in local/integration | `aster.trusted_operation=missing`, rejected/completed outcome |
-| Unknown name or altered body | enforce rejects before planning; audit records and executes | `aster.trusted_operation=unknown`, finite operation label |
-| Generated artifact is stale or malformed | schema check/build fails; no image publication | deterministic build failure without document output |
-| Matcher/module fails to load | Router remains unready | bounded container startup logs |
-| Manifest and active client drift | rollout gate blocks promotion; after new-hash exposure rollback keeps or restores the last healthy union Router | rejected-operation rate and named release evidence |
+| Failure | Expected behavior | Evidence/telemetry |
+| --- | --- | --- |
+| Body exceeds32 KiB | Router returns bounded4xx before GraphQL execution | finite rejection outcome |
+| Document exceeds2,000 tokens or parser recursion | Router returns sanitized4xx before planning | finite rejection outcome |
+| Source exceeds shape/list/cost policy | composition fails; no artifact/image publication | operation name plus finite rule |
+| Cost/list metadata missing, invalid or conflicting | composition fails | schema coordinate plus finite rule |
+| Introspection or batched request | public Router rejects without alternate path | sanitized bounded response |
+| Demand artifact missing/stale | schema check/image publication fails | bounded build finding |
+| Owner page input exceeds maximum | owning service rejects sanitized input | existing finite owner result |
 
 ## Data and contracts
 
-- Schema/migration: no GraphQL schema or database migration.
-- GraphQL: the existing 25 canonical operations become the first trusted-operation set; exact link-ready Apollo documents remain the client transport and one obsolete reviewed byte-exact wire body per name may overlap during rollout.
+- Schema/migration: additive Federation metadata only; no public field, database
+  or event migration.
+- GraphQL: trusted operation documents/hashes stay unchanged; generated demand
+  profiles extend the delivery contract.
 - Events: none.
-- Cache: APQ remains disabled; no response-cache or Redis change.
-- Compatibility: local/integration audit mode preserves ad hoc diagnostic requests; enforce mode accepts the canonical Apollo Client printer output.
-- Retention/deletion: generated artifacts follow source history and immutable image retention; no user data is retained.
+- Cache: no response/Redis behavior change; plan cache stays128.
+- Compatibility: every current Web document must retain its exact hash and pass
+  the calibrated budget; local audit is not a hosted bypass.
+- Retention: generated manifests follow source/image history and contain no
+  request or user data.
 
 ## Security and privacy
 
-- Authorization: the Router admits document shape only; owning applications still authorize account/profile/operator/product access.
-- Input limits: existing 32 KiB body, 2,000 parser-token, recursion, selection, concurrency and deadline controls remain; later Phase13 items calibrate shape/cost controls.
-- Sensitive data: only finite result labels reach metrics/traces/logs; query, hash and variables are absent.
-- Abuse cases: known-name substitution, whitespace/comment mutation, unnamed operations, multiple definitions, audit in hosted environments, APQ registration and manifest drift are rejected or tested.
+- Authorization: demand admission never grants account/profile/operator or
+  resource authority; owning services still authorize.
+- Input limits: 32 KiB body,2,000 tokens, finite recursion/selections plus
+  calibrated depth, alias, root, list and cost maxima.
+- Sensitive data: operation names and finite outcomes/bands only; no query,
+  variable, hash, identifier or signed URL in telemetry/evidence.
+- Abuse: oversized bytes, ignored-token amplification, deep nesting, aliases,
+  repeated roots/fragments, list multiplication, expensive federation, batching,
+  introspection, stale artifacts and sanitized errors receive adverse coverage.
 
 ## Implementation steps
 
-1. Record the source-owned manifest, Core Rhai enforcement and environment rollout in ADR-0045.
-2. Generate deterministic manifest and matcher artifacts during schema composition.
-3. Package the artifacts and enforce the startup/request policy in Router Rhai.
-4. Add local/integration audit configuration and a disposable enforce-mode runtime proof.
-5. Add deterministic, adverse, telemetry/privacy, Docker-context and CI-policy tests.
-6. Document safe operation/schema rollout and capture Phase13 evidence.
+1. Record the source-owned shape/list/cost decision and alternatives in ADR-0046.
+2. Upgrade Federation links and add validated owner-backed cost/list metadata.
+3. Implement deterministic shape/cost analysis and generated demand artifact.
+4. Bind trusted generation to the passing profile and finite telemetry policy.
+5. Add unit/adverse, schema/client, packaging, CI-policy and real Router proofs.
+6. Capture calibration, update docs/memory and run candidate acceptance.
 
 ## Tests
 
-- Domain: not applicable; no product domain rule changes.
-- Application: artifact generation rejects unnamed, duplicate, excessive, malformed and incompatible operation sources.
-- Integration: the pinned real Router starts in audit/enforce modes, accepts a canonical operation and rejects altered, unknown and missing inputs in enforce mode.
-- Contract: Apollo manifest format/version/body/ID/type, generated-module determinism, artifact bounds/staleness, Docker packaging and environment matrix.
-- Browser: existing Docker-only demo proves Apollo Client canonical operations still work; no UI behavior changes.
-- Performance/failure: bounded startup failure and finite rejection telemetry; operation hash cost is calibrated later with the Phase13 cost/load slice.
+- Domain: existing owner page/list maxima remain authoritative.
+- Application: analyzer fixtures cover fragments, variables/defaults, nested
+  lists, aliases, roots, mutations, missing metadata and numeric overflow.
+- Integration: pinned Router rejects oversized/token-heavy/batched/introspection
+  requests before owner work and accepts every canonical client operation.
+- Contract: Federation metadata composition, exact hash/profile cardinality,
+  generated staleness/bounds and Docker packaging.
+- Browser: protected Docker playable journey proves compatibility.
+- Performance/failure: calibration reports all current operations and exact
+  boundary decisions; item66 owns measured SQL/N+1/latency.
 
 ## Evidence
 
-- Commands: focused Router build/tests, schema check/update, Router source/platform policy, exact Router config/startup proof, `pnpm check:changed`, documentation/AI checks, secret scan and protected CI.
-- Raw artifact path: `evidence/phase-13/trusted-operations.txt` and generated artifacts under `infra/router/generated/`.
-- Acceptance result: corrected source `0e4a4b3`, Router11/11, Web118/118,
-  focused policy36/36 and the 49/49 affected candidate gate pass; the corrected
-  pinned packaged Router proof passed protected run `33352310376`. Confirmation
-  review discussion `3891493400` identified that verifier-only changes could skip
-  that proof; source `b85230d` corrected the classifier and protected run
-  `33354040239` passed. Blocker-focused confirmation discussion `3891588767`
-  then found that Web manifest checks selected only one same-name version by
-  hash order; source `effc7fd` corrected the tests and protected run
-  `33355546182` passed. Follow-up discussions `3891672851` and `3891672854`
-  found that retained bodies were reprinted instead of byte-preserved and that
-  the rollback path could restore a pre-union Router after new-client exposure;
-  source `5f4a315` corrected both and protected run `33357231869` passed.
-  Follow-up discussion `3891772219` then found AST locations still omit ignored
-  leading/trailing wire bytes. Source
-  `0bcdd68833c23f1ae61a1c07f5f93ac5d9d989e1`, tree
-  `7ad2f2d88d5c2848265f6bbf568ba4168aee3562`, replaces location-derived slices
-  with bounded versioned JSON body strings and proves leading/comment/trailing
-  bytes remain in both the manifest body and SHA-256. Router11/11 and the final
-  affected gate49/49 with38 cached in45.499 seconds pass. Evidence head
-  `66fcab71d34552412eb6d6390801f74a9129f3bb` passed protected run
-  `33359022739`; discussion `3891772219` is resolved. Confirmation discussion
-  `3891915868` then found Router generator-only changes could skip the packaged
-  platform proof. Source `64fa64e7650e422e4b1a4405555521afc95921bd`, tree
-  `35817101dd1cb1126b2bddb2a2e9646938f760d0`, classifies the complete Router
-  package as platform work. CI policy38/38 and the repeated gate49/49 with36
-  cached in64.294 seconds pass. Protected run `33360643657` attempt1 had one
-  transient TraceQL indexing timeout in unchanged diagnostics; attempt2 passed
-  every required job and discussion `3891915868` is resolved. Blocker-focused
-  confirmation discussion `3895588146` then found the runtime proof could select
-  a retained `Browse` body while sending current variables. The proof now joins
-  the persisted entry to the unique current hash in the schema manifest and
-  fails closed on a missing or ambiguous join. A retained-first regression and
-  the complete platform suite92/92 pass. The affected candidate gate passes
-  49/49 with33 cached in98.949 seconds. Evidence head `a4e849f` passed protected
-  run `33406328754`; discussion `3895588146` is answered and resolved. Final
-  pre-merge audit then found that the schema delivery manifest also indexed the
-  retained union, so the unique-current join would fail during the exact overlap
-  it must prove. Source `a353164b36a7124c1721915ee07be09ca561de78`, tree
-  `f69257780d003d75ef575101a8e3c358fd9923cb`, keeps the Apollo manifest and
-  Router matcher as the bounded union while indexing only the unique current
-  operation in the delivery manifest. Router11/11, verifier2/2, docs and the
-  repeated gate49/49 with36 cached in99.305 seconds pass. Exact-head protected
-  proof and blocker-focused confirmation remain.
-- Iteration gate: Router composition tests plus Router source/runtime policy tests and `git diff --check`.
-- Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed`, documentation/AI checks and zero-finding secret scan.
-- Heavyweight repeat triggers: repeat the real Router enforce-mode proof when operation generation, matcher logic, startup mode policy, Router image/config/Rhai packaging or rejection telemetry changes; repeat the Docker playable journey when canonical client documents or admission behavior changes.
-- Review stopping rule: one complete initial review and one confirmation; extend only for requirement, manifest integrity, security/privacy, availability, authorization or public-contract blockers.
+- Raw artifact: `evidence/phase-13/graphql-demand-controls.txt` and generated
+  demand manifest.
+- Acceptance: pending implementation.
+- Iteration gate: Router analyzer/composition tests, affected owner schema tests,
+  format/lint and `git diff --check`.
+- Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536
+  TURBO_CONCURRENCY=4 pnpm check:changed`, documentation/AI and secret checks.
+- Heavyweight repeat triggers: repeat packaged abuse/browser proof when Router
+  limits, trusted documents, schema metadata, analyzer, artifacts, Rhai,
+  image/config or client transport changes.
+- Review stopping rule: one complete initial review and one confirmation; extend
+  only for requirement, budget integrity, security/privacy, availability,
+  authorization or public-contract blockers.
 
 ## Rollback or recovery
 
-Before new-hash exposure, restore the previous Router image/config/Rhai and
-complete composition set. After exposure, roll back the Web client while keeping
-or redeploying the last healthy union Router; roll forward a faulty union Router
-to another union-compatible image. No schema, database, Redis, event, media or
-credential rollback is needed. Retain the old reviewed byte-exact wire body in
-`infra/router/retained-operations.json` until telemetry and the compatibility
-window prove both client populations drained.
+Restore the item64 Router image/config, Federation SDLs and ten-artifact
+generation set. No product data, database, Redis, event, media or credential
+rollback is required. Roll forward by adding compatible metadata/operations
+before raising any reviewed budget.
 
 ## Documentation updates
 
-- ADR-0045, GraphQL/security architecture, configuration and release process.
-- Router README, Phase13 evidence index, repository state, queue, decision ledger, session log and handoff.
-- Phase12 evidence closeout with final protected/main release coordinates.
+- ADR-0046, GraphQL/security architecture, Router configuration and release.
+- Phase13 calibration/evidence, repository state, queue, session log and handoff.
 
 ## Completion checklist
 
 - [ ] Requirements satisfied
 - [ ] Tests pass
-- [x] Evidence captured
-- [x] Documentation current
-- [x] `.ai/` state activated
+- [ ] Evidence captured
+- [ ] Documentation current
+- [ ] `.ai/` state updated
 - [x] Remaining risks recorded

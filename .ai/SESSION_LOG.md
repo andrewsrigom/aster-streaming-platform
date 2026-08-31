@@ -4,30 +4,28 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
-## 2026-08-31 — Trusted-operation current index separated from rollout union
+## 2026-08-31 — GraphQL demand controls activated locally
 
 ### Completed
 
-- Evidence head `a4e849f` passed protected run `33406328754`; discussion
-  `3895588146` is answered and resolved.
-- Final audit found the delivery manifest indexed both the current and retained
-  versions, making the fail-closed current-operation proof ambiguous during a
-  real overlap.
-- Source `a353164b36a7124c1721915ee07be09ca561de78`, tree
-  `f69257780d003d75ef575101a8e3c358fd9923cb`, keeps the Apollo manifest and
-  Router matcher as the admission union but limits the delivery index to one
-  current hash per name. Router11/11, verifier2/2, docs and gate49/49 with36
-  cached in99.305 seconds pass; the included secret scan has zero findings.
+- Froze item64 exact head `a4e849f` as `WAITING_EXTERNAL`; protected run
+  `33406328754`, confirmation, merge and exact-main CI remain.
+- Activated item65 P13-R03/R04/R05/R10 on
+  `feat/p13-graphql-demand-controls` from that frozen head. The plan binds
+  source-owned shape/list/cost analysis to exact trusted-operation admission and
+  keeps owner pagination and authorization authoritative.
+- Current official Apollo documentation confirms Federation `@cost` and
+  `@listSize` metadata and Router demand-control semantics; Aster's accepted
+  local path adds no account, key, hosted control plane, service or dependency.
 
 ### Evidence
 
-- `evidence/phase-13/trusted-operations.txt` records the exact predecessor run,
-  finding, source correction and accepted local gates.
+- `.ai/CHANGE_PLAN.md` records requirements, boundaries, failure behavior,
+  gates, rollback and the no-publish predecessor constraint.
 
 ### Next action
 
-- Publish once, pass exact-head protected CI and blocker-focused confirmation,
-  then squash merge and verify exact main before activating item65.
+- Draft ADR-0046 and implement the deterministic analyzer while observing item64.
 
 ## 2026-08-31 — Trusted-operation runtime proof selects current version
 

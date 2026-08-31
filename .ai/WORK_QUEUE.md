@@ -156,8 +156,8 @@ Historical stashes are superseded.
 | 61 | Provision a bounded three-layer operational overview | P12-R12 | DONE |
 | 62 | Implement multi-window SLO burn-rate alerts linked to runbooks | P12-R07 | DONE |
 | 63 | Diagnose three injected failures from telemetry and close Phase 12 | P12-R10 | DONE |
-| 64 | Generate trusted operations, enforce the environment rollout and document safe schema delivery (also P13-R02/R12) | P13-R01 | IN_PROGRESS |
-| 65 | Enforce GraphQL parser, shape, list, cost and introspection controls (also P13-R04/R05/R10) | P13-R03 | READY |
+| 64 | Generate trusted operations, enforce the environment rollout and document safe schema delivery (also P13-R02/R12) | P13-R01 | WAITING_EXTERNAL |
+| 65 | Enforce GraphQL parser, shape, list, cost and introspection controls (also P13-R04/R05/R10) | P13-R03 | IN_PROGRESS |
 | 66 | Enforce execution, concurrency, identity-rate and cache-scope controls (also P13-R11) | P13-R06 | READY |
 | 67 | Prove N+1/query counts and owner authorization; close Phase 13 (also P13-R08/R09) | P13-R07 | READY |
 
@@ -361,6 +361,9 @@ Source `a353164`, tree `f692577`, keeps only current hashes in that index while
 the Apollo manifest and Router matcher retain both reviewed versions.
 Router11/11, verifier2/2, docs and gate49/49 with36 cached in99.305 seconds pass.
 Exact-head protected CI, confirmation and release remain.
+Item64 is therefore `WAITING_EXTERNAL` at exact head `a4e849f`; run
+`33406328754` is active. Item65 is the sole local `IN_PROGRESS` dependent from
+that frozen head and cannot publish, merge or release first.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

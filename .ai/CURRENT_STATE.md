@@ -42,15 +42,10 @@ Blocker-focused discussion `3895588146` then found the packaged proof could pair
 a retained `Browse` body with current variables. Source `2286c7f`, tree
 `d253a5e`, joins the persisted body to the unique current schema-manifest hash
 and fails closed on missing/ambiguous joins. Platform92/92 and gate49/49 with33
-cached in98.949 seconds pass. Evidence head `a4e849f` passed protected run
-`33406328754`; discussion `3895588146` is resolved. Final audit found the
-delivery manifest still indexed both current and retained hashes, making that
-unique-current join fail during overlap. Source `a353164`, tree `f692577`, now
-keeps only the current operation index there while the Apollo manifest and
-Router matcher retain the rollout union. Router11/11, verifier2/2, docs and
-gate49/49 with36 cached in99.305 seconds pass. Exact-head CI and confirmation
-remain. Full
-Phase00–14 goal stays active.
+cached in98.949 seconds pass. Exact-head CI and confirmation remain. Full
+Phase00–14 goal stays active. Item64 is a coherent `WAITING_EXTERNAL` candidate
+at head `a4e849f`; protected run `33406328754` is active. Item65 is the sole
+local `IN_PROGRESS` dependent and cannot publish before item64 exact-main CI.
 
 ## Verified
 
@@ -81,7 +76,7 @@ and Catalog/Playback isolation pass their recorded Web110/110, browser8/8 and
 
 ## Current work
 
-P13-R01/R02/R12 is the sole active item. The corrected candidate generates an
+P13-R01/R02/R12 item64 is frozen as `WAITING_EXTERNAL`. Its candidate generates an
 Apollo manifest and finite Rhai matcher from the 25 reviewed operations,
 packages both with Apollo Router 2.17.0 Core and binds each operation name to the
 exact link-ready Apollo wire-document hash. Actual `HttpLink` bodies for all 19
@@ -131,16 +126,16 @@ verifier selected `Browse` by name only. Source
 `d253a5e8e69abf18c29e8dd432b3c4225958aa73`, selects the exact current hash from
 the schema manifest, proves retained-first and missing/ambiguous cases, and adds
 that regression to the platform gate. Platform92/92 and gate49/49 with33 cached
-in98.949 seconds pass. Evidence head `a4e849f` passed protected run
-`33406328754`; discussion `3895588146` is resolved. Source
-`a353164b36a7124c1721915ee07be09ca561de78`, tree
-`f69257780d003d75ef575101a8e3c358fd9923cb`, then separates the current-only
-delivery index from the current/retained admission union. Router11/11,
-verifier2/2, docs and gate49/49 with36 cached in99.305 seconds pass. Exact-head
-protected proof and confirmation remain. APQ
+in98.949 seconds pass. Exact-head protected proof and confirmation remain. APQ
 stays disabled.
 PostgreSQL/data ownership, owner authorization, schemas, Redis, events and media
 remain unchanged.
+
+P13-R03/R04/R05/R10 item65 is the sole active dependent on
+`feat/p13-graphql-demand-controls` at item64 head `a4e849f`. The accepted plan
+adds source-owned depth/alias/root/list/cost analysis to exact trusted-operation
+generation, owner-backed Federation metadata, one bounded calibration artifact
+and packaged adverse proofs. No implementation or acceptance claim exists yet.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -699,14 +694,12 @@ deployment remain planned.
 
 ## Next outcome
 
-For item64 (P13-R01), commit the current-only delivery-index evidence checkpoint
-and push the correction once. Require protected CI to load the generated Rhai
-policy in the pinned Router, select the current version during retained overlap,
-accept it, reject altered/unknown/missing documents and expose all three finite
-metric labels. Obtain the permitted blocker-focused confirmation, merge, verify
-exact-main CI and then activate item65. Inspect the
-exact historical interrupted Phase12 project only when that same Docker engine
-becomes reachable.
+For P13-R03 item65, implement ADR-0046, owner-backed Federation metadata and a
+deterministic demand analyzer locally while observing item64 protected
+run `33406328754`. Do not publish item65 first. When item64 passes, resolve
+discussion `3895588146`, obtain confirmation, merge and verify exact-main CI;
+then rebase item65 and repeat only affected gates. Inspect the exact historical
+interrupted Phase12 project only when that same Docker engine becomes reachable.
 
 ## Runtime and recovery
 
