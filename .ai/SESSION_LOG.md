@@ -4,6 +4,41 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — GraphQL execution-control PR remediation accepted locally
+
+### Completed
+
+- PR56 evidence head `59b7215`, tree `ee1c908`, failed protected run
+  `33432579598`: the full Identity integration stopped at the subgraph readiness
+  assertion and the packaged Router rejected the static response-header YAML.
+  Initial review discussion `3897861197` also found that a durable mutation
+  retry could spend a fresh admission before receipt replay.
+- Corrected source `8d2633d`, tree `d75aca0`, validates canonical mutation
+  inputs, binds create/update/delete admission to mutation ID plus request
+  digest, consults Redis before outage-only local state and caps local retry
+  markers at8,192. Selection retains a fresh identity.
+- Router uses supported Rhai response handling. Admitted responses require
+  no-store; the pre-service body rejection must be bounded, data-free and have
+  no reusable freshness or cache validators. CI failure output now includes
+  bounded Router logs.
+- Identity159/159, Router21/21, telemetry19/19, Router verifier5/5 and GraphQL
+  verifier3/3 pass. Full real integration passed all11 scenarios in150.963
+  seconds with cleanup remaining0; the isolated packaged Router proof passed
+  and removed its exact project.
+- The corrected affected gate passes57/57 with37 cached in95.749 seconds.
+
+### Evidence
+
+- `evidence/phase-13/execution-rate-cache-controls.txt` records the failed
+  protected head, review blocker, corrected exact source, local runtime and
+  candidate gate.
+
+### Next action
+
+- Push the corrected evidence checkpoint once, require corrected protected CI,
+  resolve the initial discussion and request one exact-head confirmation before
+  merge.
+
 ## 2026-08-31 — GraphQL execution, account rate and cache-scope candidate
 
 ### Completed

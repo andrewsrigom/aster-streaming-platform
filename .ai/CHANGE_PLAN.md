@@ -155,7 +155,11 @@ sole readiness-critical dependency.
 - Commands: focused Identity/Router tests during iteration; affected candidate
   gate before publication; protected CI for real packaged runtime.
 - Raw artifact path: `evidence/phase-13/execution-rate-cache-controls.txt`.
-- Acceptance result: pending.
+- Acceptance result: corrected local candidate accepted at source `8d2633d`,
+  tree `d75aca0`; Identity159/159, Router21/21, focused verifiers, all11 real
+  integration scenarios, isolated packaged Router and affected gate57/57 pass.
+  Corrected protected CI, discussion resolution, confirmation and release are
+  pending.
 - Iteration gate: changed-package typecheck/lint plus focused unit/contract tests.
 - Candidate gate: repository affected-scope gate selected from exact diff,
   including Identity integration, Router generation and platform policy.

@@ -11,9 +11,11 @@ indexing timeout. Item65 is released.
 
 Item66 (P13-R06/R11) is the sole `IN_PROGRESS` item on
 `feat/p13-execution-rate-cache-controls`, worktree `/tmp/aster-p13-runtime`,
-from exact main `8cd6c0b`. Exact source `a090285`, tree `98d3064`, is committed
-and passes its affected candidate gate. It is not published, reviewed or
-released yet.
+from exact main `8cd6c0b`. Initial source `a090285`, tree `98d3064`, passed its
+candidate gate; evidence head `59b7215`, tree `ee1c908`, opened PR56. Protected
+run `33432579598` failed and initial review found one blocker. Corrected source
+`8d2633d`, tree `d75aca0`, is committed and locally accepted. It is not pushed,
+confirmed or released yet.
 
 ## Implemented locally
 
@@ -23,27 +25,37 @@ released yet.
   3,000 ms/eight-request boundary and requires `no-store`.
 - Composition derives minimum private scope from selected owner coordinates and
   fails missing/stale/weaker policy.
-- Router overwrites all public responses with `Cache-Control: no-store`; the
-  packaged adverse verifier now checks that header.
+- Router's GraphQL service overwrites admitted responses with
+  `Cache-Control: no-store`; the pre-service body rejection must be data-free
+  without reusable freshness or cache validators.
 - Identity create/update/delete use `profile_mutation` (8 burst,2/s); selection
   uses `profile_selection` (16 burst,4/s). A current session supplies the
   authoritative account partition, then the existing profile command repeats
   authorization before writing.
-- The limiter has at most1,024 local partitions. Redis uses its existing atomic
-  server-time bucket with30-second TTL and only SHA-256 account/admission
-  pseudonyms. It connects on demand; rejection rejects; outage uses only local
-  admission; cancellation/capacity fail closed.
+- Create/update/delete bind admission to the validated durable mutation ID plus
+  canonical request digest. Exact retries share one decision; changed payloads
+  remain distinct. Selection uses a fresh admission identity.
+- The limiter has at most1,024 local partitions and8,192 expiring local
+  admission markers. Redis uses its existing atomic server-time bucket with
+  30-second TTL and only SHA-256 account/admission pseudonyms. The shared
+  decision runs before outage-only local admission; cancellation/capacity fail
+  closed.
 - PostgreSQL is Identity's sole readiness-critical dependency. Redis remains
   lifecycle-owned and closes cleanly.
 - Telemetry accepts finite `profile_mutation` and `profile_selection` labels.
 
 ## Current evidence
 
-- Identity tests:156/156 pass.
+- Initial protected run `33432579598` failed the Identity subgraph readiness
+  assertion and Router startup because a static response-header YAML shape was
+  unsupported. Its real fixture cleaned remaining0.
+- Initial review discussion `3897861197` found fresh admission could block
+  durable receipt replay. Corrected source is `8d2633d`, tree `d75aca0`.
+- Identity tests:159/159 pass.
 - Router tests:21/21 plus deterministic schema check pass.
 - Telemetry tests:19/19 pass.
 - Router source verifier:5/5 pass.
-- GraphQL rejection/cache verifier:2/2 pass.
+- GraphQL rejection/cache verifier:3/3 pass.
 - Build:15/15 relevant dependency/package tasks pass.
 - `pnpm --filter @aster/identity integration:core` passed four disposable
   scenarios in58.870s: real atomic two-replica Redis admission, Redis outage
@@ -51,17 +63,21 @@ released yet.
   SIGTERM/HTTP drain and cleanup remaining0.
 - Raw checkpoint:
   `evidence/phase-13/execution-rate-cache-controls.txt`.
-- Affected candidate gate:54/54 tasks,20 cached,178.363 seconds on exact source
-  `a090285`/tree `98d3064`.
+- Full `pnpm integration`: all11 scenarios passed in150.963 seconds on the
+  correction; exact project cleanup remaining0.
+- Isolated `aster-p13-remediation` packaged Router proof passed accepted/adverse
+  cache behavior and removed its owned resources.
+- Corrected affected candidate gate:57/57 tasks,37 cached,95.749 seconds on
+  exact source `8d2633d`/tree `d75aca0`.
 
 ## Exact next actions
 
-1. Run documentation/repository-memory checks and commit this evidence
-   checkpoint without repeating unaffected integration.
-2. Push once, open one PR, require protected exact-head CI including the pinned
-   Router `no-store` proof, collect one complete initial review and one
-   confirmation review, then squash merge only after blockers are resolved.
-3. Verify candidate-tree identity and exact-main CI before activating item67.
+1. Push the corrected evidence head once to existing PR56.
+2. Require protected exact-head CI including the pinned Router `no-store`
+   proof. Answer/resolve discussion `3897861197`, then request one confirmation
+   review on the corrected exact head.
+3. Squash merge only after those gates. Verify candidate-tree identity and
+   exact-main CI before publishing item67.
 
 ## Execution boundary
 

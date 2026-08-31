@@ -52,7 +52,10 @@ required job. Item64 is released. Item65 final candidate head `94c17b9`, tree
 retained that tree, and exact-main run `33425758870` passed on attempt2 after
 one isolated TraceQL indexing timeout. Item65 is released. Full Phase00–14 goal
 stays active. Item66 is the sole `IN_PROGRESS` item on
-`feat/p13-execution-rate-cache-controls` from exact main `8cd6c0b`.
+`feat/p13-execution-rate-cache-controls` from exact main `8cd6c0b`. PR56's
+published head `59b7215` failed protected run `33432579598` and initial review
+found one durable-retry blocker. Corrected source `8d2633d`, tree `d75aca0`,
+passes the complete local remediation gate; protected correction remains.
 
 ## Verified
 
@@ -195,26 +198,35 @@ P13-R06/R11 item66 is implemented locally on
 `feat/p13-execution-rate-cache-controls` from exact released main `8cd6c0b`.
 ADR-0047 and operation-demand manifest version2 give every exact trusted hash a
 derived public/account/profile scope, one finite rate class, the existing
-three-second/eight-request Router boundary and mandatory `no-store`. Router now
-overwrites public response cache control. Identity profile create/update/delete
-share an eight-token/two-per-second authorized-account limiter; selection uses
-sixteen/four-per-second. The local shield has at most1,024 partitions, Redis
-uses only SHA-256 account/admission pseudonyms and connects on demand, and the
-base owner command revalidates authorization before its write. PostgreSQL is now
-Identity's sole readiness-critical dependency; Redis outage keeps readiness and
-uses only bounded local admission.
+three-second/eight-request Router boundary and mandatory `no-store`. Router's
+GraphQL service overwrites admitted response cache control; the fixed
+pre-service oversized-body rejection is data-free and has no freshness or
+validators. Identity profile create/update/delete share an eight-token/
+two-per-second authorized-account limiter; selection uses sixteen/four-per-
+second. PostgreSQL is Identity's sole readiness-critical dependency; Redis
+outage keeps readiness and uses only bounded local admission.
 
-Identity156/156, Router21/21, telemetry19/19, Router verifier5/5 and GraphQL
-verifier2/2 pass. The disposable real PostgreSQL/Redis core integration passed
-atomic two-replica admission, outage fallback/recovery, optional Redis
-readiness, PostgreSQL readiness loss/recovery, cancellation/capacity, drain and
-exact cleanup in58.870 seconds. The affected candidate gate, packaged Router
-header proof, bounded review, protected exact-head CI and release remain. Exact
-source `a090285ccca972bd3c549f4d22ab72f2244e2961`, tree
-`98d3064b23c07f2145c68f1eef5a1c4309759400`, passes the affected candidate
-gate54/54 with20 cached in178.363 seconds after its only finding, three
-unnecessary public exports, was corrected before publication. This is an
-accepted local candidate, not verified or released.
+Initial source `a090285`, tree `98d3064`, passed gate54/54 with20 cached in
+178.363 seconds. Evidence head `59b7215`, tree `ee1c908`, opened PR56. Protected
+run `33432579598` then exposed a real Identity subgraph readiness assertion and
+Router startup failure from an unsupported static response-header YAML shape.
+Initial review discussion `3897861197` found that exact durable mutation retries
+used a fresh admission identity and could be rate-rejected before receipt
+replay.
+
+Corrected source `8d2633d052a44ad0d6f115be0641369f911c0820`, tree
+`d75aca0b7097e47d5ef6beff6ce8222cae6d5b10`, validates canonical mutation input
+and binds admission to mutation ID plus request digest, consults the distributed
+decision before outage-only local state, and bounds local degradation by 1,024
+buckets/8,192 expiring markers. It uses supported Rhai response handling,
+strengthens transport-rejection checks and records Router failure logs.
+Identity159/159, Router21/21, telemetry19/19, Router verifier5/5 and GraphQL
+verifier3/3 pass. The complete real integration passed all11 scenarios in
+150.963 seconds and cleaned remaining0. The isolated packaged Router proof
+passed accepted/adverse cache behavior and removed its project. The corrected
+affected gate passes57/57 with37 cached in95.749 seconds. This is an implemented
+corrected local candidate, not verified or released; protected exact-head CI,
+discussion resolution, one confirmation, merge and exact-main CI remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -767,17 +779,18 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 P13-R01/R02/R12 is released through exact-main run `33412728404`. GraphQL
 shape/list/cost controls are released through tree-identical PR55 merge
 `8cd6c0b` and exact-main run `33425758870` attempt2. Execution/rate/cache
-controls are implemented locally in item66; candidate/release gates remain.
+controls are implemented locally in corrected item66; protected/release gates
+remain.
 N+1/query-count proof, owner-authorization abuse tests and the remaining Phase13
 requirements are planned in item67. Phase14 capacity validation and hosted
 deployment remain planned.
 
 ## Next outcome
 
-For P13-R06/P13-R11 item66, commit the evidence checkpoint, publish once, then
-perform the bounded initial/confirmation review and protected release process.
-The packaged Router must prove `no-store` on accepted and adverse responses
-before merge.
+For P13-R06/P13-R11 item66, publish the corrected evidence head once, require
+protected exact-head CI including the packaged Router proof, resolve the
+corrected initial discussion and request one confirmation. Squash merge only
+after those gates, then verify exact-main CI before item67 publication.
 Inspect the exact historical interrupted Phase12 project only when that same
 Docker engine becomes reachable.
 

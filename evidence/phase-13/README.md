@@ -73,15 +73,19 @@ released.
 Item66 implements the local P13-R06/R11 candidate from exact main `8cd6c0b`.
 [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md)
 adds exact runtime/cache classification, authorized-account Identity
-profile-command admission and PostgreSQL-only readiness. Identity156/156,
-Router21/21, telemetry19/19 and focused verifiers pass. The disposable real
-PostgreSQL/Redis core integration proves atomic two-replica admission, bounded
-outage fallback/recovery, optional Redis readiness, PostgreSQL readiness
-loss/recovery, cancellation/drain and cleanup remaining0. [Current evidence](execution-rate-cache-controls.txt)
-records the exact local checkpoint. Candidate, packaged Router, review and
-release gates remain. Exact source `a090285`, tree `98d3064`, passes the
-affected candidate gate54/54 with20 cached in178.363 seconds after three
-unnecessary exports were made module-private before publication.
+profile-command admission and PostgreSQL-only readiness. Initial source
+`a090285`, tree `98d3064`, passed gate54/54; evidence head `59b7215` opened
+PR56. Protected run `33432579598` found a real Identity assertion and invalid
+Router response-header YAML. Initial discussion `3897861197` found exact durable
+retries could spend a fresh rate admission before receipt replay. Corrected
+source `8d2633d`, tree `d75aca0`, binds admission to canonical durable mutation
+identity, orders distributed/local degradation safely and uses supported Rhai
+response handling. Identity159/159, Router21/21, telemetry19/19 and focused
+verifiers pass. Full real integration passed all11 scenarios in150.963 seconds
+with cleanup0; the isolated packaged Router proof passed. [Current evidence](execution-rate-cache-controls.txt)
+records the exact correction. The corrected gate passes57/57 with37 cached in
+95.749 seconds. Corrected protected CI, discussion resolution, confirmation and
+release remain.
 
 ## Requirement traceability
 
@@ -91,14 +95,14 @@ unnecessary exports were made module-private before publication.
 | P13-R02 | Explicit local/integration audit, hosted enforce policy and passed disposable real-Router proof in [trusted-operation evidence](trusted-operations.txt) |
 | P13-R12 | [ADR-0045](../../docs/adr/0045-source-owned-trusted-operations.md), GraphQL architecture and release sequence |
 | P13-R03/R04/R05/R10 | Released through [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json), [demand-control evidence](graphql-demand-controls.txt), PR55 tree-identical main `8cd6c0b` and exact-main run `33425758870` attempt2 |
-| P13-R06/R11 | Exact source `a090285`, tree `98d3064`, passes the affected candidate gate54/54; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record the implementation; packaged/review/release gates remain |
+| P13-R06/R11 | Corrected source `8d2633d`, tree `d75aca0`, passes the affected candidate gate57/57 and all11 real integration scenarios; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record the implementation and initial protected/review findings; corrected protected/confirmation/release gates remain |
 | P13-R07–R09 | Planned in queue item67; no implementation or closeout claim |
 
 ## Current limitations
 
-- Docker server26.0.0 was reachable for item66's owned Identity fixture; all
-  resources were removed. The updated packaged Router header proof remains a
-  protected candidate requirement.
+- Docker server26.0.0 was reachable for item66's owned full integration and
+  isolated packaged Router proof; all owned resources were removed. Corrected
+  protected packaged acceptance remains required.
 - Audit mode intentionally accepts ad hoc local/integration documents and is not
   a public-deployment security control.
 - A trusted document is not user authority. Owner authorization remains required.

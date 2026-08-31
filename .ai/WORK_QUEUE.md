@@ -187,12 +187,19 @@ timeout; every source and product job was unchanged and cleanup was clean.
 Item65 is released. Item66 is active on
 `feat/p13-execution-rate-cache-controls` from that exact main.
 ADR-0047, manifest-v2 runtime/cache classification, authorized-account Identity
-admission and optional-Redis readiness are implemented locally. Identity156/156,
-Router21/21, telemetry19/19 and the disposable real PostgreSQL/Redis core
-integration pass with cleanup remaining0. Candidate, packaged Router, review and
-release gates remain. Exact source `a090285`, tree `98d3064`, passes the
-affected candidate gate54/54 with20 cached in178.363 seconds; the branch is
-ready for one evidence checkpoint and publication.
+admission and optional-Redis readiness are implemented locally. Initial source
+`a090285`, tree `98d3064`, passed gate54/54; evidence head `59b7215` opened
+PR56. Protected run `33432579598` found an Identity integration assertion and
+unsupported Router response-header YAML. Initial discussion `3897861197` found
+durable mutation retries could spend a fresh admission before receipt replay.
+Corrected source `8d2633d`, tree `d75aca0`, binds admission to canonical durable
+mutation identity, orders distributed/local degradation safely, caps local
+retry markers, uses supported Rhai response handling and preserves Router
+failure logs. Identity159/159, Router21/21, telemetry19/19, focused verifiers,
+the all11-scenario integration in150.963 seconds, isolated packaged Router and
+the corrected57/57 gate with37 cached in95.749 seconds pass with exact cleanup.
+One corrected evidence-head push, protected exact-head CI, discussion
+resolution, confirmation and release remain.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head
