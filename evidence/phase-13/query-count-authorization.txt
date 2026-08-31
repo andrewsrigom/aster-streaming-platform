@@ -1,0 +1,150 @@
+Phase 13 — GraphQL execution-path, query-count and authorization acceptance
+Date: 2026-08-31
+Requirements: P13-R07, P13-R08, P13-R09
+Branch: feat/p13-n-plus-one-authorization
+Predecessor head: 82ba630da7ccc64e4c82329701ff2c11f41d5508 (item66 PR56)
+Source commit: 8007444b24406c0b81d87156ab98197a727bb858
+Source tree: eb87e5f717031f82e257817e1c47541758ed41d6
+
+IMPLEMENTED LOCAL DEPENDENT CANDIDATE (NOT PUBLISHED OR RELEASED)
+
+EXECUTION-PATH AUDIT
+
+The source-owned Router audit exactly covers the generated public API and all
+five generated owner schemas. It records owner, public/account/profile scope,
+list or parent bound, resolution strategy, maximum batch and owner-query budget.
+Schema drift fails instead of silently creating an unaudited path.
+
+Observed exact inventory on the source commit:
+  public list paths: 12
+  public entity-return paths: 10
+  federated entity contributors: 5
+
+Request-scoped loaders remain owned by the subgraph request context:
+  Catalog Title: at most 20 keys and one owner query per batch;
+  Engagement Title/Profile: at most 20 pairs, five profiles and one owner query
+    per batch;
+  Identity Profile: at most 16 keys and one memoized owner read per request;
+  Discovery Title: reference-only and performs no owner query.
+
+The exact audit test rejects an added public list, changed @listSize metadata,
+removed entity contributor, parent bound above 20 and a query budget assigned
+to a reference-only contributor. Existing owner tests prove duplicate/order/null
+semantics, per-request cache disposal, cross-credential isolation, freshness,
+cancellation and batch overflow.
+
+N+1 BEFORE/AFTER
+
+The unchanged Phase08 Engagement experiment remains the concrete before/after
+comparison for a federated entity contribution. Twenty sequential profile/title
+reads performed 20 SELECTs in 55.249 ms; forty fields through one request-scoped
+DataLoader performed one SELECT in 7.229 ms, one Identity check and one Catalog
+visibility batch. The source path and bounds did not change in this item, so the
+heavyweight experiment was not repeated. Its raw artifact and limitations are
+in evidence/phase-08/engagement-fields-postgres.jsonl and
+evidence/phase-08/engagement-fields.md.
+
+PHASE13 REAL POSTGRESQL MEASUREMENTS
+
+Raw bounded events:
+  evidence/phase-13/query-count-measurements.jsonl
+
+Environment:
+  WSL2 Ubuntu 20.04; Node.js 24.19.0; Docker server 26.0.0; PostgreSQL image
+  docker.io/library/postgres:18.6-alpine3.23@sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f.
+  Every run used one owned random-name container, loopback-only random port,
+  one CPU, 384 MiB, 128 PIDs and tmpfs storage. Every run removed its exact
+  labelled container and reported remaining 0.
+
+Command:
+  node ./tools/run-catalog-integration.mjs
+Result:
+  PASS. TitleDetail traversed actual GraphQL HTTP and Catalog's restricted
+  PostgreSQL adapter: 1 query in 52.727 ms for one published title. The captured
+  EXPLAIN used catalog_published_titles,
+  publications_title_id_id_rights_revision_key and rights_revisions_pkey; its
+  observed execution interval was 0.128 ms. The broader fixture ended with
+  catalog_resources_closed reservedSlots 0 and cleanup remaining 0 in 24,997 ms.
+
+Command:
+  node ./tools/run-discovery-integration.mjs
+Result:
+  PASS. SearchTitles used 3 queries in 23.948 ms for three projection rows and
+  first 20. HomePublic used 5 fixed owner queries in 18.454 ms for projection
+  state plus featured, recent, trending and genre rails. The search plan used
+  discovery_search_vector; keyset, independent rails, generation fencing and
+  cleanup remaining 0 also passed in 2,381 ms.
+
+Command:
+  node ./tools/run-engagement-integration.mjs
+Initial result:
+  FAIL after the new measurement had passed: a later 65-row visibility test
+  crossed its two-second wall-clock authority window and returned unavailable.
+  The exact owned fixture still cleaned with remaining 0. The fixture now freezes
+  that isolated read's owner/visibility clock, as required for deterministic
+  ordering tests; no production policy changed.
+Corrected result:
+  PASS. ContinueWatching used 1 Engagement PostgreSQL query in 3.744 ms for 25
+  owned aggregates, first20 and current Catalog visibility. EXPLAIN used
+  engagement_continue_order and profile_guards_profile_id_account_id_key; its
+  observed execution interval was 0.131 ms. The 65-row bounded scan still split
+  four visibility batches and returned its one visible aggregate. Cleanup
+  reported remaining 0 in 4,923 ms.
+
+Interpretation:
+  Counts are constant within the declared list/page bounds. They are not a
+  throughput claim, hosted SLO or comparison of machine speed. Durations are
+  single local observations retained to expose large regressions only. Phase14
+  owns calibrated mixed load, saturation and hosted budgets.
+
+OWNER AUTHORIZATION MATRIX
+
+Artifact:
+  evidence/phase-13/authorization-matrix.json
+
+The executable matrix contains 12 negative cases across Catalog, Discovery,
+Engagement, Identity and Playback. It covers identifier substitution,
+cross-profile access and role/private-transport escalation. Each row references
+an exact test name. The Router test fails if a file/test/category/owner or case
+identity drifts. The combined five-owner test gate passed19/19 Turbo tasks;
+Router passed25/25 and verified all matrix references. Owner tests assert
+rejection before disclosure or durable mutation, not merely a UI response.
+
+FOCUSED GATES
+
+Commands:
+  turbo run build --filter=@aster/router --filter=@aster/catalog \
+    --filter=@aster/discovery --filter=@aster/engagement --concurrency=3
+  pnpm --filter @aster/router test
+  turbo run test --filter=@aster/catalog --filter=@aster/discovery \
+    --filter=@aster/engagement --filter=@aster/identity \
+    --filter=@aster/playback --concurrency=3
+Results:
+  PASS — affected builds 15/15 with 13 cached; Router 25/25 plus deterministic
+  composition; five-owner gate 19/19 tasks with 14 cached.
+
+Commands:
+  pnpm --filter @aster/engagement typecheck
+  pnpm ai:check
+  pnpm security:staged
+  pnpm staged:check
+Results:
+  PASS — strict Engagement types, repository memory, zero staged secrets,
+  formatting and staged lint.
+
+PENDING RELEASE EVIDENCE
+
+- Item66 PR56 passes protected CI; confirmation, squash merge and exact-main CI
+  remain before this dependent item can publish.
+- Rebase this source onto released main and repeat affected local gates. Repeat
+  a PostgreSQL fixture only if the rebase changes its query path, adapter,
+  migration, authorization or measurement.
+- Then run the item67 candidate gate, publish once, require protected CI and one
+  bounded initial/confirmation review, merge and confirm exact-main CI before
+  declaring P13-R07/R08/R09 or Phase13 verified/released.
+
+ROLLBACK
+
+Revert source commit 8007444b24406c0b81d87156ab98197a727bb858 and its evidence
+checkpoint. No schema, migration, event, cache, retained media or durable data
+change exists. Fixtures own only exact random-name disposable containers.

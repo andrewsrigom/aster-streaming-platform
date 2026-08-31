@@ -217,6 +217,12 @@ source/platform jobs and confirmation remain.
 Item67 is the one permitted dependent `IN_PROGRESS` item on
 `feat/p13-n-plus-one-authorization`, rebasing exactly on that frozen head. It may
 build and verify locally but must not publish or merge before item66 releases.
+Source `8007444`, tree `eb87e5f`, implements the exact 12-list/10-entity-return/
+5-contributor audit, real query-count observations 1/3/5/1 for title/search/home/
+continue-watching and a 12-case five-owner authorization matrix. Router 25/25,
+five-owner 19/19 tasks and all changed disposable PostgreSQL fixtures pass with
+cleanup 0. Evidence is current; ordered rebase/candidate/publication gates wait
+for item66 release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

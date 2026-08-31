@@ -23,12 +23,13 @@ released item65 main `8cd6c0b`. Its second corrected source `bf14e2c`, tree
 `0084c67`, passes the affected gate57/57, all11 real integration scenarios and
 the exact-source removed-marker replay proof; protected CI run `33442875698`
 and blocker-focused confirmation remain external.
-Existing owners already use bounded request-scoped DataLoader for Catalog Title
-entities and Engagement Title/Profile fields. Phase08 evidence records one
-twenty-pair Engagement before/after comparison, and owner tests cover many
-authorization failures separately. Phase13 does not yet have one complete,
-staleness-checked path inventory, four-operation query-count report or
-consolidated authorization matrix.
+The pre-rebase item67 source `8007444`, tree `eb87e5f`, exactly audits 12 public
+lists, 10 entity returns and 5 contributors. Router 25/25 and the five-owner
+19/19 task gate pass. Disposable PostgreSQL fixtures record TitleDetail 1 query,
+SearchTitles 3, HomePublic 5 and ContinueWatching 1 with exact cleanup. The
+12-case matrix covers all five owners and all three required abuse categories.
+This is implemented and locally evidenced; the predecessor change requires the
+current rebase and affected-gate repeat before publication.
 
 Protected run `33442875698` passes exact head `1e115fe`. The blocker-focused
 confirmation found two remaining acceptance gaps: the packaged runtime verifier
@@ -39,17 +40,17 @@ rollout/availability boundaries and are remediated together before release.
 
 ## Proposed behavior
 
-Add a source-owned audit beside Router composition that exactly covers every
+The source-owned audit beside Router composition exactly covers every
 public list field and federated entity contribution. The audit records the owner,
 request scope, batch maximum, source-query budget and authorization class, and
 fails when the schema adds or removes an audited path.
 
-Extend existing disposable PostgreSQL fixtures to measure the actual home,
+Existing disposable PostgreSQL fixtures measure the actual home,
 title, continue-watching and search application paths without a new service or
 benchmark harness. Record query count and elapsed time after fixture warmup;
 assert bounded counts, but treat latency as a single local observation rather
-than a production objective. Consolidate current and new owner-side negative
-tests into an executable identifier/role/profile matrix.
+than a production objective. Current owner-side negative tests form one
+executable identifier/role/profile matrix.
 
 ## Boundaries
 
@@ -147,8 +148,9 @@ tests into an executable identifier/role/profile matrix.
 - Commands: focused owner/Router tests; Catalog, Discovery and Engagement real
   PostgreSQL fixtures; affected candidate gate; protected CI.
 - Raw artifact path: `evidence/phase-13/query-count-authorization.txt` plus
-  bounded JSONL measurement output.
-- Acceptance result: pending.
+  `evidence/phase-13/query-count-measurements.jsonl`.
+- Acceptance result: local source/fixtures pass; predecessor release,
+  post-rebase candidate, protected, review, merge and exact-main gates pending.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.
@@ -176,8 +178,8 @@ measurements whose path changed.
 ## Completion checklist
 
 - [ ] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
-- [ ] Remaining risks recorded
+- [x] Tests pass at the dependent local-source checkpoint
+- [x] Evidence captured for the dependent local-source checkpoint
+- [x] Documentation current for the dependent local-source checkpoint
+- [x] `.ai/` state updated
+- [x] Remaining risks recorded

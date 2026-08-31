@@ -10,21 +10,18 @@ and expired local-marker pruning. Identity163/163, Router verifier6/6 and both
 `3898857100`/`3898857110`, final confirmation and release remain.
 
 Item67 (P13-R07/R08/R09) is the one dependent `IN_PROGRESS` item on
-`feat/p13-n-plus-one-authorization`, worktree `/tmp/aster-p13-final`, rebasing
-exactly on `e6134ae`. It must not publish or merge before item66 releases.
+`feat/p13-n-plus-one-authorization`, worktree `/tmp/aster-p13-final`, rebased
+onto `e6134ae`. Pre-rebase source `8007444`, tree `eb87e5f`, implements and
+locally proves the exact path audit, four PostgreSQL measurements and owner
+matrix. The rebase and affected gate must complete, and it must not publish or
+merge before item66 releases.
 
 ## Active outcome
 
-- Encode an exact staleness-checked inventory for every public GraphQL list and
-  federated entity path, including owner, request scope, batch maximum, query
-  budget and authorization class.
-- Record real PostgreSQL query count and observed latency for representative
-  home, title, continue-watching and search operations using existing disposable
-  fixtures.
-- Prove owner-side identifier substitution, role escalation and cross-profile
-  rejection in one executable authorization matrix.
-- Close Phase13 only after focused, integration, candidate, protected and review
-  evidence passes.
+- Preserve the exact local audit, four PostgreSQL measurements and owner matrix
+  while item66 completes confirmation/release.
+- Rebase item67 onto released main, repeat its invalidated affected gates and
+  close Phase13 only after candidate, protected, review and exact-main evidence.
 
 ## Current local evidence
 

@@ -61,9 +61,39 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish the second corrected evidence head once, require protected exact-head
-  CI, resolve discussion `3898385895`, complete one blocker-focused
+- Published second corrected evidence head `1e115fe`; require protected
+  exact-head CI, resolve discussion `3898385895`, complete one blocker-focused
   confirmation, then merge and verify exact-main CI before item67 publication.
+
+## 2026-08-31 — Phase13 query-count and owner-authorization source accepted locally
+
+### Completed
+
+- Source `8007444`, tree `eb87e5f`, exactly audits 12 public lists, 10 entity
+  returns and 5 contributors with owner, scope, finite parent/list/batch bounds
+  and owner-query budget. Router 25/25 and deterministic composition pass.
+- The five-owner authorization gate passes 19/19 tasks. Its 12-case executable
+  matrix covers identifier substitution, cross-profile access and role/private-
+  transport escalation across Catalog, Discovery, Engagement, Identity and
+  Playback.
+- Disposable PostgreSQL fixtures passed TitleDetail 1 query/52.727 ms,
+  SearchTitles 3/23.948 ms, HomePublic 5/18.454 ms and ContinueWatching 1/3.744 ms.
+  Engagement's first run exposed a later wall-clock-sensitive test; freezing
+  that isolated test clock made ordering deterministic. Both attempts cleaned
+  their exact container; no production policy changed.
+- Item66 protected run `33437257163` passed every required job on exact head
+  `82ba630`. Its initial discussion is resolved and one exact-head confirmation
+  was requested in comment `5484481989`.
+
+### Evidence
+
+- `evidence/phase-13/query-count-authorization.txt`, raw bounded JSONL and the
+  authorization matrix record commands, environment, plans and limitations.
+
+### Next action
+
+- Rebase item67 onto second corrected head `1e115fe`, repeat its affected
+  candidate gate and wait for item66 release before publication.
 
 ## 2026-08-31 — GraphQL execution-control PR remediation accepted locally
 

@@ -260,8 +260,14 @@ discussion resolution, final confirmation, merge and exact-main CI remain.
 P13-R07/R08/R09 item67 is active from frozen item66 head `e6134ae`. It owns an
 exact list/entity batching audit, real PostgreSQL query-count/latency evidence
 for home, title, continue-watching and search, the owner authorization abuse
-matrix and Phase13 closeout. It may verify locally but cannot publish before
-item66 releases; a changed predecessor requires rebase and affected evidence.
+matrix and Phase13 closeout. Source `8007444`, tree `eb87e5f`, audits 12 lists,
+10 entity returns and 5 contributors. Router 25/25 and the five-owner 19/19 task
+gate pass. Real PostgreSQL observed TitleDetail 1 query/52.727 ms,
+SearchTitles 3/23.948 ms, HomePublic 5/18.454 ms and ContinueWatching 1/3.744 ms;
+all exact fixtures cleaned. The 12-case matrix covers all five owners and three
+required abuse categories. This dependent candidate may verify locally but
+cannot publish before item66 releases; a changed predecessor requires rebase
+and affected evidence.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -816,9 +822,10 @@ shape/list/cost controls are released through tree-identical PR55 merge
 `8cd6c0b` and exact-main run `33425758870` attempt2. Execution/rate/cache
 controls are implemented locally in third corrected item66; protected/release
 gates remain.
-N+1/query-count proof, owner-authorization abuse tests and the remaining Phase13
-requirements are active in item67. Phase14 capacity validation and hosted
-deployment remain planned.
+N+1/query-count proof and owner-authorization abuse tests are implemented and
+locally evidenced in dependent item67, but its post-rebase candidate/protected/
+release gates remain. Phase14 capacity validation and hosted deployment remain
+planned.
 
 ## Next outcome
 

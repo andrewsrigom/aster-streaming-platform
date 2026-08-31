@@ -163,6 +163,16 @@ Each request creates loaders scoped by:
 
 Loaders batch entity and list joins, cap batch sizes, preserve order, and return missing values explicitly.
 
+The dependent Phase13 closing candidate makes that review executable rather
+than relying on prose. It exactly inventories 12 public list paths, 10 public
+entity-return paths and 5 federated contributors against the generated schemas.
+Each entry records owner, authorization scope, parent/list/batch maximum,
+resolution strategy and owner-query budget. A new list/entity contributor or a
+changed `@listSize` fails the Router test until reviewed. Existing owner tests
+remain the authority for per-request cache disposal, credential isolation,
+freshness, ordering and missing values. See the [query-count and authorization
+report](../../evidence/phase-13/query-count-authorization.txt).
+
 ## Operation controls
 
 The generated Apollo manifest and finite Rhai matcher now bind every first-party
@@ -217,8 +227,11 @@ which the owner write path repeats authorization. The degraded local marker set
 prunes expired entries before applying its finite capacity, including after
 healthy Redis decisions. Engagement progress/watchlist and Discovery search retain
 their released operation-specific controls. Owner authorization,
-N+1/query-count and latency proof remain the closing slice rather than being
-inferred from a passing cost score.
+N+1/query-count and latency are never inferred from a passing cost score. The
+dependent closing candidate records real bounded PostgreSQL counts for home,
+title, continue-watching and search and maps12 owner-side abuse cases across all
+five contexts; it remains unreleased until its execution-control predecessor
+passes the ordered release gates.
 
 ## Schema evolution
 
