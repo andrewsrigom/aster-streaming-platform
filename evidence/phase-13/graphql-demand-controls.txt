@@ -1,0 +1,199 @@
+P13-R03/R04/R05/R10 GraphQL demand-control candidate evidence
+Date: 2026-08-31
+Status: corrected candidate verified with clean confirmation; release pending
+
+Environment
+- Branch: feat/p13-graphql-demand-controls; PR55
+- Released base main: fb5cf0147a3a306f4186b1717fee53ed787bd3a6
+- Initial source commit: 36b6af2cb114aa4dad2afddc39142ad5e5878c28
+- Initial source tree: e8fc58bbcbe3899b7b420adcdedfbd867173de0b
+- Corrected source commit: 96dc6eab7b7deacea14a1661b6491c991d0d7a0c
+- Corrected source tree: c708f9e226e3f45959afc75cd96aff4d0c776cb8
+- Redaction-verifier source: 55875ce2fcab48062c0a310593c96f14a46e3815
+- Redaction-verifier tree: 9ac71a9c3f7f78f5d4fd4b0c688bc4f5ca2964d5
+- Verified runtime head: 0fd6c78738411ca1a515298eefe04ee2474d7da5
+- Protected runtime run: 33417515807
+- Entity-field-cost source: 8395f7985173bb10af7dcb6f3aaafee298ed1452
+- Entity-field-cost tree: 0a026a6a00cf481b0b9709a098e3b185668b07e8
+- Corrected evidence head: 9f23640a65df42c89dc4ecfc645a0c5cf543e3f7
+- Corrected evidence tree: 7812620d0c4fe0862944884f5ed5504cb08a75fc
+- Corrected protected run: 33420810495 attempt 2
+- Clean confirmation comment: 5482516972
+- Node.js: 24.19.0
+- pnpm: 11.24.0
+- Runtime target: Apollo Router Core 2.17.0
+- Generated demand artifact SHA-256:
+  2669dcd5b894dc73084c42c991af8d2e088397e26f0aa20584f673ad909fe0ac
+
+Implemented contract
+- All five owners link Federation v2.9 and publish standard `@cost` and
+  `@listSize` metadata for the fields reachable from current trusted operations.
+- Root work has an explicit owner weight. Every reachable list has a finite
+  owner-backed assumed maximum; literal slices may lower but never raise that
+  maximum, while variables conservatively use it.
+- Every selected non-root field on a cost-owned entity type has a direct field
+  weight. Removing one fails generation rather than falling back implicitly.
+- Composition parses at most 2,000 tokens, validates the exact body and SHA-256,
+  expands fragments under finite cycle/count limits and calculates aliases,
+  depth, root fields, selections, maximum nested list expansion and static cost.
+- Invalid/missing metadata, an excessive literal, numeric overflow, a stale
+  artifact or any operation above policy fails generation before image delivery.
+- Hosted admission remains the exact analyzed trusted name/hash union. The
+  schema delivery index remains current-only during a bounded retained overlap.
+- The generated manifest is packaged in the Router image and contains reviewed
+  names, hashes and finite numeric profiles, never variables or request data.
+- CI packages the pinned Router and must accept canonical Browse while rejecting
+  parser-token, body-size, batching and introspection probes with bounded,
+  sanitized responses before the existing trusted-operation/runtime journey.
+
+Policy
+- maximum aliases: 8
+- maximum cost: 2048
+- maximum depth: 12
+- maximum nested list expansion: 512
+- maximum root fields: 4
+- maximum selections: 256
+
+Calibrated exact trusted-operation profiles
+name                         type      aliases depth roots selections list cost
+Browse                       query           0     6     1         46  320 1089
+ContinueWatching             query           0     7     1         26   20  194
+CreateProfile                mutation        0     2     1          6    1   28
+DeleteProfile                mutation        0     2     1          6    1   28
+DemoSignIn                   mutation        0     3     1          8    1   23
+HomePersonalized             query           0     7     2         55   20  410
+HomePublic                   query           0     7     1         95   36  606
+PlayerProgress               query           0     3     1         15    1   12
+Profile                      query           0     2     2         12    1    8
+Profiles                     query           0     3     1         11   16   70
+ProfileWithEngagement        query           0     3     1         10    1   18
+ProgressHistory              query           0     7     1         26   20  194
+RecordProgress               mutation        0     3     1         17    1   31
+SearchTitles                 query           0     6     1         24   20  176
+SelectProfile                mutation        0     3     1          8    1   26
+SetWatchlist                 mutation        0     3     1         13    1   29
+SignOut                      mutation        0     3     1          7    1   23
+StartPlayback                mutation        0     3     1         10    1   35
+TitleDetail                  query           0     4     1         37   16   53
+TitlesWithEngagement         query           0     5     1         20   20  449
+UpdateProfile                mutation        0     2     1          6    1   28
+Viewer                       query           0     2     1          4    1    4
+ViewerAndTitle               query           0     3     2          9    1   11
+Watchlist                    query           0     7     1         25   20  194
+WatchlistMembership          query           0     2     1          4    1   10
+
+Observed maxima and margin
+- Aliases: 0/8.
+- Cost: 1089/2048 (Browse).
+- Depth: 7/12.
+- Nested list expansion: 320/512 (Browse).
+- Root fields: 2/4.
+- Selections: 95/256 (HomePublic).
+
+Focused and candidate results
+- Router build/typecheck and tests: pass; 19/19 after explicit mutation,
+  fragment-cycle, repeated-metadata and full encoded-request-bound coverage.
+- Runtime-demand verifier unit tests: pass; 2/2.
+- CI policy suite: pass; 38/38 within the candidate gate.
+- First complete candidate attempt ran every selected task and passed 53/54;
+  lint alone rejected unsafe enum/string comparisons and two test non-null
+  assertions. Both findings were corrected before the accepted gate.
+- `pnpm lint:workspace`: pass after correction.
+- The final pre-rebase gate passed54/54 tasks,49 cached, in8.549 seconds.
+- After item64 release and autosquash rebase, `CI=true
+  NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm
+  check:changed` passes51/51 tasks,38 cached, in75.853 seconds. The gate includes
+  format, lint, strict typecheck, owner/Router tests, architecture, documentation,
+  AI-memory, CI policy, staged/commit policy and secret scanning.
+- After initial protected findings, the same candidate gate passes51/51 tasks,
+  38 cached, in110.103 seconds on corrected source `96dc6ea`.
+- After matching the exact pinned Router redaction, the repeated candidate gate
+  passes51/51 tasks,41 cached, in91.422 seconds on source `55875ce`.
+- Entity-field-cost correction passes Router20/20 and the repeated affected gate
+  passes51/51 tasks,32 cached, in88.328 seconds on source `8395f79`. All 25
+  calibrated demand profiles remain byte-identical.
+- Exact evidence head `9f23640` passes protected run `33420810495` attempt2. All
+  required jobs pass, including packaged demand/trust rejection, owner runtimes,
+  diagnostics and the Docker playable demo.
+- `git diff --check`: pass before commit.
+- Commit hook: staged secret scan zero findings; lockfile policy and format pass.
+
+Initial protected run and review
+- PR55 initial exact head `a6774b29ec010bc4319d95137c4f28ba02065ff4`
+  ran protected workflow `33415238912`. The real packaged Router returned its
+  disabled-introspection validation error as sanitized GraphQL errors with HTTP
+  200; the verifier incorrectly accepted only transport-error statuses, so the
+  Local platform job failed before the later trusted-operation checks.
+- The verifier correction accepts HTTP 200 only when the response is structured,
+  contains one to four errors and contains no data. Unparseable HTTP 200 and any
+  data response still fail. Focused verifier tests pass2/2.
+- Initial review discussion `3896477418` found that generation allowed a query
+  body below its old 128 KiB source ceiling even when the canonical JSON
+  operation envelope exceeded Router's exact 32 KiB request limit.
+- Corrected generation measures UTF-8 bytes for operation name, exact query and
+  an empty variables object in the canonical GraphQL envelope. A regression
+  proves a query below 32 KiB still fails when its encoded envelope crosses the
+  Router limit. No runtime limit was raised.
+- Protected run `33416680451` accepted the corrected HTTP 200 guard, then showed
+  the exact pinned Router response is `{message: "GraphQL operation failed.",
+  code: "UNAVAILABLE"}` without a source location. The verifier had guessed the
+  pre-redaction validation code/location. Source `55875ce` now asserts the exact
+  finite redacted contract instead of weakening message/body/privacy checks.
+- Exact head `0fd6c78738411ca1a515298eefe04ee2474d7da5` passed protected run
+  `33417515807`: every required job succeeded, including packaged demand/trust
+  rejection, owner runtimes, diagnostic exercises and Docker playable demo.
+  Discussion `3896477418` was answered with exact evidence and resolved.
+- Exact-head confirmation review completed at `0fd6c78`; discussion
+  `3896804794` found that removing `@cost` from `Title.progress`,
+  `Title.inWatchlist` or analogous selected entity work could silently use an
+  implicit scalar/composite fallback. Source `8395f79` requires direct field
+  cost whenever the selected parent type owns a type cost and explicitly records
+  the previous finite weights for current `Title`/`Profile` fields.
+- Run `33420810495` attempt1 passed the packaged GraphQL/local-platform job but
+  an unrelated Identity storage fixture observed a transient conditional-write
+  count `0` instead of `1`. No storage source changed. The single bounded failed
+  rerun passed that unchanged integration and every subsequent service/demo job
+  as attempt2 on the same exact head.
+- Discussion `3896804794` was answered by reply `3897061253` and resolved. Both
+  review threads are resolved. Confirmation comment `5482516972` reviewed exact
+  `9f23640` and found no major issue.
+
+Dependency security re-review
+- `pnpm audit --json` on the exact tree reports zero high/critical and one
+  moderate advisory: UUID 9.0.1, GHSA-w5hq-g745-h8pq, transitive only through
+  pinned Apollo Federation 2.14.4 packages.
+- The advisory affects v3/v5/v6 only when a caller supplies a buffer. The exact
+  installed Apollo Federation internals call `v1()` without arguments in
+  `dist/operations.js`; query-graphs calls `v4()` without arguments in
+  `dist/graphPath.js`. No installed affected v3/v5/v6 buffer call was found.
+- A forced unsupported transitive-major override was not introduced. The
+  high-severity release gate remains unchanged, and the moderate advisory stays
+  visible for upstream remediation/re-review before hosted release.
+
+Adverse coverage
+- Build tests reject missing root cost, missing/invalid list metadata, owner-list
+  literal overflow, aliases, depth, roots, selections, list expansion, static
+  cost, parser-token amplification, fragment cycles and numeric overflow.
+- Build/composition tests remove a non-root owner field cost and require
+  generation to fail with its exact schema coordinate.
+- Build tests reject an encoded operation envelope above 32 KiB even when raw
+  query bytes alone remain below that limit.
+- Cardinality tests require one finite profile for every exact admitted hash,
+  including a retained overlap while keeping one current delivery entry.
+- Runtime proof sends one sub-32-KiB document above the 2,000-token ceiling, one
+  body above 32 KiB, an introspection document and a JSON batch containing a
+  private canary. The verifier bounds status/body/error count and rejects query,
+  canary, topology, stack or internal dependency leakage.
+
+Pending acceptance
+- Publish this final evidence checkpoint, require its proportional exact-head
+  protected gate, then squash merge PR55 with tree identity and exact-main
+  verification for item65.
+
+Interpretation and limitations
+The source and gate evidence prove deterministic pre-publication demand analysis,
+finite owner metadata, artifact cardinality and adverse repository policy. Static
+cost is a conservative review budget, not measured query-plan, SQL-count or
+latency telemetry. Item66 owns execution/concurrency/rate/cache controls; item67
+owns measured N+1/query-count and authorization matrices. No hosted deployment,
+field SLO or Phase13 closeout is claimed.

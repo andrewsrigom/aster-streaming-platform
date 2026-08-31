@@ -9,9 +9,11 @@ Phases00–12 are released. P12-R10 final source
 `2b77a32f43a87fcdfc5032faf856f369de183998` retained the tree; exact-main run
 `33348247619` passed every required job.
 
-Item64 (P13-R01/R02/R12) is the sole `IN_PROGRESS` item on
-`feat/p13-trusted-operations`, based exactly on that main. Its active plan is
-`.ai/CHANGE_PLAN.md`. PR52 is open. Initial protected run `33350909056` failed
+Item64 (P13-R01/R02/R12) is released. Exact head `de50b3e` passed protected run
+`33410126892` and clean confirmation; all ten review threads are resolved. PR52
+squash main `fb5cf014` retained candidate tree `a78f095`; exact-main run
+`33412728404` passed every required job. Initial protected
+run `33350909056` failed
 and its complete initial review produced four blockers. Their correction passed
 protected run `33352310376`; confirmation then found one CI-classification gap.
 That correction passed run `33354040239`; blocker-focused confirmation found
@@ -27,9 +29,29 @@ Source `64fa64e`, tree `35817101`, corrected it. Protected run `33360643657`
 attempt2 passed after attempt1's transient TraceQL indexing timeout and the
 discussion is resolved. Blocker-focused discussion `3895588146` then found the
 runtime verifier could select a retained `Browse` body with current variables.
-Source `2286c7f`, tree `d253a5e`, corrected that join; evidence head `a4e849f`
-passed protected run `33406328754` and the discussion is resolved. Final audit
-then found the delivery manifest itself indexed both retained and current hashes.
+Source `2286c7f`, tree `d253a5e`, corrects it; platform92/92 and gate49/49 pass.
+Final source `a353164`, tree `f6925778`, separates the unique current delivery
+index from the bounded current-plus-retained enforcement union.
+
+Item65 (P13-R03/R04/R05/R10) is the sole `IN_PROGRESS` item on
+`feat/p13-graphql-demand-controls`, rebased onto released main, with PR55 open.
+Initial run `33415238912` exposed an HTTP-status mismatch in the new runtime
+verifier; review discussion `3896477418` found the analyzer did not include the
+GraphQL envelope in the 32 KiB bound. Corrected source `96dc6ea`, tree `c708f9e`,
+passes Router19/19, verifier2/2 and the affected51/51 candidate gate. Its active
+protected run `33416680451` then exposed the verifier's guessed introspection
+error code/location; source `55875ce`, tree `9ac71a9`, now asserts the pinned
+Router's exact sanitized `UNAVAILABLE` response and passes the repeated51/51
+gate. Exact head `0fd6c78` passed protected run `33417515807`; discussion
+`3896477418` is resolved. Confirmation discussion `3896804794` found implicit
+non-root entity field cost. Source `8395f79`, tree `0a026a6a`, requires direct
+cost on selected fields of cost-owned types; Router20/20 and gate51/51 with32
+cached in88.328 seconds pass with unchanged profiles. Exact head `9f23640`, tree
+`7812620d`, passed protected run `33420810495` attempt2. Discussion `3896804794`
+and both review threads are resolved; confirmation comment `5482516972` found no
+major issue. Its active plan is `.ai/CHANGE_PLAN.md`; evidence is
+`evidence/phase-13/graphql-demand-controls.txt`. Final evidence publication,
+merge and exact-main release remain.
 
 ## Current behavior
 
@@ -80,13 +102,26 @@ then found the delivery manifest itself indexed both retained and current hashes
   `2286c7f71a82011c2eb083cdf52de07dc7301f51`, tree
   `d253a5e8e69abf18c29e8dd432b3c4225958aa73`, joins the persisted entry to the
   unique current schema-manifest hash and fails closed otherwise. Platform92/92
-  and gate49/49 with33 cached in98.949 seconds pass. Evidence head `a4e849f`
-  passed protected run `33406328754`; discussion `3895588146` is resolved.
-- Source `a353164b36a7124c1721915ee07be09ca561de78`, tree
-  `f69257780d003d75ef575101a8e3c358fd9923cb`, keeps the current/retained union
-  in the Apollo manifest and Router matcher but indexes exactly one current hash
-  per name in the delivery manifest. Router11/11, verifier2/2, docs and
-  gate49/49 with36 cached in99.305 seconds pass.
+  and gate49/49 with33 cached in98.949 seconds pass.
+- Item64 final source `a353164`, tree `f6925778`, keeps persisted/Rhai admission
+  as the bounded current-plus-retained union and `manifest.json` as the unique
+  current delivery index. Evidence head `de50b3e` passed protected run
+  `33410126892`, clean confirmation and tree-identical squash; exact-main run
+  `33412728404` passes.
+- Item65 initial source `36b6af2`, tree `e8fc58b`, adds Federation v2.9 owner cost/list
+  metadata and one deterministic profile for each of 25 admitted hashes.
+  Policy bounds aliases8, cost2048, depth12, list expansion512, roots4 and
+  selections256. Browse is the maximum cost/list profile at1089/320; HomePublic
+  is the largest shape at95 selections. Correction `96dc6ea`, tree `c708f9e`,
+  aligns structured HTTP 200 GraphQL rejection proof and the complete encoded
+  request limit. Source `55875ce`, tree `9ac71a9`, additionally matches the exact
+  pinned Router redaction contract observed in run `33416680451`. Protected run
+  `33417515807` proves that packaged boundary. Source `8395f79`, tree `0a026a6a`,
+  corrects confirmation discussion `3896804794` by requiring explicit cost on
+  selected fields of cost-owned entity types. Router20/20 and the affected
+  gate51/51 pass. Exact head `9f23640` passed protected run `33420810495`
+  attempt2 and clean confirmation `5482516972`; corrected packaged proof is
+  verified.
 
 ## Accepted design and implementation
 
@@ -103,14 +138,17 @@ then found the delivery manifest itself indexed both retained and current hashes
 - Local development stays in explicit audit mode; CI contains one disposable
   enforce-mode real-Router proof.
 - Both generated artifacts are packaged; APQ remains disabled.
+- Item65 upgrades Federation links to v2.9 for standard `@cost` and `@listSize`,
+  calculates deterministic trusted-operation demand at build time, fails
+  excessive/missing metadata and emits one bounded calibration artifact. The
+  source candidate is implemented; protected early-Router rejection and release
+  remain pending.
 
 ## Exact next actions
 
-1. Commit the current-index evidence checkpoint and push the correction once.
-2. Require exact-head protected CI, including the real two-version-safe proof.
-3. Confirm every thread remains resolved, then obtain the permitted
-   blocker-focused confirmation for the current exact head.
-4. Squash merge, verify exact-main CI, close item64 and activate item65.
+1. Commit and publish the final item65 evidence checkpoint once.
+2. Require its proportional exact-head protected gate.
+3. Squash merge, verify tree identity and exact-main CI before item66.
 
 ## Execution boundary
 
@@ -129,7 +167,7 @@ projects.
 
 ## Do not do yet
 
-Do not implement the later shape/cost/rate/N+1/authorization slices concurrently.
+Do not implement item66 rate/cache or item67 N+1/authorization concurrently.
 Do not add GraphOS credentials, a paid plan, APQ registration, a new proxy/service,
 hosted resources or client IDs presented as authorization. Phase14 owns hosted
 provider and deployment decisions.

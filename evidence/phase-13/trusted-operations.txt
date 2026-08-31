@@ -1,6 +1,6 @@
 P13-R01/R02/R12 trusted-operation evidence
 Date: 2026-08-31
-Status: packaged runtime verified; current-index correction pending protected release
+Status: released through tree-identical squash and exact-main protected CI
 
 Environment
 - Branch: feat/p13-trusted-operations
@@ -36,6 +36,12 @@ Environment
 - Current-operation protected run: 33406328754 (passed)
 - Current-index correction: a353164b36a7124c1721915ee07be09ca561de78
 - Current-index correction tree: f69257780d003d75ef575101a8e3c358fd9923cb
+- Current-index evidence head: de50b3ee98a3a8686c359a96e00113a709ce5dad
+- Current-index protected run: 33410126892 (passed)
+- Clean exact-head confirmation: comment 5481061578
+- Squash main: fb5cf0147a3a306f4186b1717fee53ed787bd3a6
+- Squash main tree: a78f09598f19b05cd552664c1ad68e5bdcd2d43a
+- Exact-main protected run: 33412728404 (passed)
 - Node.js: 24.19.0
 - pnpm: 11.24.0
 - Runtime target: Apollo Router Core 2.17.0, explicit integration/enforce proof
@@ -176,15 +182,17 @@ Protected acceptance and confirmation correction
   verifier2/2, documentation and the repeated49/49 gate pass with36 cached in
   99.305 seconds.
 
-Pending acceptance
-- Publish the current-index/evidence correction once, pass exact-head protected
-  CI, confirm every review thread remains resolved, then obtain the permitted
-  blocker-focused confirmation before squash merge and exact-main verification.
+Release acceptance
+- Exact-head protected run33410126892 passed the current-only delivery index,
+  union admission, every owner integration, diagnostics and Docker playable
+  demo. All ten review threads are resolved; exact-head confirmation reported no
+  major issue. PR52 squash-merged as main fb5cf014 with tree a78f095, identical
+  to candidate head de50b3e. Exact-main run33412728404 passed every required job.
 
 Interpretation and limitations
-The corrected results prove deterministic source generation, actual current Web
+The released results prove deterministic source generation, actual current Web
 wire compatibility, bounded rollout overlap, adverse repository policy and the
-packaged pinned-Router enforcement/telemetry path. Boundary-exact retained bodies,
-the rollback floor, unique current-version proof selection and current-only
-delivery index are source/contract behavior; the last correction requires its
-exact-head protected run. No hosted deployment is claimed.
+packaged pinned-Router enforcement/telemetry path. Boundary-exact retained
+bodies, the rollback floor, unique current-version proof selection and
+current-only delivery index passed candidate and exact-main protected runs. No
+hosted deployment is claimed.

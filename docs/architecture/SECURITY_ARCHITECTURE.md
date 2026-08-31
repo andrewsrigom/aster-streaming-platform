@@ -64,8 +64,13 @@ rejects missing, unknown and altered operations before planning; explicit
 local/integration `audit` mode preserves bounded development queries. Only the
 finite match result enters telemetry. This reduces the public document surface
 but does not authorize a user or replace owner-side identifier, role and profile
-checks. Shape, cost, rate, cache-scope and N+1 verification remain separate
-Phase 13 layers.
+checks. Composition now gives every exact current or retained operation
+a bounded source-owned profile using owner `@cost` and `@listSize` metadata. It
+fails publication on excessive depth, aliases, roots, selections, list
+expansion, weighted cost or missing metadata. Router still rejects oversized or
+parser-hostile bodies and disables batching and introspection. Final
+identity-aware rate, cache-scope, N+1/query-count and owner-authorization abuse
+proof remain separate Phase 13 work; a passing profile never grants authority.
 
 ## Media threat model
 

@@ -14,8 +14,8 @@ runtime. Discussion `3891065894` is resolved and the final confirmation found
 no blocker. PR51 squash-merged as tree-identical main
 `2b77a32f43a87fcdfc5032faf856f369de183998`; exact-main run `33348247619`
 passed every required job, including source quality, every owner integration,
-the diagnostic runtime and Docker-only playable demo. Item64 is active on
-`feat/p13-trusted-operations` from that exact main. It implements P13-R01/R02/R12:
+the diagnostic runtime and Docker-only playable demo. Item64 implemented
+P13-R01/R02/R12 on `feat/p13-trusted-operations` from that exact main:
 one deterministic first-party operation manifest, exact admission under an
 explicit environment policy, a bounded local/integration audit workflow and a
 safe schema/client rollout. Initial PR52 run `33350909056` and review found four
@@ -42,15 +42,13 @@ Blocker-focused discussion `3895588146` then found the packaged proof could pair
 a retained `Browse` body with current variables. Source `2286c7f`, tree
 `d253a5e`, joins the persisted body to the unique current schema-manifest hash
 and fails closed on missing/ambiguous joins. Platform92/92 and gate49/49 with33
-cached in98.949 seconds pass. Evidence head `a4e849f` passed protected run
-`33406328754`; discussion `3895588146` is resolved. Final audit found the
-delivery manifest still indexed both current and retained hashes, making that
-unique-current join fail during overlap. Source `a353164`, tree `f692577`, now
-keeps only the current operation index there while the Apollo manifest and
-Router matcher retain the rollout union. Router11/11, verifier2/2, docs and
-gate49/49 with36 cached in99.305 seconds pass. Exact-head CI and confirmation
-remain. Full
-Phase00–14 goal stays active.
+cached in98.949 seconds pass. Final source `a353164`, tree `f6925778`, separates
+the current delivery index from the current-plus-retained enforcement union.
+Evidence head `de50b3e` passed exact-head protected run `33410126892` and clean
+confirmation; all ten review threads are resolved. PR52 squash main `fb5cf014`
+retained candidate tree `a78f095`; exact-main run `33412728404` passed every
+required job. Item64 is released. Full Phase00–14 goal stays active. Item65 is
+the sole `IN_PROGRESS` item, rebased onto that release.
 
 ## Verified
 
@@ -81,7 +79,7 @@ and Catalog/Playback isolation pass their recorded Web110/110, browser8/8 and
 
 ## Current work
 
-P13-R01/R02/R12 is the sole active item. The corrected candidate generates an
+P13-R01/R02/R12 item64 is released. It generates an
 Apollo manifest and finite Rhai matcher from the 25 reviewed operations,
 packages both with Apollo Router 2.17.0 Core and binds each operation name to the
 exact link-ready Apollo wire-document hash. Actual `HttpLink` bodies for all 19
@@ -131,16 +129,57 @@ verifier selected `Browse` by name only. Source
 `d253a5e8e69abf18c29e8dd432b3c4225958aa73`, selects the exact current hash from
 the schema manifest, proves retained-first and missing/ambiguous cases, and adds
 that regression to the platform gate. Platform92/92 and gate49/49 with33 cached
-in98.949 seconds pass. Evidence head `a4e849f` passed protected run
-`33406328754`; discussion `3895588146` is resolved. Source
+in98.949 seconds pass. Final source
 `a353164b36a7124c1721915ee07be09ca561de78`, tree
-`f69257780d003d75ef575101a8e3c358fd9923cb`, then separates the current-only
-delivery index from the current/retained admission union. Router11/11,
-verifier2/2, docs and gate49/49 with36 cached in99.305 seconds pass. Exact-head
-protected proof and confirmation remain. APQ
-stays disabled.
-PostgreSQL/data ownership, owner authorization, schemas, Redis, events and media
-remain unchanged.
+`f69257780d003d75ef575101a8e3c358fd9923cb`, keeps persisted/Rhai enforcement
+as the bounded current-plus-retained union while the schema delivery manifest
+identifies exactly one current version. Evidence head `de50b3e` passed protected
+run `33410126892` and clean confirmation; PR52 squash main `fb5cf014` retained
+tree `a78f095`, and exact-main run `33412728404` passed. APQ stays disabled.
+PostgreSQL/data ownership, owner authorization, public GraphQL fields, Redis,
+events and media remain unchanged.
+
+P13-R03/R04/R05/R10 item65 is the sole active item on
+`feat/p13-graphql-demand-controls`; PR55 is open. Initial source
+`36b6af2cb114aa4dad2afddc39142ad5e5878c28`, tree
+`e8fc58bbcbe3899b7b420adcdedfbd867173de0b`, upgrades owner metadata to
+Federation v2.9, analyzes every exact current/retained trusted operation for
+aliases, depth, roots, selections, nested list expansion and static owner cost,
+and emits one bounded 25-operation demand artifact. Missing/invalid metadata,
+overflow, parser amplification and every policy boundary fail closed. Router
+18/18, verifier2/2 and the exact rebased affected candidate gate51/51 pass.
+Initial protected run `33415238912` reached the real packaged Router but its
+demand verifier rejected the valid HTTP 200 status used for a sanitized GraphQL
+introspection error. Initial review discussion `3896477418` found the analyzer
+bounded raw query bytes instead of the complete encoded request. Correction
+`96dc6eab7b7deacea14a1661b6491c991d0d7a0c`, tree
+`c708f9e226e3f45959afc75cd96aff4d0c776cb8`, requires structured error-only
+HTTP 200 responses and bounds the canonical operation envelope at the Router's
+32 KiB limit. Router19/19, verifier2/2 and the corrected affected gate51/51 with
+38 cached in110.103 seconds pass. Protected run `33416680451` accepted the HTTP
+status guard, then exposed that pinned Router redaction intentionally returns
+only `GraphQL operation failed.` with code `UNAVAILABLE`, without a location;
+the verifier had guessed `GRAPHQL_VALIDATION_FAILED`. Source
+`55875ce2fcab48062c0a310593c96f14a46e3815`, tree
+`9ac71a9c3f7f78f5d4fd4b0c688bc4f5ca2964d5`, asserts the exact finite redacted
+response. Verifier2/2 and the repeated affected gate51/51 with41 cached in91.422
+seconds pass. Exact head `0fd6c78738411ca1a515298eefe04ee2474d7da5`
+passed protected run `33417515807`, including packaged GraphQL rejection,
+owners, diagnostics and the Docker playable demo. Discussion `3896477418` is
+resolved. Confirmation discussion `3896804794` found a removed non-root entity
+field cost could silently fall back to an implicit weight. Source
+`8395f7985173bb10af7dcb6f3aaafee298ed1452`, tree
+`0a026a6a00cf481b0b9709a098e3b185668b07e8`, requires direct field cost on every
+selected non-root field of a cost-owned type and explicitly annotates all
+current `Title`/`Profile` fields. The demand profiles are unchanged. Router20/20
+and the affected gate51/51 with32 cached in88.328 seconds pass. Corrected
+candidate head `9f23640a65df42c89dc4ecfc645a0c5cf543e3f7`, tree
+`7812620d0c4fe0862944884f5ed5504cb08a75fc`, passed protected run
+`33420810495` attempt2. Attempt1's only failure was an unrelated transient
+storage fixture assertion; the same unchanged integration and every later job
+passed on the bounded rerun. Discussion `3896804794` is resolved, both review
+threads are resolved and confirmation comment `5482516972` found no major
+issue. Release remains; this is not a released claim.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -690,23 +729,22 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P13-R01/R02/R12 is implemented and the latest boundary-exact correction is
-source-verified on the active branch, but that exact head is not yet verified in
-the pinned packaged Router or released. GraphQL shape/cost controls,
+P13-R01/R02/R12 is released through exact-main run `33412728404`. GraphQL
+shape/list/cost controls have prior exact-head packaged proof in item65; the
+latest entity-field-cost correction has protected proof and clean confirmation;
+release remains.
+Execution/rate/cache controls,
 N+1/query-count proof, owner-authorization abuse tests and the remaining Phase13
-requirements are planned in items65–67. Phase14 capacity validation and hosted
+requirements are planned in items66–67. Phase14 capacity validation and hosted
 deployment remain planned.
 
 ## Next outcome
 
-For item64 (P13-R01), commit the current-only delivery-index evidence checkpoint
-and push the correction once. Require protected CI to load the generated Rhai
-policy in the pinned Router, select the current version during retained overlap,
-accept it, reject altered/unknown/missing documents and expose all three finite
-metric labels. Obtain the permitted blocker-focused confirmation, merge, verify
-exact-main CI and then activate item65. Inspect the
-exact historical interrupted Phase12 project only when that same Docker engine
-becomes reachable.
+For P13-R03 item65, commit and publish the final evidence checkpoint, require its
+proportional exact-head protected gate, then squash merge PR55, prove tree
+identity and verify exact-main CI. Activate item66 only after item65 is released.
+Inspect the exact historical interrupted Phase12 project only when that same
+Docker engine becomes reachable.
 
 ## Runtime and recovery
 
@@ -724,5 +762,9 @@ Retained project aster-p04-development: Web3000/Router4000/origin9001, Catalog00
   compatibility precursor now verified by exact-main CI33244657936.
 - ADR-0026 permits only exact stopped/expired disposable scratch cleanup. Hosted lifecycle/fencing/storage budgets remain P14-R11.
 - Shared-host timings are laboratory observations, not field SLOs. No host investigation is required.
-- Last audit: zero high/critical, one known moderate UUID advisory with inspected Apollo callers unaffected; revisit before hosted release.
+- Phase13 dependency re-review on the unchanged pinned graph reports zero
+  high/critical and one known moderate UUID advisory. Exact installed Apollo callers use argument-free
+  `v1()`/`v4()`, not the advisory's v3/v5/v6 buffer paths. Keep it visible and
+  re-review upstream remediation before hosted release; no unsupported
+  transitive-major override.
 - Preserve MIT/upstream notices. No paid resources, invented media rights or global Docker cleanup.

@@ -4,30 +4,135 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
-## 2026-08-31 — Trusted-operation current index separated from rollout union
+## 2026-08-31 — GraphQL entity field cost confirmation correction
 
 ### Completed
 
-- Evidence head `a4e849f` passed protected run `33406328754`; discussion
-  `3895588146` is answered and resolved.
-- Final audit found the delivery manifest indexed both the current and retained
-  versions, making the fail-closed current-operation proof ambiguous during a
-  real overlap.
-- Source `a353164b36a7124c1721915ee07be09ca561de78`, tree
-  `f69257780d003d75ef575101a8e3c358fd9923cb`, keeps the Apollo manifest and
-  Router matcher as the admission union but limits the delivery index to one
-  current hash per name. Router11/11, verifier2/2, docs and gate49/49 with36
-  cached in99.305 seconds pass; the included secret scan has zero findings.
+- Exact PR55 head `0fd6c78` passed protected run `33417515807`, including the
+  packaged GraphQL adverse verifier, all owner runtimes, diagnostics and the
+  Docker playable demo. Initial discussion `3896477418` is resolved.
+- Confirmation discussion `3896804794` found a selected non-root entity field
+  could lose its direct `@cost` and fall back to an implicit weight.
+- Source `8395f79`, tree `0a026a6a`, requires direct cost on every selected
+  non-root field of a cost-owned type and annotates current `Title`/`Profile`
+  fields with their prior implicit values. The 25 profiles remain unchanged.
+- Router20/20 and the affected gate51/51 with32 cached in88.328 seconds pass.
+- Exact evidence head `9f23640`, tree `7812620d`, passed protected run
+  `33420810495` attempt2. Attempt1's unrelated storage fixture assertion passed
+  on the bounded rerun; every required job is green.
+- Discussion `3896804794` and both review threads are resolved. Confirmation
+  comment `5482516972` found no major issue on exact `9f23640`.
 
 ### Evidence
 
-- `evidence/phase-13/trusted-operations.txt` records the exact predecessor run,
-  finding, source correction and accepted local gates.
+- `evidence/phase-13/graphql-demand-controls.txt` records the exact protected
+  run, review boundary, correction and local gates.
 
 ### Next action
 
-- Publish once, pass exact-head protected CI and blocker-focused confirmation,
-  then squash merge and verify exact main before activating item65.
+- Publish the final evidence checkpoint once, require its proportional
+  exact-head protected gate, then merge and verify exact-main before item66.
+
+## 2026-08-31 — GraphQL demand initial protected findings corrected
+
+### Completed
+
+- Opened item65 as PR55. Initial protected run `33415238912` reached the pinned
+  packaged Router and exposed that disabled introspection returns sanitized
+  GraphQL errors with HTTP 200; the verifier incorrectly required a transport
+  error status.
+- Initial review discussion `3896477418` found generation bounded raw query
+  bytes instead of the complete encoded request against Router's 32 KiB limit.
+- Correction `96dc6ea`, tree `c708f9e`, accepts only structured error-only HTTP
+  200 rejections and measures the canonical GraphQL envelope. Router19/19,
+  verifier2/2 and the corrected affected gate51/51 with38 cached in110.103
+  seconds pass.
+- Protected run `33416680451` passed that status guard and exposed the verifier's
+  guessed introspection code/location. Source `55875ce`, tree `9ac71a9`, asserts
+  pinned Router's exact sanitized `UNAVAILABLE` contract; verifier2/2 and the
+  repeated gate51/51 with41 cached in91.422 seconds pass.
+
+### Evidence
+
+- `evidence/phase-13/graphql-demand-controls.txt` records the exact initial run,
+  discussion, corrected source, focused tests and accepted candidate gate.
+
+### Next action
+
+- Push the later corrected PR55 head once, require exact-head protected runtime, answer
+  and resolve discussion `3896477418`, request one confirmation, then release.
+
+## 2026-08-31 — Trusted operations released; demand candidate rebased
+
+### Completed
+
+- Item64 exact head `de50b3e` passed protected run `33410126892`, clean
+  confirmation and all resolved threads. PR52 squash main `fb5cf014` retained
+  candidate tree `a78f095`; exact-main run `33412728404` passed every job.
+- Autosquash-rebased item65 onto that release. Source `36b6af2`, tree `e8fc58b`,
+  includes explicit mutation, fragment-cycle and repeated-metadata coverage.
+- Router18/18, verifier2/2 and the exact rebased affected gate51/51 with38 cached
+  in75.853 seconds pass; no protected packaged-runtime claim is made yet.
+
+### Evidence
+
+- `evidence/phase-13/trusted-operations.txt` closes item64. Demand-control
+  evidence records the exact rebased source, calibration, dependency re-review
+  and pending runtime limitations.
+
+### Next action
+
+- Publish item65 once, require protected packaged proof and complete its bounded
+  initial/confirmation review before merge and exact-main CI.
+
+## 2026-08-31 — GraphQL demand-control candidate implemented
+
+### Completed
+
+- PR52 final head `de50b3e` passed exact-head protected run `33410126892`; one
+  exact-head blocker-focused confirmation was requested once.
+- Implemented pre-rebase item65 source
+  `9e5bd3c931b5fa1d53d03c788d7f2482bd109f44`,
+  tree `dcd4ddc35b14544b142658f845fdc01032de1e7f`: Federation v2.9
+  owner cost/list metadata, deterministic current/retained demand profiles,
+  stale-artifact failure and packaged parser/body/batching/introspection proof.
+- Corrected the first complete gate's only lint findings. Router17/17,
+  verifier2/2 and the final affected candidate gate54/54 pass; staged secret
+  scan reports zero findings.
+
+### Evidence
+
+- `evidence/phase-13/graphql-demand-controls.txt`, generated demand manifest and
+  ADR-0046 record policy, 25 calibrated profiles, adverse coverage and pending
+  protected-runtime limitations.
+
+### Next action
+
+- Complete PR52 confirmation/merge/exact-main CI, then rebase item65, repeat its
+  affected gate and publish once.
+
+## 2026-08-31 — GraphQL demand controls activated locally
+
+### Completed
+
+- Froze item64 exact head `a4e849f` as `WAITING_EXTERNAL`; protected run
+  `33406328754`, confirmation, merge and exact-main CI remain.
+- Activated item65 P13-R03/R04/R05/R10 on
+  `feat/p13-graphql-demand-controls` from that frozen head. The plan binds
+  source-owned shape/list/cost analysis to exact trusted-operation admission and
+  keeps owner pagination and authorization authoritative.
+- Current official Apollo documentation confirms Federation `@cost` and
+  `@listSize` metadata and Router demand-control semantics; Aster's accepted
+  local path adds no account, key, hosted control plane, service or dependency.
+
+### Evidence
+
+- `.ai/CHANGE_PLAN.md` records requirements, boundaries, failure behavior,
+  gates, rollback and the no-publish predecessor constraint.
+
+### Next action
+
+- Draft ADR-0046 and implement the deterministic analyzer while observing item64.
 
 ## 2026-08-31 — Trusted-operation runtime proof selects current version
 

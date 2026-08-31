@@ -12,6 +12,7 @@ const ARTIFACT_NAMES = new Set([
   "identity.graphql",
   "playback.graphql",
   "persisted-query-manifest.json",
+  "operation-demand-manifest.json",
   "trusted-operations.rhai",
   "manifest.json",
 ]);

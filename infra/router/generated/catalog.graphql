@@ -1,4 +1,4 @@
-extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@inaccessible"])
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.9", import: ["@key", "@inaccessible", "@cost", "@listSize"])
 
 enum CatalogAccessibility {
   CAPTIONS
@@ -35,18 +35,18 @@ type LocalizedTitle {
   synopsis: String!
 }
 
-type Title @key(fields: "id") {
-  id: ID!
-  localized(locale: String! = "en"): LocalizedTitle!
-  releaseYear: Int
-  runtimeSeconds: Int
-  genres: [String!]!
-  languages: [String!]!
-  accessibility: [CatalogAccessibility!]!
-  editorialLabels: [String!]!
-  credits: [CatalogCredit!]!
-  artwork: CatalogArtwork
-  attribution: CatalogAttribution!
+type Title @key(fields: "id") @cost(weight: 6) {
+  id: ID! @cost(weight: 0)
+  localized(locale: String! = "en"): LocalizedTitle! @cost(weight: 1)
+  releaseYear: Int @cost(weight: 0)
+  runtimeSeconds: Int @cost(weight: 0)
+  genres: [String!]! @cost(weight: 1) @listSize(assumedSize: 8)
+  languages: [String!]! @cost(weight: 1) @listSize(assumedSize: 8)
+  accessibility: [CatalogAccessibility!]! @cost(weight: 1) @listSize(assumedSize: 3)
+  editorialLabels: [String!]! @cost(weight: 1) @listSize(assumedSize: 8)
+  credits: [CatalogCredit!]! @cost(weight: 1) @listSize(assumedSize: 16)
+  artwork: CatalogArtwork @cost(weight: 1)
+  attribution: CatalogAttribution! @cost(weight: 1)
 }
 
 type CatalogTitleEdge {
@@ -60,7 +60,7 @@ type CatalogPageInfo {
 }
 
 type CatalogTitleConnection {
-  edges: [CatalogTitleEdge!]!
+  edges: [CatalogTitleEdge!]! @listSize(assumedSize: 20)
   pageInfo: CatalogPageInfo!
 }
 
@@ -74,8 +74,8 @@ type CurrentPlaybackPublication @inaccessible {
 }
 
 type Query {
-  titles(first: Int!, after: String): CatalogTitleConnection!
-  title(id: ID!): Title
+  titles(first: Int!, after: String): CatalogTitleConnection! @cost(weight: 8)
+  title(id: ID!): Title @cost(weight: 6)
   _playbackPublications(ids: [ID!]!): [CurrentPlaybackPublication]! @inaccessible
   _engagementTitles(ids: [ID!]!): EngagementTitleVisibility! @inaccessible
   _discoverySnapshots(ids: [ID!]!): [DiscoverySourceSnapshot]! @inaccessible

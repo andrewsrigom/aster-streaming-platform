@@ -9,7 +9,11 @@ import type { PublicCatalogTitle } from "../domain/public-title.js";
 import { catalogIdentifier, catalogRecord } from "../domain/values.js";
 
 export const CATALOG_TYPE_DEFS = parse(`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@inaccessible"])
+  extend schema
+    @link(
+      url: "https://specs.apollo.dev/federation/v2.9"
+      import: ["@key", "@inaccessible", "@cost", "@listSize"]
+    )
   enum CatalogAccessibility { CAPTIONS AUDIO_DESCRIPTION TRANSCRIPT }
   type CatalogAttribution {
     workTitle: String!
@@ -25,22 +29,25 @@ export const CATALOG_TYPE_DEFS = parse(`
   type CatalogArtwork { url: String! altText: String! attribution: CatalogAttribution! }
   type CatalogCredit { name: String! role: String! }
   type LocalizedTitle { locale: String! title: String! synopsis: String! }
-  type Title @key(fields: "id") {
-    id: ID!
-    localized(locale: String! = "en"): LocalizedTitle!
-    releaseYear: Int
-    runtimeSeconds: Int
-    genres: [String!]!
-    languages: [String!]!
-    accessibility: [CatalogAccessibility!]!
-    editorialLabels: [String!]!
-    credits: [CatalogCredit!]!
-    artwork: CatalogArtwork
-    attribution: CatalogAttribution!
+  type Title @key(fields: "id") @cost(weight: 6) {
+    id: ID! @cost(weight: 0)
+    localized(locale: String! = "en"): LocalizedTitle! @cost(weight: 1)
+    releaseYear: Int @cost(weight: 0)
+    runtimeSeconds: Int @cost(weight: 0)
+    genres: [String!]! @cost(weight: 1) @listSize(assumedSize: 8)
+    languages: [String!]! @cost(weight: 1) @listSize(assumedSize: 8)
+    accessibility: [CatalogAccessibility!]! @cost(weight: 1) @listSize(assumedSize: 3)
+    editorialLabels: [String!]! @cost(weight: 1) @listSize(assumedSize: 8)
+    credits: [CatalogCredit!]! @cost(weight: 1) @listSize(assumedSize: 16)
+    artwork: CatalogArtwork @cost(weight: 1)
+    attribution: CatalogAttribution! @cost(weight: 1)
   }
   type CatalogTitleEdge { cursor: String! node: Title! }
   type CatalogPageInfo { endCursor: String hasNextPage: Boolean! }
-  type CatalogTitleConnection { edges: [CatalogTitleEdge!]! pageInfo: CatalogPageInfo! }
+  type CatalogTitleConnection {
+    edges: [CatalogTitleEdge!]! @listSize(assumedSize: 20)
+    pageInfo: CatalogPageInfo!
+  }
   type CurrentPlaybackPublication @inaccessible {
     titleId: ID!
     publicationId: ID!
@@ -50,8 +57,8 @@ export const CATALOG_TYPE_DEFS = parse(`
     validUntil: Float
   }
   type Query {
-    titles(first: Int!, after: String): CatalogTitleConnection!
-    title(id: ID!): Title
+    titles(first: Int!, after: String): CatalogTitleConnection! @cost(weight: 8)
+    title(id: ID!): Title @cost(weight: 6)
     _playbackPublications(ids: [ID!]!): [CurrentPlaybackPublication]! @inaccessible
     _engagementTitles(ids: [ID!]!): EngagementTitleVisibility! @inaccessible
     _discoverySnapshots(ids: [ID!]!): [DiscoverySourceSnapshot]! @inaccessible

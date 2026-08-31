@@ -236,6 +236,7 @@ export function validateRouterSources(sources) {
       "COPY infra/router/generated/trusted-operations.rhai /dist/rhai/trusted-operations.rhai\n",
       "COPY infra/router/generated/supergraph.graphql /dist/schema/supergraph.graphql\n",
       "COPY infra/router/generated/persisted-query-manifest.json /dist/manifest/persisted-query-manifest.json\n",
+      "COPY infra/router/generated/operation-demand-manifest.json /dist/manifest/operation-demand-manifest.json\n",
       "COPY LICENSE /dist/ASTER-LICENSE\n",
       "COPY infra/router/LICENSE-APOLLO-ROUTER /dist/APOLLO-ROUTER-LICENSE\n",
       "HEALTHCHECK --interval=3s --timeout=2s --start-period=10s --retries=3",

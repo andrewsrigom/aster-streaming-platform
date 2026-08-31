@@ -1,4 +1,4 @@
-extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.9", import: ["@key", "@cost", "@listSize"])
 
 enum DiscoverySearchCode {
   COMPLETED
@@ -63,7 +63,7 @@ type DiscoveryPageInfo {
 
 type DiscoverySearchConnection {
   generation: ID!
-  edges: [DiscoverySearchEdge!]!
+  edges: [DiscoverySearchEdge!]! @listSize(assumedSize: 20)
   pageInfo: DiscoveryPageInfo!
 }
 
@@ -87,7 +87,7 @@ type DiscoveryRail {
   source: DiscoveryRailSource!
   oldestIndexedAt: Float
   freshUntil: Float
-  edges: [DiscoveryRailEdge!]!
+  edges: [DiscoveryRailEdge!]! @listSize(assumedSize: 12)
 }
 
 type DiscoveryRailResult {
@@ -97,7 +97,7 @@ type DiscoveryRailResult {
 
 type DiscoveryGenreRailResult {
   code: DiscoveryRailCode!
-  rails: [DiscoveryRail!]!
+  rails: [DiscoveryRail!]! @listSize(assumedSize: 3)
 }
 
 type DiscoveryHomePayload {
@@ -112,6 +112,6 @@ type DiscoveryHomePayload {
 }
 
 type Query {
-  searchTitles(query: String!, locale: String!, first: Int! = 20, after: String): DiscoverySearchPayload!
-  homeRails(first: Int! = 10): DiscoveryHomePayload!
+  searchTitles(query: String!, locale: String!, first: Int! = 20, after: String): DiscoverySearchPayload! @cost(weight: 14)
+  homeRails(first: Int! = 10): DiscoveryHomePayload! @cost(weight: 20)
 }

@@ -100,6 +100,11 @@ test("Router packaging and config reject unsafe limits, notices and propagation"
       "generated/persisted-query-manifest.json",
       "generated/untrusted-query-manifest.json",
     ],
+    [
+      "infra/docker/router.Dockerfile",
+      "generated/operation-demand-manifest.json",
+      "generated/unreviewed-demand-manifest.json",
+    ],
     ["infra/docker/router.Dockerfile", "--timeout=2s", "--timeout=200s"],
     ["infra/docker/router-trust.Dockerfile", "-m 0700", "-m 0777"],
     ["infra/docker/router-trust.Dockerfile", "USER node", "USER root"],

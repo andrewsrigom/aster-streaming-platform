@@ -2,6 +2,16 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0046](../docs/adr/0046-source-owned-graphql-demand-budget.md) upgrades the
+five owner schemas to Federation v2.9 standard `@cost`/`@listSize` metadata and
+derives one finite demand profile for every exact admitted current or retained
+operation. Generation fails on missing/invalid owner metadata, parser or shape
+amplification, excessive owner list literals, overflow or a reviewed policy
+breach. Hosted enforcement is exact trusted admission plus a passing profile;
+local audit remains development-only. The artifact contains only names, hashes
+and finite numeric budgets. Native hosted Router demand control may be measured
+in Phase14 but cannot weaken this credential-free reproducible contract.
+
 [ADR-0045](../docs/adr/0045-source-owned-trusted-operations.md) generates one
 Apollo manifest and finite Rhai matcher from the bounded first-party operation
 source. Exact name plus link-ready Apollo wire-document SHA-256 is required. A

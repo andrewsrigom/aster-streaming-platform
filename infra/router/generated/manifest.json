@@ -4,14 +4,15 @@
   "graphqlVersion": "16.14.2",
   "files": {
     "api.graphql": "9fed7bf01ccb5991ccff7d006f7e9d0e7aadd30620660d3c9c5be4ef956791ad",
-    "supergraph.graphql": "22eb2b2dd088045922baaff8d8486e78a252da6f577c943114cf33564a4312f0",
-    "catalog.graphql": "2c2c9c9d3bce6e7e36eed2994cfe428c8f3d2490908f61cf9423a5e3785bf4fa",
-    "discovery.graphql": "377e15c64c895e6c24b86841348d3a3094774be510007f1a68dd2920264b2c48",
-    "engagement.graphql": "c34b826f95b91d61621915646f2734ecf4efc43ba9db02bbce789481be16d35a",
-    "identity.graphql": "48bad454871ee9b28e51e1fed48cf0f177d0afe9c9b5478211dee0acb6eb04eb",
-    "playback.graphql": "46dead26e0830a8c6f8d8df7c93d5c9f9ca562c00b23652f12f2e4a6d891293a",
+    "supergraph.graphql": "8944df9d87103471cf35c1ead3f16d015fdfceba729534c19ef7b2522a6b79d4",
+    "catalog.graphql": "eea16ddb7ba4bd521a241c639d64c67fc9fd3d53d8702d5d7b99f5211154b506",
+    "discovery.graphql": "4745bf22d88b851b992db21408903c4025b89238dfd9c0a2b938996741692f8a",
+    "engagement.graphql": "ac4c7fb7085b8583153362cc919bcae5c7497fc7b670b6aefc337ed02b913ac4",
+    "identity.graphql": "b5779ed0e80aeff35153bc607fb0421d31fe156fa88bdec7d63a6b5657597e2e",
+    "playback.graphql": "b177626a8a55923399b1310e8f38f1ff017063bca167e12ba79dfc3a56123803",
     "persisted-query-manifest.json": "45e6efdc7f0dd12f993e09748f0da18f2456739655afc100f64b49b0c854cf62",
-    "trusted-operations.rhai": "2012a4aa1d710cf076828f0628a808fa71362d8b660f9590e7733105068185d3"
+    "trusted-operations.rhai": "2012a4aa1d710cf076828f0628a808fa71362d8b660f9590e7733105068185d3",
+    "operation-demand-manifest.json": "2669dcd5b894dc73084c42c991af8d2e088397e26f0aa20584f673ad909fe0ac"
   },
   "subgraphs": [
     {
