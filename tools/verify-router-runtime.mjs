@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { serviceBlock, volumeBlock } from "./verify-optional-platform.mjs";
 
@@ -215,6 +216,7 @@ export async function readRouterSources(root) {
     "infra/router/router.yaml",
     "infra/router/main.rhai",
     "infra/router/generated/trusted-operations.rhai",
+    "infra/router/generated/persisted-query-manifest.json",
     "infra/router/generated/operation-demand-manifest.json",
     "infra/docker/router.Dockerfile",
     "infra/docker/router-trust.Dockerfile",
@@ -344,7 +346,14 @@ export function validateRouterSources(sources) {
   const config = sources["infra/router/router.yaml"] ?? "";
   const policy = sources["infra/router/main.rhai"] ?? "";
   const matcher = sources["infra/router/generated/trusted-operations.rhai"] ?? "";
+  let trustedManifest;
   let demandManifest;
+  try {
+    const source = sources["infra/router/generated/persisted-query-manifest.json"] ?? "";
+    trustedManifest = source.length <= 2_200_000 ? JSON.parse(source || "null") : null;
+  } catch {
+    trustedManifest = null;
+  }
   try {
     demandManifest = JSON.parse(
       sources["infra/router/generated/operation-demand-manifest.json"] ?? "null",
@@ -355,6 +364,36 @@ export function validateRouterSources(sources) {
   const demandOperations = Array.isArray(demandManifest?.operations)
     ? demandManifest.operations
     : [];
+  const trustedOperations = Array.isArray(trustedManifest?.operations)
+    ? trustedManifest.operations
+    : [];
+  const trustedKeys = trustedOperations
+    .map((entry) => `${entry?.name ?? ""}\0${entry?.id ?? ""}`)
+    .sort((left, right) => left.localeCompare(right, "en"));
+  const demandKeys = demandOperations
+    .map((entry) => `${entry?.name ?? ""}\0${entry?.id ?? ""}`)
+    .sort((left, right) => left.localeCompare(right, "en"));
+  const trustedVersions = Map.groupBy(trustedOperations, (entry) => entry?.name);
+  const manifestsAlign =
+    trustedManifest?.format === "apollo-persisted-query-manifest" &&
+    trustedManifest?.version === 1 &&
+    trustedOperations.length > 0 &&
+    trustedOperations.length <= 64 &&
+    trustedOperations.length === demandOperations.length &&
+    new Set(trustedKeys).size === trustedKeys.length &&
+    trustedKeys.join("\0") === demandKeys.join("\0") &&
+    [...trustedVersions.values()].every((entries) => entries.length <= 2) &&
+    trustedOperations.every(
+      (entry) =>
+        entry &&
+        typeof entry.body === "string" &&
+        entry.body.length > 0 &&
+        typeof entry.name === "string" &&
+        /^[A-Za-z][_0-9A-Za-z]{0,127}$/u.test(entry.name) &&
+        ["mutation", "query"].includes(entry.type) &&
+        /^[a-f0-9]{64}$/u.test(entry.id) &&
+        createHash("sha256").update(entry.body).digest("hex") === entry.id,
+    );
   const trafficShaping =
     /(?:^|\n)traffic_shaping:\n(?<policy>[\s\S]*?)\ninclude_subgraph_errors:/u.exec(config)
       ?.groups?.["policy"] ?? "";
@@ -367,12 +406,16 @@ export function validateRouterSources(sources) {
     /(?:catalog|playback):\n(?:(?! {4}[a-z]+:)[\s\S])*named: cookie/.test(config) ||
     /log_(?:info|warn|error|debug)\([^)]*(?:query|hash|variables)/u.test(policy) ||
     /env::get|log_|request\.body|request\.context/u.test(matcher) ||
+    !manifestsAlign ||
     demandManifest?.format !== "aster-operation-demand-manifest" ||
     demandManifest?.version !== 2 ||
-    demandOperations.length !== 25 ||
     demandOperations.some(
       (entry) =>
         !entry ||
+        typeof entry.name !== "string" ||
+        !/^[A-Za-z][_0-9A-Za-z]{0,127}$/u.test(entry.name) ||
+        typeof entry.id !== "string" ||
+        !/^[a-f0-9]{64}$/u.test(entry.id) ||
         !["public", "account", "profile"].includes(entry.authorizationScope) ||
         entry.cacheControl !== "no-store" ||
         entry.executionDeadlineMs !== 3_000 ||

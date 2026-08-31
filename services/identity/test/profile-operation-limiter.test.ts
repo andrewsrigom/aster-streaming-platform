@@ -187,6 +187,62 @@ test("connects Redis on demand without making outage admission unbounded", async
   assert.deepEqual({ connects, commands }, { connects: 2, commands: 1 });
 });
 
+test("prunes expired healthy Redis markers before capacity and preserves failover replay", async () => {
+  let clock = 0;
+  let redisAvailable = true;
+  const limiter = createIdentityProfileOperationLimiter({
+    environment: "test",
+    digest,
+    monotonicNow: () => clock,
+    redis: {
+      consumeTokenBucket: () =>
+        Promise.resolve(
+          redisAvailable
+            ? {
+                status: "completed" as const,
+                allowed: true,
+                remaining: 7,
+                retryAfterMs: 0,
+                resetAfterMs: 500,
+                recovered: false,
+                deduplicated: false,
+              }
+            : { status: "unavailable" as const },
+        ),
+    },
+  });
+  const signal = new AbortController().signal;
+  for (let index = 0; index < 8_192; index++) {
+    assert.equal(
+      (await limiter.admit("profile_mutation", accountId, digest(`healthy-${index}`), signal))
+        .status,
+      "allowed",
+    );
+  }
+  assert.equal(limiter.snapshot().localAdmissions, 8_192);
+
+  clock = 30_000;
+  const retainedAdmission = digest("retained-after-prune");
+  assert.equal(
+    (await limiter.admit("profile_mutation", accountId, retainedAdmission, signal)).status,
+    "allowed",
+  );
+  assert.equal(limiter.snapshot().localAdmissions, 1);
+
+  redisAvailable = false;
+  for (let index = 0; index < 8; index++) {
+    assert.equal(
+      (await limiter.admit("profile_mutation", accountId, digest(`degraded-${index}`), signal))
+        .status,
+      "allowed",
+    );
+  }
+  assert.deepEqual(await limiter.admit("profile_mutation", accountId, retainedAdmission, signal), {
+    status: "allowed",
+  });
+  assert.equal(limiter.snapshot().localAdmissions, 9);
+});
+
 test("bounds local partitions and rejects malformed identity or clock state", async () => {
   const signal = new AbortController().signal;
   const limiter = createIdentityProfileOperationLimiter({

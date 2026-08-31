@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { test } from "node:test";
@@ -21,6 +22,60 @@ const trustedOperationsOverlay = await readFile(
 test("Router topology and source pin private bounded runtime without a GraphOS account", () => {
   assert.deepEqual(validateRouterRuntime(compose), []);
   assert.deepEqual(validateRouterSources(sources), []);
+});
+
+test("Router source verification accepts only the bounded exact retained-operation union", () => {
+  const persistedFile = "infra/router/generated/persisted-query-manifest.json";
+  const demandFile = "infra/router/generated/operation-demand-manifest.json";
+  const persisted = JSON.parse(sources[persistedFile]);
+  const demand = JSON.parse(sources[demandFile]);
+  const current = persisted.operations.find(({ name }) => name === "Viewer");
+  const currentDemand = demand.operations.find(({ name }) => name === "Viewer");
+  assert.ok(current);
+  assert.ok(currentDemand);
+  const retainedBody = `${current.body}\n# retained wire`;
+  const retainedId = createHash("sha256").update(retainedBody).digest("hex");
+  persisted.operations.push({ ...current, body: retainedBody, id: retainedId });
+  demand.operations.push({ ...currentDemand, id: retainedId });
+  const retainedSources = {
+    ...sources,
+    [persistedFile]: JSON.stringify(persisted, null, 2) + "\n",
+    [demandFile]: JSON.stringify(demand, null, 2) + "\n",
+  };
+
+  assert.deepEqual(validateRouterSources(retainedSources), []);
+  const thirdBody = `${current.body}\n# third wire`;
+  const thirdId = createHash("sha256").update(thirdBody).digest("hex");
+  assert.ok(
+    validateRouterSources({
+      ...retainedSources,
+      [persistedFile]:
+        JSON.stringify(
+          {
+            ...persisted,
+            operations: [...persisted.operations, { ...current, body: thirdBody, id: thirdId }],
+          },
+          null,
+          2,
+        ) + "\n",
+      [demandFile]:
+        JSON.stringify(
+          {
+            ...demand,
+            operations: [...demand.operations, { ...currentDemand, id: thirdId }],
+          },
+          null,
+          2,
+        ) + "\n",
+    }).length,
+  );
+  demand.operations.pop();
+  assert.ok(
+    validateRouterSources({
+      ...retainedSources,
+      [demandFile]: JSON.stringify(demand, null, 2) + "\n",
+    }).length,
+  );
 });
 
 test("trusted-operation proof can only recreate Router in integration enforce mode", () => {

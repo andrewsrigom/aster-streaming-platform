@@ -73,6 +73,7 @@ export function createIdentityProfileOperationLimiter(
   const now = options.monotonicNow ?? (() => performance.now());
   const partitions = new Map<string, LocalBucket>();
   const localAdmissions = new Map<string, number>();
+  let nextLocalAdmissionExpiry = Number.POSITIVE_INFINITY;
   let closed = false;
 
   const record = (
@@ -92,6 +93,26 @@ export function createIdentityProfileOperationLimiter(
     }
   };
 
+  const pruneLocalAdmissions = (timestamp: number): void => {
+    if (timestamp < nextLocalAdmissionExpiry) {
+      return;
+    }
+    let nextExpiry = Number.POSITIVE_INFINITY;
+    for (const [key, expiresAt] of localAdmissions) {
+      if (timestamp >= expiresAt) {
+        localAdmissions.delete(key);
+      } else {
+        nextExpiry = Math.min(nextExpiry, expiresAt);
+      }
+    }
+    nextLocalAdmissionExpiry = nextExpiry;
+  };
+
+  const rememberLocalAdmission = (admission: string, expiresAt: number): void => {
+    localAdmissions.set(admission, expiresAt);
+    nextLocalAdmissionExpiry = Math.min(nextLocalAdmissionExpiry, expiresAt);
+  };
+
   const localAdmission = (
     partition: string,
     admission: string,
@@ -103,11 +124,7 @@ export function createIdentityProfileOperationLimiter(
         partitions.delete(key);
       }
     }
-    for (const [key, expiresAt] of localAdmissions) {
-      if (timestamp >= expiresAt) {
-        localAdmissions.delete(key);
-      }
-    }
+    pruneLocalAdmissions(timestamp);
     if (localAdmissions.has(admission)) {
       return { status: "allowed" };
     }
@@ -138,7 +155,7 @@ export function createIdentityProfileOperationLimiter(
       expiresAt: timestamp + policy.ttlMs,
     });
     if (allowed) {
-      localAdmissions.set(admission, timestamp + policy.ttlMs);
+      rememberLocalAdmission(admission, timestamp + policy.ttlMs);
     }
     return allowed
       ? { status: "allowed" }
@@ -209,13 +226,16 @@ export function createIdentityProfileOperationLimiter(
         return { status: "cancelled" };
       }
       if (distributed?.status === "completed") {
-        if (distributed.allowed && localAdmissions.size < MAXIMUM_LOCAL_ADMISSIONS) {
-          const timestamp = now();
-          if (Number.isFinite(timestamp) && timestamp >= 0) {
-            localAdmissions.set(
-              `${operation}:${accountDigest}:${admissionId}`,
-              timestamp + POLICIES[operation].ttlMs,
-            );
+        const timestamp = now();
+        if (Number.isFinite(timestamp) && timestamp >= 0) {
+          pruneLocalAdmissions(timestamp);
+          const localAdmissionId = `${operation}:${accountDigest}:${admissionId}`;
+          if (
+            distributed.allowed &&
+            (localAdmissions.has(localAdmissionId) ||
+              localAdmissions.size < MAXIMUM_LOCAL_ADMISSIONS)
+          ) {
+            rememberLocalAdmission(localAdmissionId, timestamp + POLICIES[operation].ttlMs);
           }
         }
         record(
@@ -261,6 +281,7 @@ export function createIdentityProfileOperationLimiter(
       closed = true;
       partitions.clear();
       localAdmissions.clear();
+      nextLocalAdmissionExpiry = Number.POSITIVE_INFINITY;
     },
   });
 }
