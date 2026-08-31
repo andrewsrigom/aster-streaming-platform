@@ -8,8 +8,12 @@ affected candidate gate pass. Protected run `33352310376` verifies the packaged
 Router enforcement, telemetry, owner runtimes and playable demo. Confirmation
 discussion `3891493400` then found a CI-classification gap for verifier-only
 changes. Source `b85230d21bd733cc27337f2d8e9e8fd8068bb6f6`, tree
-`05532b639091e8fb54e547e282230ccbfa313258`, corrects it with a regression;
-exact-head protected CI, blocker-focused confirmation and release remain.
+`05532b639091e8fb54e547e282230ccbfa313258`, corrected it and protected run
+`33354040239` passed. Blocker-focused confirmation discussion `3891588767`
+then found same-name manifest versions collapsed by the Web tests. Source
+`effc7fd705f149eba193a619d70c0e0039f767ea`, tree
+`0acdba2a73e63841513c54950aeaffe8cf7356fa`, indexes every version per name and
+passes Web119/119 plus the 49/49 gate; exact-head CI and confirmation remain.
 
 ## Requirement traceability
 

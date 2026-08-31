@@ -118,7 +118,10 @@ retains the finite classification. Neither mode logs query text or hashes.
   focused policy36/36 and the 49/49 affected candidate gate pass; the corrected
   pinned packaged Router proof passed protected run `33352310376`. Confirmation
   review discussion `3891493400` identified that verifier-only changes could skip
-  that proof; the bounded CI-classifier correction and repeated gates remain.
+  that proof; source `b85230d` corrected the classifier and protected run
+  `33354040239` passed. Blocker-focused confirmation discussion `3891588767`
+  then found that Web manifest checks selected only one same-name version by
+  hash order; the bounded multi-version test correction and repeated gates remain.
 - Iteration gate: Router composition tests plus Router source/runtime policy tests and `git diff --check`.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed`, documentation/AI checks and zero-finding secret scan.
 - Heavyweight repeat triggers: repeat the real Router enforce-mode proof when operation generation, matcher logic, startup mode policy, Router image/config/Rhai packaging or rejection telemetry changes; repeat the Docker playable journey when canonical client documents or admission behavior changes.

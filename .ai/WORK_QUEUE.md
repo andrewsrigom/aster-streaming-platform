@@ -333,8 +333,11 @@ finite audit labels. Router11/11, Web118/118, focused policy36/36 and the correc
 job. Confirmation discussion `3891493400` found that verifier-only changes
 could skip the Local platform proof. Source `b85230d`, tree `05532b63`, adds the
 path plus a regression; classifier12/12 and the affected gate49/49 with36 cached
-in50.442 seconds pass. Exact-head protected CI, blocker-focused confirmation
-and release remain.
+in50.442 seconds pass. Protected run `33354040239` passes. Blocker-focused
+discussion `3891588767` found Web tests collapsing same-name manifest versions.
+Source `effc7fd`, tree `0acdba2a`, indexes all reviewed versions; Web119/119 and
+gate49/49 with35 cached in54.987 seconds pass. Exact-head protected CI,
+blocker-focused confirmation and release remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

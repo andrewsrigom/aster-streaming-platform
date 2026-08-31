@@ -13,6 +13,9 @@ Environment
 - Protected run: 33352310376 (passed)
 - Confirmation CI correction: b85230d21bd733cc27337f2d8e9e8fd8068bb6f6
 - Confirmation correction tree: 05532b639091e8fb54e547e282230ccbfa313258
+- Classifier-corrected protected run: 33354040239 (passed)
+- Multi-version Web-test correction: effc7fd705f149eba193a619d70c0e0039f767ea
+- Multi-version correction tree: 0acdba2a73e63841513c54950aeaffe8cf7356fa
 - Node.js: 24.19.0
 - pnpm: 11.24.0
 - Runtime target: Apollo Router Core 2.17.0, explicit integration/enforce proof
@@ -41,6 +44,8 @@ Focused commands and results
   check:changed: pass; 49/49 tasks, 35 cached, 72.599 seconds.
 - Confirmation correction: classifier test 12/12 and affected candidate gate
   49/49 tasks, 36 cached, 50.442 seconds.
+- Multi-version correction: Web 119/119 and affected candidate gate 49/49
+  tasks, 35 cached, 54.987 seconds.
 - pnpm typecheck and pnpm ci:test: pass; CI policy 37/37.
 - pnpm security:check (inside the candidate gate): pass; zero findings.
 
@@ -72,17 +77,22 @@ Protected acceptance and confirmation correction
   `tools/verify-trusted-operations.mjs` would not select the Local platform job.
   Source b85230d adds that verifier to the finite platform classifier and a
   regression proves verifier-only changes select full plus platform checks.
-  This does not change Router or verifier behavior, but exact-head protected CI
-  and one blocker-focused confirmation remain required before merge.
+  Exact-head protected run 33354040239 then passed every required job.
+- Blocker-focused confirmation discussion 3891588767 found that both Web
+  manifest checks collapsed same-name versions into one `Map` entry, so a valid
+  retained version could displace the current body by hash order. Source effc7fd
+  indexes every version per name and accepts the current source and actual wire
+  body when either matches any reviewed version. A regression places a
+  later-sorting retained body after the current body and Web119/119 passes.
 
 Pending acceptance
-- Publish the batched classifier/evidence correction once, pass exact-head
-  protected CI, resolve discussion 3891493400 and obtain the permitted
+- Publish the batched Web-test/evidence correction once, pass exact-head
+  protected CI, resolve discussion 3891588767 and obtain the permitted
   blocker-focused confirmation before squash merge and exact-main verification.
 
 Interpretation and limitations
 The corrected results prove deterministic source generation, actual current Web
 wire compatibility, bounded rollout overlap, adverse repository policy and the
-packaged pinned-Router enforcement/telemetry path. The final source-only
-classifier correction cannot alter that runtime behavior, but the protected
-branch policy still requires an exact-head run. No hosted deployment is claimed.
+packaged pinned-Router enforcement/telemetry path. The final test-only correction
+does not alter runtime behavior, but the protected branch policy still requires
+an exact-head run. No hosted deployment is claimed.

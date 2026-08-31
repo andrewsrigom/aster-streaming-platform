@@ -14,6 +14,8 @@ Item64 (P13-R01/R02/R12) is the sole `IN_PROGRESS` item on
 `.ai/CHANGE_PLAN.md`. PR52 is open. Initial protected run `33350909056` failed
 and its complete initial review produced four blockers. Their correction passed
 protected run `33352310376`; confirmation then found one CI-classification gap.
+That correction passed run `33354040239`; blocker-focused confirmation found
+one same-name multi-version Web-test gap.
 
 ## Current behavior
 
@@ -36,7 +38,10 @@ protected run `33352310376`; confirmation then found one CI-classification gap.
   runtimes and the playable demo. Confirmation discussion `3891493400` found
   that verifier-only changes could skip that lane. Source `b85230d`, tree
   `05532b63`, adds the verifier to the finite platform classifier; classifier
-  12/12 and the affected gate49/49 with36 cached in50.442 seconds pass.
+  12/12 and the affected gate49/49 with36 cached in50.442 seconds pass. Protected
+  run `33354040239` passes. Discussion `3891588767` then found that Web tests
+  retained only one hash per name. Source `effc7fd`, tree `0acdba2a`, indexes
+  every version per name; Web119/119 and gate49/49 with35 cached in54.987 pass.
 
 ## Accepted design and implementation
 
@@ -56,11 +61,10 @@ protected run `33352310376`; confirmation then found one CI-classification gap.
 
 ## Exact next actions
 
-1. Commit the evidence checkpoint and push the batched correction to PR52 once.
-2. Require exact-head protected CI; its classifier change must select the Local
-   platform lane containing the trusted-operation proof.
-3. Answer and resolve discussion `3891493400`; obtain one permitted
-   blocker-focused confirmation because the correction changes a CI boundary.
+1. Commit the evidence checkpoint and push the Web-test correction to PR52 once.
+2. Require exact-head protected CI.
+3. Answer and resolve discussion `3891588767`; obtain one permitted
+   blocker-focused confirmation because the correction closes a rollout boundary.
 4. Squash merge, verify exact-main CI, close item64 and activate item65.
 
 ## Execution boundary

@@ -16,7 +16,12 @@ full snapshot through the archival checkpoint remains in
 - Source `b85230d21bd733cc27337f2d8e9e8fd8068bb6f6`, tree
   `05532b639091e8fb54e547e282230ccbfa313258`, routes that exact verifier through
   platform CI. Classifier12/12 and affected gate49/49 with36 cached in50.442
-  seconds pass.
+  seconds pass. Protected run `33354040239` passes every required job.
+- Blocker-focused confirmation discussion `3891588767` found the Web tests kept
+  only one same-name manifest version by hash order. Source
+  `effc7fd705f149eba193a619d70c0e0039f767ea`, tree
+  `0acdba2a73e63841513c54950aeaffe8cf7356fa`, indexes every reviewed version;
+  Web119/119 and gate49/49 with35 cached in54.987 seconds pass.
 
 ### Evidence
 
@@ -25,9 +30,9 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish the batched correction once, require exact-head protected CI, resolve
-  the confirmation thread, obtain one blocker-focused confirmation, then merge
-  and verify exact main.
+- Publish the batched Web-test correction once, require exact-head protected CI,
+  resolve discussion `3891588767`, obtain one blocker-focused confirmation,
+  then merge and verify exact main.
 
 ## 2026-08-30 — Trusted-operation protected findings corrected
 
