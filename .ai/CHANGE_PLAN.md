@@ -147,7 +147,16 @@ retains the finite classification. Neither mode logs query text or hashes.
   the persisted entry to the unique current hash in the schema manifest and
   fails closed on a missing or ambiguous join. A retained-first regression and
   the complete platform suite92/92 pass. The affected candidate gate passes
-  49/49 with33 cached in98.949 seconds; protected proof and confirmation remain.
+  49/49 with33 cached in98.949 seconds. Evidence head `a4e849f` passed protected
+  run `33406328754`; discussion `3895588146` is answered and resolved. Final
+  pre-merge audit then found that the schema delivery manifest also indexed the
+  retained union, so the unique-current join would fail during the exact overlap
+  it must prove. Source `a353164b36a7124c1721915ee07be09ca561de78`, tree
+  `f69257780d003d75ef575101a8e3c358fd9923cb`, keeps the Apollo manifest and
+  Router matcher as the bounded union while indexing only the unique current
+  operation in the delivery manifest. Router11/11, verifier2/2, docs and the
+  repeated gate49/49 with36 cached in99.305 seconds pass. Exact-head protected
+  proof and blocker-focused confirmation remain.
 - Iteration gate: Router composition tests plus Router source/runtime policy tests and `git diff --check`.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed`, documentation/AI checks and zero-finding secret scan.
 - Heavyweight repeat triggers: repeat the real Router enforce-mode proof when operation generation, matcher logic, startup mode policy, Router image/config/Rhai packaging or rejection telemetry changes; repeat the Docker playable journey when canonical client documents or admission behavior changes.

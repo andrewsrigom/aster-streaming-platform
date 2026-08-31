@@ -35,7 +35,14 @@ proof could select a retained `Browse` body while sending current variables.
 Source `2286c7f71a82011c2eb083cdf52de07dc7301f51`, tree
 `d253a5e8e69abf18c29e8dd432b3c4225958aa73`, joins the persisted operation to
 the unique current schema-manifest hash and fails closed on missing/ambiguous
-joins. Platform92/92 and gate49/49 with33 cached in98.949 seconds pass. Exact-head
+joins. Platform92/92 and gate49/49 with33 cached in98.949 seconds pass. Evidence
+head `a4e849f` passed protected run `33406328754` and discussion `3895588146` is
+resolved. Final audit found the delivery manifest still indexed the retained
+union, so that unique-current join would fail during overlap. Source
+`a353164b36a7124c1721915ee07be09ca561de78`, tree
+`f69257780d003d75ef575101a8e3c358fd9923cb`, keeps the Apollo manifest and
+matcher union while indexing exactly one current hash per name. Router11/11,
+verifier2/2, docs and gate49/49 with36 cached in99.305 seconds pass. Exact-head
 protected CI, confirmation and release remain.
 
 ## Requirement traceability

@@ -42,7 +42,14 @@ Blocker-focused discussion `3895588146` then found the packaged proof could pair
 a retained `Browse` body with current variables. Source `2286c7f`, tree
 `d253a5e`, joins the persisted body to the unique current schema-manifest hash
 and fails closed on missing/ambiguous joins. Platform92/92 and gate49/49 with33
-cached in98.949 seconds pass. Exact-head CI and confirmation remain. Full
+cached in98.949 seconds pass. Evidence head `a4e849f` passed protected run
+`33406328754`; discussion `3895588146` is resolved. Final audit found the
+delivery manifest still indexed both current and retained hashes, making that
+unique-current join fail during overlap. Source `a353164`, tree `f692577`, now
+keeps only the current operation index there while the Apollo manifest and
+Router matcher retain the rollout union. Router11/11, verifier2/2, docs and
+gate49/49 with36 cached in99.305 seconds pass. Exact-head CI and confirmation
+remain. Full
 Phase00–14 goal stays active.
 
 ## Verified
@@ -124,7 +131,13 @@ verifier selected `Browse` by name only. Source
 `d253a5e8e69abf18c29e8dd432b3c4225958aa73`, selects the exact current hash from
 the schema manifest, proves retained-first and missing/ambiguous cases, and adds
 that regression to the platform gate. Platform92/92 and gate49/49 with33 cached
-in98.949 seconds pass. Exact-head protected proof and confirmation remain. APQ
+in98.949 seconds pass. Evidence head `a4e849f` passed protected run
+`33406328754`; discussion `3895588146` is resolved. Source
+`a353164b36a7124c1721915ee07be09ca561de78`, tree
+`f69257780d003d75ef575101a8e3c358fd9923cb`, then separates the current-only
+delivery index from the current/retained admission union. Router11/11,
+verifier2/2, docs and gate49/49 with36 cached in99.305 seconds pass. Exact-head
+protected proof and confirmation remain. APQ
 stays disabled.
 PostgreSQL/data ownership, owner authorization, schemas, Redis, events and media
 remain unchanged.
@@ -686,12 +699,12 @@ deployment remain planned.
 
 ## Next outcome
 
-For item64 (P13-R01), commit the current-operation evidence checkpoint and push
-the correction once. Require protected CI to load the generated Rhai policy in
-the pinned Router, select the current manifest version, accept it, reject
-altered/unknown/missing documents and expose all three finite metric labels.
-Resolve discussion `3895588146`, obtain the permitted blocker-focused
-confirmation, merge, verify exact-main CI and then activate item65. Inspect the
+For item64 (P13-R01), commit the current-only delivery-index evidence checkpoint
+and push the correction once. Require protected CI to load the generated Rhai
+policy in the pinned Router, select the current version during retained overlap,
+accept it, reject altered/unknown/missing documents and expose all three finite
+metric labels. Obtain the permitted blocker-focused confirmation, merge, verify
+exact-main CI and then activate item65. Inspect the
 exact historical interrupted Phase12 project only when that same Docker engine
 becomes reachable.
 

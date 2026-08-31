@@ -354,6 +354,12 @@ select a retained `Browse` body while sending current variables. Source
 `2286c7f`, tree `d253a5e`, joins the persisted entry to the unique current hash,
 fails closed on an absent/ambiguous join and adds retained-first coverage to the
 platform suite. Platform92/92 and gate49/49 with33 cached in98.949 seconds pass.
+Evidence head `a4e849f` passed protected run `33406328754`; discussion
+`3895588146` is resolved. Final audit then found the delivery manifest indexed
+the retained union, making its unique-current role ambiguous during overlap.
+Source `a353164`, tree `f692577`, keeps only current hashes in that index while
+the Apollo manifest and Router matcher retain both reviewed versions.
+Router11/11, verifier2/2, docs and gate49/49 with36 cached in99.305 seconds pass.
 Exact-head protected CI, confirmation and release remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.

@@ -1,6 +1,6 @@
 P13-R01/R02/R12 trusted-operation evidence
 Date: 2026-08-31
-Status: packaged runtime verified; boundary-exact rollout correction pending protected release
+Status: packaged runtime verified; current-index correction pending protected release
 
 Environment
 - Branch: feat/p13-trusted-operations
@@ -32,6 +32,10 @@ Environment
 - Current-operation review discussion: 3895588146
 - Current-operation correction: 2286c7f71a82011c2eb083cdf52de07dc7301f51
 - Current-operation correction tree: d253a5e8e69abf18c29e8dd432b3c4225958aa73
+- Current-operation evidence head: a4e849f7c1f23ce7a9326f132a157fd04cd3c047
+- Current-operation protected run: 33406328754 (passed)
+- Current-index correction: a353164b36a7124c1721915ee07be09ca561de78
+- Current-index correction tree: f69257780d003d75ef575101a8e3c358fd9923cb
 - Node.js: 24.19.0
 - pnpm: 11.24.0
 - Runtime target: Apollo Router Core 2.17.0, explicit integration/enforce proof
@@ -41,6 +45,8 @@ Implemented contract
 - IDs are SHA-256 of the exact link-ready Apollo wire body, including Apollo's
   deterministic `__typename` transform.
 - One generated Rhai matcher returns only matched or unknown; main policy adds missing.
+- The Apollo manifest and matcher contain the bounded current/retained union;
+  the delivery manifest indexes exactly one current hash per operation name.
 - A reviewed versioned JSON source stores each obsolete operation as an explicit
   string, preserves all wire bytes and permits at most two distinct hashes per
   operation name during Router-first client rollout.
@@ -71,6 +77,8 @@ Focused commands and results
   49/49 tasks, 36 cached, 64.294 seconds.
 - Current-operation correction: focused2/2, platform92/92 and affected candidate
   gate49/49 tasks, 33 cached, 98.949 seconds.
+- Current-index correction: Router11/11, verifier2/2, docs and affected candidate
+  gate49/49 tasks, 36 cached, 99.305 seconds.
 - pnpm typecheck and pnpm ci:test: pass; CI policy 37/37.
 - pnpm security:check (inside the candidate gate): pass; zero findings.
 
@@ -155,16 +163,28 @@ Protected acceptance and confirmation correction
   missing or ambiguous. The regression places the retained version first and
   covers absent/ambiguous joins; focused2/2, platform92/92 and the repeated49/49
   candidate gate pass with33 cached in98.949 seconds.
+- Evidence head a4e849f passed protected run33406328754, including source
+  quality, every owner integration, packaged Router enforcement, diagnostics and
+  the Docker-only playable demo. Discussion3895588146 is answered and resolved.
+- Final pre-merge audit then found that `manifest.json` populated its operation
+  index from the same current/retained union. A real overlap would therefore
+  produce two `Browse` entries and make the newly fail-closed current selection
+  ambiguous. Source a353164 keeps that delivery index current-only while the
+  Apollo manifest and Router matcher still accept both reviewed versions. The
+  retained-version composition regression proves two admission entries, one
+  unique current delivery entry and the exact current hash. Router11/11,
+  verifier2/2, documentation and the repeated49/49 gate pass with36 cached in
+  99.305 seconds.
 
 Pending acceptance
-- Publish the current-operation/evidence correction once, pass exact-head
-  protected CI, answer and resolve discussion3895588146 (and confirm earlier
-  threads remain resolved), then obtain the permitted blocker-focused
-  confirmation before squash merge and exact-main verification.
+- Publish the current-index/evidence correction once, pass exact-head protected
+  CI, confirm every review thread remains resolved, then obtain the permitted
+  blocker-focused confirmation before squash merge and exact-main verification.
 
 Interpretation and limitations
 The corrected results prove deterministic source generation, actual current Web
 wire compatibility, bounded rollout overlap, adverse repository policy and the
 packaged pinned-Router enforcement/telemetry path. Boundary-exact retained bodies,
-the rollback floor and current-version proof selection are source/contract
-behavior and require the final protected run. No hosted deployment is claimed.
+the rollback floor, unique current-version proof selection and current-only
+delivery index are source/contract behavior; the last correction requires its
+exact-head protected run. No hosted deployment is claimed.

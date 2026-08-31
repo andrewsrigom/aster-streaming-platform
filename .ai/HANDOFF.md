@@ -27,6 +27,9 @@ Source `64fa64e`, tree `35817101`, corrected it. Protected run `33360643657`
 attempt2 passed after attempt1's transient TraceQL indexing timeout and the
 discussion is resolved. Blocker-focused discussion `3895588146` then found the
 runtime verifier could select a retained `Browse` body with current variables.
+Source `2286c7f`, tree `d253a5e`, corrected that join; evidence head `a4e849f`
+passed protected run `33406328754` and the discussion is resolved. Final audit
+then found the delivery manifest itself indexed both retained and current hashes.
 
 ## Current behavior
 
@@ -77,7 +80,13 @@ runtime verifier could select a retained `Browse` body with current variables.
   `2286c7f71a82011c2eb083cdf52de07dc7301f51`, tree
   `d253a5e8e69abf18c29e8dd432b3c4225958aa73`, joins the persisted entry to the
   unique current schema-manifest hash and fails closed otherwise. Platform92/92
-  and gate49/49 with33 cached in98.949 seconds pass.
+  and gate49/49 with33 cached in98.949 seconds pass. Evidence head `a4e849f`
+  passed protected run `33406328754`; discussion `3895588146` is resolved.
+- Source `a353164b36a7124c1721915ee07be09ca561de78`, tree
+  `f69257780d003d75ef575101a8e3c358fd9923cb`, keeps the current/retained union
+  in the Apollo manifest and Router matcher but indexes exactly one current hash
+  per name in the delivery manifest. Router11/11, verifier2/2, docs and
+  gate49/49 with36 cached in99.305 seconds pass.
 
 ## Accepted design and implementation
 
@@ -97,10 +106,10 @@ runtime verifier could select a retained `Browse` body with current variables.
 
 ## Exact next actions
 
-1. Commit the runtime-proof evidence checkpoint and push the correction once.
+1. Commit the current-index evidence checkpoint and push the correction once.
 2. Require exact-head protected CI, including the real two-version-safe proof.
-3. Answer and resolve discussion `3895588146`; confirm earlier threads remain
-   resolved, then obtain the permitted blocker-focused confirmation.
+3. Confirm every thread remains resolved, then obtain the permitted
+   blocker-focused confirmation for the current exact head.
 4. Squash merge, verify exact-main CI, close item64 and activate item65.
 
 ## Execution boundary

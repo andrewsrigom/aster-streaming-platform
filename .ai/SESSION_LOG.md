@@ -4,6 +4,31 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — Trusted-operation current index separated from rollout union
+
+### Completed
+
+- Evidence head `a4e849f` passed protected run `33406328754`; discussion
+  `3895588146` is answered and resolved.
+- Final audit found the delivery manifest indexed both the current and retained
+  versions, making the fail-closed current-operation proof ambiguous during a
+  real overlap.
+- Source `a353164b36a7124c1721915ee07be09ca561de78`, tree
+  `f69257780d003d75ef575101a8e3c358fd9923cb`, keeps the Apollo manifest and
+  Router matcher as the admission union but limits the delivery index to one
+  current hash per name. Router11/11, verifier2/2, docs and gate49/49 with36
+  cached in99.305 seconds pass; the included secret scan has zero findings.
+
+### Evidence
+
+- `evidence/phase-13/trusted-operations.txt` records the exact predecessor run,
+  finding, source correction and accepted local gates.
+
+### Next action
+
+- Publish once, pass exact-head protected CI and blocker-focused confirmation,
+  then squash merge and verify exact main before activating item65.
+
 ## 2026-08-31 — Trusted-operation runtime proof selects current version
 
 ### Completed

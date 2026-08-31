@@ -7,7 +7,9 @@ Apollo manifest and finite Rhai matcher from the bounded first-party operation
 source. Exact name plus link-ready Apollo wire-document SHA-256 is required. A
 reviewed versioned JSON source preserves each obsolete operation as one explicit
 wire-body string, including ignored boundary bytes, and permits at most two
-bodies per name during client rollout. After new-hash exposure the union Router
+bodies per name during client rollout. The Apollo manifest and matcher contain
+that union; the delivery index contains only one current hash per name. After
+new-hash exposure the union Router
 is the rollback floor until both client populations drain. Local/integration
 audit preserves explicit development queries and only
 finite known-name diagnostics; staging/production require enforce and reject
