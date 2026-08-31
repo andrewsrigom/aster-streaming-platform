@@ -3,7 +3,7 @@ import { createLocalEventDelivery } from "@aster/event-delivery";
 
 import { loadReferenceRuntimeConfig, type ReferenceRuntimeConfigSourceEntry } from "@aster/config";
 import { createAsterPostgresAdapter, type AsterPostgresAdapter } from "@aster/postgres";
-import { createAsterRedisAdapter } from "@aster/redis";
+import { createAsterRedisAdapter, type AsterRedisOperationResult } from "@aster/redis";
 import {
   createAsterDeadline,
   createAsterLogger,
@@ -38,6 +38,10 @@ interface DependencyAdapter {
   close(signal?: AbortSignal): Promise<CloseResult>;
   readonly transaction?: AsterPostgresAdapter["transaction"];
 }
+interface RedisDependencyAdapter extends DependencyAdapter {
+  readonly consumeTokenBucket?: ReturnType<typeof createAsterRedisAdapter>["consumeTokenBucket"];
+  readonly snapshot?: ReturnType<typeof createAsterRedisAdapter>["snapshot"];
+}
 
 // Internal factory seams are trusted composition code, never caller/environment configuration.
 export interface IdentityServiceFactories {
@@ -48,7 +52,9 @@ export interface IdentityServiceFactories {
   readonly postgresql: (
     options: Parameters<typeof createAsterPostgresAdapter>[0],
   ) => DependencyAdapter;
-  readonly redis: (options: Parameters<typeof createAsterRedisAdapter>[0]) => DependencyAdapter;
+  readonly redis: (
+    options: Parameters<typeof createAsterRedisAdapter>[0],
+  ) => RedisDependencyAdapter;
   readonly http: typeof createIdentityHttpServer;
   readonly runtime: typeof createAsterIdentityRuntime;
   readonly terminate: (exitCode: number) => void;
@@ -170,11 +176,28 @@ export async function createIdentityServiceWithFactories(
     });
     const postgresqlOwner = ownClose((signal) => postgresql.close(signal));
     owners.push(postgresqlOwner);
+    const redis = factories.redis({
+      url: configuration.redisUrl,
+      telemetry,
+      maxInFlightCommands: 16,
+      connectionTimeoutMs: 1_000,
+      operationTimeoutMs: 250,
+      closeTimeoutMs: 1_000,
+      reconnectMaxAttempts: 3,
+      reconnectBaseDelayMs: 50,
+    });
+    const redisOwner = ownClose((signal) => redis.close(signal));
+    owners.push(redisOwner);
     let product: Awaited<ReturnType<typeof createLocalIdentityProduct>> | undefined;
     let productOwner: OwnedClose | undefined;
     if (configuration.localDemo) {
       const transaction = postgresql.transaction;
       if (!transaction) {
+        throw new AsterIdentityCompositionError();
+      }
+      const consumeTokenBucket = redis.consumeTokenBucket;
+      const snapshot = redis.snapshot;
+      if (!consumeTokenBucket || !snapshot) {
         throw new AsterIdentityCompositionError();
       }
       product = await createLocalIdentityProduct(
@@ -184,6 +207,12 @@ export async function createIdentityServiceWithFactories(
         identifiers,
         logger,
         () => telemetry.activeTraceContext(),
+        {
+          connect: async (signal) => (await redis.connect(signal)) as AsterRedisOperationResult,
+          consumeTokenBucket: (...arguments_) => consumeTokenBucket(...arguments_),
+          snapshot: () => snapshot(),
+        },
+        (input) => telemetry.recordOperationLimit?.(input),
       );
       const ownedProduct = product;
       productOwner = ownClose(async () => {
@@ -192,9 +221,6 @@ export async function createIdentityServiceWithFactories(
       });
       owners.push(productOwner);
     }
-    const redis = factories.redis({ url: configuration.redisUrl, telemetry });
-    const redisOwner = ownClose((signal) => redis.close(signal));
-    owners.push(redisOwner);
     const events = configuration.localDemo?.eventDelivery
       ? await createLocalEventDelivery({
           owner: "identity",

@@ -12,7 +12,7 @@
     "playback.graphql": "b177626a8a55923399b1310e8f38f1ff017063bca167e12ba79dfc3a56123803",
     "persisted-query-manifest.json": "45e6efdc7f0dd12f993e09748f0da18f2456739655afc100f64b49b0c854cf62",
     "trusted-operations.rhai": "2012a4aa1d710cf076828f0628a808fa71362d8b660f9590e7733105068185d3",
-    "operation-demand-manifest.json": "2669dcd5b894dc73084c42c991af8d2e088397e26f0aa20584f673ad909fe0ac"
+    "operation-demand-manifest.json": "c0edaff76bab706d2d4ab419563ddbdc2f20b4cc5ea93414c7b741a8c5a7059e"
   },
   "subgraphs": [
     {

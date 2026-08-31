@@ -157,8 +157,8 @@ Historical stashes are superseded.
 | 62 | Implement multi-window SLO burn-rate alerts linked to runbooks | P12-R07 | DONE |
 | 63 | Diagnose three injected failures from telemetry and close Phase 12 | P12-R10 | DONE |
 | 64 | Generate trusted operations, enforce the environment rollout and document safe schema delivery (also P13-R02/R12) | P13-R01 | DONE |
-| 65 | Enforce GraphQL parser, shape, list, cost and introspection controls (also P13-R04/R05/R10) | P13-R03 | IN_PROGRESS |
-| 66 | Enforce execution, concurrency, identity-rate and cache-scope controls (also P13-R11) | P13-R06 | READY |
+| 65 | Enforce GraphQL parser, shape, list, cost and introspection controls (also P13-R04/R05/R10) | P13-R03 | DONE |
+| 66 | Enforce execution, concurrency, identity-rate and cache-scope controls (also P13-R11) | P13-R06 | IN_PROGRESS |
 | 67 | Prove N+1/query counts and owner authorization; close Phase 13 (also P13-R08/R09) | P13-R07 | READY |
 
 Item64 final source `a353164`, evidence head `de50b3e`, passed protected run
@@ -180,7 +180,36 @@ field on a cost-owned type while preserving all calibrated profiles; Router20/20
 and gate51/51 with32 cached in88.328 seconds pass. Exact head `9f23640` passed
 protected run `33420810495` attempt2; discussion `3896804794` and both review
 threads are resolved, and clean confirmation comment `5482516972` found no major
-issue. Final evidence publication, merge and exact-main release remain.
+issue. Final candidate head `94c17b9`, tree `d034c03`, passed protected run
+`33424006919`. PR55 squash main `8cd6c0b` retained that exact tree. Exact-main
+run `33425758870` passed on attempt2 after attempt1's isolated TraceQL indexing
+timeout; every source and product job was unchanged and cleanup was clean.
+Item65 is released. Item66 is active on
+`feat/p13-execution-rate-cache-controls` from that exact main.
+ADR-0047, manifest-v2 runtime/cache classification, authorized-account Identity
+admission and optional-Redis readiness are implemented locally. Initial source
+`a090285`, tree `98d3064`, passed gate54/54; evidence head `59b7215` opened
+PR56. Protected run `33432579598` found an Identity integration assertion and
+unsupported Router response-header YAML. Initial discussion `3897861197` found
+durable mutation retries could spend a fresh admission before receipt replay.
+Corrected source `8d2633d`, tree `d75aca0`, binds admission to canonical durable
+mutation identity, orders distributed/local degradation safely, caps local
+retry markers, uses supported Rhai response handling and preserves Router
+failure logs. Identity159/159, Router21/21, telemetry19/19, focused verifiers,
+the all11-scenario integration in150.963 seconds, isolated packaged Router and
+the corrected57/57 gate with37 cached in95.749 seconds pass with exact cleanup.
+Published head `82ba630` passed protected run `33437257163`; initial discussion
+`3897861197` is resolved. Confirmation discussion `3898385895` found marker TTL
+could expire before the retained durable receipt. Second source `bf14e2c`, tree
+`0084c67`, probes the authorized receipt before admission; Identity162/162,
+all11 real integration scenarios, exact-source exhausted-bucket/removed-marker
+subgraph proof and the final57/57 gate with46 cached in61.880 seconds pass.
+Published head `1e115fe` passed protected run `33442875698`. Blocker-focused
+review found a fixed-count retained-union verifier and missing expired-marker
+pruning. Third source `af47c62`, tree `bb2d476`, fixes both; Identity163/163,
+Router verifier6/6 and gate57/57 with39 cached in66.529 seconds pass. One third
+correction evidence-head push, protected exact-head CI, final confirmation and
+release remain.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

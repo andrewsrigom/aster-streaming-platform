@@ -8,6 +8,9 @@ import {
   createOperationDemandManifest,
   type DemandOperation,
   type DemandPolicy,
+  type OperationAuthorizationScope,
+  type OperationRateClass,
+  type OperationRuntimePolicy,
 } from "../src/demand.js";
 
 const schemaSource = `
@@ -49,6 +52,19 @@ function demandOperation(body: string): DemandOperation {
 
 function policy(overrides: Partial<DemandPolicy>): DemandPolicy {
   return Object.freeze({ ...GRAPHQL_DEMAND_POLICY, ...overrides });
+}
+
+function runtimePolicy(
+  authorizationScope: OperationAuthorizationScope,
+  rateClass: OperationRateClass = "global",
+): OperationRuntimePolicy {
+  return Object.freeze({
+    authorizationScope,
+    cacheControl: "no-store",
+    executionDeadlineMs: 3_000,
+    maximumConcurrentRequests: 8,
+    rateClass,
+  });
 }
 
 test("variables use the owner maximum while bounded literals lower the exact estimate", () => {
@@ -284,8 +300,16 @@ test("the manifest preserves exact name, type and hash cardinality", () => {
     demandOperation(`query Second { books(first: 2) { author { name } } }`),
     demandOperation(`query First { books(first: 1) { tags } }`),
   ];
-  const manifest = createOperationDemandManifest(schema, schema, operations);
+  const policies = { First: runtimePolicy("public"), Second: runtimePolicy("public") };
+  const manifest = createOperationDemandManifest(
+    schema,
+    schema,
+    operations,
+    GRAPHQL_DEMAND_POLICY,
+    policies,
+  );
   assert.equal(manifest.format, "aster-operation-demand-manifest");
+  assert.equal(manifest.version, 2);
   assert.deepEqual(
     manifest.operations.map(({ name }) => name),
     ["First", "Second"],
@@ -296,7 +320,37 @@ test("the manifest preserves exact name, type and hash cardinality", () => {
   const first = operations[0];
   assert.ok(first);
   assert.throws(
-    () => createOperationDemandManifest(schema, schema, [first, first]),
+    () =>
+      createOperationDemandManifest(schema, schema, [first, first], GRAPHQL_DEMAND_POLICY, {
+        Second: runtimePolicy("public"),
+      }),
     /hashes must be unique/u,
   );
+});
+
+test("runtime policy coverage and private cache scope fail closed", () => {
+  const schema = buildSchema(`
+    directive @cost(weight: Int!) on FIELD_DEFINITION | OBJECT
+    type Query { me: Viewer @cost(weight: 4) }
+    type Viewer { accountId: ID! }
+  `);
+  const viewer = demandOperation(`query Viewer { me { accountId } }`);
+  assert.throws(
+    () => createOperationDemandManifest(schema, schema, [viewer], GRAPHQL_DEMAND_POLICY, {}),
+    /requires every exact operation name/u,
+  );
+  assert.throws(
+    () =>
+      createOperationDemandManifest(schema, schema, [viewer], GRAPHQL_DEMAND_POLICY, {
+        Viewer: runtimePolicy("public"),
+      }),
+    /runtime authorization, rate or cache scope is invalid/u,
+  );
+  const manifest = createOperationDemandManifest(schema, schema, [viewer], GRAPHQL_DEMAND_POLICY, {
+    Viewer: runtimePolicy("account"),
+  });
+  const profile = manifest.operations[0];
+  assert.ok(profile);
+  assert.equal(profile.authorizationScope, "account");
+  assert.equal(profile.cacheControl, "no-store");
 });

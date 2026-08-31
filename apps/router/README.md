@@ -25,7 +25,12 @@ with exact tool versions, file hashes, field/entity ownership and the current 25
 trusted-operation hashes. The persisted manifest and matcher include the bounded
 current/retained rollout union, while the delivery manifest indexes exactly one
 current hash per name. The demand manifest records one bounded shape, list
-expansion and weighted-cost profile for every exact current or retained hash.
+expansion and weighted-cost profile for every exact current or retained hash. Its
+version-2 runtime policy also classifies authorization scope and rate class,
+requires `no-store`, and pins the three-second/eight-request public execution
+boundary for every admitted operation. Missing or weaker policy fails
+composition. [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md)
+defines the account admission and cache-scope contract.
 Manifest bodies use the exact link-ready Apollo `HttpLink` representation.
 Routing URLs are internal service names, not public endpoints. Composition uses the existing
 approved Apollo 2.14.4 and GraphQL 16.14.2 pins; [ADR-0003](../../docs/adr/0003-federation.md)
@@ -86,7 +91,7 @@ Normal Compose publishes only `127.0.0.1:4000/graphql`. POST JSON requires the m
 
 The finite router-trust-init creates five per-owner Router credentials plus five separate owner-read credentials: Playback-to-Catalog, Engagement-to-Identity/Playback/Catalog and Discovery-to-Catalog. Router mounts only its five keys; each private-read key is shared solely by its two participants. Valid files are reused on restart; insecure or missing files fail startup. Never print credentials. For rotation, stop affected consumers, validate the exact disposable volume labels and absence of foreign attachments, replace only those volumes and restart consumers together. Retain PostgreSQL/media. The guarded whole-project reset recognizes all ten disposable trust volumes but is not a key-only rotation command. [Discovery trust and operations](../../services/discovery/README.md#runtime-and-failure-boundaries).
 
-Core limits are 32 KiB request bodies, 64 headers/16 KiB header bytes, 2000 parser tokens, recursion 32, 512 recursive selections, 256 KiB subgraph responses, eight Router requests and a 64/s process-global burst. Router and normal owner fetch deadlines are three/two seconds; Playback and Engagement have a 2700 ms fetch budget around their 2000/2500 ms application deadlines. Client disconnect cancels owner work. Owner depth/alias/list/cost guards remain active. Exact hosted operations additionally pass source composition limits of depth 12, eight aliases, four roots, 256 selections, 512 maximum list expansion and weighted cost 2,048. Native GraphOS demand control is not activated because it would add an account and hosted control-plane contract; the local build remains reproducible without credentials. No unsafe mutation retry is added.
+Core limits are 32 KiB request bodies, 64 headers/16 KiB header bytes, 2000 parser tokens, recursion 32, 512 recursive selections, 256 KiB subgraph responses, eight Router requests and a 64/s process-global burst. Router and normal owner fetch deadlines are three/two seconds; Playback and Engagement have a 2700 ms fetch budget around their 2000/2500 ms application deadlines. Client disconnect cancels owner work. Every response admitted to the GraphQL service is `no-store`; the pre-service oversized-body rejection contains no data, explicit freshness or validators. Apollo Server response/document caches remain disabled, while public Catalog/Discovery source caches keep their separate owner policies. Owner depth/alias/list/cost guards remain active. Exact hosted operations additionally pass source composition limits of depth 12, eight aliases, four roots, 256 selections, 512 maximum list expansion and weighted cost 2,048. Native GraphOS demand control is not activated because it would add an account and hosted control-plane contract; the local build remains reproducible without credentials. No unsafe mutation retry is added.
 
 The runtime emits JSON operation/fetch events, finite operation buckets and
 internal Prometheus metrics. The P12-R05 candidate classifies known Router

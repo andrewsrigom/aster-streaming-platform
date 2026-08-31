@@ -64,8 +64,36 @@ discussion `3896804794` found implicit non-root entity field cost. Source
 cost-owned type while preserving the 25 calibrated profiles; Router20/20 and
 gate51/51 pass. Exact head `9f23640`, tree `7812620d`, passed protected run
 `33420810495` attempt2. Discussion `3896804794` and both review threads are
-resolved; confirmation comment `5482516972` found no major issue. Final evidence
-publication and release remain.
+resolved; confirmation comment `5482516972` found no major issue. Final
+candidate head `94c17b9`, tree `d034c03`, passed protected run `33424006919`.
+PR55 squash main `8cd6c0b` retained that tree and exact-main run `33425758870`
+passed on attempt2 after one isolated TraceQL indexing timeout. Item65 is
+released.
+
+Item66 implements the local P13-R06/R11 candidate from exact main `8cd6c0b`.
+[ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md)
+adds exact runtime/cache classification, authorized-account Identity
+profile-command admission and PostgreSQL-only readiness. Initial source
+`a090285`, tree `98d3064`, passed gate54/54; evidence head `59b7215` opened
+PR56. Protected run `33432579598` found a real Identity assertion and invalid
+Router response-header YAML. Initial discussion `3897861197` found exact durable
+retries could spend a fresh rate admission before receipt replay. Corrected
+head `82ba630` passed protected run `33437257163` and the initial discussion is
+resolved. Confirmation discussion `3898385895` found the 30-second marker could
+expire before the 86,400-second receipt. Second corrected source `bf14e2c`, tree
+`0084c67`, authorizes and reads the retained PostgreSQL receipt before admission;
+only missing receipts reach the limiter. Identity162/162, Router21/21,
+telemetry19/19 and focused verifiers pass. Full real integration passed all11
+scenarios; the exact-source subgraph exhausted the Redis bucket, removed the
+marker, replayed the receipt and cleaned remaining0. The isolated packaged
+Router proof passed. Published head `1e115fe` passed protected run
+`33442875698`. Blocker-focused discussions `3898857100` and `3898857110` then
+found a fixed-count packaged verifier and missing expired-marker pruning. Third
+corrected source `af47c62`, tree `bb2d476`, derives the bounded persisted union
+and prunes before local capacity. Identity163/163, Router verifier6/6 and
+gate57/57 with39 cached in66.529 seconds pass. [Current evidence](execution-rate-cache-controls.txt)
+records all three corrections. Third protected CI, final confirmation and
+release remain.
 
 ## Requirement traceability
 
@@ -74,18 +102,19 @@ publication and release remain.
 | P13-R01 | [Apollo manifest](../../infra/router/generated/persisted-query-manifest.json), [finite matcher](../../infra/router/generated/trusted-operations.rhai) and [trusted-operation evidence](trusted-operations.txt) |
 | P13-R02 | Explicit local/integration audit, hosted enforce policy and passed disposable real-Router proof in [trusted-operation evidence](trusted-operations.txt) |
 | P13-R12 | [ADR-0045](../../docs/adr/0045-source-owned-trusted-operations.md), GraphQL architecture and release sequence |
-| P13-R03/R04/R05/R10 | Verified corrected candidate and clean confirmation in [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json) and [demand-control evidence](graphql-demand-controls.txt); release pending |
-| P13-R06–R09/R11 | Planned in queue items66–67; no implementation or closeout claim |
+| P13-R03/R04/R05/R10 | Released through [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json), [demand-control evidence](graphql-demand-controls.txt), PR55 tree-identical main `8cd6c0b` and exact-main run `33425758870` attempt2 |
+| P13-R06/R11 | Third corrected source `af47c62`, tree `bb2d476`, passes the affected candidate gate57/57 after the all11 real integration scenarios and exact-source PostgreSQL/Redis replay proof; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record exact-union verification, expired-marker pruning and all review corrections; third protected/confirmation/release gates remain |
+| P13-R07–R09 | Planned in queue item67; no implementation or closeout claim |
 
 ## Current limitations
 
-- The local Docker engine was unavailable at the bounded host checkpoint; the
-  protected disposable runtime supplied the packaged Router proof.
+- Docker server26.0.0 was reachable for item66's owned full integration and
+  isolated packaged Router proof; all owned resources were removed. Corrected
+  protected packaged acceptance remains required.
 - Audit mode intentionally accepts ad hoc local/integration documents and is not
   a public-deployment security control.
 - A trusted document is not user authority. Owner authorization remains required.
-- Static shape/list/cost generation has corrected packaged proof and clean
-  confirmation; release remains.
-  Identity-aware rate, cache-scope, N+1/query-count and authorization matrices
-  remain later Phase 13 work.
+- Shape/list/cost controls are released. Identity-aware rate and cache scope have
+  a third corrected local candidate but are not released. N+1/query-count and authorization
+  matrices remain item67 work.
 - Hosted providers, credentials, deployment and capacity remain Phase 14.

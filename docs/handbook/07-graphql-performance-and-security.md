@@ -219,6 +219,22 @@ Response caching must include all authorization and variation dimensions:
 
 Public catalog responses may be shared. Profile progress responses may not.
 
+In Aster's current Phase13 contract, GraphQL responses are deliberately never
+shared: Router writes `Cache-Control: no-store`, every owner disables Apollo
+response/document caches, DataLoader exists only for one request, and private
+Apollo Client state is discarded with its session/profile boundary. Catalog and
+Discovery retain only their separately versioned public owner caches. Every
+trusted operation hash records the derived public/account/profile scope and
+`no-store`, so a future operation fails composition if classification is missing
+or weaker than its selected fields.
+
+Identity profile mutation/selection rate limits run only after a current session
+provides the authoritative account partition. A bounded local bucket absorbs
+hot traffic; Redis coordinates replicas with pseudonymous, expiring keys.
+Outage uses the local result and does not make Identity unready, while
+cancellation and exhausted capacity fail closed. The actual profile command
+revalidates authorization before writing.
+
 ## 13. Abuse-test suite
 
 Include:

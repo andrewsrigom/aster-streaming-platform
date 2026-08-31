@@ -314,7 +314,7 @@ jobs:
         timeout-minutes: 1
         run: |
           docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --profile full ps --all
-          docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --profile full logs --no-color --tail 120 grafana prometheus
+          docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --profile full logs --no-color --tail 120 grafana prometheus router
       - name: Verify packaged health and real telemetry
         timeout-minutes: 2
         run: |

@@ -10,6 +10,7 @@ import { createIdentityHttpServer, type IdentityHttpServer } from "./transport/h
 
 let dependencyReady = false;
 let dependencyCalls = 0;
+let redisCalls = 0;
 const dependency = {
   connect() {
     dependencyCalls += 1;
@@ -18,6 +19,17 @@ const dependency = {
   probe() {
     dependencyCalls += 1;
     return Promise.resolve({ status: dependencyReady ? "completed" : "unavailable" });
+  },
+  close: () => Promise.resolve({ status: "completed" }),
+};
+const optionalRedis = {
+  connect() {
+    redisCalls += 1;
+    return Promise.resolve({ status: "unavailable" });
+  },
+  probe() {
+    redisCalls += 1;
+    return Promise.resolve({ status: "unavailable" });
   },
   close: () => Promise.resolve({ status: "completed" }),
 };
@@ -36,7 +48,7 @@ const service = await createIdentityServiceWithFactories(
   {
     logger: (options) => createAsterLogger({ ...options, destination: { write: () => undefined } }),
     postgresql: () => dependency,
-    redis: () => dependency,
+    redis: () => optionalRedis,
     telemetry: (options) => {
       telemetry = createAsterTelemetry(options);
       return telemetry;
@@ -77,7 +89,8 @@ try {
     }
     await checkHealth(expected);
   }
-  assert.ok(dependencyCalls >= 8);
+  assert.ok(dependencyCalls >= 6);
+  assert.equal(redisCalls, 0);
   assert.ok(telemetry);
   const collection = await telemetry.collect();
   assert.equal(collection.status, "collected");

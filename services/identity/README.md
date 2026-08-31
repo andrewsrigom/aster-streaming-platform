@@ -48,8 +48,18 @@ Mutation payloads return `code` and `correlationId`, plus safe result metadata. 
 - 64 KiB HTTP body; 16 KiB document; 2048 parser tokens; depth 8; 16 aliases; 128 expanded fields; cost 512, with list multiplier 16.
 - Input depth 8, 256 nodes and arrays of at most 16. One named operation and one root mutation field. No subscriptions, introspection, multipart/incremental output or landing page.
 - Eight executing requests, no waiting queue, one process-local token bucket (64 burst, eight/second); 429 includes Retry-After. Three-second request deadline propagates cancellation. Work ignoring cancellation retains its admission slot until it settles; late cookies are refused.
+- After current session restoration, create/update/delete share an eight-token,
+  two/second authorized-account limiter; selection has sixteen tokens and
+  four/second. Validated durable mutation IDs plus canonical request digests
+  make exact retries reuse the shared admission decision while conflicting
+  payloads stay distinct; selection uses a fresh identity. One atomic
+  thirty-second Redis bucket combines with an outage-only local bound of 1,024
+  partitions and 8,192 short-lived admission markers. Keys contain only
+  account/admission SHA-256 pseudonyms. Redis rejection rejects; outage uses
+  only bounded local admission; cancellation and local-capacity exhaustion fail
+  closed.
 - Five profiles by default, eight sessions/account. Owner-side SQL, locks, optimistic versions, deletion, receipt/audit retention and 128-event outbox backpressure are specified in [the migration guide](migrations/README.md).
-- Restart invalidates previous ephemeral signatures, not accounts/profiles. Sign in again. Redis is not session authority. Runtime readiness rejects administrative credentials or missing product tables; migrations run separately.
+- Restart invalidates previous ephemeral signatures, not accounts/profiles. Sign in again. Redis is not session authority or a readiness dependency; it connects on demand and is still closed by lifecycle ownership. PostgreSQL readiness rejects administrative credentials or missing product tables; migrations run separately.
 - Structured operation records contain generated correlation/trace IDs, fixed outcome labels and measured duration. They are not exported distributed traces or an SLO. Apollo usage/schema reporting and inline trace output are disabled. Phase 04/12 own routing and distributed telemetry.
 - Phase 08 activates outbox delivery/acknowledged cleanup. Do not delete pending facts to bypass capacity. This API has no email/signup/recovery, operator role or hosted identity bypass.
 

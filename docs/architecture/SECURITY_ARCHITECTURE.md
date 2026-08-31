@@ -67,10 +67,19 @@ but does not authorize a user or replace owner-side identifier, role and profile
 checks. Composition now gives every exact current or retained operation
 a bounded source-owned profile using owner `@cost` and `@listSize` metadata. It
 fails publication on excessive depth, aliases, roots, selections, list
-expansion, weighted cost or missing metadata. Router still rejects oversized or
-parser-hostile bodies and disables batching and introspection. Final
-identity-aware rate, cache-scope, N+1/query-count and owner-authorization abuse
-proof remain separate Phase 13 work; a passing profile never grants authority.
+expansion, weighted cost or missing metadata. Version-2 profiles also derive the
+minimum authorization scope, require one reviewed rate class and bind all
+responses to `no-store`. Identity profile commands partition rate admission by
+the account from a current owner session; only SHA-256 account/admission
+pseudonyms enter Redis. A retained durable receipt replays before the shorter
+limiter marker can reject it, while new writes repeat authorization in the base
+command. Expired local retry markers are pruned before their finite capacity is
+enforced, so healthy Redis traffic cannot disable later bounded failover.
+Router still rejects oversized or parser-hostile bodies, bounds execution
+to three seconds/eight concurrent requests, overwrites response cache control,
+and disables batching and introspection. N+1/query-count and final
+owner-authorization abuse proof remain the closing Phase13 work; neither demand
+nor rate admission grants authority.
 
 ## Media threat model
 

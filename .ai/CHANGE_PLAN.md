@@ -1,217 +1,214 @@
-# Work Item: Bounded GraphQL Demand Controls
+# Work Item: Bounded GraphQL Execution, Rate and Cache Scope
 
 - Status: IN_PROGRESS
-- Owner: Platform
+- Owner: Platform and Identity
 - Phase: 13
-- Requirement IDs: P13-R03, P13-R04, P13-R05, P13-R10
+- Requirement IDs: P13-R06, P13-R11
 - Created: 2026-08-31
 - Updated: 2026-08-31
 
 ## Outcome
 
-Aster rejects oversized and parser-hostile requests before expensive work and
-admits in hosted environments only reviewed first-party operations whose depth,
-aliases, roots, selections, list expansion and backend-weighted cost fit one
-source-controlled budget. Owner pagination remains authoritative. Batching,
-introspection and public error detail stay disabled. The policy is reproducible
-without credentials or a hosted control plane and emits a finite calibration
-report.
+Every admitted GraphQL operation has an explicit authorization/cache class and
+inherits bounded execution and concurrency. Identity profile commands admit
+traffic by the currently authorized account through a bounded local-plus-Redis
+limiter. Redis loss degrades admission without becoming identity authority or
+making the owner unready. Private responses cannot enter a shared response
+cache.
 
 ## Current behavior
 
-Item64 final source correction `a353164b36a7124c1721915ee07be09ca561de78`,
-evidence head `de50b3ee98a3a8686c359a96e00113a709ce5dad`, passed protected
-run `33410126892` and clean confirmation. PR52 squash main
-`fb5cf0147a3a306f4186b1717fee53ed787bd3a6` retained candidate tree
-`a78f09598f19b05cd552664c1ad68e5bdcd2d43a`; exact-main run `33412728404`
-passed. The predecessor is released and this item is rebased onto it.
+Item65 is released through tree-identical PR55 squash main `8cd6c0b` and
+exact-main run `33425758870` attempt2. Apollo Router already bounds public
+execution to three seconds and eight concurrent requests, owners have shorter
+outbound/subgraph deadlines, and every admitted GraphQL response is `no-store`.
+The pre-service oversized-body rejection contains no data, explicit freshness
+or validators. Apollo
+Server response/document caches are disabled. At item start, Engagement already
+proved an authorized-account Redis limiter with bounded local degradation, but
+Identity profile commands had only process-global admission and Identity
+incorrectly treated Redis readiness as critical.
 
-The Router already enforces 32 KiB bodies, 2,000 parser tokens, recursion32,
-512 recursive selections, three-second execution, concurrency8 and a finite
-global burst. Introspection, APQ, sandbox, homepage, batching and subgraph error
-detail are disabled. Exact trusted-operation admission prevents arbitrary
-hosted shapes. Owners enforce finite page/input bounds. Initial source
-`36b6af2cb114aa4dad2afddc39142ad5e5878c28`, tree
-`e8fc58bbcbe3899b7b420adcdedfbd867173de0b`, calculates depth, aliases,
-roots, selections, list expansion and backend-weighted cost for every exact
-reviewed operation, fails excessive or incomplete metadata, and emits a bounded
-25-operation calibration artifact. PR55 run `33415238912` reached the packaged
-runtime and exposed a verifier mismatch: Apollo Router correctly returned a
-sanitized GraphQL validation error with HTTP 200 for disabled introspection.
-Initial review discussion `3896477418` also found that the analyzer bounded the
-query body instead of the complete encoded GraphQL request. Correction
-`96dc6eab7b7deacea14a1661b6491c991d0d7a0c`, tree
-`c708f9e226e3f45959afc75cd96aff4d0c776cb8`, accepts only structured error-only
-HTTP 200 rejections and includes the operation envelope in the exact 32 KiB
-Router limit. Router19/19, verifier2/2 and the corrected affected candidate
-gate51/51 pass. Protected run `33416680451` then reached the exact response and
-showed pinned Router redaction uses the finite code `UNAVAILABLE`, not the
-verifier's guessed validation code/location. Verifier correction
-`55875ce2fcab48062c0a310593c96f14a46e3815`, tree
-`9ac71a9c3f7f78f5d4fd4b0c688bc4f5ca2964d5`, asserts the exact sanitized
-redaction contract; verifier2/2 and the repeated affected gate51/51 pass.
-Exact head `0fd6c78738411ca1a515298eefe04ee2474d7da5` then passed protected run
-`33417515807`, including packaged demand/trust rejection, every owner runtime,
-diagnostics and the Docker playable demo. Initial discussion `3896477418` is
-resolved. Confirmation discussion `3896804794` found selected fields on a
-cost-owned entity could lose their explicit field cost and fall back to an
-implicit scalar/composite weight. Source
-`8395f7985173bb10af7dcb6f3aaafee298ed1452`, tree
-`0a026a6a00cf481b0b9709a098e3b185668b07e8`, requires direct field cost for
-every selected non-root field on a cost-owned type and explicitly marks all
-current `Title`/`Profile` fields without changing any calibrated profile.
-Router20/20 and the affected gate51/51 pass. Exact candidate head
-`9f23640a65df42c89dc4ecfc645a0c5cf543e3f7` passed protected run
-`33420810495` attempt2 after attempt1 exposed an unrelated transient storage
-fixture assertion. Discussion `3896804794` is resolved, all review threads are
-resolved and clean confirmation comment `5482516972` found no major issue.
-Release remains pending.
+Protected run `33442875698` passes exact head `1e115fe`. The blocker-focused
+confirmation found two remaining acceptance gaps: the packaged runtime verifier
+hard-codes 25 demand profiles instead of accepting the bounded current-plus-
+retained trusted union, and healthy Redis admissions do not prune expired local
+failover markers before enforcing their 8,192-entry capacity. Both are blocking
+rollout/availability boundaries and are remediated together before release.
 
 ## Proposed behavior
 
-Upgrade subgraph Federation links to the supported version that defines standard
-`@cost` and `@listSize`. Annotate resolver work and every selected list with
-finite owner-backed weights and sizes. A deterministic build analyzer consumes
-the composed public schema and the exact trusted-operation body/hash set,
-expands fragments once under explicit bounds, resolves variable/default page
-sizes conservatively and records depth, aliases, roots, selections, maximum list
-expansion and static cost.
+Generate one finite runtime policy beside the trusted-operation demand
+profiles. It classifies every exact current/retained operation as public,
+account or profile scoped, assigns a reviewed rate class, and requires
+`no-store`. Generation fails when an operation lacks policy or private behavior
+is classified public. Keep Router's three-second/eight-request boundary and
+prove its relation to owner deadlines.
 
-Composition fails on missing/invalid metadata, overflow, unresolved sizing or an
-operation above any reviewed maximum. It emits one bounded versioned demand
-manifest beside the trusted manifest. Because hosted admission accepts only the
-same exact hashes after the analyzer passes, over-budget operations cannot reach
-planning. Local/integration audit remains a development path protected by the
-existing parser, owner and execution bounds. Protected CI sends oversized,
-token-heavy, batched and introspection requests to the pinned packaged Router
-and retains the playable journey.
+Decorate Identity profile mutations after authoritative session restoration
+with account-partitioned token buckets. First use the owner transaction to
+validate the request, authorize the session and replay or conflict a retained
+durable receipt. Only a missing receipt proceeds to admission. Validated durable
+mutation IDs plus canonical request digests coordinate new or unsaved exact
+create/update/delete attempts without deduplicating conflicting payloads;
+selection uses a fresh identity. One
+versioned Redis script uses server time for cross-replica coordination. Its
+bounded decision precedes the outage-only local path so a retry is not hidden by
+one process's exhausted fallback bucket. Redis rejection rejects. Redis timeout
+or outage uses only 1,024 local partitions and 8,192 short-lived admission
+markers. Cancellation never falls back to allow. PostgreSQL remains Identity's
+sole readiness-critical dependency.
 
 ## Boundaries
 
-- Owning context: Platform owns public demand admission and generated evidence;
-  each bounded context owns resolver work, pagination and authorization.
-- Affected code: five owner SDL contracts, `@aster/router`, generated artifacts,
-  Router/runtime proof, CI policy and GraphQL/security/operations documentation.
-- Authoritative data: owner PostgreSQL stores remain authoritative; generated
-  demand metadata is source-derived policy only.
-- Read models/caches: no product cache/read-model change; Router plan cache stays
-  bounded and APQ stays disabled.
-- Trust boundaries: request bytes, tokens/documents/variables, operation sources
-  and schema annotations are untrusted until validated.
-- External dependencies: existing pinned Apollo composition, Router and GraphQL
-  packages only; no account, key, paid resource, new service or package.
+- Owning context: Platform owns public operation classification; Identity owns
+  session authorization, profile commands and their admission.
+- Affected services/packages: `@aster/router`, `@aster/identity`, telemetry,
+  runtime/configuration verification, CI policy and Phase13 documentation.
+- Authoritative data: Identity PostgreSQL and current session validation remain
+  authoritative; Redis and generated policy never authorize durable data.
+- Read models/caches: existing public Catalog/Discovery source caches remain
+  public-only; DataLoader remains request-scoped; private Apollo state remains
+  session-scoped and is discarded on session/profile change.
+- Trust boundaries: cookies, GraphQL documents/variables, operation metadata,
+  Redis contents, clocks and dependency responses are untrusted.
+- External dependencies: existing pinned PostgreSQL, Redis, Router and Node
+  dependencies only; no GraphOS account, proxy, service or hosted resource.
 
 ## Invariants
 
-- Network body/parser limits run before query planning and subgraph work.
-- Hosted shape/cost enforcement cannot be bypassed because only exact analyzed
-  trusted hashes are admitted.
-- Every list reachable from a trusted operation has a finite owner-backed size;
-  owner pagination rejects the same or a stricter maximum at runtime.
-- Weights distinguish scalar/in-memory shape, owner I/O, mutation work and
-  federated fan-out; cost supplements dependency bounds.
-- Missing/conflicting metadata, excessive demand or stale artifacts fail the
-  build rather than choosing an implicit safe-looking default.
-- Batching, introspection, sandbox and detailed upstream errors stay disabled.
-- Query text, variables, hashes, identifiers and raw numeric cost never enter
-  metric labels or public errors.
-- Item64 merges and passes exact-main CI before this item publishes.
+- Owner authorization precedes identity-aware admission and is repeated by the
+  existing command path before the write.
+- Raw cookie, account/profile ID, query, hash and variables never enter Redis
+  keys, public errors, logs or metric labels.
+- Limiter work runs outside PostgreSQL transactions and cannot authorize a
+  profile mutation.
+- Bounded local partitions/admission markers and Redis TTLs prevent unbounded state.
+- Redis failure cannot make durable identity state incorrect or Identity
+  readiness fail.
+- Cancellation, local capacity exhaustion and malformed dependency replies fail
+  closed.
+- All exact admitted operations have one runtime/cache policy; their responses
+  are `no-store`. The pre-service body rejection has no reusable cache metadata;
+  private data never enters shared response caching.
+- Router execution/concurrency bounds supplement owner deadlines and do not
+  replace authorization, pagination or dependency bounds.
 
 ## Failure behavior
 
-| Failure | Expected behavior | Evidence/telemetry |
+| Failure | Expected behavior | Telemetry |
 | --- | --- | --- |
-| Body exceeds32 KiB | Router returns bounded4xx before GraphQL execution | finite rejection outcome |
-| Document exceeds2,000 tokens or parser recursion | Router returns sanitized4xx before planning | finite rejection outcome |
-| Source exceeds shape/list/cost policy | composition fails; no artifact/image publication | operation name plus finite rule |
-| Cost/list metadata missing, invalid or conflicting | composition fails | schema coordinate plus finite rule |
-| Introspection or batched request | public Router rejects without alternate path | sanitized bounded response |
-| Demand artifact missing/stale | schema check/image publication fails | bounded build finding |
-| Owner page input exceeds maximum | owning service rejects sanitized input | existing finite owner result |
+| Account exceeds profile command budget | Reject before mutation | finite operation/result/source |
+| Exact completed mutation is retried after a limiter marker expires | Return the retained durable result before rate admission | finite owner result; no limiter event |
+| Healthy traffic fills local failover markers and their TTL elapses | Prune expired markers before capacity and preserve new retry markers | bounded local snapshot |
+| Redis rejects | Reject consistently across replicas | `redis` plus `rejected` |
+| Redis times out or is unavailable | Use bounded local result; keep Identity ready | `local_fallback` plus finite cause |
+| Redis reply/key is malformed | Fail closed or bounded fallback; never authorize | finite dependency failure |
+| Local partition map is full | Reject new partition | finite `capacity` outcome |
+| Request is cancelled | Reject/cancel without fallback allow | finite `cancelled` outcome |
+| Operation lacks runtime/cache policy | Composition fails | operation name plus finite rule |
+| A reviewed retained operation overlaps current client rollout | Runtime verification accepts the same bounded trusted/demand union | exact manifest identities |
+| Private operation is marked public/cacheable | Composition fails | finite scope rule |
+| Public concurrency or deadline is exceeded | Router returns sanitized bounded failure | existing finite server outcome |
 
 ## Data and contracts
 
-- Schema/migration: additive Federation metadata only; no public field, database
-  or event migration.
-- GraphQL: trusted operation documents/hashes stay unchanged; generated demand
-  profiles extend the delivery contract.
+- Schema/migration: none.
+- GraphQL: no field/type change; existing `LIMIT_EXCEEDED` outcome is reused.
 - Events: none.
-- Cache: no response/Redis behavior change; plan cache stays128.
-- Compatibility: every current Web document must retain its exact hash and pass
-  the calibrated budget; local audit is not a hosted bypass.
-- Retention: generated manifests follow source/image history and contain no
-  request or user data.
+- Cache: versioned SHA-256 account partitions, finite TTL, all GraphQL responses
+  `no-store`; no durable source-of-truth cache.
+- Compatibility: existing first-party operations and demo behavior remain
+  compatible below the reviewed limits.
+- Retention/deletion: limiter state expires automatically and contains no raw
+  identifier; profile/session deletion behavior is unchanged.
 
 ## Security and privacy
 
-- Authorization: demand admission never grants account/profile/operator or
-  resource authority; owning services still authorize.
-- Input limits: 32 KiB body,2,000 tokens, finite recursion/selections plus
-  calibrated depth, alias, root, list and cost maxima.
-- Sensitive data: operation names and finite outcomes/bands only; no query,
-  variable, hash, identifier or signed URL in telemetry/evidence.
-- Abuse: oversized bytes, ignored-token amplification, deep nesting, aliases,
-  repeated roots/fragments, list multiplication, expensive federation, batching,
-  introspection, stale artifacts and sanitized errors receive adverse coverage.
+- Authorization: current signed session is restored by Identity before account
+  partition selection; owner command validation remains authoritative.
+- Input limits: existing Router/owner body, parser, list, deadline and
+  concurrency bounds remain; limiter partitions and admission markers are
+  finite.
+- Sensitive data: only SHA-256 pseudonyms enter Redis keys; session cookies and
+  signed media URLs remain absent from telemetry and cache artifacts.
+- Abuse cases: one account hot-spots profile mutations, cross-account collision,
+  repeated/replayed admission, Redis outage, forged forwarded identity, cache
+  scope confusion, cancellation and capacity exhaustion.
 
 ## Implementation steps
 
-1. Record the source-owned shape/list/cost decision and alternatives in ADR-0046.
-2. Upgrade Federation links and add validated owner-backed cost/list metadata.
-3. Implement deterministic shape/cost analysis and generated demand artifact.
-4. Bind trusted generation to the passing profile and finite telemetry policy.
-5. Add unit/adverse, schema/client, packaging, CI-policy and real Router proofs.
-6. Capture calibration, update docs/memory and run candidate acceptance.
+1. Record ADR-0047 and exact generated runtime/cache policy coverage.
+2. Implement Identity profile-operation limiter, decorator and telemetry.
+3. Make Redis optional for Identity readiness and prove degraded operation.
+4. Add deterministic unit, contract and real Redis/PostgreSQL integration tests.
+5. Generate evidence, update security/GraphQL/operations documentation and run
+   the affected candidate gate.
+6. Publish one coherent candidate; complete one initial and one confirmation
+   review; merge only after protected exact-head CI.
 
 ## Tests
 
-- Domain: existing owner page/list maxima remain authoritative.
-- Application: analyzer fixtures cover fragments, variables/defaults, nested
-  lists, aliases, roots, mutations, missing metadata and numeric overflow.
-- Integration: pinned Router rejects oversized/token-heavy/batched/introspection
-  requests before owner work and accepts every canonical client operation.
-- Contract: Federation metadata composition, exact hash/profile cardinality,
-  generated staleness/bounds and Docker packaging.
-- Browser: protected Docker playable journey proves compatibility.
-- Performance/failure: calibration reports all current operations and exact
-  boundary decisions; item66 owns measured SQL/N+1/latency.
+- Domain: deterministic token refill, burst, independent account partitions,
+  capacity and clock/reply validation.
+- Application: authorization/durable replay before admission, rejection blocks
+  new commands, revalidation stays in the base command, cancellation and
+  telemetry.
+- Integration: real Redis atomic decisions/outage recovery plus real PostgreSQL
+  readiness with Redis absent; exhaust the shared bucket, remove the exact short
+  marker and prove retained PostgreSQL replay without marker recreation.
+- Contract: one runtime/cache classification per exact trusted hash; private
+  operations cannot be public/cacheable; generated artifact staleness fails;
+  current-plus-retained manifest unions align exactly and remain bounded.
+- Browser: canonical sign-in/profile/browse/play journey remains valid; private
+  Apollo state still resets on session/profile changes.
+- Performance/failure: deterministic eight-active/one-rejected concurrency
+  proof, three-second Router/shorter owner deadline verification and bounded
+  Redis outage behavior.
 
 ## Evidence
 
-- Raw artifact: `evidence/phase-13/graphql-demand-controls.txt` and generated
-  demand manifest.
-- Acceptance: protected run `33420810495` attempt2 proves the corrected packaged
-  runtime at exact source/evidence head `9f23640`; all review threads are
-  resolved and confirmation comment `5482516972` is clean. Release remains
-  pending.
-- Iteration gate: Router analyzer/composition tests, affected owner schema tests,
-  format/lint and `git diff --check`.
-- Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536
-  TURBO_CONCURRENCY=4 pnpm check:changed`, documentation/AI and secret checks.
-- Heavyweight repeat triggers: repeat packaged abuse/browser proof when Router
-  limits, trusted documents, schema metadata, analyzer, artifacts, Rhai,
-  image/config or client transport changes.
-- Review stopping rule: one complete initial review and one confirmation; extend
-  only for requirement, budget integrity, security/privacy, availability,
-  authorization or public-contract blockers.
+- Commands: focused Identity/Router tests during iteration; affected candidate
+  gate before publication; protected CI for real packaged runtime.
+- Raw artifact path: `evidence/phase-13/execution-rate-cache-controls.txt`.
+- Acceptance result: third corrected local candidate accepted at source
+  `af47c62`, tree `bb2d476`; Identity163/163, Router21/21, Router verifier6/6,
+  all11 carried real integration scenarios, exact-source PostgreSQL/Redis
+  subgraph, isolated packaged Router and affected gate57/57 pass. Corrected
+  protected runs `33437257163` and `33442875698` passed; discussions
+  `3897861197` and `3898385895` are resolved. The blocker-focused review then
+  found retained-union verification (`3898857100`) and expired-marker pruning
+  (`3898857110`) gaps. Both are remediated locally; exact-head protected CI,
+  discussion resolution, final confirmation and release remain.
+- Iteration gate: changed-package typecheck/lint plus focused unit/contract tests.
+- Candidate gate: repository affected-scope gate selected from exact diff,
+  including Identity integration, Router generation and platform policy.
+- Heavyweight repeat triggers: repeat container/browser/runtime evidence only if
+  Identity lifecycle, Redis script, Router config/artifact, Web cache/session
+  behavior or shared Compose/runtime wiring changes after the last proof.
+- Review stopping rule: collect one complete initial review, batch blocker
+  remediation, then one confirmation; reopen only for a changed blocking
+  security/data/availability/public-contract boundary.
 
 ## Rollback or recovery
 
-Restore the item64 Router image/config, Federation SDLs and ten-artifact
-generation set. No product data, database, Redis, event, media or credential
-rollback is required. Roll forward by adding compatible metadata/operations
-before raising any reviewed budget.
+Revert ADR/policy generation and the Identity decorator/optional-Redis wiring as
+one item. No schema, database, event or media migration exists. Reverting leaves
+the released global Router execution/concurrency controls and global Identity
+shield intact. If Redis policy is faulty, disable only the new decorator through
+source rollback; never delete durable Identity data or retained Redis globally.
 
 ## Documentation updates
 
-- ADR-0046, GraphQL/security architecture, Router configuration and release.
-- Phase13 calibration/evidence, repository state, queue, session log and handoff.
+- ADR-0047 and decisions ledger.
+- GraphQL, security, Redis/degraded-mode and Identity operational documentation.
+- Phase13 evidence index and `.ai/` state/session/handoff.
 
 ## Completion checklist
 
 - [ ] Requirements satisfied
 - [ ] Tests pass
 - [ ] Evidence captured
-- [x] Documentation current
-- [x] `.ai/` state updated
-- [x] Remaining risks recorded
+- [ ] Documentation current
+- [ ] `.ai/` state updated
+- [ ] Remaining risks recorded

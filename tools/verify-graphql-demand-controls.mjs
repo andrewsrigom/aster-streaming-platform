@@ -14,7 +14,7 @@ export function parserTokenFlood() {
   ).join(" ")}) { __typename }`;
 }
 
-export function assertSafeGraphqlRejection(response, label) {
+function assertSafeRejection(response, label) {
   assert.ok(
     [200, 400, 413, 422, 429].includes(response.status),
     `${label} returned ${response.status}.`,
@@ -41,6 +41,20 @@ export function assertSafeGraphqlRejection(response, label) {
         response.body.errors.length <= 4,
     );
   }
+}
+
+export function assertSafeGraphqlRejection(response, label) {
+  assert.equal(response.cacheControl, "no-store", `${label} did not disable response caching.`);
+  assertSafeRejection(response, label);
+}
+
+export function assertSafeTransportRejection(response, label) {
+  assert.ok(
+    response.cacheControl === undefined || response.cacheControl === "no-store",
+    `${label} advertised a reusable cache policy.`,
+  );
+  assert.deepEqual(response.cacheValidators, [], `${label} advertised cache validators.`);
+  assertSafeRejection(response, label);
 }
 
 async function rawCall(encoded) {
@@ -76,7 +90,18 @@ async function rawCall(encoded) {
           } catch {
             body = undefined;
           }
-          resolve({ status: message.statusCode, text, body });
+          resolve({
+            status: message.statusCode,
+            text,
+            body,
+            cacheControl: message.headers["cache-control"],
+            cacheValidators: [
+              message.headers["age"],
+              message.headers["expires"],
+              message.headers["etag"],
+              message.headers["last-modified"],
+            ].filter((value) => value !== undefined),
+          });
         });
       },
     );
@@ -102,6 +127,7 @@ async function main() {
     variables: { first: 1, locale: "en" },
   });
   assert.equal(accepted.status, 200);
+  assert.equal(accepted.cacheControl, "no-store");
   assert.equal(accepted.body?.errors, undefined);
   assert.ok(accepted.body?.data);
 
@@ -144,7 +170,7 @@ async function main() {
       variables: {},
     }),
   );
-  assertSafeGraphqlRejection(oversized, "request-body");
+  assertSafeTransportRejection(oversized, "request-body");
 
   process.stdout.write(
     JSON.stringify({

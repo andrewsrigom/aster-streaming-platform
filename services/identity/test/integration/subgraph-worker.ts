@@ -1,10 +1,13 @@
 import assert from "node:assert/strict";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { once } from "node:events";
 import { createServer } from "node:net";
+import { setTimeout as delay } from "node:timers/promises";
 
 import { loadReferenceRuntimeConfig } from "@aster/config";
+import { createAsterRedisAdapter } from "@aster/redis";
 import { createAsterLogger } from "@aster/runtime";
+import { createAsterTelemetry } from "@aster/telemetry";
 import { Client } from "pg";
 
 import { createIdentityServiceWithFactories } from "../../src/create-service.js";
@@ -65,6 +68,7 @@ const output = (event: string, details: Record<string, unknown> = {}): void => {
   process.stdout.write(JSON.stringify({ event, ...details }) + "\n");
 };
 const signal = (): AbortSignal => AbortSignal.timeout(10_000);
+const digest = (value: string): string => createHash("sha256").update(value).digest("hex");
 async function start(configuration = runtimeEnvironment) {
   const service = await createIdentityServiceWithFactories(Object.entries(configuration), {
     clock: () => ({ now: () => new Date(now * 1_000) }),
@@ -160,7 +164,24 @@ try {
 
   const elevated = await start(environment);
   assert.deepEqual(elevated.started, { status: "started", readiness: "not_ready" });
-  assert.equal((await send(signInQuery)).status, 503);
+  const unavailable = await send(signInQuery);
+  assert.deepEqual(
+    {
+      health: elevated.service.health(),
+      status: unavailable.status,
+      code: unavailable.json.errors?.[0]?.extensions.code,
+    },
+    {
+      health: {
+        liveness: "live",
+        phase: "ready",
+        readiness: "not_ready",
+        reason: "dependency_unavailable",
+      },
+      status: 503,
+      code: "UNAVAILABLE",
+    },
+  );
   assert.equal((await elevated.service.shutdown()).outcome, "completed");
   const first = await start();
   assert.deepEqual(first.started, { status: "started", readiness: "ready" });
@@ -206,6 +227,59 @@ try {
     "SELECT count(*)::integer AS count FROM identity.profile_outbox",
   );
   assert.equal(events.rows[0]?.count, 5);
+  const accountDigest = digest(viewer.accountId);
+  const requestDigest = digest(
+    JSON.stringify([
+      "create",
+      null,
+      null,
+      {
+        displayName: "Cinéma viewer",
+        locale: "pt-BR",
+        maturity: "GENERAL",
+        avatarRef: null,
+      },
+    ]),
+  );
+  const admissionDigest = digest(`profile_mutation\0${duplicate.mutationId}\0${requestDigest}`);
+  const keyPrefix = `aster:local:identity:rate:v1:profile_mutation:${accountDigest}`;
+  const bucketKey = `${keyPrefix}:bucket`;
+  const admissionKey = `${keyPrefix}:admission:${admissionDigest}`;
+  const controlTelemetry = createAsterTelemetry({
+    serviceName: "identity-subgraph-redis-control",
+    serviceVersion: "0.0.0",
+    environment: "test",
+    export: { mode: "none" },
+  });
+  const redisControl = createAsterRedisAdapter({
+    url: environment.REDIS_URL,
+    telemetry: controlTelemetry,
+    maxInFlightCommands: 1,
+    operationTimeoutMs: 1_000,
+  });
+  let markerRemoved = false;
+  try {
+    assert.equal((await redisControl.connect(signal())).status, "completed");
+    const bucket = await redisControl.read(bucketKey, signal());
+    assert.equal(bucket.status, "completed");
+    assert.notEqual(bucket.value, null, "The shared mutation bucket must remain exhausted.");
+    const marker = await redisControl.read(admissionKey, signal());
+    assert.equal(marker.status, "completed");
+    const removed = await redisControl.delete(admissionKey, signal());
+    assert.equal(removed.status, "completed");
+    markerRemoved = marker.value !== null && removed.deleted;
+    assert.deepEqual(
+      payload(await send(createQuery, { input: duplicate }, cookie), "createProfile"),
+      created,
+    );
+    assert.deepEqual(await redisControl.read(admissionKey, signal()), {
+      status: "completed",
+      value: null,
+    });
+  } finally {
+    assert.equal((await redisControl.close(signal())).status, "completed");
+    assert.equal((await controlTelemetry.shutdown(signal())).status, "completed");
+  }
   output("identity_graphql_concurrency", {
     duplicateRequests: 8,
     duplicateFacts: 1,
@@ -213,7 +287,10 @@ try {
     admitted: 4,
     rejected: 4,
     profiles: 5,
+    durableReplayAfterAdmissionMarker: "passed",
+    markerRemoved,
   });
+  await delay(1_250, undefined, { signal: signal() });
 
   const foreignAccount = randomUUID();
   const foreignProfile = randomUUID();
@@ -277,6 +354,7 @@ try {
     payload(await send(listQuery, {}, cookie), "profiles")["activeProfileId"],
     profileId,
   );
+  await delay(2_750, undefined, { signal: signal() });
 
   const updateInput = {
     mutationId: randomUUID(),

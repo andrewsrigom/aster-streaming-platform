@@ -1,0 +1,318 @@
+Phase 13 — execution, identity rate and cache-scope controls
+Date: 2026-08-31
+Requirements: P13-R06, P13-R11
+Branch: feat/p13-execution-rate-cache-controls
+Base main: 8cd6c0b25938f605ded95df736b2c53b4ecff150
+Base release tree: d034c033ec57e9b641fba04dae678ea082c944b7
+
+IMPLEMENTED THIRD CORRECTED CANDIDATE (NOT RELEASED)
+
+Initial source commit: a090285ccca972bd3c549f4d22ab72f2244e2961
+Initial source tree: 98d3064b23c07f2145c68f1eef5a1c4309759400
+Published evidence head: 59b7215f848c3f6906cc36f0c0f1e8a4ad47ceda
+Published evidence tree: ee1c908e8a20e32262616638e076565ab8bedc9c
+Corrected source commit: 8d2633d052a44ad0d6f115be0641369f911c0820
+Corrected source tree: d75aca0b7097e47d5ef6beff6ce8222cae6d5b10
+Second corrected source commit: bf14e2c2a403558122d2ae27b827a382368b671f
+Second corrected source tree: 0084c671589711660e3a23aa87316d84f5b9bc41
+Second corrected published head: 1e115fe9d43fe21ede9d555bc34e074df1439326
+Third corrected source commit: af47c625bc937cb6e41325bcbd9b64914db7b3b2
+Third corrected source tree: bb2d47618032af388d5c3dfd8c698d39b83e6dda
+
+- ADR-0047 records the three-second/eight-request public execution boundary,
+  account-partitioned Identity admission, Redis degradation and mandatory
+  GraphQL no-store policy.
+- Operation demand manifest format version 2 classifies every exact current or
+  retained operation as public/account/profile, assigns one finite rate class,
+  and records deadline, concurrency and no-store. Exact name coverage and
+  derived private scope fail composition.
+- Router's GraphQL service overwrites admitted responses with
+  Cache-Control: no-store. The fixed pre-service oversized-body rejection
+  contains no data, explicit freshness or cache validators.
+- Identity create/update/delete use profile_mutation (burst 8, refill 2/s);
+  selection uses profile_selection (burst 16, refill 4/s). Canonical input,
+  authorization and durable receipt lookup run before admission; missing
+  receipts proceed to the limiter and repeat authorization before a write.
+- Redis keys contain only SHA-256 account/admission pseudonyms, use finite TTL
+  and atomic server-time token buckets, and never authorize durable state.
+- PostgreSQL is Identity's sole readiness-critical dependency. Redis connects
+  on demand, degrades to the bounded local shield and remains lifecycle-owned.
+
+INITIAL PROTECTED AND REVIEW FINDINGS
+
+Pull request:
+  https://github.com/andrewsrigom/aster-streaming-platform/pull/56
+
+Initial protected workflow:
+  https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33432579598
+Result:
+  FAIL on published evidence head
+  59b7215f848c3f6906cc36f0c0f1e8a4ad47ceda. Install and source quality
+  reached the real integration and failed the Identity subgraph readiness
+  assertion at subgraph-worker.js:163; its owned fixture cleaned with remaining
+  0. Local platform built the full profile but Router exited 1 because the new
+  static response-header YAML shape is not accepted by pinned Apollo Router.
+  The diagnostic step omitted Router logs, so the corrected workflow includes
+  that bounded service output.
+
+Initial review:
+  Review 5070579735 on the same exact head found discussion 3897861197. A
+  create/update/delete retry generated a fresh admission identity before the
+  durable receipt replay, so an exact retry could return LIMIT_EXCEEDED and a
+  second replica could not reuse Redis admission deduplication.
+
+Corrected protected workflow:
+  https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33437257163
+Result:
+  PASS on exact published head
+  82ba630da7ccc64e4c82329701ff2c11f41d5508. Every required job passed,
+  including source quality and the packaged local platform. Discussion
+  3897861197 is resolved.
+
+Confirmation review:
+  Review 5071227472 on exact head 82ba630 found discussion 3898385895. The
+  Redis/local admission markers expire after 30 seconds while durable profile
+  receipts remain valid for 86,400 seconds. An exact retry after marker expiry
+  could therefore still be rate-rejected before receipt lookup.
+
+Second corrected protected workflow:
+  https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33442875698
+Result:
+  PASS on exact published head
+  1e115fe9d43fe21ede9d555bc34e074df1439326. Every required job passed,
+  including real owner integrations and the packaged Docker-only platform.
+  Discussion 3898385895 is resolved.
+
+Blocker-focused review:
+  Review on exact head 1e115fe found discussions 3898857100 and 3898857110.
+  The packaged verifier required exactly 25 demand profiles, rejecting a valid
+  current-plus-retained trusted overlap. Successful Redis admission also
+  accumulated expired local retry markers without pruning them before the
+  8,192-entry bound, so healthy lifetime traffic could exhaust later failover.
+
+CORRECTED BEHAVIOR
+
+- Create/update/delete derive admission from the validated durable mutation ID
+  plus a canonical request digest. Exact retries share one decision; a changed
+  payload remains a different attempt. Selection keeps a fresh identity.
+- The shared Redis decision runs before outage-only local admission. A valid
+  cross-replica retry is not hidden by one process's exhausted fallback bucket.
+- Degraded local admission is bounded by 1,024 account-operation buckets and
+  8,192 expiring admission markers, including same-process retry deduplication.
+- Router uses the supported Rhai response boundary for no-store on every
+  admitted response. The pre-service body-limit rejection is accepted only
+  when it is bounded, data-free and advertises neither reusable freshness nor
+  validators.
+- The real Identity integration records the exact not-ready health/status/code
+  fact and separates the rate-exhaustion scenario from later authorization
+  assertions. The CI failure diagnostic now includes bounded Router logs.
+
+SECOND CORRECTED BEHAVIOR
+
+- Create/update/delete now validate the canonical request, authorize the current
+  session and read the retained PostgreSQL receipt before rate admission.
+- An exact retained receipt returns its original result without consulting or
+  recreating the 30-second Redis/local marker. Reuse of the same mutation ID
+  with a changed payload conflicts before admission.
+- Only a missing receipt reaches the account-partitioned limiter. The existing
+  mutation path then repeats owner authorization and performs the durable write.
+- This preserves the limiter for new work while making the 86,400-second durable
+  receipt, rather than a shorter Redis marker, authoritative for replay.
+
+THIRD CORRECTED BEHAVIOR
+
+- Packaged runtime verification derives the exact bounded name/hash union from
+  the persisted manifest. It accepts a current-plus-retained overlap, rejects
+  more than two hashes for one name and rejects any demand identity mismatch;
+  it no longer assumes a fixed operation count.
+- The Identity limiter amortizes expired local-marker pruning before capacity
+  on both successful Redis and degraded local decisions. A current marker is
+  refreshed or preserved at the bound, while expired lifetime traffic cannot
+  permanently prevent later retry deduplication.
+
+FOCUSED SOURCE EVIDENCE
+
+Command:
+  pnpm exec turbo run build --filter=@aster/identity --filter=@aster/router --filter=@aster/telemetry --concurrency=3
+Result:
+  PASS — 15/15 build tasks; 13 cached.
+
+Command:
+  pnpm --filter @aster/identity test
+Result:
+  PASS — third corrected suite 163/163 tests. Includes durable receipt lookup
+  before admission, replay with an exhausted limiter, changed-payload conflict,
+  read-only probe behavior, canonical durable retry identity,
+  distributed-before-local recovery,
+  pseudonymous keys, burst/refill, on-demand Redis connection, outage fallback,
+  recovery, cancellation, 1,024-partition/8,192-marker capacity,
+  authorization/admission ordering, optional Redis readiness and deterministic
+  eight-active/deadline behavior.
+
+Command:
+  pnpm --filter @aster/router test
+Result:
+  PASS — 21/21 tests plus deterministic schema check. Generated artifact count
+  11; manifest SHA-256
+  d5dd5593c687ee9f00941c8be8e57d0fb126b0fb49ff6faeb048cef963222a7c.
+
+Command:
+  pnpm --filter @aster/telemetry test
+Result:
+  PASS — 19/19 tests; finite profile_mutation/profile_selection vocabulary is
+  accepted without unbounded labels.
+
+Commands:
+  node --test tools/verify-router-runtime.test.mjs
+  node --test tools/verify-graphql-demand-controls.test.mjs
+Results:
+  PASS — 6/6 Router source/package policy tests and 3/3 bounded GraphQL
+  rejection/cache-control verifier tests.
+
+Third-correction focused results:
+  PASS — the Router verifier accepts one retained Viewer overlap, rejects a
+  third version and rejects a missing demand identity. Identity fills all 8,192
+  local markers through successful Redis admissions, expires them under a
+  deterministic clock, prunes before admitting a fresh marker and reuses that
+  marker when Redis then fails with the local bucket exhausted.
+
+REAL POSTGRESQL/REDIS FAILURE EVIDENCE
+
+Docker engine observed once before the owned fixture: server 26.0.0.
+
+Command:
+  pnpm --filter @aster/identity integration:core
+Result:
+  PASS — disposable project aster-integration-75daf7f13014474ebf7b0e5240a9e2a1.
+  Key observed events:
+  - protocol_probes: PostgreSQL completed, Redis completed;
+  - identity_rate_atomic_admission: passed across two limiter replicas;
+  - postgres_stop_recovery: passed;
+  - postgres_timeout_cancellation: passed, reservedSlots 0;
+  - redis_stop_recovery: passed after an allowed bounded local fallback;
+  - redis_cancellation_capacity_timeout: passed;
+  - identity_dependency_recovery: PostgreSQL passed;
+  - identity_optional_redis: readiness stayed ready during Redis stop/start;
+  - identity_signal_drain: passed in 55 ms;
+  - HTTP in-flight drain: passed in 64 ms;
+  - core integration: passed four scenarios in 58,870 ms;
+  - cleanup: remaining 0 in 1,789 ms.
+
+FULL REAL-INTEGRATION REMEDIATION EVIDENCE
+
+Environment:
+  WSL2 Ubuntu 20.04, Node.js 24.19.0, Docker server 26.0.0, disposable project
+  aster-integration-8eb9ec2bafd84bacbc97d2046513ae96.
+
+Command:
+  pnpm integration
+Result:
+  PASS — all 11 scenarios (protocol, adapters, identity, HTTP drain, subgraph,
+  sessions, profiles, broker, storage, runtime and telemetry) in 150,963 ms on
+  corrected source 8d2633d052a44ad0d6f115be0641369f911c0820.
+  The subgraph proof observed eight duplicate requests producing one durable
+  fact, eight limit requests producing four admissions/four rejections, owner
+  substitution rejection, session restart/revocation and natural shutdown.
+  PostgreSQL/Redis stop, timeout, cancellation and recovery passed. Storage,
+  broker and telemetry fixtures also passed. Cleanup removed the exact project
+  with remaining 0 in 5,170 ms.
+
+Second correction command:
+  pnpm integration
+Result:
+  PASS — all 11 scenarios in 142,098 ms on the second-remediation working tree.
+  The real subgraph exhausted the mutation bucket, removed the exact Redis
+  admission marker, replayed the retained PostgreSQL result and did not recreate
+  the marker. The exact fixture cleaned remaining 0 in 4,807 ms. A subsequent
+  lint-only rewrite changed direct cancellation reads to an equivalent closure;
+  it did not affect the successful replay path. The exact committed source then
+  repeated the focused real subgraph proof below and passed its complete affected
+  gate.
+
+Exact-source command:
+  pnpm --filter @aster/identity integration:subgraph
+Result:
+  PASS — exact source bf14e2c ran the PostgreSQL/Redis subgraph scenario in
+  18,137 ms. `durableReplayAfterAdmissionMarker=passed`, `markerRemoved=true`,
+  natural exit passed and cleanup removed the exact project with remaining 0 in
+  1,096 ms.
+
+LOCAL PACKAGED ROUTER REMEDIATION PROOF
+
+Environment:
+  WSL2/Docker with exact isolated COMPOSE_PROJECT_NAME
+  aster-p13-remediation. Existing development PostgreSQL/Redis containers were
+  not modified.
+
+Commands:
+  node ./tools/verify-graphql-demand-controls.mjs
+  COMPOSE_PROJECT_NAME=aster-p13-remediation docker compose \
+    --file infra/compose/compose.yml \
+    --file infra/compose/observability.yml \
+    --file infra/compose/graphql-security-proof.yml --profile full up \
+    --no-deps --force-recreate --wait --wait-timeout 60 router
+  node ./tools/verify-trusted-operations.mjs
+Result:
+  PASS — accepted operation and admitted batching, introspection and
+  parser-token rejections carried no-store. The pre-service oversized-body
+  rejection was bounded, data-free and had no positive freshness or cache
+  validator. The exact isolated project and volumes were removed. This local
+  proof supplements rather than replaces the protected packaged workflow.
+
+AFFECTED CANDIDATE GATE
+
+The first exact-source attempt stopped after the unused-code gate identified
+three unnecessary public exports. They were made module-private and the source
+commit was amended before publication.
+
+Command:
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    node tools/run-quality-gate.ts --changed
+Initial result:
+  PASS — 54/54 tasks, 20 cached, in 178.363 seconds on initial source
+  a090285ccca972bd3c549f4d22ab72f2244e2961.
+
+Corrected result:
+  PASS — 57/57 tasks, 37 cached, in 95.749 seconds on corrected source
+  8d2633d052a44ad0d6f115be0641369f911c0820. The gate includes builds,
+  typechecks, complete affected package tests, lint, formatting, unused-code,
+  architecture, platform, documentation, repository-memory, security and CI
+  policy checks.
+
+Second corrected result:
+  PASS — 57/57 tasks, 43 cached, in 53.509 seconds on exact source
+  bf14e2c2a403558122d2ae27b827a382368b671f. The first attempt reached 56/57
+  and reported only five strict unnecessary-condition lint findings; those were
+  corrected before this accepted run.
+
+Final evidence/documentation result:
+  PASS — 57/57 tasks, 46 cached, in 61.880 seconds with exact source bf14e2c and
+  the current evidence, ADR and repository-memory updates. This is the final
+  local candidate gate before the second correction publication.
+
+Third corrected source result:
+  PASS — 57/57 tasks, 39 cached, in 66.529 seconds on exact source
+  af47c625bc937cb6e41325bcbd9b64914db7b3b2 and tree
+  bb2d47618032af388d5c3dfd8c698d39b83e6dda. The gate includes the complete
+  Identity163/163 suite, Router verifier6/6, affected builds, typechecks, lint,
+  formatting, unused-code, architecture, platform, documentation, repository
+  memory, security and CI policy checks.
+
+Third corrected evidence-head result:
+  PASS — 57/57 tasks, 46 cached, in 82.472 seconds on pre-publication head
+  2d4a9da1974769acba7eabda4ae4e768f8fc76f1 and tree
+  6b17b2bd4c5eddac11bf3fc7c9fffb37d597d73a. The subsequent amendment records
+  this result only; it changes no runtime, policy or test source. Final
+  formatting, documentation, repository-memory and staged security checks are
+  repeated on the amended publication head.
+
+PENDING PROTECTED/RELEASE EVIDENCE
+
+- Push the third corrected source/evidence head once and require protected
+  exact-head CI, including the pinned packaged Router proof.
+- Reply to and resolve discussions 3898857100 and 3898857110 after the
+  published evidence is green. Because this remediation changes rollout and
+  availability boundaries, complete one final blocker-focused confirmation on
+  that exact head.
+- Protected exact-head CI, tree-identical squash merge and exact-main CI remain
+  required before this item is verified/released.

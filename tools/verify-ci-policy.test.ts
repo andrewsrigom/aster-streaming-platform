@@ -280,7 +280,7 @@ test("rejects missing or unbounded Docker-only build and metric verification", a
       "timeout-minutes: 20\n        run: |\n          grafana_health=",
     ],
     [
-      "--profile full logs --no-color --tail 120 grafana prometheus",
+      "--profile full logs --no-color --tail 120 grafana prometheus router",
       "--profile full logs grafana prometheus",
     ],
     ["api/datasources/uid/aster-prometheus/health", "api/datasources/uid/unreviewed/health"],

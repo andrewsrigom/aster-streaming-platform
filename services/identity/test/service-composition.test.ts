@@ -98,7 +98,7 @@ test("composes real health HTTP, controlled recovery, local metrics, clock/IDs a
   try {
     const startup = service.start();
     assert.equal(service.start(), startup);
-    assert.deepEqual(await startup, { status: "started", readiness: "not_ready" });
+    assert.deepEqual(await startup, { status: "started", readiness: "ready" });
     assert.ok(http);
     const listener = http;
     const port = listener.port();
@@ -110,7 +110,7 @@ test("composes real health HTTP, controlled recovery, local metrics, clock/IDs a
         headers: { connection: "close" },
       });
     const ready = await health();
-    assert.equal(ready.status, 503);
+    assert.equal(ready.status, 200);
     assert.equal(ready.headers.get("cache-control"), "no-store");
     assert.deepEqual(await ready.json(), service.health());
     const live = await health("/health/live");
@@ -124,9 +124,11 @@ test("composes real health HTTP, controlled recovery, local metrics, clock/IDs a
     await graphql.text();
     assert.equal(postgresql.state.connects, 1);
     assert.equal(postgresql.state.probes, 1);
-    assert.equal(redis.state.connects, 1);
+    assert.equal(redis.state.connects, 0);
     assert.equal(redis.state.probes, 0);
-    assert.equal(service.tryBeginWork(), undefined);
+    const initialLease = service.tryBeginWork();
+    assert.ok(initialLease);
+    initialLease.complete();
     assert.ok(monitor);
     const settings = monitor;
     const cycle = async (): Promise<void> => {
@@ -140,6 +142,7 @@ test("composes real health HTTP, controlled recovery, local metrics, clock/IDs a
     redis.state.ready = true;
     await cycle();
     assert.equal(service.health().readiness, "ready");
+    assert.equal(redis.state.connects, 0);
     const recovered = await health();
     assert.equal(recovered.status, 200);
     await recovered.text();
@@ -161,7 +164,7 @@ test("composes real health HTTP, controlled recovery, local metrics, clock/IDs a
     assert.match(logs.join(""), /2026-08-27T00:00:00.000Z/u);
     assert.equal(
       logs.filter((line) => line.includes("aster.identity.readiness_changed")).length,
-      3,
+      2,
     );
     assert.doesNotMatch(logs.join(""), /postgresql:|redis:|localhost|controlled/u);
     const shutdown = await service.shutdown();
@@ -321,7 +324,7 @@ test("diagnostic runs real loopback health transitions and exits naturally", asy
   });
 });
 
-test("real PostgreSQL and Redis adapters fail readiness safely and release their handles", async () => {
+test("real PostgreSQL failure removes readiness while unopened Redis still closes safely", async () => {
   const result = await runProcess("./real-adapters-fixture.js", [], process.env, 15_000);
   assert.equal(result.killed, false);
   assert.equal(result.code, 0, result.stderr);

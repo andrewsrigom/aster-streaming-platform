@@ -4,6 +4,136 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — Retained rollout and failover marker remediation
+
+### Completed
+
+- Second corrected PR56 head `1e115fe` passed protected run `33442875698` and
+  discussion `3898385895` is resolved. Blocker-focused review found discussions
+  `3898857100` and `3898857110`: packaged verification assumed exactly25 demand
+  profiles, while successful Redis traffic retained expired local markers up
+  to the8,192-entry failover bound.
+- Source `af47c62`, tree `bb2d476`, derives and validates the exact bounded
+  current-plus-retained name/hash union with at most two versions per name. The
+  limiter prunes expired markers before capacity on both distributed-success
+  and degraded local paths.
+- Identity163/163 and Router verifier6/6 pass. The complete affected source gate
+  passes57/57 with39 cached in66.529 seconds; the pre-publication evidence head
+  repeats57/57 with46 cached in82.472 seconds.
+
+### Evidence
+
+- `evidence/phase-13/execution-rate-cache-controls.txt` records the exact review
+  blockers, third correction and local acceptance.
+
+### Next action
+
+- Publish the third corrected evidence head once, require protected exact-head
+  CI, resolve both discussions, complete one final blocker-focused confirmation,
+  then merge and verify exact-main CI before item67 publication.
+
+## 2026-08-31 — Durable profile replay precedes short-lived admission
+
+### Completed
+
+- Corrected PR56 head `82ba630` passed protected run `33437257163`; initial
+  discussion `3897861197` is resolved. Confirmation review `5071227472` found
+  discussion `3898385895`: the 30-second Redis/local marker could expire before
+  the 86,400-second durable profile receipt.
+- Source `bf14e2c`, tree `0084c67`, now validates and authorizes the canonical
+  mutation and reads its retained PostgreSQL receipt before admission. Exact
+  replay or changed-payload conflict returns immediately; only missing receipts
+  reach the limiter, then the write path reauthorizes.
+- Identity162/162 pass. Full real integration passed all11 scenarios again in
+  142.098 seconds with cleanup0. Exact committed source repeated the real
+  subgraph in18.137 seconds: the shared bucket was exhausted, the exact marker
+  was removed, durable replay passed without marker recreation, and cleanup was
+  0.
+- The first affected gate reported only five strict lint findings. After the
+  equivalent cancellation-read cleanup, the source gate passed57/57 with43
+  cached in53.509 seconds; the final evidence/documentation gate passes57/57
+  with46 cached in61.880 seconds.
+
+### Evidence
+
+- `evidence/phase-13/execution-rate-cache-controls.txt` records the confirmation
+  blocker, second correction, exact source and real PostgreSQL/Redis proof.
+
+### Next action
+
+- Publish the second corrected evidence head once, require protected exact-head
+  CI, resolve discussion `3898385895`, complete one blocker-focused
+  confirmation, then merge and verify exact-main CI before item67 publication.
+
+## 2026-08-31 — GraphQL execution-control PR remediation accepted locally
+
+### Completed
+
+- PR56 evidence head `59b7215`, tree `ee1c908`, failed protected run
+  `33432579598`: the full Identity integration stopped at the subgraph readiness
+  assertion and the packaged Router rejected the static response-header YAML.
+  Initial review discussion `3897861197` also found that a durable mutation
+  retry could spend a fresh admission before receipt replay.
+- Corrected source `8d2633d`, tree `d75aca0`, validates canonical mutation
+  inputs, binds create/update/delete admission to mutation ID plus request
+  digest, consults Redis before outage-only local state and caps local retry
+  markers at8,192. Selection retains a fresh identity.
+- Router uses supported Rhai response handling. Admitted responses require
+  no-store; the pre-service body rejection must be bounded, data-free and have
+  no reusable freshness or cache validators. CI failure output now includes
+  bounded Router logs.
+- Identity159/159, Router21/21, telemetry19/19, Router verifier5/5 and GraphQL
+  verifier3/3 pass. Full real integration passed all11 scenarios in150.963
+  seconds with cleanup remaining0; the isolated packaged Router proof passed
+  and removed its exact project.
+- The corrected affected gate passes57/57 with37 cached in95.749 seconds.
+
+### Evidence
+
+- `evidence/phase-13/execution-rate-cache-controls.txt` records the failed
+  protected head, review blocker, corrected exact source, local runtime and
+  candidate gate.
+
+### Next action
+
+- Push the corrected evidence checkpoint once, require corrected protected CI,
+  resolve the initial discussion and request one exact-head confirmation before
+  merge.
+
+## 2026-08-31 — GraphQL execution, account rate and cache-scope candidate
+
+### Completed
+
+- Released item65: final head `94c17b9`, tree `d034c03`, passed protected run
+  `33424006919`; PR55 squash main `8cd6c0b` retained that tree and exact-main
+  run `33425758870` passed on attempt2 after one isolated TraceQL indexing
+  timeout.
+- Activated item66 on `feat/p13-execution-rate-cache-controls` from exact main.
+  ADR-0047 and demand-manifest version2 give every exact operation derived
+  public/account/profile scope, finite rate class, three-second/eight-request
+  execution policy and mandatory `no-store`; Router inserts that header.
+- Added authorized-account Identity admission for profile mutations/selections,
+  bounded local-plus-Redis degradation, SHA-256-only keys, on-demand Redis
+  connection and PostgreSQL-only readiness.
+- Identity156/156, Router21/21, telemetry19/19, Router verifier5/5 and GraphQL
+  cache verifier2/2 pass. Real PostgreSQL/Redis core integration passed atomic
+  two-replica admission, outage/recovery, optional Redis readiness, cancellation,
+  drain and cleanup remaining0 in58.870 seconds.
+- Exact source `a090285`, tree `98d3064`, passes the affected candidate gate
+  54/54 with20 cached in178.363 seconds. Its first attempt found only three
+  unnecessary exports; they were made module-private and the source was amended
+  before publication.
+
+### Evidence
+
+- `evidence/phase-13/execution-rate-cache-controls.txt` records the local source
+  and disposable runtime checkpoint. Candidate/protected release remains.
+
+### Next action
+
+- Commit this evidence checkpoint, publish once and require packaged Router,
+  bounded review and protected exact-head acceptance before merge.
+
 ## 2026-08-31 — GraphQL entity field cost confirmation correction
 
 ### Completed
