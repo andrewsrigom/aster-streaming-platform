@@ -121,6 +121,16 @@ test("routes observability rules, contracts and verifier changes through the pla
   }
 });
 
+test("routes trusted-operation verifier changes through the platform job", () => {
+  assert.deepEqual(classifyChangedPaths(["tools/verify-trusted-operations.mjs"]), {
+    changedFiles: 1,
+    diagnostics: false,
+    full: true,
+    platform: true,
+    reason: "executable-change",
+  });
+});
+
 test("runs the heavyweight diagnostic proof only for paths that can invalidate it", () => {
   for (const path of [
     "services/catalog/src/create-service.ts",
