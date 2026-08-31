@@ -23,6 +23,10 @@ full snapshot through the archival checkpoint remains in
   cache verifier2/2 pass. Real PostgreSQL/Redis core integration passed atomic
   two-replica admission, outage/recovery, optional Redis readiness, cancellation,
   drain and cleanup remaining0 in58.870 seconds.
+- Exact source `a090285`, tree `98d3064`, passes the affected candidate gate
+  54/54 with20 cached in178.363 seconds. Its first attempt found only three
+  unnecessary exports; they were made module-private and the source was amended
+  before publication.
 
 ### Evidence
 
@@ -31,8 +35,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Complete the final local review/lint checkpoint, commit the coherent candidate
-  and run the affected candidate gate before publication.
+- Commit this evidence checkpoint, publish once and require packaged Router,
+  bounded review and protected exact-head acceptance before merge.
 
 ## 2026-08-31 — GraphQL entity field cost confirmation correction
 

@@ -209,8 +209,12 @@ verifier2/2 pass. The disposable real PostgreSQL/Redis core integration passed
 atomic two-replica admission, outage fallback/recovery, optional Redis
 readiness, PostgreSQL readiness loss/recovery, cancellation/capacity, drain and
 exact cleanup in58.870 seconds. The affected candidate gate, packaged Router
-header proof, bounded review, protected exact-head CI and release remain; this
-is implemented, not verified or released.
+header proof, bounded review, protected exact-head CI and release remain. Exact
+source `a090285ccca972bd3c549f4d22ab72f2244e2961`, tree
+`98d3064b23c07f2145c68f1eef5a1c4309759400`, passes the affected candidate
+gate54/54 with20 cached in178.363 seconds after its only finding, three
+unnecessary public exports, was corrected before publication. This is an
+accepted local candidate, not verified or released.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -770,10 +774,10 @@ deployment remain planned.
 
 ## Next outcome
 
-For P13-R06/P13-R11 item66, commit the coherent locally passing candidate, run
-the affected candidate gate, then perform the bounded initial/confirmation
-review and protected release process. The packaged Router must prove `no-store`
-on accepted and adverse responses before merge.
+For P13-R06/P13-R11 item66, commit the evidence checkpoint, publish once, then
+perform the bounded initial/confirmation review and protected release process.
+The packaged Router must prove `no-store` on accepted and adverse responses
+before merge.
 Inspect the exact historical interrupted Phase12 project only when that same
 Docker engine becomes reachable.
 

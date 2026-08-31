@@ -79,7 +79,9 @@ PostgreSQL/Redis core integration proves atomic two-replica admission, bounded
 outage fallback/recovery, optional Redis readiness, PostgreSQL readiness
 loss/recovery, cancellation/drain and cleanup remaining0. [Current evidence](execution-rate-cache-controls.txt)
 records the exact local checkpoint. Candidate, packaged Router, review and
-release gates remain.
+release gates remain. Exact source `a090285`, tree `98d3064`, passes the
+affected candidate gate54/54 with20 cached in178.363 seconds after three
+unnecessary exports were made module-private before publication.
 
 ## Requirement traceability
 
@@ -89,7 +91,7 @@ release gates remain.
 | P13-R02 | Explicit local/integration audit, hosted enforce policy and passed disposable real-Router proof in [trusted-operation evidence](trusted-operations.txt) |
 | P13-R12 | [ADR-0045](../../docs/adr/0045-source-owned-trusted-operations.md), GraphQL architecture and release sequence |
 | P13-R03/R04/R05/R10 | Released through [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json), [demand-control evidence](graphql-demand-controls.txt), PR55 tree-identical main `8cd6c0b` and exact-main run `33425758870` attempt2 |
-| P13-R06/R11 | Locally implemented in [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt); candidate/release gates pending |
+| P13-R06/R11 | Exact source `a090285`, tree `98d3064`, passes the affected candidate gate54/54; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record the implementation; packaged/review/release gates remain |
 | P13-R07–R09 | Planned in queue item67; no implementation or closeout claim |
 
 ## Current limitations
@@ -100,7 +102,7 @@ release gates remain.
 - Audit mode intentionally accepts ad hoc local/integration documents and is not
   a public-deployment security control.
 - A trusted document is not user authority. Owner authorization remains required.
-- Shape/list/cost controls are released. Identity-aware rate and cache scope are
-  implemented locally but not released. N+1/query-count and authorization
+- Shape/list/cost controls are released. Identity-aware rate and cache scope have
+  an accepted local candidate but are not released. N+1/query-count and authorization
   matrices remain item67 work.
 - Hosted providers, credentials, deployment and capacity remain Phase 14.

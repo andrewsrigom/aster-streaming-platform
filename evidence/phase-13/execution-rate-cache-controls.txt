@@ -7,6 +7,9 @@ Base release tree: d034c033ec57e9b641fba04dae678ea082c944b7
 
 IMPLEMENTED CANDIDATE (NOT RELEASED)
 
+Exact source commit: a090285ccca972bd3c549f4d22ab72f2244e2961
+Exact source tree: 98d3064b23c07f2145c68f1eef5a1c4309759400
+
 - ADR-0047 records the three-second/eight-request public execution boundary,
   account-partitioned Identity admission, Redis degradation and mandatory
   GraphQL no-store policy.
@@ -80,9 +83,24 @@ Result:
   - core integration: passed four scenarios in 58,870 ms;
   - cleanup: remaining 0 in 1,789 ms.
 
+AFFECTED CANDIDATE GATE
+
+The first exact-source attempt stopped after the unused-code gate identified
+three unnecessary public exports. They were made module-private and the source
+commit was amended before publication.
+
+Command:
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    node tools/run-quality-gate.ts --changed
+Result:
+  PASS — 54/54 tasks, 20 cached, in 178.363 seconds on exact source
+  a090285ccca972bd3c549f4d22ab72f2244e2961. The gate includes builds,
+  typechecks, complete affected package tests, lint, formatting, unused-code,
+  architecture, platform, documentation, repository-memory, security and CI
+  policy checks.
+
 PENDING CANDIDATE/RELEASE EVIDENCE
 
-- Complete affected-scope candidate gate on the exact committed source.
 - Run the packaged pinned Apollo Router and prove accepted plus every adverse
   response carries Cache-Control: no-store.
 - Complete one bounded initial review and one confirmation review.

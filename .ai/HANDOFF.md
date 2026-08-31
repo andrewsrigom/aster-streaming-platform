@@ -11,8 +11,9 @@ indexing timeout. Item65 is released.
 
 Item66 (P13-R06/R11) is the sole `IN_PROGRESS` item on
 `feat/p13-execution-rate-cache-controls`, worktree `/tmp/aster-p13-runtime`,
-from exact main `8cd6c0b`. The working tree contains one coherent implemented
-candidate but is not committed, published, reviewed or released yet.
+from exact main `8cd6c0b`. Exact source `a090285`, tree `98d3064`, is committed
+and passes its affected candidate gate. It is not published, reviewed or
+released yet.
 
 ## Implemented locally
 
@@ -50,20 +51,17 @@ candidate but is not committed, published, reviewed or released yet.
   SIGTERM/HTTP drain and cleanup remaining0.
 - Raw checkpoint:
   `evidence/phase-13/execution-rate-cache-controls.txt`.
+- Affected candidate gate:54/54 tasks,20 cached,178.363 seconds on exact source
+  `a090285`/tree `98d3064`.
 
 ## Exact next actions
 
-1. Run formatting/docs/lint checks once after the memory checkpoint.
-2. Review the complete diff, batch only blocking corrections and commit one
-   coherent source candidate.
-3. Run `node tools/run-quality-gate.ts --changed` with
-   `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4`.
-4. Append the exact candidate gate and source/tree IDs to evidence/memory and
-   commit that checkpoint.
-5. Push once, open one PR, require protected exact-head CI including the pinned
+1. Run documentation/repository-memory checks and commit this evidence
+   checkpoint without repeating unaffected integration.
+2. Push once, open one PR, require protected exact-head CI including the pinned
    Router `no-store` proof, collect one complete initial review and one
    confirmation review, then squash merge only after blockers are resolved.
-6. Verify candidate-tree identity and exact-main CI before activating item67.
+3. Verify candidate-tree identity and exact-main CI before activating item67.
 
 ## Execution boundary
 
@@ -75,7 +73,7 @@ fixture ownership and were removed.
 
 ## Do not do yet
 
-Do not start item67 before item66 becomes a coherent candidate or valid
-`WAITING_EXTERNAL`. Do not add GraphOS credentials, a paid plan, APQ, a proxy,
+Do not publish or merge item67 before item66 releases. Do not add GraphOS
+credentials, a paid plan, APQ, a proxy,
 hosted resources or forwarded client identity. Phase14 owns hosted provider and
 deployment decisions.

@@ -76,7 +76,8 @@ that exact main. ADR-0047, exact runtime/cache classification, authorized-accoun
 Identity admission and optional-Redis readiness are implemented locally.
 Identity156/156, Router21/21, telemetry19/19 and the disposable real
 PostgreSQL/Redis core integration pass with exact cleanup. Candidate, packaged
-Router, review and release gates remain. No hosted deployment is claimed;
+source `a090285`, tree `98d3064`, passes the affected gate54/54 with20 cached in
+178.363 seconds. Packaged Router, review and release gates remain. No hosted deployment is claimed;
 Phase14 still owns provider and deployment decisions.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.

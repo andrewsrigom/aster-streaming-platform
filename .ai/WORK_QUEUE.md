@@ -190,7 +190,9 @@ ADR-0047, manifest-v2 runtime/cache classification, authorized-account Identity
 admission and optional-Redis readiness are implemented locally. Identity156/156,
 Router21/21, telemetry19/19 and the disposable real PostgreSQL/Redis core
 integration pass with cleanup remaining0. Candidate, packaged Router, review and
-release gates remain.
+release gates remain. Exact source `a090285`, tree `98d3064`, passes the
+affected candidate gate54/54 with20 cached in178.363 seconds; the branch is
+ready for one evidence checkpoint and publication.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head
