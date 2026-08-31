@@ -4,6 +4,31 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — GraphQL entity field cost confirmation correction
+
+### Completed
+
+- Exact PR55 head `0fd6c78` passed protected run `33417515807`, including the
+  packaged GraphQL adverse verifier, all owner runtimes, diagnostics and the
+  Docker playable demo. Initial discussion `3896477418` is resolved.
+- Confirmation discussion `3896804794` found a selected non-root entity field
+  could lose its direct `@cost` and fall back to an implicit weight.
+- Source `8395f79`, tree `0a026a6a`, requires direct cost on every selected
+  non-root field of a cost-owned type and annotates current `Title`/`Profile`
+  fields with their prior implicit values. The 25 profiles remain unchanged.
+- Router20/20 and the affected gate51/51 with32 cached in88.328 seconds pass.
+
+### Evidence
+
+- `evidence/phase-13/graphql-demand-controls.txt` records the exact protected
+  run, review boundary, correction and local gates.
+
+### Next action
+
+- Publish this correction/evidence once, require exact-head protected CI,
+  resolve discussion `3896804794`, obtain the permitted boundary confirmation,
+  then release item65.
+
 ## 2026-08-31 — GraphQL demand initial protected findings corrected
 
 ### Completed

@@ -163,8 +163,18 @@ the verifier had guessed `GRAPHQL_VALIDATION_FAILED`. Source
 `55875ce2fcab48062c0a310593c96f14a46e3815`, tree
 `9ac71a9c3f7f78f5d4fd4b0c688bc4f5ca2964d5`, asserts the exact finite redacted
 response. Verifier2/2 and the repeated affected gate51/51 with41 cached in91.422
-seconds pass. Corrected protected runtime, confirmation and release remain;
-this is not a verified/released claim.
+seconds pass. Exact head `0fd6c78738411ca1a515298eefe04ee2474d7da5`
+passed protected run `33417515807`, including packaged GraphQL rejection,
+owners, diagnostics and the Docker playable demo. Discussion `3896477418` is
+resolved. Confirmation discussion `3896804794` found a removed non-root entity
+field cost could silently fall back to an implicit weight. Source
+`8395f7985173bb10af7dcb6f3aaafee298ed1452`, tree
+`0a026a6a00cf481b0b9709a098e3b185668b07e8`, requires direct field cost on every
+selected non-root field of a cost-owned type and explicitly annotates all
+current `Title`/`Profile` fields. The demand profiles are unchanged. Router20/20
+and the affected gate51/51 with32 cached in88.328 seconds pass. Corrected
+protected proof, blocking-boundary confirmation and release remain; this is not
+a released claim.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -715,20 +725,21 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 ## Not implemented
 
 P13-R01/R02/R12 is released through exact-main run `33412728404`. GraphQL
-shape/list/cost controls are implemented only in the rebased item65 candidate;
-its packaged proof and release remain. Execution/rate/cache controls,
+shape/list/cost controls have prior exact-head packaged proof in item65; the
+latest entity-field-cost correction still needs protected proof and release.
+Execution/rate/cache controls,
 N+1/query-count proof, owner-authorization abuse tests and the remaining Phase13
 requirements are planned in items66–67. Phase14 capacity validation and hosted
 deployment remain planned.
 
 ## Next outcome
 
-For P13-R03 item65, commit the second evidence checkpoint, push the corrected
-PR55 head once, obtain the protected packaged Router adverse proof, answer/resolve initial
-discussion `3896477418` and request one confirmation. Treat only requirement,
-security, availability or public-contract blockers, then squash merge and verify
-exact-main CI. Do not start item66 before item65 is a coherent waiting or
-released candidate. Inspect the exact historical interrupted Phase12 project
+For P13-R03 item65, commit this correction evidence, push the corrected PR55
+head once, obtain exact-head protected proof, answer/resolve discussion
+`3896804794` and obtain the permitted blocking-boundary confirmation. Treat only
+requirement, budget-integrity, security, availability or public-contract
+blockers, then squash merge and verify exact-main CI. Do not start item66 before
+item65 is released. Inspect the exact historical interrupted Phase12 project
 only when that same Docker engine becomes reachable.
 
 ## Runtime and recovery

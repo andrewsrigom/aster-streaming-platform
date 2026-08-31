@@ -42,9 +42,14 @@ passes Router19/19, verifier2/2 and the affected51/51 candidate gate. Its active
 protected run `33416680451` then exposed the verifier's guessed introspection
 error code/location; source `55875ce`, tree `9ac71a9`, now asserts the pinned
 Router's exact sanitized `UNAVAILABLE` response and passes the repeated51/51
-gate. Its active plan is `.ai/CHANGE_PLAN.md`; local evidence is
+gate. Exact head `0fd6c78` passed protected run `33417515807`; discussion
+`3896477418` is resolved. Confirmation discussion `3896804794` found implicit
+non-root entity field cost. Source `8395f79`, tree `0a026a6a`, requires direct
+cost on selected fields of cost-owned types; Router20/20 and gate51/51 with32
+cached in88.328 seconds pass with unchanged profiles. Its active plan is
+`.ai/CHANGE_PLAN.md`; local evidence is
 `evidence/phase-13/graphql-demand-controls.txt`. Corrected protected packaged
-proof, confirmation and release remain.
+proof, blocking-boundary confirmation and release remain.
 
 ## Current behavior
 
@@ -108,9 +113,11 @@ proof, confirmation and release remain.
   is the largest shape at95 selections. Correction `96dc6ea`, tree `c708f9e`,
   aligns structured HTTP 200 GraphQL rejection proof and the complete encoded
   request limit. Source `55875ce`, tree `9ac71a9`, additionally matches the exact
-  pinned Router redaction contract observed in run `33416680451`. Router19/19,
-  verifier2/2 and the repeated affected gate51/51 pass. The corrected packaged
-  adverse proof remains pending.
+  pinned Router redaction contract observed in run `33416680451`. Protected run
+  `33417515807` proves that packaged boundary. Source `8395f79`, tree `0a026a6a`,
+  corrects confirmation discussion `3896804794` by requiring explicit cost on
+  selected fields of cost-owned entity types. Router20/20 and the affected
+  gate51/51 pass; corrected protected proof remains pending.
 
 ## Accepted design and implementation
 
@@ -135,9 +142,9 @@ proof, confirmation and release remain.
 
 ## Exact next actions
 
-1. Commit the second item65 evidence checkpoint and push the corrected PR55 head once.
-2. Require protected packaged demand/trusted proof, resolve initial discussion
-   `3896477418` and request one confirmation, treating only blocking findings.
+1. Commit this item65 correction evidence and push the corrected PR55 head once.
+2. Require exact-head protected proof, answer/resolve discussion `3896804794`
+   and obtain the permitted blocking-boundary confirmation.
 3. Squash merge, verify tree identity and exact-main CI before item66.
 
 ## Execution boundary

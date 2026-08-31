@@ -50,7 +50,18 @@ verifier's guessed validation code/location. Verifier correction
 `55875ce2fcab48062c0a310593c96f14a46e3815`, tree
 `9ac71a9c3f7f78f5d4fd4b0c688bc4f5ca2964d5`, asserts the exact sanitized
 redaction contract; verifier2/2 and the repeated affected gate51/51 pass.
-Corrected protected runtime proof and release remain pending.
+Exact head `0fd6c78738411ca1a515298eefe04ee2474d7da5` then passed protected run
+`33417515807`, including packaged demand/trust rejection, every owner runtime,
+diagnostics and the Docker playable demo. Initial discussion `3896477418` is
+resolved. Confirmation discussion `3896804794` found selected fields on a
+cost-owned entity could lose their explicit field cost and fall back to an
+implicit scalar/composite weight. Source
+`8395f7985173bb10af7dcb6f3aaafee298ed1452`, tree
+`0a026a6a00cf481b0b9709a098e3b185668b07e8`, requires direct field cost for
+every selected non-root field on a cost-owned type and explicitly marks all
+current `Title`/`Profile` fields without changing any calibrated profile.
+Router20/20 and the affected gate51/51 pass. Corrected protected proof,
+blocking-boundary confirmation and release remain pending.
 
 ## Proposed behavior
 
@@ -165,9 +176,10 @@ and retains the playable journey.
 
 - Raw artifact: `evidence/phase-13/graphql-demand-controls.txt` and generated
   demand manifest.
-- Acceptance: the corrected source/candidate evidence passes. Initial protected
-  runtime and review findings are corrected; corrected protected runtime,
-  confirmation and release remain pending.
+- Acceptance: protected run `33417515807` proves the packaged runtime at its
+  exact head. Its confirmation cost-drift blocker is corrected locally with
+  unchanged calibrated profiles; corrected protected proof, confirmation and
+  release remain pending.
 - Iteration gate: Router analyzer/composition tests, affected owner schema tests,
   format/lint and `git diff --check`.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536

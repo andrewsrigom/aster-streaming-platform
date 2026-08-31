@@ -172,8 +172,13 @@ encoded-envelope request bound. Corrected source `96dc6ea`, tree `c708f9e`,
 passes Router19/19, verifier2/2 and the affected gate51/51. Corrected protected
 run `33416680451` then exposed the verifier's guessed introspection error
 code/location. Source `55875ce`, tree `9ac71a9`, matches pinned Router's finite
-redaction and passes the repeated gate51/51. Corrected packaged proof,
-confirmation and release remain.
+redaction and passes the repeated gate51/51. Exact head `0fd6c78` passed
+protected run `33417515807`, and initial discussion `3896477418` is resolved.
+Confirmation discussion `3896804794` found implicit non-root entity field cost.
+Source `8395f79`, tree `0a026a6a`, requires explicit cost for every selected
+field on a cost-owned type while preserving all calibrated profiles; Router20/20
+and gate51/51 with32 cached in88.328 seconds pass. Corrected packaged proof,
+blocking-boundary confirmation and release remain.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

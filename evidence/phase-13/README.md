@@ -57,8 +57,13 @@ operation envelope. Corrected source `96dc6ea`, tree `c708f9e`, passes
 Router19/19, verifier2/2 and the corrected 51/51 gate. Corrected packaged
 run `33416680451` then exposed the verifier's guessed introspection code/location.
 Source `55875ce`, tree `9ac71a9`, matches pinned Router's exact finite redaction
-and passes the repeated 51/51 gate. Corrected packaged runtime, confirmation and
-release remain; no verified runtime claim is made.
+and passes the repeated 51/51 gate. Exact head `0fd6c78` passed protected run
+`33417515807`, and initial discussion `3896477418` is resolved. Confirmation
+discussion `3896804794` found implicit non-root entity field cost. Source
+`8395f79`, tree `0a026a6a`, requires direct cost on every selected field of a
+cost-owned type while preserving the 25 calibrated profiles; Router20/20 and
+gate51/51 pass. Corrected packaged proof, boundary confirmation and release
+remain.
 
 ## Requirement traceability
 
@@ -67,7 +72,7 @@ release remain; no verified runtime claim is made.
 | P13-R01 | [Apollo manifest](../../infra/router/generated/persisted-query-manifest.json), [finite matcher](../../infra/router/generated/trusted-operations.rhai) and [trusted-operation evidence](trusted-operations.txt) |
 | P13-R02 | Explicit local/integration audit, hosted enforce policy and passed disposable real-Router proof in [trusted-operation evidence](trusted-operations.txt) |
 | P13-R12 | [ADR-0045](../../docs/adr/0045-source-owned-trusted-operations.md), GraphQL architecture and release sequence |
-| P13-R03/R04/R05/R10 | Local candidate in [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json) and [demand-control evidence](graphql-demand-controls.txt); packaged runtime/release pending |
+| P13-R03/R04/R05/R10 | Packaged runtime proof at the prior exact head plus locally corrected confirmation boundary in [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json) and [demand-control evidence](graphql-demand-controls.txt); corrected runtime/release pending |
 | P13-R06–R09/R11 | Planned in queue items66–67; no implementation or closeout claim |
 
 ## Current limitations
@@ -77,7 +82,8 @@ release remain; no verified runtime claim is made.
 - Audit mode intentionally accepts ad hoc local/integration documents and is not
   a public-deployment security control.
 - A trusted document is not user authority. Owner authorization remains required.
-- Static shape/list/cost generation is implemented only in the local item65
-  candidate; packaged proof and release remain. Identity-aware rate, cache-scope,
-  N+1/query-count and authorization matrices remain later Phase 13 work.
+- Static shape/list/cost generation has packaged proof before the latest
+  entity-field-cost correction; corrected packaged proof and release remain.
+  Identity-aware rate, cache-scope, N+1/query-count and authorization matrices
+  remain later Phase 13 work.
 - Hosted providers, credentials, deployment and capacity remain Phase 14.
