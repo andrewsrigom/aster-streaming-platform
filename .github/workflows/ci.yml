@@ -495,9 +495,10 @@ jobs:
         run: >-
           docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml
           --profile full exec -T identity node --input-type=module - --compose-router < tools/verify-local-identity.mjs
-      - name: Verify enforced trusted GraphQL operations
+      - name: Verify GraphQL demand and trusted operations
         timeout-minutes: 2
         run: |
+          node ./tools/verify-graphql-demand-controls.mjs
           docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --file infra/compose/graphql-security-proof.yml --profile full up --no-deps --force-recreate --wait --wait-timeout 60 router
           node ./tools/verify-trusted-operations.mjs
           docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --file infra/compose/graphql-security-proof.yml --profile full exec -T identity node --input-type=module - --metrics < tools/verify-trusted-operations.mjs

@@ -128,6 +128,8 @@ test("routes Router generator and trusted-operation verifier changes through pla
     "apps/router/src/main.ts",
     "apps/router/package.json",
     "tools/verify-trusted-operations.mjs",
+    "tools/verify-graphql-demand-controls.mjs",
+    "tools/verify-graphql-demand-controls.test.mjs",
   ]) {
     assert.deepEqual(
       classifyChangedPaths([path]),

@@ -44,6 +44,9 @@ Trusted operations are published before clients that need them.
 For a document change, place the obsolete reviewed body in
 `infra/router/retained-operations.json` as an exact JSON body string, regenerate and review the old/new
 union, and verify that its manifest preserves the retained wire body byte-for-byte.
+The Apollo manifest and Router matcher contain both versions, the delivery index
+identifies only the current version and the demand manifest contains one passing
+profile for every admitted hash.
 Deploy the Router image containing that set, then deploy the client. The generator
 allows at most two distinct wire bodies per operation name. Observe finite
 matched/unknown/missing outcomes before deleting the old body in a later release.

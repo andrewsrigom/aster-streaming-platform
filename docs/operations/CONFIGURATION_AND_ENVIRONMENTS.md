@@ -126,7 +126,10 @@ queries remain possible. The disposable security proof uses
 `integration`/`enforce`. A hosted deployment must use `enforce`; it cannot copy
 the local default. Neither variable is a secret. Operation bodies, hashes and
 variables are never configuration or telemetry labels. The complete generated
-manifest and matcher deploy with the same Router image.
+manifest, matcher and operation-demand manifest deploy with the same Router
+image. Demand limits are source-controlled rather than environment variables;
+raising one requires the schema metadata, generated profiles, evidence and image
+to pass review together.
 
 ## Configuration classes
 

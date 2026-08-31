@@ -174,7 +174,15 @@ missing, unknown or altered documents before query planning. Telemetry retains
 only `matched`, `unknown` or `missing`. [ADR-0045](../adr/0045-source-owned-trusted-operations.md)
 defines packaging, rollout and rollback.
 
-Hosted environments additionally enforce the complete Phase 13 control set:
+Every exact current or retained hash also receives a deterministic source-owned
+demand profile during composition. Federation v2.9 `@cost` and `@listSize`
+metadata make owner work and list maxima explicit. Variables use the owner
+maximum, fragments expand conservatively and a new operation cannot enter the
+hosted manifest above the depth, alias, root, selection, list-expansion or cost
+budget. [ADR-0046](../adr/0046-source-owned-graphql-demand-budget.md) records the
+model and why native GraphOS demand control remains deferred.
+
+The current hosted contract enforces:
 
 - known first-party operations;
 - operation-name requirement;
@@ -185,9 +193,12 @@ Hosted environments additionally enforce the complete Phase 13 control set:
 - cost budget;
 - execution deadline;
 - request concurrency;
-- identity-aware rate limits;
 - disabled or controlled batching;
 - controlled introspection.
+
+The next Phase 13 slice adds final identity-aware public rate and cache-scope
+controls. Owner authorization, N+1/query-count and latency proof remain the
+closing slice rather than being inferred from a passing cost score.
 
 ## Schema evolution
 
@@ -216,4 +227,4 @@ CI builds each subgraph schema and composes the supergraph. A change fails when:
 - an inaccessible field leaks;
 - a required authorization test is missing.
 
-Current schema commands are `pnpm schema:check` and `pnpm schema:update`. They print executable owner schemas, compose deterministic files, generate the Apollo trusted-operation manifest and Router matcher, and compare the current API with a committed baseline. [The delivery manifest](../../infra/router/generated/manifest.json) enumerates current field/entity ownership and hashes the complete generated set; [conventions](../../apps/router/README.md#schema-conventions) preserve existing scalars, pagination, errors and nullability. Owner authorization and later-subgraph evolution remain separate gates.
+Current schema commands are `pnpm schema:check` and `pnpm schema:update`. They print executable owner schemas, compose deterministic files, generate the Apollo trusted-operation manifest, Router matcher and exact [demand profiles](../../infra/router/generated/operation-demand-manifest.json), and compare the current API with a committed baseline. [The delivery manifest](../../infra/router/generated/manifest.json) enumerates current field/entity ownership and hashes the complete generated set; [conventions](../../apps/router/README.md#schema-conventions) preserve existing scalars, pagination, errors and nullability. Owner authorization and later-subgraph evolution remain separate gates.

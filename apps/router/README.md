@@ -16,14 +16,16 @@ pnpm schema:update
 pnpm --filter @aster/router test
 ```
 
-Both root schema commands first build Identity, Catalog, Playback, Engagement, Discovery and this tooling through declared workspace dependencies. Each owner prints its executable Federation schema in a bounded local child process; no service, PostgreSQL, Docker, GraphOS registry, credential or introspection request is needed. `schema:check` is read-only. `schema:update` explicitly regenerates the ten files under [infra/router/generated](../../infra/router/generated/manifest.json), then verifies them. Commit the resulting artifact set together, not a hand-edited subset.
+Both root schema commands first build Identity, Catalog, Playback, Engagement, Discovery and this tooling through declared workspace dependencies. Each owner prints its executable Federation schema in a bounded local child process; no service, PostgreSQL, Docker, GraphOS registry, credential or introspection request is needed. `schema:check` is read-only. `schema:update` explicitly regenerates the eleven files under [infra/router/generated](../../infra/router/generated/manifest.json), then verifies them. Commit the resulting artifact set together, not a hand-edited subset.
 
 The generated set contains five subgraph SDLs, the public API SDL, Router-ready
 supergraph SDL, an Apollo persisted-query manifest, a generated finite Router
-matcher and a format-version-1 delivery manifest with exact tool versions, file
-hashes, field/entity ownership and the current 25 trusted-operation hashes. The
-persisted manifest and matcher include the bounded current/retained rollout
-union, while the delivery manifest indexes exactly one current hash per name.
+matcher, a source-owned demand manifest and a format-version-1 delivery manifest
+with exact tool versions, file hashes, field/entity ownership and the current 25
+trusted-operation hashes. The persisted manifest and matcher include the bounded
+current/retained rollout union, while the delivery manifest indexes exactly one
+current hash per name. The demand manifest records one bounded shape, list
+expansion and weighted-cost profile for every exact current or retained hash.
 Manifest bodies use the exact link-ready Apollo `HttpLink` representation.
 Routing URLs are internal service names, not public endpoints. Composition uses the existing
 approved Apollo 2.14.4 and GraphQL 16.14.2 pins; [ADR-0003](../../docs/adr/0003-federation.md)
@@ -44,6 +46,15 @@ wire hashes for a name and zero retained bodies outside an overlap window. The
 union Router remains the rollback floor after new-hash traffic until both client
 populations drain. An ownership collision, invalid operation, stale output or
 breaking baseline API rejects the candidate.
+
+All five subgraphs use Federation v2.9 `@cost` and `@listSize` metadata. Owners
+retain their runtime input and pagination maxima. Composition requires every
+selected root and list to expose finite metadata, expands fragments under fixed
+bounds and rejects a trusted operation above any source-controlled demand limit.
+Variables use the owner maximum; a positive literal may lower but never exceed
+it. The generated profile is a review and delivery contract, not authorization
+or live request telemetry. [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md)
+defines the weights, conservative list semantics and rollback.
 
 CI compares against the PR base SHA (or previous push SHA), never merely the candidate's regenerated API. Manual runs resolve the merge base with `origin/main`; when that is the candidate itself, they use its first parent. A missing baseline/history or explicit self-comparison fails before the source gate. It reads the previous API and operation file directly from that commit, so deleting or rewriting current fixtures cannot hide a broken existing operation. `ASTER_SCHEMA_BASE` accepts only a full commit SHA; local commands default to local `main`. A pre-supergraph commit with neither file is the initial bootstrap; one missing file is an error. Intentional breaking evolution requires a separate reviewed migration, not bypassing this check.
 
@@ -75,7 +86,7 @@ Normal Compose publishes only `127.0.0.1:4000/graphql`. POST JSON requires the m
 
 The finite router-trust-init creates five per-owner Router credentials plus five separate owner-read credentials: Playback-to-Catalog, Engagement-to-Identity/Playback/Catalog and Discovery-to-Catalog. Router mounts only its five keys; each private-read key is shared solely by its two participants. Valid files are reused on restart; insecure or missing files fail startup. Never print credentials. For rotation, stop affected consumers, validate the exact disposable volume labels and absence of foreign attachments, replace only those volumes and restart consumers together. Retain PostgreSQL/media. The guarded whole-project reset recognizes all ten disposable trust volumes but is not a key-only rotation command. [Discovery trust and operations](../../services/discovery/README.md#runtime-and-failure-boundaries).
 
-Core limits are 32 KiB request bodies, 64 headers/16 KiB header bytes, 2000 parser tokens, recursion 32, 512 recursive selections, 256 KiB subgraph responses, eight Router requests and a 64/s process-global burst. Router and normal owner fetch deadlines are three/two seconds; Playback and Engagement have a 2700 ms fetch budget around their 2000/2500 ms application deadlines. Client disconnect cancels owner work. Owner depth/alias/list/cost guards remain active. Native GraphOS-key-protected depth/alias limits are not configured; complete hosted abuse protection belongs to Phase 13. No unsafe mutation retry is added.
+Core limits are 32 KiB request bodies, 64 headers/16 KiB header bytes, 2000 parser tokens, recursion 32, 512 recursive selections, 256 KiB subgraph responses, eight Router requests and a 64/s process-global burst. Router and normal owner fetch deadlines are three/two seconds; Playback and Engagement have a 2700 ms fetch budget around their 2000/2500 ms application deadlines. Client disconnect cancels owner work. Owner depth/alias/list/cost guards remain active. Exact hosted operations additionally pass source composition limits of depth 12, eight aliases, four roots, 256 selections, 512 maximum list expansion and weighted cost 2,048. Native GraphOS demand control is not activated because it would add an account and hosted control-plane contract; the local build remains reproducible without credentials. No unsafe mutation retry is added.
 
 The runtime emits JSON operation/fetch events, finite operation buckets and
 internal Prometheus metrics. The P12-R05 candidate classifies known Router

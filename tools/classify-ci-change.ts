@@ -62,6 +62,8 @@ const PLATFORM_FILES = new Set([
   "tools/verify-router-lifecycle.mjs",
   "tools/verify-router-observability.mjs",
   "tools/verify-trusted-operations.mjs",
+  "tools/verify-graphql-demand-controls.mjs",
+  "tools/verify-graphql-demand-controls.test.mjs",
   "tools/verify-local-catalog.mjs",
   "tools/run-catalog-integration.mjs",
   "tools/run-playback-integration.mjs",

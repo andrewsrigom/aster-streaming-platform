@@ -8,13 +8,17 @@ import type { ProfileRequest, ProfileResult } from "../application/profile-ports
 import { profileIdentifier, type ViewerProfile } from "../domain/profile.js";
 
 export const IDENTITY_TYPE_DEFS = parse(`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@inaccessible"])
+  extend schema
+    @link(
+      url: "https://specs.apollo.dev/federation/v2.9"
+      import: ["@key", "@inaccessible", "@cost", "@listSize"]
+    )
   enum IdentityOutcome {
     COMPLETED UNAUTHENTICATED UNAVAILABLE CANCELLED INDETERMINATE
     LIMIT_EXCEEDED INVALID_INPUT NOT_FOUND CONFLICT BACKPRESSURE
   }
   enum ProfileMaturity { GENERAL TEEN MATURE }
-  type Profile @key(fields: "id") {
+  type Profile @key(fields: "id") @cost(weight: 4) {
     id: ID!
     displayName: String!
     locale: String!
@@ -26,7 +30,10 @@ export const IDENTITY_TYPE_DEFS = parse(`
   type EngagementProfileAuthority @inaccessible {
     code: IdentityOutcome! accountId: ID profileId: ID checkedAt: Float expiresAt: Float
   }
-  type OwnedProfiles { profiles: [Profile!]! activeProfileId: ID }
+  type OwnedProfiles {
+    profiles: [Profile!]! @listSize(assumedSize: 16)
+    activeProfileId: ID
+  }
   type SessionPayload { code: IdentityOutcome! correlationId: ID! viewer: Viewer }
   type ProfileMutationPayload {
     code: IdentityOutcome!
@@ -50,18 +57,18 @@ export const IDENTITY_TYPE_DEFS = parse(`
   input DeleteProfileInput { mutationId: ID! profileId: ID! expectedVersion: Int! }
   type Query {
     _engagementProfile(profileId: ID!): EngagementProfileAuthority! @inaccessible
-    me: Viewer
-    profiles: OwnedProfiles!
-    profile(id: ID!): Profile
-    activeProfile(id: ID!): Profile
+    me: Viewer @cost(weight: 4)
+    profiles: OwnedProfiles! @cost(weight: 6)
+    profile(id: ID!): Profile @cost(weight: 4)
+    activeProfile(id: ID!): Profile @cost(weight: 4)
   }
   type Mutation {
-    demoSignIn: SessionPayload!
-    signOut: SessionPayload!
-    createProfile(input: CreateProfileInput!): ProfileMutationPayload!
-    updateProfile(input: UpdateProfileInput!): ProfileMutationPayload!
-    deleteProfile(input: DeleteProfileInput!): ProfileMutationPayload!
-    selectProfile(id: ID!): ProfileSelectionPayload!
+    demoSignIn: SessionPayload! @cost(weight: 12)
+    signOut: SessionPayload! @cost(weight: 12)
+    createProfile(input: CreateProfileInput!): ProfileMutationPayload! @cost(weight: 18)
+    updateProfile(input: UpdateProfileInput!): ProfileMutationPayload! @cost(weight: 18)
+    deleteProfile(input: DeleteProfileInput!): ProfileMutationPayload! @cost(weight: 18)
+    selectProfile(id: ID!): ProfileSelectionPayload! @cost(weight: 12)
   }
 `);
 

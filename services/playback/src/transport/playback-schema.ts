@@ -4,7 +4,11 @@ import type { PlaybackSessions } from "../application/create-session.js";
 import type { createPlaybackSessionInspector } from "../application/inspect-session.js";
 
 export const PLAYBACK_TYPE_DEFS = parse(`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@inaccessible"])
+  extend schema
+    @link(
+      url: "https://specs.apollo.dev/federation/v2.9"
+      import: ["@inaccessible", "@cost", "@listSize"]
+    )
   enum PlaybackSessionCode {
     COMPLETED INVALID_INPUT NOT_PLAYABLE UNAVAILABLE CANCELLED INDETERMINATE LIMIT_EXCEEDED
   }
@@ -26,7 +30,7 @@ export const PLAYBACK_TYPE_DEFS = parse(`
     session: PlaybackSession
   }
   type Mutation {
-    createPlaybackSession(titleId: ID!): PlaybackSessionPayload!
+    createPlaybackSession(titleId: ID!): PlaybackSessionPayload! @cost(weight: 24)
   }
 `);
 

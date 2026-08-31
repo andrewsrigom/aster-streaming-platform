@@ -4,7 +4,11 @@ import type { createHomeRails, HomeRail, HomeRailResult } from "../application/h
 import type { createTitleSearch } from "../application/search-titles.js";
 
 export const DISCOVERY_TYPE_DEFS = parse(`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+  extend schema
+    @link(
+      url: "https://specs.apollo.dev/federation/v2.9"
+      import: ["@key", "@cost", "@listSize"]
+    )
   enum DiscoverySearchCode {
     COMPLETED INVALID_INPUT CURSOR_EXPIRED STALE LIMIT_EXCEEDED UNAVAILABLE CANCELLED INDETERMINATE
   }
@@ -25,7 +29,7 @@ export const DISCOVERY_TYPE_DEFS = parse(`
   type DiscoveryPageInfo { endCursor: String hasNextPage: Boolean! }
   type DiscoverySearchConnection {
     generation: ID!
-    edges: [DiscoverySearchEdge!]!
+    edges: [DiscoverySearchEdge!]! @listSize(assumedSize: 20)
     pageInfo: DiscoveryPageInfo!
   }
   type DiscoverySearchPayload {
@@ -46,10 +50,13 @@ export const DISCOVERY_TYPE_DEFS = parse(`
     source: DiscoveryRailSource!
     oldestIndexedAt: Float
     freshUntil: Float
-    edges: [DiscoveryRailEdge!]!
+    edges: [DiscoveryRailEdge!]! @listSize(assumedSize: 12)
   }
   type DiscoveryRailResult { code: DiscoveryRailCode! rail: DiscoveryRail }
-  type DiscoveryGenreRailResult { code: DiscoveryRailCode! rails: [DiscoveryRail!]! }
+  type DiscoveryGenreRailResult {
+    code: DiscoveryRailCode!
+    rails: [DiscoveryRail!]! @listSize(assumedSize: 3)
+  }
   type DiscoveryHomePayload {
     code: DiscoveryHomeCode!
     correlationId: ID!
@@ -61,8 +68,8 @@ export const DISCOVERY_TYPE_DEFS = parse(`
     genres: DiscoveryGenreRailResult
   }
   type Query {
-    searchTitles(query: String!, locale: String!, first: Int! = 20, after: String): DiscoverySearchPayload!
-    homeRails(first: Int! = 10): DiscoveryHomePayload!
+    searchTitles(query: String!, locale: String!, first: Int! = 20, after: String): DiscoverySearchPayload! @cost(weight: 14)
+    homeRails(first: Int! = 10): DiscoveryHomePayload! @cost(weight: 20)
   }
 `);
 

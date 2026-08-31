@@ -12,7 +12,11 @@ import { EngagementGraphqlError } from "./engagement-error.js";
 export { EngagementGraphqlError } from "./engagement-error.js";
 
 const ENGAGEMENT_TYPE_DEFS = parse(`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+  extend schema
+    @link(
+      url: "https://specs.apollo.dev/federation/v2.9"
+      import: ["@key", "@cost", "@listSize"]
+    )
   enum ProgressStatus { NOT_STARTED IN_PROGRESS COMPLETED }
   enum ProgressCode {
     COMPLETED INVALID_INPUT UNAUTHENTICATED NOT_FOUND NOT_PLAYABLE
@@ -29,23 +33,26 @@ const ENGAGEMENT_TYPE_DEFS = parse(`
   }
   type Title @key(fields: "id") {
     id: ID!
-    progress(profileId: ID!): Progress
-    inWatchlist(profileId: ID!): Boolean
+    progress(profileId: ID!): Progress @cost(weight: 8)
+    inWatchlist(profileId: ID!): Boolean @cost(weight: 6)
   }
   type Profile @key(fields: "id") {
     id: ID!
-    progress(titleId: ID!): Progress
-    inWatchlist(titleId: ID!): Boolean
+    progress(titleId: ID!): Progress @cost(weight: 8)
+    inWatchlist(titleId: ID!): Boolean @cost(weight: 6)
   }
   type ProgressEdge { cursor: String! node: Progress! }
   type ProgressPageInfo { endCursor: String hasNextPage: Boolean! }
-  type ProgressConnection { edges: [ProgressEdge!]! pageInfo: ProgressPageInfo! }
+  type ProgressConnection {
+    edges: [ProgressEdge!]! @listSize(assumedSize: 20)
+    pageInfo: ProgressPageInfo!
+  }
   type ProgressPagePayload { code: ProgressCode! correlationId: ID! connection: ProgressConnection }
   type Query {
-    progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
-    continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
-    homeContinueWatching(profileId: ID!, first: Int! = 10, after: String): ProgressPagePayload
-    watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload!
+    progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload! @cost(weight: 12)
+    continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload! @cost(weight: 12)
+    homeContinueWatching(profileId: ID!, first: Int! = 10, after: String): ProgressPagePayload @cost(weight: 12)
+    watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload! @cost(weight: 12)
   }
   type ProgressPayload {
     code: ProgressCode!
@@ -63,7 +70,10 @@ const ENGAGEMENT_TYPE_DEFS = parse(`
   }
   type WatchlistEntry { id: ID! profileId: ID! titleId: ID! addedAt: Float! title: Title }
   type WatchlistEdge { cursor: String! node: WatchlistEntry! }
-  type WatchlistConnection { edges: [WatchlistEdge!]! pageInfo: ProgressPageInfo! }
+  type WatchlistConnection {
+    edges: [WatchlistEdge!]! @listSize(assumedSize: 20)
+    pageInfo: ProgressPageInfo!
+  }
   type WatchlistPagePayload { code: WatchlistCode! correlationId: ID! connection: WatchlistConnection }
   type WatchlistPayload {
     code: WatchlistCode!
@@ -72,8 +82,8 @@ const ENGAGEMENT_TYPE_DEFS = parse(`
     change: WatchlistChange
   }
   type Mutation {
-    recordProgress(input: RecordProgressInput!): ProgressPayload!
-    setWatchlist(input: SetWatchlistInput!): WatchlistPayload!
+    recordProgress(input: RecordProgressInput!): ProgressPayload! @cost(weight: 20)
+    setWatchlist(input: SetWatchlistInput!): WatchlistPayload! @cost(weight: 18)
   }
 `);
 export interface EngagementWatchlist {

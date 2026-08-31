@@ -27,6 +27,7 @@ const included = [
   "apps/web/licenses/SOURCES.md",
   "infra/router/generated/supergraph.graphql",
   "infra/router/generated/persisted-query-manifest.json",
+  "infra/router/generated/operation-demand-manifest.json",
   "infra/router/generated/trusted-operations.rhai",
   "evidence/phase-05/generated-media.json",
   "tools/media/hls.mjs",

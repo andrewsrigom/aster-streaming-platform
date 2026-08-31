@@ -1,4 +1,4 @@
-extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@inaccessible"])
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.9", import: ["@inaccessible", "@cost", "@listSize"])
 
 enum PlaybackSessionCode {
   COMPLETED
@@ -37,5 +37,5 @@ type PlaybackSessionPayload {
 }
 
 type Mutation {
-  createPlaybackSession(titleId: ID!): PlaybackSessionPayload!
+  createPlaybackSession(titleId: ID!): PlaybackSessionPayload! @cost(weight: 24)
 }

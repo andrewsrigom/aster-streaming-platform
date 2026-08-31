@@ -14,17 +14,17 @@ import { Kind, parse } from "graphql";
 
 const root = new URL("../../../../", import.meta.url);
 const sources = {
-  catalog: readFileSync(new URL("evidence/phase-03/catalog-schema.graphql", root), "utf8"),
+  catalog: readFileSync(new URL("infra/router/generated/catalog.graphql", root), "utf8"),
   discovery: readFileSync(new URL("infra/router/generated/discovery.graphql", root), "utf8"),
   engagement: readFileSync(new URL("infra/router/generated/engagement.graphql", root), "utf8"),
-  identity: readFileSync(new URL("evidence/phase-02/identity-schema.graphql", root), "utf8"),
+  identity: readFileSync(new URL("infra/router/generated/identity.graphql", root), "utf8"),
   playback: readFileSync(new URL("infra/router/generated/playback.graphql", root), "utf8"),
 };
 const operations = readFileSync(new URL("infra/router/known-operations.graphql", root), "utf8");
 test("five owner schemas compose deterministically, retain entity ownership and validate all known operations", () => {
   const first = composeLocalSupergraph(sources, operations);
   assert.deepEqual(composeLocalSupergraph(sources, operations), first);
-  assert.equal(Object.keys(first).length, 10);
+  assert.equal(Object.keys(first).length, 11);
   assert.match(first["supergraph.graphql"] ?? "", /http:\/\/identity:3100\/graphql/u);
   assert.match(first["supergraph.graphql"] ?? "", /http:\/\/catalog:3200\/graphql/u);
   assert.match(first["supergraph.graphql"] ?? "", /http:\/\/playback:3300\/graphql/u);
@@ -40,6 +40,45 @@ test("five owner schemas compose deterministically, retain entity ownership and 
     first["api.graphql"] ?? "",
     /_entities|_service|join__|reviewedBy|sourceChecksum/u,
   );
+});
+
+test("every exact trusted operation has one bounded demand profile", () => {
+  const artifacts = composeLocalSupergraph(sources, operations);
+  const persisted = JSON.parse(artifacts["persisted-query-manifest.json"] ?? "null") as {
+    operations: { id: string; name: string; type: string }[];
+  };
+  const demand = JSON.parse(artifacts["operation-demand-manifest.json"] ?? "null") as {
+    format: string;
+    version: number;
+    policy: Record<string, number>;
+    operations: {
+      aliases: number;
+      cost: number;
+      depth: number;
+      id: string;
+      listExpansion: number;
+      name: string;
+      rootFields: number;
+      selections: number;
+      type: string;
+    }[];
+  };
+  assert.equal(demand.format, "aster-operation-demand-manifest");
+  assert.equal(demand.version, 1);
+  assert.equal(demand.operations.length, persisted.operations.length);
+  assert.deepEqual(
+    demand.operations.map(({ id, name, type }) => ({ id, name, type })),
+    persisted.operations.map(({ id, name, type }) => ({ id, name, type })),
+  );
+  for (const profile of demand.operations) {
+    assert.ok(profile.cost <= (demand.policy["maximumCost"] ?? 0));
+    assert.ok(profile.depth <= (demand.policy["maximumDepth"] ?? 0));
+    assert.ok(profile.listExpansion <= (demand.policy["maximumListExpansion"] ?? 0));
+    assert.ok(profile.rootFields <= (demand.policy["maximumRootFields"] ?? 0));
+    assert.ok(profile.selections <= (demand.policy["maximumSelections"] ?? 0));
+    assert.ok(profile.aliases <= (demand.policy["maximumAliases"] ?? 0));
+  }
+  assert.match(artifacts["manifest.json"] ?? "", /operation-demand-manifest\.json/u);
 });
 
 test("every first-party operation has one exact Apollo manifest entry and finite Router matcher", () => {
@@ -86,6 +125,9 @@ test("a bounded retained wire version supports Router-first client rollout", () 
   const persisted = JSON.parse(artifacts["persisted-query-manifest.json"] ?? "null") as {
     operations: { body: string; id: string; name: string }[];
   };
+  const demand = JSON.parse(artifacts["operation-demand-manifest.json"] ?? "null") as {
+    operations: { id: string; name: string }[];
+  };
   const schema = JSON.parse(artifacts["manifest.json"] ?? "null") as {
     operations: { name: string; sha256: string }[];
   };
@@ -97,6 +139,10 @@ test("a bounded retained wire version supports Router-first client rollout", () 
   assert.equal(retainedEntry.id, sha256(retainedBody));
   const currentEntry = viewers.find(({ body }) => body !== retainedBody);
   assert.ok(currentEntry);
+  assert.deepEqual(
+    demand.operations.filter(({ name }) => name === "Viewer").map(({ id }) => id),
+    viewers.map(({ id }) => id),
+  );
   assert.deepEqual(
     schema.operations.filter(({ name }) => name === "Viewer"),
     [{ name: "Viewer", sha256: currentEntry.id }],

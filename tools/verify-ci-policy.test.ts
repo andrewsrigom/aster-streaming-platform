@@ -382,9 +382,10 @@ test("Web tooling cannot broaden the package-specific license exceptions", async
   }
 });
 
-test("trusted-operation enforcement proof cannot be omitted or weakened", async () => {
+test("GraphQL demand and trusted-operation proofs cannot be omitted or weakened", async () => {
   const source = await readFile(workflowPath, "utf8");
   for (const [before, after] of [
+    ["node ./tools/verify-graphql-demand-controls.mjs", "true"],
     ["node ./tools/verify-trusted-operations.mjs", "true"],
     ["--metrics < tools/verify-trusted-operations.mjs", "--metrics < tools/unreviewed.mjs"],
     ["--no-deps --force-recreate --wait --wait-timeout 60 router", "router"],
@@ -394,7 +395,7 @@ test("trusted-operation enforcement proof cannot be omitted or weakened", async 
     assert.notEqual(weakened, source);
     assert.ok(
       validateWorkflowPolicy(weakened).some(({ detail }) =>
-        detail.toLowerCase().includes("trusted-operation"),
+        /graphql demand|trusted-operation/u.test(detail.toLowerCase()),
       ),
     );
   }

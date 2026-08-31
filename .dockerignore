@@ -88,6 +88,7 @@
 !infra/router/init-trust.mjs
 !infra/router/LICENSE-APOLLO-ROUTER
 !infra/router/generated/persisted-query-manifest.json
+!infra/router/generated/operation-demand-manifest.json
 !infra/router/generated/supergraph.graphql
 !infra/router/generated/trusted-operations.rhai
 !infra/compose/collector.integration.yml

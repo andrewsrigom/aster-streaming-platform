@@ -1,13 +1,17 @@
-schema @link(url: "https://specs.apollo.dev/link/v1.0") @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION) @link(url: "https://specs.apollo.dev/inaccessible/v0.2", for: SECURITY) {
+schema @link(url: "https://specs.apollo.dev/link/v1.0") @link(url: "https://specs.apollo.dev/join/v0.5", for: EXECUTION) @link(url: "https://specs.apollo.dev/inaccessible/v0.2", for: SECURITY) @link(url: "https://specs.apollo.dev/cost/v0.1", import: ["@listSize"]) {
   query: Query
   mutation: Mutation
 }
 
+directive @cost(weight: Int!) on ARGUMENT_DEFINITION | ENUM | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | OBJECT | SCALAR
+
 directive @inaccessible on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
+
+directive @join__directive(graphs: [join__Graph!], name: String!, args: join__DirectiveArguments) repeatable on SCHEMA | OBJECT | INTERFACE | FIELD_DEFINITION
 
 directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
 
-directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean, overrideLabel: String, contextArguments: [join__ContextArgument!]) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
@@ -18,6 +22,8 @@ directive @join__type(graph: join__Graph!, key: join__FieldSet, extension: Boole
 directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on UNION
 
 directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
+
+directive @listSize(assumedSize: Int, slicingArguments: [String!], sizedFields: [String!], requireOneSlicingArgument: Boolean = true) on FIELD_DEFINITION
 
 enum CatalogAccessibility @join__type(graph: CATALOG) {
   CAPTIONS @join__enumValue(graph: CATALOG)
@@ -54,7 +60,7 @@ type CatalogPageInfo @join__type(graph: CATALOG) {
 }
 
 type CatalogTitleConnection @join__type(graph: CATALOG) {
-  edges: [CatalogTitleEdge!]!
+  edges: [CatalogTitleEdge!]! @listSize(assumedSize: 20)
   pageInfo: CatalogPageInfo!
 }
 
@@ -85,7 +91,7 @@ input DeleteProfileInput @join__type(graph: IDENTITY) {
 
 type DiscoveryGenreRailResult @join__type(graph: DISCOVERY) {
   code: DiscoveryRailCode!
-  rails: [DiscoveryRail!]!
+  rails: [DiscoveryRail!]! @listSize(assumedSize: 3)
 }
 
 enum DiscoveryHomeCode @join__type(graph: DISCOVERY) {
@@ -121,7 +127,7 @@ type DiscoveryRail @join__type(graph: DISCOVERY) {
   source: DiscoveryRailSource!
   oldestIndexedAt: Float
   freshUntil: Float
-  edges: [DiscoveryRailEdge!]!
+  edges: [DiscoveryRailEdge!]! @listSize(assumedSize: 12)
 }
 
 enum DiscoveryRailCode @join__type(graph: DISCOVERY) {
@@ -172,7 +178,7 @@ enum DiscoverySearchCode @join__type(graph: DISCOVERY) {
 
 type DiscoverySearchConnection @join__type(graph: DISCOVERY) {
   generation: ID!
-  edges: [DiscoverySearchEdge!]!
+  edges: [DiscoverySearchEdge!]! @listSize(assumedSize: 20)
   pageInfo: DiscoveryPageInfo!
 }
 
@@ -255,7 +261,18 @@ enum IdentityOutcome @join__type(graph: IDENTITY) {
   BACKPRESSURE @join__enumValue(graph: IDENTITY)
 }
 
+input join__ContextArgument {
+  name: String!
+  type: String!
+  context: String!
+  selection: join__FieldValue!
+}
+
+scalar join__DirectiveArguments
+
 scalar join__FieldSet
+
+scalar join__FieldValue
 
 enum join__Graph {
   CATALOG @join__graph(name: "catalog", url: "http://catalog:3200/graphql")
@@ -285,19 +302,19 @@ type LocalizedTitle @join__type(graph: CATALOG) {
 }
 
 type Mutation @join__type(graph: ENGAGEMENT) @join__type(graph: IDENTITY) @join__type(graph: PLAYBACK) {
-  recordProgress(input: RecordProgressInput!): ProgressPayload! @join__field(graph: ENGAGEMENT)
-  setWatchlist(input: SetWatchlistInput!): WatchlistPayload! @join__field(graph: ENGAGEMENT)
-  demoSignIn: SessionPayload! @join__field(graph: IDENTITY)
-  signOut: SessionPayload! @join__field(graph: IDENTITY)
-  createProfile(input: CreateProfileInput!): ProfileMutationPayload! @join__field(graph: IDENTITY)
-  updateProfile(input: UpdateProfileInput!): ProfileMutationPayload! @join__field(graph: IDENTITY)
-  deleteProfile(input: DeleteProfileInput!): ProfileMutationPayload! @join__field(graph: IDENTITY)
-  selectProfile(id: ID!): ProfileSelectionPayload! @join__field(graph: IDENTITY)
-  createPlaybackSession(titleId: ID!): PlaybackSessionPayload! @join__field(graph: PLAYBACK)
+  recordProgress(input: RecordProgressInput!): ProgressPayload! @join__field(graph: ENGAGEMENT) @cost(weight: 20)
+  setWatchlist(input: SetWatchlistInput!): WatchlistPayload! @join__field(graph: ENGAGEMENT) @cost(weight: 18)
+  demoSignIn: SessionPayload! @join__field(graph: IDENTITY) @cost(weight: 12)
+  signOut: SessionPayload! @join__field(graph: IDENTITY) @cost(weight: 12)
+  createProfile(input: CreateProfileInput!): ProfileMutationPayload! @join__field(graph: IDENTITY) @cost(weight: 18)
+  updateProfile(input: UpdateProfileInput!): ProfileMutationPayload! @join__field(graph: IDENTITY) @cost(weight: 18)
+  deleteProfile(input: DeleteProfileInput!): ProfileMutationPayload! @join__field(graph: IDENTITY) @cost(weight: 18)
+  selectProfile(id: ID!): ProfileSelectionPayload! @join__field(graph: IDENTITY) @cost(weight: 12)
+  createPlaybackSession(titleId: ID!): PlaybackSessionPayload! @join__field(graph: PLAYBACK) @cost(weight: 24)
 }
 
 type OwnedProfiles @join__type(graph: IDENTITY) {
-  profiles: [Profile!]!
+  profiles: [Profile!]! @listSize(assumedSize: 16)
   activeProfileId: ID
 }
 
@@ -324,10 +341,10 @@ type PlaybackSessionPayload @join__type(graph: PLAYBACK) {
   session: PlaybackSession
 }
 
-type Profile @join__type(graph: ENGAGEMENT, key: "id") @join__type(graph: IDENTITY, key: "id") {
+type Profile @join__type(graph: ENGAGEMENT, key: "id") @join__type(graph: IDENTITY, key: "id") @cost(weight: 4) {
   id: ID!
-  progress(titleId: ID!): Progress @join__field(graph: ENGAGEMENT)
-  inWatchlist(titleId: ID!): Boolean @join__field(graph: ENGAGEMENT)
+  progress(titleId: ID!): Progress @join__field(graph: ENGAGEMENT) @cost(weight: 8)
+  inWatchlist(titleId: ID!): Boolean @join__field(graph: ENGAGEMENT) @cost(weight: 6)
   displayName: String! @join__field(graph: IDENTITY)
   locale: String! @join__field(graph: IDENTITY)
   maturity: ProfileMaturity! @join__field(graph: IDENTITY)
@@ -390,7 +407,7 @@ enum ProgressCode @join__type(graph: ENGAGEMENT) {
 }
 
 type ProgressConnection @join__type(graph: ENGAGEMENT) {
-  edges: [ProgressEdge!]!
+  edges: [ProgressEdge!]! @listSize(assumedSize: 20)
   pageInfo: ProgressPageInfo!
 }
 
@@ -424,23 +441,23 @@ enum ProgressStatus @join__type(graph: ENGAGEMENT) {
 }
 
 type Query @join__type(graph: CATALOG) @join__type(graph: DISCOVERY) @join__type(graph: ENGAGEMENT) @join__type(graph: IDENTITY) @join__type(graph: PLAYBACK) {
-  titles(first: Int!, after: String): CatalogTitleConnection! @join__field(graph: CATALOG)
-  title(id: ID!): Title @join__field(graph: CATALOG)
+  titles(first: Int!, after: String): CatalogTitleConnection! @join__field(graph: CATALOG) @cost(weight: 8)
+  title(id: ID!): Title @join__field(graph: CATALOG) @cost(weight: 6)
   _playbackPublications(ids: [ID!]!): [CurrentPlaybackPublication]! @inaccessible @join__field(graph: CATALOG)
   _engagementTitles(ids: [ID!]!): EngagementTitleVisibility! @inaccessible @join__field(graph: CATALOG)
   _discoverySnapshots(ids: [ID!]!): [DiscoverySourceSnapshot]! @inaccessible @join__field(graph: CATALOG)
   _discoveryExport(after: ID): DiscoverySourcePage! @inaccessible @join__field(graph: CATALOG)
-  searchTitles(query: String!, locale: String!, first: Int! = 20, after: String): DiscoverySearchPayload! @join__field(graph: DISCOVERY)
-  homeRails(first: Int! = 10): DiscoveryHomePayload! @join__field(graph: DISCOVERY)
-  progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload! @join__field(graph: ENGAGEMENT)
-  continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload! @join__field(graph: ENGAGEMENT)
-  homeContinueWatching(profileId: ID!, first: Int! = 10, after: String): ProgressPagePayload @join__field(graph: ENGAGEMENT)
-  watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload! @join__field(graph: ENGAGEMENT)
+  searchTitles(query: String!, locale: String!, first: Int! = 20, after: String): DiscoverySearchPayload! @join__field(graph: DISCOVERY) @cost(weight: 14)
+  homeRails(first: Int! = 10): DiscoveryHomePayload! @join__field(graph: DISCOVERY) @cost(weight: 20)
+  progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload! @join__field(graph: ENGAGEMENT) @cost(weight: 12)
+  continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload! @join__field(graph: ENGAGEMENT) @cost(weight: 12)
+  homeContinueWatching(profileId: ID!, first: Int! = 10, after: String): ProgressPagePayload @join__field(graph: ENGAGEMENT) @cost(weight: 12)
+  watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload! @join__field(graph: ENGAGEMENT) @cost(weight: 12)
   _engagementProfile(profileId: ID!): EngagementProfileAuthority! @inaccessible @join__field(graph: IDENTITY)
-  me: Viewer @join__field(graph: IDENTITY)
-  profiles: OwnedProfiles! @join__field(graph: IDENTITY)
-  profile(id: ID!): Profile @join__field(graph: IDENTITY)
-  activeProfile(id: ID!): Profile @join__field(graph: IDENTITY)
+  me: Viewer @join__field(graph: IDENTITY) @cost(weight: 4)
+  profiles: OwnedProfiles! @join__field(graph: IDENTITY) @cost(weight: 6)
+  profile(id: ID!): Profile @join__field(graph: IDENTITY) @cost(weight: 4)
+  activeProfile(id: ID!): Profile @join__field(graph: IDENTITY) @cost(weight: 4)
   _engagementSession(sessionId: ID!, titleId: ID!): EngagementSessionAuthority! @inaccessible @join__field(graph: PLAYBACK)
 }
 
@@ -468,20 +485,20 @@ input SetWatchlistInput @join__type(graph: ENGAGEMENT) {
   present: Boolean!
 }
 
-type Title @join__type(graph: CATALOG, key: "id") @join__type(graph: DISCOVERY, key: "id") @join__type(graph: ENGAGEMENT, key: "id") {
+type Title @join__type(graph: CATALOG, key: "id") @join__type(graph: DISCOVERY, key: "id") @join__type(graph: ENGAGEMENT, key: "id") @cost(weight: 6) {
   id: ID!
   localized(locale: String! = "en"): LocalizedTitle! @join__field(graph: CATALOG)
   releaseYear: Int @join__field(graph: CATALOG)
   runtimeSeconds: Int @join__field(graph: CATALOG)
-  genres: [String!]! @join__field(graph: CATALOG)
-  languages: [String!]! @join__field(graph: CATALOG)
-  accessibility: [CatalogAccessibility!]! @join__field(graph: CATALOG)
-  editorialLabels: [String!]! @join__field(graph: CATALOG)
-  credits: [CatalogCredit!]! @join__field(graph: CATALOG)
+  genres: [String!]! @join__field(graph: CATALOG) @cost(weight: 1) @listSize(assumedSize: 8)
+  languages: [String!]! @join__field(graph: CATALOG) @cost(weight: 1) @listSize(assumedSize: 8)
+  accessibility: [CatalogAccessibility!]! @join__field(graph: CATALOG) @cost(weight: 1) @listSize(assumedSize: 3)
+  editorialLabels: [String!]! @join__field(graph: CATALOG) @cost(weight: 1) @listSize(assumedSize: 8)
+  credits: [CatalogCredit!]! @join__field(graph: CATALOG) @listSize(assumedSize: 16)
   artwork: CatalogArtwork @join__field(graph: CATALOG)
   attribution: CatalogAttribution! @join__field(graph: CATALOG)
-  progress(profileId: ID!): Progress @join__field(graph: ENGAGEMENT)
-  inWatchlist(profileId: ID!): Boolean @join__field(graph: ENGAGEMENT)
+  progress(profileId: ID!): Progress @join__field(graph: ENGAGEMENT) @cost(weight: 8)
+  inWatchlist(profileId: ID!): Boolean @join__field(graph: ENGAGEMENT) @cost(weight: 6)
 }
 
 input UpdateProfileInput @join__type(graph: IDENTITY) {
@@ -520,7 +537,7 @@ enum WatchlistCode @join__type(graph: ENGAGEMENT) {
 }
 
 type WatchlistConnection @join__type(graph: ENGAGEMENT) {
-  edges: [WatchlistEdge!]!
+  edges: [WatchlistEdge!]! @listSize(assumedSize: 20)
   pageInfo: ProgressPageInfo!
 }
 

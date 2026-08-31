@@ -13,6 +13,7 @@ import {
   type DocumentNode,
   type OperationDefinitionNode,
 } from "graphql";
+import { createOperationDemandManifest, type DemandOperation } from "./demand.js";
 
 const SUBGRAPHS = Object.freeze({
   catalog: "http://catalog:3200/graphql",
@@ -37,12 +38,7 @@ export function sha256(source: string): string {
   return createHash("sha256").update(source).digest("hex");
 }
 
-type TrustedOperation = Readonly<{
-  body: string;
-  id: string;
-  name: string;
-  type: OperationDefinitionNode["operation"];
-}>;
+type TrustedOperation = DemandOperation;
 
 type RetainedOperation = Readonly<{
   body: string;
@@ -237,6 +233,7 @@ export function composeLocalSupergraph(
     );
   }
   const api = result.schema.toAPISchema().toGraphQLJSSchema();
+  const supergraph = buildSchema(result.supergraphSdl);
   const operations = document(knownOperations, "Known operations");
   const definitions = operations.definitions.filter(
     (entry) => entry.kind === Kind.OPERATION_DEFINITION,
@@ -329,6 +326,8 @@ export function composeLocalSupergraph(
       2,
     ) + "\n";
   artifacts["trusted-operations.rhai"] = trustedOperationsRhai(trusted);
+  artifacts["operation-demand-manifest.json"] =
+    JSON.stringify(createOperationDemandManifest(api, supergraph, trusted), null, 2) + "\n";
   artifacts["manifest.json"] =
     JSON.stringify(
       {

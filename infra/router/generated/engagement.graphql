@@ -1,4 +1,4 @@
-extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.9", import: ["@key", "@cost", "@listSize"])
 
 enum ProgressStatus {
   NOT_STARTED
@@ -48,14 +48,14 @@ type Progress {
 
 type Title @key(fields: "id") {
   id: ID!
-  progress(profileId: ID!): Progress
-  inWatchlist(profileId: ID!): Boolean
+  progress(profileId: ID!): Progress @cost(weight: 8)
+  inWatchlist(profileId: ID!): Boolean @cost(weight: 6)
 }
 
 type Profile @key(fields: "id") {
   id: ID!
-  progress(titleId: ID!): Progress
-  inWatchlist(titleId: ID!): Boolean
+  progress(titleId: ID!): Progress @cost(weight: 8)
+  inWatchlist(titleId: ID!): Boolean @cost(weight: 6)
 }
 
 type ProgressEdge {
@@ -69,7 +69,7 @@ type ProgressPageInfo {
 }
 
 type ProgressConnection {
-  edges: [ProgressEdge!]!
+  edges: [ProgressEdge!]! @listSize(assumedSize: 20)
   pageInfo: ProgressPageInfo!
 }
 
@@ -80,10 +80,10 @@ type ProgressPagePayload {
 }
 
 type Query {
-  progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
-  continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
-  homeContinueWatching(profileId: ID!, first: Int! = 10, after: String): ProgressPagePayload
-  watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload!
+  progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload! @cost(weight: 12)
+  continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload! @cost(weight: 12)
+  homeContinueWatching(profileId: ID!, first: Int! = 10, after: String): ProgressPagePayload @cost(weight: 12)
+  watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload! @cost(weight: 12)
 }
 
 type ProgressPayload {
@@ -137,7 +137,7 @@ type WatchlistEdge {
 }
 
 type WatchlistConnection {
-  edges: [WatchlistEdge!]!
+  edges: [WatchlistEdge!]! @listSize(assumedSize: 20)
   pageInfo: ProgressPageInfo!
 }
 
@@ -155,6 +155,6 @@ type WatchlistPayload {
 }
 
 type Mutation {
-  recordProgress(input: RecordProgressInput!): ProgressPayload!
-  setWatchlist(input: SetWatchlistInput!): WatchlistPayload!
+  recordProgress(input: RecordProgressInput!): ProgressPayload! @cost(weight: 20)
+  setWatchlist(input: SetWatchlistInput!): WatchlistPayload! @cost(weight: 18)
 }
