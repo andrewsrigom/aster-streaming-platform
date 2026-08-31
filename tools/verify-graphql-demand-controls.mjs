@@ -115,8 +115,7 @@ async function main() {
     errors: [
       {
         message: "GraphQL operation failed.",
-        locations: [{ line: 1, column: 28 }],
-        extensions: { code: "GRAPHQL_VALIDATION_FAILED" },
+        extensions: { code: "UNAVAILABLE" },
       },
     ],
   });
