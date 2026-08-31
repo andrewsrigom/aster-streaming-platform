@@ -370,6 +370,10 @@ export function validateWorkflowPolicy(
       "packaged Identity product behavior must use the internal Router within a bounded deadline",
     ],
     [
+      /- name: Verify enforced trusted GraphQL operations\s+timeout-minutes: 2\s+run: \|\s+docker compose --file "\$COMPOSE_FILE" --file infra\/compose\/observability.yml --file infra\/compose\/graphql-security-proof.yml --profile full up --no-deps --force-recreate --wait --wait-timeout 60 router\s+node \.\/tools\/verify-trusted-operations.mjs\s+docker compose --file "\$COMPOSE_FILE" --file infra\/compose\/observability.yml --file infra\/compose\/graphql-security-proof.yml --profile full exec -T identity node --input-type=module - --metrics < tools\/verify-trusted-operations.mjs/u,
+      "trusted-operation changes require bounded packaged enforcement and finite metric proof",
+    ],
+    [
       /- name: Verify packaged health and real telemetry\s+timeout-minutes: 2\s+run: \|/u,
       "Docker-only health and telemetry verification must have a bounded deadline",
     ],

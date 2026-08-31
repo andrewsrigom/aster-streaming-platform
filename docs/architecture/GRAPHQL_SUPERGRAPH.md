@@ -165,7 +165,16 @@ Loaders batch entity and list joins, cap batch sizes, preserve order, and return
 
 ## Operation controls
 
-Hosted environments enforce:
+The generated Apollo manifest and finite Rhai matcher now bind every first-party
+operation name to the exact SHA-256 of the link-ready Apollo wire document.
+Router starts only with an
+explicit environment and trusted-operation mode. Local/integration `audit`
+preserves diagnostics; staging/production require `enforce`, which rejects
+missing, unknown or altered documents before query planning. Telemetry retains
+only `matched`, `unknown` or `missing`. [ADR-0045](../adr/0045-source-owned-trusted-operations.md)
+defines packaging, rollout and rollback.
+
+Hosted environments additionally enforce the complete Phase 13 control set:
 
 - known first-party operations;
 - operation-name requirement;
@@ -184,12 +193,15 @@ Hosted environments enforce:
 
 Engagement's history/continue-watching connections resolve nullable Title metadata through Catalog. Continue-watching additionally uses a private, purpose-separated current visibility batch before pagination; @inaccessible hides that owner contract but does not authorize it. [ADR-0031](../adr/0031-current-catalog-visibility.md) bounds the scan, validity window and failure behavior. No recursive Router request or cross-owner SQL is used.
 
-1. add the new shape;
-2. deploy owners and consumers compatibly;
-3. migrate client operations;
-4. observe usage;
-5. deprecate the old field;
-6. remove only after the compatibility window.
+1. add the new shape in backward-compatible owners;
+2. add the new client document while retaining the old reviewed body in
+   `infra/router/retained-operations.json` as an exact body string (at most two hashes per name);
+3. deploy the owner, complete manifest and Router policy before the client;
+4. deploy the client and observe finite operation outcomes;
+5. keep the union Router as the rollback floor while either browser bundle may
+   remain active, even when rolling back the Web client;
+6. deprecate the old field and remove its operation only after the compatibility window;
+7. remove the old shape in a later reviewed release.
 
 Field ownership changes use a dedicated migration plan and an ADR when the boundary changes.
 
@@ -204,4 +216,4 @@ CI builds each subgraph schema and composes the supergraph. A change fails when:
 - an inaccessible field leaks;
 - a required authorization test is missing.
 
-Current schema-only commands are `pnpm schema:check` and `pnpm schema:update`. They print executable owner schemas, compose deterministic files and compare the current API with a committed baseline. [The manifest](../../infra/router/generated/manifest.json) enumerates current field/entity ownership; [conventions](../../apps/router/README.md#schema-conventions) preserve existing scalars, pagination, errors and nullability. Runtime authorization and later-subgraph evolution remain separate gates.
+Current schema commands are `pnpm schema:check` and `pnpm schema:update`. They print executable owner schemas, compose deterministic files, generate the Apollo trusted-operation manifest and Router matcher, and compare the current API with a committed baseline. [The delivery manifest](../../infra/router/generated/manifest.json) enumerates current field/entity ownership and hashes the complete generated set; [conventions](../../apps/router/README.md#schema-conventions) preserve existing scalars, pagination, errors and nullability. Owner authorization and later-subgraph evolution remain separate gates.

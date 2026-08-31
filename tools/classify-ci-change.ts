@@ -12,6 +12,7 @@ const ZERO_OBJECT = /^0{40}$/u;
 const DOCUMENTATION_PREFIXES = [".ai/", "docs/", "evidence/", "skills/"] as const;
 const EXECUTABLE_EVIDENCE_FILES = new Set(["evidence/phase-05/generated-media.json"]);
 const PLATFORM_PREFIXES = [
+  "apps/router/",
   "apps/web/",
   "infra/compose/",
   "infra/docker/",
@@ -60,6 +61,7 @@ const PLATFORM_FILES = new Set([
   "tools/verify-local-router.mjs",
   "tools/verify-router-lifecycle.mjs",
   "tools/verify-router-observability.mjs",
+  "tools/verify-trusted-operations.mjs",
   "tools/verify-local-catalog.mjs",
   "tools/run-catalog-integration.mjs",
   "tools/run-playback-integration.mjs",

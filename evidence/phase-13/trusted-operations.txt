@@ -1,0 +1,190 @@
+P13-R01/R02/R12 trusted-operation evidence
+Date: 2026-08-31
+Status: packaged runtime verified; current-index correction pending protected release
+
+Environment
+- Branch: feat/p13-trusted-operations
+- Base main: 2b77a32f43a87fcdfc5032faf856f369de183998
+- Initial evidence head: 7f26b6d97ac9a834695baa42d1f00a11f4c8fb15
+- Initial protected run: 33350909056 (failed; invalidated by the correction below)
+- Corrected source: 0e4a4b3d5742f2458d082b59bac1efedf1651783
+- Corrected tree: 61b325350149c9d5ba07b4ddc3c41cb324526984
+- Protected evidence head: 24e37c280af130de114f8e7c3e4fc47ba7475746
+- Protected run: 33352310376 (passed)
+- Confirmation CI correction: b85230d21bd733cc27337f2d8e9e8fd8068bb6f6
+- Confirmation correction tree: 05532b639091e8fb54e547e282230ccbfa313258
+- Classifier-corrected protected run: 33354040239 (passed)
+- Multi-version Web-test correction: effc7fd705f149eba193a619d70c0e0039f767ea
+- Multi-version correction tree: 0acdba2a73e63841513c54950aeaffe8cf7356fa
+- Multi-version protected run: 33355546182 (passed)
+- Byte-exact rollout correction: 5f4a3150ba4085677b710168d64d22195de48a0c
+- Byte-exact rollout tree: 7c15d92500209b72a80fa46a276958cf86a3332f
+- Byte-exact protected run: 33357231869 (passed)
+- Boundary-byte review discussion: 3891772219
+- Explicit-body correction: 0bcdd68833c23f1ae61a1c07f5f93ac5d9d989e1
+- Explicit-body correction tree: 7ad2f2d88d5c2848265f6bbf568ba4168aee3562
+- Explicit-body evidence head: 66fcab71d34552412eb6d6390801f74a9129f3bb
+- Explicit-body protected run: 33359022739 (passed)
+- Router-classification review discussion: 3891915868
+- Router-classification correction: 64fa64e7650e422e4b1a4405555521afc95921bd
+- Router-classification correction tree: 35817101dd1cb1126b2bddb2a2e9646938f760d0
+- Router-classification protected run: 33360643657 attempt 2 (passed)
+- Current-operation review discussion: 3895588146
+- Current-operation correction: 2286c7f71a82011c2eb083cdf52de07dc7301f51
+- Current-operation correction tree: d253a5e8e69abf18c29e8dd432b3c4225958aa73
+- Current-operation evidence head: a4e849f7c1f23ce7a9326f132a157fd04cd3c047
+- Current-operation protected run: 33406328754 (passed)
+- Current-index correction: a353164b36a7124c1721915ee07be09ca561de78
+- Current-index correction tree: f69257780d003d75ef575101a8e3c358fd9923cb
+- Node.js: 24.19.0
+- pnpm: 11.24.0
+- Runtime target: Apollo Router Core 2.17.0, explicit integration/enforce proof
+
+Implemented contract
+- 25 named operations generate Apollo persisted-query manifest version 1.
+- IDs are SHA-256 of the exact link-ready Apollo wire body, including Apollo's
+  deterministic `__typename` transform.
+- One generated Rhai matcher returns only matched or unknown; main policy adds missing.
+- The Apollo manifest and matcher contain the bounded current/retained union;
+  the delivery manifest indexes exactly one current hash per operation name.
+- A reviewed versioned JSON source stores each obsolete operation as an explicit
+  string, preserves all wire bytes and permits at most two distinct hashes per
+  operation name during Router-first client rollout.
+- Local/integration may explicitly audit. Staging/production require enforce.
+- Enforce rejects missing, unknown and altered documents before query planning.
+- Web's 19 runtime documents and their actual `HttpLink` request bodies exactly
+  match entries in the deployed manifest.
+- Audit mode preserves only finite known operation labels for local diagnostics;
+  unknown names remain `other`. Enforce still rejects every hash mismatch.
+- Query text, hashes and variables are excluded from telemetry.
+
+Focused commands and results
+- pnpm schema:update: pass; 5 subgraphs, 10 artifacts, compatibility base 2b77a32.
+- pnpm --filter @aster/router test: pass; 11/11.
+- pnpm --filter @aster/web test: pass; 119/119.
+- Focused Router/SLO/CI policy command: pass; 36/36.
+- CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm
+  check:changed: pass; 49/49 tasks, 35 cached, 72.599 seconds.
+- Confirmation correction: classifier test 12/12 and affected candidate gate
+  49/49 tasks, 36 cached, 50.442 seconds.
+- Multi-version correction: Web 119/119 and affected candidate gate 49/49
+  tasks, 35 cached, 54.987 seconds.
+- Byte-exact rollout correction: Router 11/11 and affected candidate gate 49/49
+  tasks, 35 cached, 53.095 seconds.
+- Explicit-body correction: Router 11/11 and affected candidate gate 49/49
+  tasks, 38 cached, 45.499 seconds.
+- Router-classification correction: CI policy 38/38 and affected candidate gate
+  49/49 tasks, 36 cached, 64.294 seconds.
+- Current-operation correction: focused2/2, platform92/92 and affected candidate
+  gate49/49 tasks, 33 cached, 98.949 seconds.
+- Current-index correction: Router11/11, verifier2/2, docs and affected candidate
+  gate49/49 tasks, 36 cached, 99.305 seconds.
+- pnpm typecheck and pnpm ci:test: pass; CI policy 37/37.
+- pnpm security:check (inside the candidate gate): pass; zero findings.
+
+Initial protected findings and correction
+- The Local platform job lost the existing `supergraph` and
+  `catalog_title_read` SLI series because audit-mode ad hoc diagnostic documents
+  were classified as `other` after exact-hash admission was introduced.
+- The Playback packaged proof completed its federated scenarios but missed its
+  finite `StartPlayback` log label for the same reason.
+- Initial review correctly found that Apollo Client adds `__typename` before
+  `HttpLink`, while the initial manifest hashed the source AST, and that one
+  hash per name made the documented old/new rollout impossible.
+- Corrected source hashes the link-ready body, captures the actual wire request,
+  supports a bounded reviewed two-version union and restores finite known labels
+  only in audit mode. Enforce admission remains exact and fail-closed.
+- The first corrected candidate attempt found only a comment-only GraphQL file
+  unsupported by Prettier and one stale source-body test expectation. The exact
+  file is parser-validated but formatter-ignored; all transport tests now assert
+  the wire body. The final candidate gate passes.
+
+Protected acceptance and confirmation correction
+- Protected run 33352310376 passed every required job at evidence head 24e37c2.
+  Apollo Router 2.17.0 loaded the generated policy, enforce mode accepted the
+  canonical operation and rejected altered, unknown and missing inputs. All
+  three finite metric labels, every owner runtime and the Docker-only playable
+  demo passed; the disposable Compose projects were removed.
+- The two initial review threads were answered and resolved after that proof.
+- Confirmation discussion 3891493400 found that a future change limited to
+  `tools/verify-trusted-operations.mjs` would not select the Local platform job.
+  Source b85230d adds that verifier to the finite platform classifier and a
+  regression proves verifier-only changes select full plus platform checks.
+  Exact-head protected run 33354040239 then passed every required job.
+- Blocker-focused confirmation discussion 3891588767 found that both Web
+  manifest checks collapsed same-name versions into one `Map` entry, so a valid
+  retained version could displace the current body by hash order. Source effc7fd
+  indexes every version per name and accepts the current source and actual wire
+  body when either matches any reviewed version. A regression places a
+  later-sorting retained body after the current body and Web119/119 passes.
+  Exact-head protected run 33355546182 then passed every required job.
+- Follow-up discussions 3891672851 and 3891672854 found two rollout failures:
+  retained operations were parsed and reprinted by the current toolchain rather
+  than hashed as the obsolete client sent them, and the documented rollback
+  could restore a pre-union Router after a new client hash had served traffic.
+- Source 5f4a315 parses and schema-validates each retained definition but slices,
+  hashes and emits its reviewed source bytes without the current printer or
+  Apollo transform. The retained test uses deliberately noncanonical formatting,
+  proves its exact body/hash and proves a manifest without the retained hash
+  rejects it. ADR-0045 and the release runbook make the healthy union Router the
+  rollback floor after new-hash exposure; client rollback keeps the union and a
+  faulty union Router rolls forward to another compatible union image.
+- Protected run 33357231869 passed every required job for source 5f4a315.
+  Discussion 3891772219 then found GraphQL AST locations exclude ignored bytes
+  before the first and after the last token, so the slice was not boundary-exact.
+- Source 0bcdd68 replaces the ambiguous GraphQL source with a bounded versioned
+  JSON envelope whose entries contain one explicit body string. It parses and
+  schema-validates that string while hashing and emitting the exact decoded
+  string. The regression includes leading whitespace, a leading comment, a
+  trailing newline and trailing whitespace and proves the exact body and hash.
+- Early candidate attempts correctly failed formatting and then strict index-
+  signature checks. After formatting and typed untrusted-object access, build,
+  lint and Router11/11 pass; the final affected gate passes49/49 with38 cached
+  in45.499 seconds and the included secret scan has zero findings.
+- Evidence head 66fcab71 passed protected run33359022739: exact generated
+  enforcement, all finite labels, owner integrations, diagnostics, cleanup and
+  Docker-only playable demo pass. Discussion3891772219 is answered/resolved.
+- Confirmation discussion3891915868 found a generator-only `apps/router/`
+  change could skip the platform proof. Source64fa64e classifies the complete
+  Router package as platform work and tests composition, artifact writer, main,
+  package and verifier paths. CI policy38/38 and the repeated49/49 candidate gate
+  pass with36 cached in64.294 seconds.
+- Protected run33360643657 attempt1 passed source quality, owners and the playable
+  demo but its unchanged diagnostic exercise timed out waiting for one TraceQL
+  search after PostgreSQL recovery. The bounded diagnostic project still cleaned
+  completely. One failed-job rerun, attempt2, passed every required job for exact
+  head61b85a2, including the packaged Router proof and diagnostics. Discussion
+  3891915868 was answered and resolved.
+- Blocker-focused confirmation discussion3895588146 found `.find()` selected
+  `Browse` by name alone. With a retained same-name body ordered first, the proof
+  could send current variables to that obsolete document and block a valid union
+  rollout. Source2286c7f reads the schema manifest's unique current hash, joins
+  it to exactly one persisted name/ID entry and fails closed when either side is
+  missing or ambiguous. The regression places the retained version first and
+  covers absent/ambiguous joins; focused2/2, platform92/92 and the repeated49/49
+  candidate gate pass with33 cached in98.949 seconds.
+- Evidence head a4e849f passed protected run33406328754, including source
+  quality, every owner integration, packaged Router enforcement, diagnostics and
+  the Docker-only playable demo. Discussion3895588146 is answered and resolved.
+- Final pre-merge audit then found that `manifest.json` populated its operation
+  index from the same current/retained union. A real overlap would therefore
+  produce two `Browse` entries and make the newly fail-closed current selection
+  ambiguous. Source a353164 keeps that delivery index current-only while the
+  Apollo manifest and Router matcher still accept both reviewed versions. The
+  retained-version composition regression proves two admission entries, one
+  unique current delivery entry and the exact current hash. Router11/11,
+  verifier2/2, documentation and the repeated49/49 gate pass with36 cached in
+  99.305 seconds.
+
+Pending acceptance
+- Publish the current-index/evidence correction once, pass exact-head protected
+  CI, confirm every review thread remains resolved, then obtain the permitted
+  blocker-focused confirmation before squash merge and exact-main verification.
+
+Interpretation and limitations
+The corrected results prove deterministic source generation, actual current Web
+wire compatibility, bounded rollout overlap, adverse repository policy and the
+packaged pinned-Router enforcement/telemetry path. Boundary-exact retained bodies,
+the rollback floor, unique current-version proof selection and current-only
+delivery index are source/contract behavior; the last correction requires its
+exact-head protected run. No hosted deployment is claimed.

@@ -21,21 +21,10 @@ const sources = {
   playback: readFileSync(new URL("infra/router/generated/playback.graphql", root), "utf8"),
 };
 const operations = readFileSync(new URL("infra/router/known-operations.graphql", root), "utf8");
-const routerPolicy = readFileSync(new URL("infra/router/main.rhai", root), "utf8");
-
-test("every known operation has a finite Router telemetry label", () => {
-  for (const definition of parse(operations).definitions) {
-    if (definition.kind === Kind.OPERATION_DEFINITION) {
-      assert.ok(definition.name);
-      assert.match(routerPolicy, new RegExp(`"${definition.name.value}"`, "u"));
-    }
-  }
-});
-
 test("five owner schemas compose deterministically, retain entity ownership and validate all known operations", () => {
   const first = composeLocalSupergraph(sources, operations);
   assert.deepEqual(composeLocalSupergraph(sources, operations), first);
-  assert.equal(Object.keys(first).length, 8);
+  assert.equal(Object.keys(first).length, 10);
   assert.match(first["supergraph.graphql"] ?? "", /http:\/\/identity:3100\/graphql/u);
   assert.match(first["supergraph.graphql"] ?? "", /http:\/\/catalog:3200\/graphql/u);
   assert.match(first["supergraph.graphql"] ?? "", /http:\/\/playback:3300\/graphql/u);
@@ -50,6 +39,107 @@ test("five owner schemas compose deterministically, retain entity ownership and 
   assert.doesNotMatch(
     first["api.graphql"] ?? "",
     /_entities|_service|join__|reviewedBy|sourceChecksum/u,
+  );
+});
+
+test("every first-party operation has one exact Apollo manifest entry and finite Router matcher", () => {
+  const artifacts = composeLocalSupergraph(sources, operations);
+  const persisted = JSON.parse(artifacts["persisted-query-manifest.json"] ?? "null") as {
+    format: string;
+    version: number;
+    operations: { body: string; id: string; name: string; type: string }[];
+  };
+  assert.equal(persisted.format, "apollo-persisted-query-manifest");
+  assert.equal(persisted.version, 1);
+  assert.equal(persisted.operations.length, 25);
+  assert.deepEqual(
+    persisted.operations.map(({ name }) => name),
+    persisted.operations.map(({ name }) => name).toSorted((a, b) => a.localeCompare(b, "en")),
+  );
+  const matcher = artifacts["trusted-operations.rhai"] ?? "";
+  for (const definition of parse(operations).definitions) {
+    if (definition.kind !== Kind.OPERATION_DEFINITION) {
+      continue;
+    }
+    assert.ok(definition.name);
+    const entry = persisted.operations.find(({ name }) => name === definition.name?.value);
+    assert.ok(entry);
+    assert.equal(entry.name, definition.name.value);
+    assert.equal(entry.type, definition.operation);
+    assert.equal(entry.id, sha256(entry.body));
+    assert.match(entry.body, /__typename/u);
+    assert.match(matcher, new RegExp(`name == "${definition.name.value}"`, "u"));
+    assert.match(matcher, new RegExp(entry.id, "u"));
+    assert.notEqual(sha256(entry.body + "\n"), entry.id);
+  }
+  assert.match(matcher, /fn operation_label\(name\)/u);
+  assert.match(matcher, /return "Browse"/u);
+  assert.match(matcher, /"other"/u);
+  assert.match(matcher, /"unknown"/u);
+  assert.doesNotMatch(matcher, /query |mutation |subscription |variables/u);
+});
+
+test("a bounded retained wire version supports Router-first client rollout", () => {
+  const retainedBody = " \n# obsolete wire\nquery Viewer{me{accountId}}\n ";
+  const retained = JSON.stringify({ operations: [{ body: retainedBody }], version: 1 });
+  const artifacts = composeLocalSupergraph(sources, operations, undefined, undefined, retained);
+  const persisted = JSON.parse(artifacts["persisted-query-manifest.json"] ?? "null") as {
+    operations: { body: string; id: string; name: string }[];
+  };
+  const schema = JSON.parse(artifacts["manifest.json"] ?? "null") as {
+    operations: { name: string; sha256: string }[];
+  };
+  const viewers = persisted.operations.filter(({ name }) => name === "Viewer");
+  assert.equal(viewers.length, 2);
+  assert.equal(new Set(viewers.map(({ id }) => id)).size, 2);
+  const retainedEntry = viewers.find(({ body }) => body === retainedBody);
+  assert.ok(retainedEntry);
+  assert.equal(retainedEntry.id, sha256(retainedBody));
+  const currentEntry = viewers.find(({ body }) => body !== retainedBody);
+  assert.ok(currentEntry);
+  assert.deepEqual(
+    schema.operations.filter(({ name }) => name === "Viewer"),
+    [{ name: "Viewer", sha256: currentEntry.id }],
+  );
+  const matcher = artifacts["trusted-operations.rhai"] ?? "";
+  for (const entry of viewers) {
+    assert.match(matcher, new RegExp(entry.id, "u"));
+  }
+  assert.match(matcher, /hash == "[a-f0-9]{64}" \|\| hash == "[a-f0-9]{64}"/u);
+  const newOnlyMatcher = composeLocalSupergraph(sources, operations)["trusted-operations.rhai"];
+  assert.ok(newOnlyMatcher);
+  assert.doesNotMatch(newOnlyMatcher, new RegExp(retainedEntry.id, "u"));
+  assert.throws(
+    () =>
+      composeLocalSupergraph(
+        sources,
+        operations,
+        undefined,
+        undefined,
+        JSON.stringify({
+          operations: [{ body: retainedBody }, { body: retainedBody }],
+          version: 1,
+        }),
+      ),
+    /two distinct reviewed bodies/u,
+  );
+  assert.throws(
+    () =>
+      composeLocalSupergraph(
+        sources,
+        operations,
+        undefined,
+        undefined,
+        JSON.stringify({
+          operations: [{ body: "query RetainedBroken { missingField }" }],
+          version: 1,
+        }),
+      ),
+    /Retained operation incompatible/u,
+  );
+  assert.throws(
+    () => composeLocalSupergraph(sources, operations, undefined, undefined, '{"version":2}'),
+    /version 1 and 0–32 exact bodies/u,
   );
 });
 

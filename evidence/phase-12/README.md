@@ -1,5 +1,12 @@
 # Phase 12 Evidence Index
 
+Status: Phase 12 is released. P12-R10 final source
+`b646e496d0946262a688f34a118a896f6c40ebda`, tree
+`789007d5f48d4a16c0a1b47b8e2554e1ee0e294a`, passed protected run
+`33346575787` attempt 2 and clean confirmation. PR51 squash main
+`2b77a32f43a87fcdfc5032faf856f369de183998` retained the tree; exact-main run
+`33348247619` passed every required job.
+
 Status: P12-R01/R02/R08/R09 are released from source `03abe8a`, evidence head
 `9a058ee`, protected run `33300561121`, clean exact-head confirmation, PR45
 squash main `ce66f9c` and successful exact-main run `33301425220`. The released
@@ -20,9 +27,9 @@ passed protected run `33318672382` and clean confirmation. PR49 squash main
 `c297d32` retained the reviewed tree; valid exact-main run `33319514232` passed
 every required job. P12-R07 corrected source `8185a81`, evidence head `4b6db71`,
 protected run `33324696622`, clean confirmation, PR50 squash main `633e819` and
-exact-main run `33325544350` release the finite burn-rate alerts. P12-R10 is the
-only active Phase 12 item. Its diagnostic profile and runner are implemented in
-the current worktree. Protected run `33331974187` passed Catalog diagnosis,
+exact-main run `33325544350` release the finite burn-rate alerts. P12-R10 is
+released; the following paragraphs preserve its diagnostic remediation history.
+Protected run `33331974187` passed Catalog diagnosis,
 PostgreSQL recovery and clean teardown, then failed on premature V1 trace
 retrieval before Redis. Run `33332980729` proved the exact PostgreSQL TraceQL
 match, recovery and teardown but showed that its subsequent V2 result remained
@@ -54,8 +61,8 @@ confirmation then found that selected TraceQL fields did not prove privacy for
 omitted stored attributes and lockfile-only changes skipped diagnostics. The
 local remediation inspects a bounded stable full trace and adds
 `pnpm-lock.yaml` to diagnostic invalidation. Focused tests pass 23/23 and the
-affected gate passes 73/73 with 63 cached in 44.855 seconds. Corrected protected
-runtime, blocking-boundary confirmation and release remain. Published
+affected gate passes 73/73 with 63 cached in 44.855 seconds. At that checkpoint,
+corrected protected runtime, blocking-boundary confirmation and release remained. Published
 `bf10756` and protected run `33341130651` reached that real full-trace boundary;
 local-platform job `99336871735` exposed that OTLP JSON encodes span trace IDs
 as Base64 bytes rather than the hexadecimal query ID, while exact cleanup
@@ -65,7 +72,7 @@ passes focused tests 13/13 plus the affected gate 73/73 with 60 cached in
 run `33341630994`; the [bounded transcript](diagnostics/protected-run-33341630994.txt)
 records the complete stored-trace proof, all three diagnoses/recoveries, exact
 cleanup and every protected job. Final evidence publication, confirmation and
-release remain. Evidence head `cc2db4c`, tree `910678e`, passed exact-head run
+release remained at that checkpoint. Evidence head `cc2db4c`, tree `910678e`, passed exact-head run
 `33342551385`; confirmation discussions `3890928257`/`3890928260` then found
 incomplete diagnostic invalidation for Catalog build inputs and a stale status
 in the operator guide. The local correction covers direct/transitive Catalog
@@ -83,7 +90,9 @@ near-deadline rejection could terminate Node before recovery/cleanup. The local
 remediation observes request and injection concurrently with
 `Promise.allSettled`, retains deterministic error precedence, passes runner
 tests 10/10 and the affected gate 73/73 with 63 cached in 53.89 seconds.
-Repeated protected runtime, corrected confirmation and release remain.
+That intermediate statement is superseded by final source `b646e49`, protected
+run `33346575787` attempt 2, clean confirmation, PR51 and exact-main run
+`33348247619` recorded above.
 
 ## Requirement traceability
 
@@ -100,7 +109,7 @@ Repeated protected runtime, corrected confirmation and release remain.
 | P12-R09 | [Exporter failure](exporter-failure.txt) records bounded queue, deadline, failure and recovery behavior |
 | P12-R11 | [Browser telemetry](browser-playback-telemetry.txt) records sampling, privacy, transport and retention boundaries |
 | P12-R12 | [Operational overview](operational-overview.txt) records the bounded Grafana topology, immutable three-layer dashboard, adverse checks and protected/exact-main release proof |
-| P12-R10 | [Failure diagnosis](failure-diagnosis.md) records the bounded Tempo profile, remediation history, supporting three-scenario run and current confirmation correction |
+| P12-R10 | [Failure diagnosis](failure-diagnosis.md) records the bounded Tempo profile, remediation history, released three-scenario proof, exact cleanup and exact-main acceptance |
 
 P12-R03's affected gate passed 73/73 tasks with 28 cached in 63.79 seconds.
 Review corrected invalid event ages, malformed pool snapshots, missing outbox
@@ -133,7 +142,7 @@ ratios from zero through one and retains the separate absent-series rejection.
 The accepted affected gate passes60/60 with45 cached in47.73 seconds. Protected
 run `33310118280` passed every job at evidence head `aca4aba`, including both
 live Router-backed ratios and the Docker-only playable demo. Discussion
-`3889248449` is answered and resolved. Final confirmation and release remain.
+`3889248449` is answered and resolved. Final confirmation and release remained at that checkpoint.
 Final confirmation discussion `3889344066` found that a failure-only population
 lost its ratio when no completed series had ever existed. Source `757f6a0`, tree
 `e9c7d24`, derives zero only from the same present population for all recording
@@ -149,8 +158,8 @@ counter objective idle;27/27 focused checks and the corrected60/60 affected gate
 with50 cached in47.383 seconds pass. Final head `72d5656`, tree `2374279`, passed
 protected run `33313090638` attempt2 and clean confirmation. PR48 squash main
 `a99d3d5` and exact-main run `33314309449` release the SLI/SLO work. Burn-rate
-alerts are released through PR50 and exact-main run `33325544350`. Three
-diagnostic exercises remain the sole Phase 12 acceptance gap.
+alerts are released through PR50 and exact-main run `33325544350`. The three
+diagnostic exercises were later released through the final P12-R10 result above.
 The operational overview is released through its protected and exact-main
 live-container acceptance.
 
@@ -175,7 +184,7 @@ live-container acceptance.
 - SLI/SLO synthetic ratios prove query behavior only. At-most-three-day local
   retention cannot prove a 28/30-day objective, and no historical compliance result is
   claimed.
-- The P12-R10 source/profile checks do not substitute for real Tempo export,
+- The P12-R10 source/profile checks alone do not substitute for real Tempo export,
   trace search, failure recovery and exact Docker cleanup. Protected run
   `33331974187` proves Catalog diagnosis, PostgreSQL recovery and clean teardown.
   Run `33332980729` additionally proves the exact PostgreSQL TraceQL match, but
@@ -187,5 +196,7 @@ live-container acceptance.
   an earlier dependency fact without a failure mark. Run `33335707261` proves
   the request-deadline failure is `cancelled`/`unset`. Run `33336386466` passes
   the finite causal-outcome path for all three scenarios, all recoveries and
-  exact cleanup. Confirmation then requires a repeat after its network,
-  data-source-health and escaped-document privacy corrections.
+  exact cleanup. Final protected run `33346575787` attempt 2 repeats the
+  corrected complete proof, and exact-main run `33348247619` closes the release.
+  The local profile remains disposable evidence, not a hosted availability
+  guarantee.

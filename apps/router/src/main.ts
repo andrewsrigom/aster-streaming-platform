@@ -39,6 +39,10 @@ async function run(): Promise<void> {
     resolve(root, "infra/router/known-operations.graphql"),
     131_072,
   );
+  const retainedOperations = await readBoundedFile(
+    resolve(root, "infra/router/retained-operations.json"),
+    131_072,
+  );
   let baseline: string | undefined;
   try {
     baseline = await readBoundedFile(resolve(directory, "api.graphql"));
@@ -63,6 +67,7 @@ async function run(): Promise<void> {
     operations,
     previous?.api ?? baseline,
     previous?.operations,
+    retainedOperations,
   );
   if (args[0] === "--write") {
     await writeArtifacts(directory, artifacts);

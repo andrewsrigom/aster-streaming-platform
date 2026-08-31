@@ -4,6 +4,205 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — Trusted-operation current index separated from rollout union
+
+### Completed
+
+- Evidence head `a4e849f` passed protected run `33406328754`; discussion
+  `3895588146` is answered and resolved.
+- Final audit found the delivery manifest indexed both the current and retained
+  versions, making the fail-closed current-operation proof ambiguous during a
+  real overlap.
+- Source `a353164b36a7124c1721915ee07be09ca561de78`, tree
+  `f69257780d003d75ef575101a8e3c358fd9923cb`, keeps the Apollo manifest and
+  Router matcher as the admission union but limits the delivery index to one
+  current hash per name. Router11/11, verifier2/2, docs and gate49/49 with36
+  cached in99.305 seconds pass; the included secret scan has zero findings.
+
+### Evidence
+
+- `evidence/phase-13/trusted-operations.txt` records the exact predecessor run,
+  finding, source correction and accepted local gates.
+
+### Next action
+
+- Publish once, pass exact-head protected CI and blocker-focused confirmation,
+  then squash merge and verify exact main before activating item65.
+
+## 2026-08-31 — Trusted-operation runtime proof selects current version
+
+### Completed
+
+- Router-classification source `64fa64e`, tree `35817101`, passed protected run
+  `33360643657` attempt2 after attempt1's isolated TraceQL indexing timeout.
+  Discussion `3891915868` is answered and resolved.
+- Blocker-focused discussion `3895588146` found the runtime proof selected
+  `Browse` only by name, so a retained version could receive current variables.
+- Source `2286c7f71a82011c2eb083cdf52de07dc7301f51`, tree
+  `d253a5e8e69abf18c29e8dd432b3c4225958aa73`, joins the persisted entry to the
+  schema manifest's unique current hash and fails closed on missing/ambiguous
+  joins. Retained-first focused2/2, platform92/92 and gate49/49 with33 cached in
+  98.949 seconds pass; the included secret scan has zero findings.
+
+### Evidence
+
+- `evidence/phase-13/trusted-operations.txt` records both protected attempts,
+  the review finding, exact correction and accepted local gates.
+
+### Next action
+
+- Publish once, pass exact-head protected CI, resolve discussion `3895588146`,
+  obtain the permitted confirmation, then merge and verify exact main.
+
+## 2026-08-31 — Trusted-operation boundary bytes corrected
+
+### Completed
+
+- Source `5f4a315`, tree `7c15d925`, passed protected run `33357231869`.
+  Discussion `3891772219` found its AST locations omitted ignored leading and
+  trailing bytes, so retained operation hashes were still not wire-exact.
+- Source `0bcdd68833c23f1ae61a1c07f5f93ac5d9d989e1`, tree
+  `7ad2f2d88d5c2848265f6bbf568ba4168aee3562`, replaces location-derived slices
+  with bounded versioned JSON entries containing explicit body strings.
+- The regression proves leading whitespace/comment plus trailing newline/
+  whitespace remain in the manifest body and SHA-256. Router11/11 pass. The
+  final affected gate passes49/49 with38 cached in45.499 seconds; zero secret
+  findings. Earlier formatting and strict untrusted-object typing failures were
+  corrected before the accepted gate.
+- Evidence head `66fcab71` passed protected run `33359022739`, including the
+  packaged Router enforcement, integrations, diagnostics and playable demo.
+  Discussion `3891772219` is answered and resolved.
+- Confirmation discussion `3891915868` found Router generator-only changes
+  could skip platform CI. Source `64fa64e7650e422e4b1a4405555521afc95921bd`,
+  tree `35817101dd1cb1126b2bddb2a2e9646938f760d0`, classifies all `apps/router/`
+  changes as platform work. CI policy38/38 and the repeated gate49/49 with36
+  cached in64.294 seconds pass.
+
+### Evidence
+
+- `evidence/phase-13/trusted-operations.txt` records the finding, exact source,
+  commands, accepted results and remaining protected release gate.
+
+### Next action
+
+- Commit the CI-classification evidence checkpoint, push once, require exact-head
+  protected CI, resolve discussion `3891915868`, obtain the blocker-focused
+  confirmation, then merge and verify exact main.
+
+## 2026-08-31 — Trusted-operation confirmation CI correction
+
+### Completed
+
+- Corrected evidence head `24e37c2` passed protected run `33352310376`, including
+  the pinned Router enforce/telemetry proof, every owner runtime and playable demo.
+- Initial review threads `3891343084` and `3891343087` were answered and resolved.
+  Confirmation discussion `3891493400` found that verifier-only changes could
+  skip the Local platform job.
+- Source `b85230d21bd733cc27337f2d8e9e8fd8068bb6f6`, tree
+  `05532b639091e8fb54e547e282230ccbfa313258`, routes that exact verifier through
+  platform CI. Classifier12/12 and affected gate49/49 with36 cached in50.442
+  seconds pass. Protected run `33354040239` passes every required job.
+- Blocker-focused confirmation discussion `3891588767` found the Web tests kept
+  only one same-name manifest version by hash order. Source
+  `effc7fd705f149eba193a619d70c0e0039f767ea`, tree
+  `0acdba2a73e63841513c54950aeaffe8cf7356fa`, indexes every reviewed version;
+  Web119/119 and gate49/49 with35 cached in54.987 seconds pass. Protected run
+  `33355546182` passes every required job.
+- Follow-up discussions `3891672851`/`3891672854` found retained operations were
+  reprinted rather than byte-preserved and rollback could restore a pre-union
+  Router after new-client exposure. Source
+  `5f4a3150ba4085677b710168d64d22195de48a0c`, tree
+  `7c15d92500209b72a80fa46a276958cf86a3332f`, preserves exact retained source
+  slices and makes the union Router the tested/documented rollback floor.
+  Router11/11 and gate49/49 with35 cached in53.095 seconds pass.
+
+### Evidence
+
+- `evidence/phase-13/trusted-operations.txt` records the protected run, review
+  thread, correction and remaining exact-head release gate.
+
+### Next action
+
+- Publish the batched byte-exact rollout correction once, require exact-head CI,
+  resolve discussions `3891672851`/`3891672854`, obtain one blocker-focused
+  confirmation, then merge and verify exact main.
+
+## 2026-08-30 — Trusted-operation protected findings corrected
+
+### Completed
+
+- Initial PR52 run `33350909056` exposed lost audit-mode SLI labels in Local
+  platform and Playback runtime. Initial review also found Apollo wire/source
+  hash drift and an impossible same-name old/new rollout.
+- Corrected source `0e4a4b3d5742f2458d082b59bac1efedf1651783`, tree
+  `61b325350149c9d5ba07b4ddc3c41cb324526984`, hashes Apollo link-ready documents,
+  proves all 19 actual `HttpLink` bodies and supports at most two reviewed hashes
+  per name through an explicit retained source.
+- Audit restores finite known-name diagnostics without weakening enforce mode.
+  Router 11/11, Web 118/118 and focused policy 36/36 pass. The corrected affected
+  gate passes 49/49 tasks with 35 cached in 72.599 seconds and zero secret findings.
+
+### Evidence
+
+- `evidence/phase-13/trusted-operations.txt` records the failed run, review
+  findings, correction, local gates and remaining protected acceptance.
+
+### Next action
+
+- Publish the corrected evidence head once, pass protected packaged acceptance,
+  obtain one clean confirmation review, squash merge and verify exact main.
+
+## 2026-08-30 — Trusted-operation candidate implemented
+
+### Completed
+
+- P13-R01/R02/R12 now generate a deterministic Apollo manifest and finite Rhai
+  matcher for all 25 reviewed operations, package both with Router and enforce
+  exact name/raw-document hashes under explicit audit/enforce configuration.
+- Added finite matched/unknown/missing telemetry, 19-document Web compatibility,
+  adverse source/packaging/CI policy and one disposable integration/enforce
+  proof for the pinned Router.
+- Focused Router tests pass 10/10, Web 117/117, Router/SLO policy 11/11 and CI
+  policy 37/37. The affected gate passes 49/49 tasks, 35 cached, in 52.315
+  seconds; the included secret scan has zero findings.
+- Implementation source `f531298dd5fd1526c260ab411213189f16ccfdf0`, tree
+  `81860cc5d803f2170afa6650a563a646a1bbf4cc`, records the coherent candidate.
+
+### Evidence
+
+- `evidence/phase-13/trusted-operations.txt`, generated manifest/matcher,
+  ADR-0045 and the rollout/configuration documentation.
+- Local Docker was unavailable at the single bounded check; no host restart or
+  loop followed. Protected CI owns the packaged Rhai/runtime metric proof.
+
+### Next action
+
+- Commit and publish item64 once, pass protected packaged acceptance, complete
+  initial/confirmation review, squash merge and verify exact-main before item65.
+
+## 2026-08-30 — Phase 12 release and Phase 13 activation
+
+### Completed
+
+- P12-R10 source `b646e49`, tree `789007d5`, passed protected run
+  `33346575787` attempt 2 and clean confirmation. PR51 squash main `2b77a32`
+  retained the tree; exact-main run `33348247619` passed every required job.
+- Phase 12 is released. Activated Phase 13 item64 on
+  `feat/p13-trusted-operations` for P13-R01/R02/R12.
+- Accepted ADR-0045: generate an Apollo manifest and finite Rhai matcher from the
+  25 bounded first-party operations; local/integration audit remains explicit,
+  staging/production require enforce, and owner authorization is unchanged.
+
+### Evidence
+
+- Protected and exact-main run IDs above; active implementation plan is
+  `.ai/CHANGE_PLAN.md`.
+
+### Next action
+
+- Complete source policy and disposable real-Router enforcement proof, then run
+  the affected candidate gate and publish item64.
+
 ## 2026-08-30 — Final diagnostic request-observation correction
 
 ### Completed
@@ -1429,17 +1628,3 @@ Published one coherent progress candidate. Initial review and protected CI 33178
 ### Next action
 
 Publish the verified correction batch, confirm only blocking boundaries, merge/prove post-merge. P08-R06 history implementation, GraphQL and 25-row keyset SQL evidence are preserved in exact stash 678ccde78146453011ed7e9941d29afdad26111d on feat/p08-history; rebase/restore once after predecessor. No CPU/media loop.
-
-## 2026-08-28 — Frozen candidate and read-side continuation
-
-### Completed
-
-Published one coherent [PR 26](https://github.com/andrewsrigom/aster-streaming-platform/pull/26) at 319ce4e7f4c02ce5991c9637200421d02b8f13cc. P08-R01 is WAITING_EXTERNAL; activated only dependent P08-R06 on feat/p08-history.
-
-### Evidence
-
-[Frozen candidate](../evidence/phase-08/progress-candidate.md) records 67 passing tasks, real federated proof, manifest, rollback and exact external conditions. Retained media/Windows processes unchanged.
-
-### Next action
-
-Implement bounded history/continue-watching while CI/review runs. Publish predecessor first; preserve/rebase dependent work if its source changes. No CPU loop.

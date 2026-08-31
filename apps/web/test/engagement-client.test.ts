@@ -11,6 +11,7 @@ import {
   readProgressOutcome,
 } from "../features/engagement/operations.ts";
 import { HOME_PERSONALIZED } from "../features/discovery/operations.ts";
+import { apolloOperationBody } from "../lib/apollo/trusted-operation.ts";
 
 const id = (n: number) => "00000000-0000-4000-8000-" + String(n).padStart(12, "0");
 const pair = { profileId: id(1), titleId: id(2) };
@@ -171,7 +172,7 @@ test("private transport sends only the fixed credentialed operation and strips u
   assert.ok(typeof request.body === "string");
   assert.deepEqual(JSON.parse(request.body), {
     operationName: "RecordProgress",
-    query: print(RECORD_PROGRESS),
+    query: apolloOperationBody(RECORD_PROGRESS),
     variables: { input },
   });
   assert.ok(!JSON.stringify(r.client.cache.extract()).includes("canary"));
@@ -213,7 +214,7 @@ test("personalized home binds the selected profile and preserves public data on 
   assert.deepEqual(requests, [
     {
       operationName: "HomePersonalized",
-      query: print(HOME_PERSONALIZED),
+      query: apolloOperationBody(HOME_PERSONALIZED),
       variables: { profileId: pair.profileId, first: 10, locale: "en" },
     },
   ]);

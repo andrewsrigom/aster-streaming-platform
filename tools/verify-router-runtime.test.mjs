@@ -7,15 +7,31 @@ import {
   readRouterSources,
   validateRouterRuntime,
   validateRouterSources,
+  validateTrustedOperationsOverlay,
 } from "./verify-router-runtime.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const compose = await readFile(resolve(root, "infra/compose/compose.yml"), "utf8");
 const sources = await readRouterSources(root);
+const trustedOperationsOverlay = await readFile(
+  resolve(root, "infra/compose/graphql-security-proof.yml"),
+  "utf8",
+);
 
 test("Router topology and source pin private bounded runtime without a GraphOS account", () => {
   assert.deepEqual(validateRouterRuntime(compose), []);
   assert.deepEqual(validateRouterSources(sources), []);
+});
+
+test("trusted-operation proof can only recreate Router in integration enforce mode", () => {
+  assert.deepEqual(validateTrustedOperationsOverlay(trustedOperationsOverlay), []);
+  for (const changed of [
+    trustedOperationsOverlay.replace("integration", "production"),
+    trustedOperationsOverlay.replace("enforce", "audit"),
+    trustedOperationsOverlay + "    network_mode: host\n",
+  ]) {
+    assert.ok(validateTrustedOperationsOverlay(changed).length);
+  }
 });
 
 test("anonymous Router startup uses the base dependency graph without optional Identity", async () => {
@@ -59,6 +75,11 @@ test("Router and initializer reject weakened trust, network and lifecycle bounda
     ["network_mode: none", "network_mode: host"],
     ["condition: service_healthy", "condition: service_started"],
     ['APOLLO_EXPOSE_QUERY_PLAN: "false"', 'APOLLO_EXPOSE_QUERY_PLAN: "true"'],
+    ["ASTER_ENV: local", "ASTER_ENV: production"],
+    [
+      "ASTER_ROUTER_TRUSTED_OPERATIONS_MODE: audit",
+      "ASTER_ROUTER_TRUSTED_OPERATIONS_MODE: enforce",
+    ],
     ["com.aster.authority: disposable-local", "com.aster.authority: durable-local"],
   ]) {
     assert.ok(validateRouterRuntime(compose.replace(before, after)).length, before);
@@ -69,6 +90,16 @@ test("Router packaging and config reject unsafe limits, notices and propagation"
   for (const [file, before, after] of [
     ["infra/docker/router.Dockerfile", "@sha256:", "@changed:"],
     ["infra/docker/router.Dockerfile", "COPY LICENSE", "COPY README.md"],
+    [
+      "infra/docker/router.Dockerfile",
+      "generated/trusted-operations.rhai",
+      "generated/untrusted-operations.rhai",
+    ],
+    [
+      "infra/docker/router.Dockerfile",
+      "generated/persisted-query-manifest.json",
+      "generated/untrusted-query-manifest.json",
+    ],
     ["infra/docker/router.Dockerfile", "--timeout=2s", "--timeout=200s"],
     ["infra/docker/router-trust.Dockerfile", "-m 0700", "-m 0777"],
     ["infra/docker/router-trust.Dockerfile", "USER node", "USER root"],
@@ -138,6 +169,30 @@ test("Router packaging and config reject unsafe limits, notices and propagation"
     ["infra/router/router.yaml", "/playback/playback.key", "/catalog/catalog.key"],
     ["infra/router/router.yaml", "max_queue_size: 128", "max_queue_size: 12800"],
     ["infra/router/router.yaml", "named: cookie", "matching: .*"],
+    [
+      "infra/router/router.yaml",
+      "allowed_attribute_keys: [aster.operation, aster.outcome, aster.trusted_operation]",
+      "allowed_attribute_keys: [aster.operation, aster.outcome]",
+    ],
+    ["infra/router/main.rhai", 'env::get("ASTER_ENV")', 'env::get("UNTRUSTED_ENV")'],
+    [
+      "infra/router/main.rhai",
+      "trusted::match_operation(name, sha256::digest(query))",
+      '"matched"',
+    ],
+    [
+      "infra/router/main.rhai",
+      'request.context["aster.trusted_operation"] = result;',
+      "log_info(query);",
+    ],
+    ["infra/router/main.rhai", "trusted::operation_label(name)", "name.to_string()"],
+    ["infra/router/main.rhai", 'result == "matched" || mode == "audit"', 'result == "matched"'],
+    [
+      "infra/router/generated/trusted-operations.rhai",
+      "fn operation_label(name)",
+      "fn label(name)",
+    ],
+    ["infra/router/generated/trusted-operations.rhai", '"unknown"', "log_info(hash);"],
     ["infra/router/router.yaml", "    catalog:\n", "    catalog:\n      named: cookie\n"],
     ["infra/router/router.yaml", "limits:\n", "limits:\n  max_depth: 12\n"],
     ["infra/router/LICENSE-APOLLO-ROUTER", "Elastic License 2.0", "MIT"],

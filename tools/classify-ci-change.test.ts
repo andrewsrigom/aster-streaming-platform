@@ -121,6 +121,28 @@ test("routes observability rules, contracts and verifier changes through the pla
   }
 });
 
+test("routes Router generator and trusted-operation verifier changes through platform", () => {
+  for (const path of [
+    "apps/router/src/composition.ts",
+    "apps/router/src/artifacts.ts",
+    "apps/router/src/main.ts",
+    "apps/router/package.json",
+    "tools/verify-trusted-operations.mjs",
+  ]) {
+    assert.deepEqual(
+      classifyChangedPaths([path]),
+      {
+        changedFiles: 1,
+        diagnostics: false,
+        full: true,
+        platform: true,
+        reason: "executable-change",
+      },
+      path,
+    );
+  }
+});
+
 test("runs the heavyweight diagnostic proof only for paths that can invalidate it", () => {
   for (const path of [
     "services/catalog/src/create-service.ts",

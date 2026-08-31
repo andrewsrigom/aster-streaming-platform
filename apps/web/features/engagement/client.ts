@@ -1,7 +1,7 @@
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
-import { print } from "graphql";
 import { readGraphqlResponse } from "../../lib/apollo/response.ts";
 import { projectSelectedData } from "../../lib/apollo/public-snapshot.ts";
+import { apolloOperationBody } from "../../lib/apollo/trusted-operation.ts";
 import { HOME_PERSONALIZED, readHomeContinueWatching } from "../discovery/operations.ts";
 import { playerIdentifier } from "../playback/operations.ts";
 import {
@@ -65,7 +65,7 @@ export function createEngagementClient(
       return {
         operationName: "SetWatchlist" as const,
         kind: "watchlist-change" as const,
-        query: print(SET_WATCHLIST),
+        query: apolloOperationBody(SET_WATCHLIST),
         variables: { input: readWatchlistCommand(variables?.input, profileId) },
       };
     }
@@ -76,7 +76,7 @@ export function createEngagementClient(
           operationName: known.name,
           kind: "library" as const,
           libraryKind: kind,
-          query: print(known.document),
+          query: apolloOperationBody(known.document),
           variables: readLibraryVariables(variables, profileId),
         };
       }
@@ -89,7 +89,7 @@ export function createEngagementClient(
       return {
         operationName: "WatchlistMembership" as const,
         kind: "membership" as const,
-        query: print(WATCHLIST_MEMBERSHIP),
+        query: apolloOperationBody(WATCHLIST_MEMBERSHIP),
         variables: { profileId, titleId: variables.titleId },
       };
     }
@@ -102,7 +102,7 @@ export function createEngagementClient(
       return {
         operationName: "HomePersonalized" as const,
         kind: "home" as const,
-        query: print(HOME_PERSONALIZED),
+        query: apolloOperationBody(HOME_PERSONALIZED),
         variables: { profileId, first: 10 as const, locale: variables.locale },
       };
     }
@@ -110,7 +110,7 @@ export function createEngagementClient(
       return {
         operationName: "RecordProgress" as const,
         kind: "progress-change" as const,
-        query: print(RECORD_PROGRESS),
+        query: apolloOperationBody(RECORD_PROGRESS),
         variables: { input: readProgressCommand(variables?.input, profileId) },
       };
     }
@@ -122,7 +122,7 @@ export function createEngagementClient(
       return {
         operationName: "PlayerProgress" as const,
         kind: "progress" as const,
-        query: print(PLAYER_PROGRESS),
+        query: apolloOperationBody(PLAYER_PROGRESS),
         variables: { profileId, titleId: variables.titleId },
       };
     }

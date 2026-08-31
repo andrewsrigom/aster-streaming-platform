@@ -20,7 +20,9 @@ services:
       com.aster.environment: local
       com.aster.scope: platform
     environment:
+      ASTER_ENV: local
       ASTER_ROUTER_OTLP_ENABLED: "false"
+      ASTER_ROUTER_TRUSTED_OPERATIONS_MODE: audit
       APOLLO_EXPOSE_QUERY_PLAN: "false"
     depends_on:
       router-trust-init:

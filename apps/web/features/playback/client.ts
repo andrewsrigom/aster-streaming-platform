@@ -1,6 +1,6 @@
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
-import { print } from "graphql";
 import { readGraphqlResponse } from "../../lib/apollo/response.ts";
+import { apolloOperationBody } from "../../lib/apollo/trusted-operation.ts";
 import { START_PLAYBACK, playerIdentifier, readPlaybackResult } from "./operations.ts";
 
 export function createPlaybackClient(
@@ -36,7 +36,7 @@ export function createPlaybackClient(
         headers: { "content-type": "application/json", "x-aster-csrf": "1" },
         body: JSON.stringify({
           operationName: "StartPlayback",
-          query: print(START_PLAYBACK),
+          query: apolloOperationBody(START_PLAYBACK),
           variables: { titleId },
         }),
       });

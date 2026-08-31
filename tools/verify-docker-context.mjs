@@ -26,6 +26,8 @@ const included = [
   "apps/web/licenses/LGPL-3.0.txt",
   "apps/web/licenses/SOURCES.md",
   "infra/router/generated/supergraph.graphql",
+  "infra/router/generated/persisted-query-manifest.json",
+  "infra/router/generated/trusted-operations.rhai",
   "evidence/phase-05/generated-media.json",
   "tools/media/hls.mjs",
 ];

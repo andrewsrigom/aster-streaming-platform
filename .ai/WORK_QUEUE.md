@@ -155,7 +155,11 @@ Historical stashes are superseded.
 | 60 | Define executable SLIs, initial SLOs and error budgets | P12-R05 | DONE |
 | 61 | Provision a bounded three-layer operational overview | P12-R12 | DONE |
 | 62 | Implement multi-window SLO burn-rate alerts linked to runbooks | P12-R07 | DONE |
-| 63 | Diagnose three injected failures from telemetry and close Phase 12 | P12-R10 | IN_PROGRESS |
+| 63 | Diagnose three injected failures from telemetry and close Phase 12 | P12-R10 | DONE |
+| 64 | Generate trusted operations, enforce the environment rollout and document safe schema delivery (also P13-R02/R12) | P13-R01 | IN_PROGRESS |
+| 65 | Enforce GraphQL parser, shape, list, cost and introspection controls (also P13-R04/R05/R10) | P13-R03 | READY |
+| 66 | Enforce execution, concurrency, identity-rate and cache-scope controls (also P13-R11) | P13-R06 | READY |
+| 67 | Prove N+1/query counts and owner authorization; close Phase 13 (also P13-R08/R09) | P13-R07 | READY |
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head
@@ -307,6 +311,56 @@ Corrected source `089f656`, tree `d9abb88`, passed protected run `33344001503`,
 including the selected diagnostic job and aggregate protection. Discussions
 `3890928257`/`3890928260` are answered and resolved. Final evidence publication,
 blocking-boundary confirmation and release remain.
+
+Final correction `b646e496d0946262a688f34a118a896f6c40ebda`, tree
+`789007d5f48d4a16c0a1b47b8e2554e1ee0e294a`, immediately observes the
+diagnostic request and disruption promises. Protected run `33346575787`
+attempt 2 passed the complete three-scenario runtime, source quality and
+aggregate protection; discussion `3891065894` is answered and resolved, and
+the final confirmation reported no blocker. PR51 squash-merged as tree-identical
+main `2b77a32f43a87fcdfc5032faf856f369de183998`. Exact-main run
+`33348247619` passed every required job, including the diagnostic runtime and
+Docker-only playable demo. Item63 and Phase12 are released. Item64 starts from
+that exact main on `feat/p13-trusted-operations`; it owns the source-generated
+trusted-operation manifest, explicit local/integration audit workflow,
+staging/production enforcement and safe schema/client rollout sequence.
+PR52 initial run `33350909056` and review found audit diagnostic-label loss,
+Apollo wire/source hash drift and a missing same-name rollout union. Corrected
+source `0e4a4b3`, tree `61b32535`, hashes actual link-ready documents, proves 19
+`HttpLink` bodies, retains at most two reviewed hashes per name and restores only
+finite audit labels. Router11/11, Web118/118, focused policy36/36 and the corrected
+49/49 affected gate pass. Protected run `33352310376` passed every required
+job. Confirmation discussion `3891493400` found that verifier-only changes
+could skip the Local platform proof. Source `b85230d`, tree `05532b63`, adds the
+path plus a regression; classifier12/12 and the affected gate49/49 with36 cached
+in50.442 seconds pass. Protected run `33354040239` passes. Blocker-focused
+discussion `3891588767` found Web tests collapsing same-name manifest versions.
+Source `effc7fd`, tree `0acdba2a`, indexes all reviewed versions; Web119/119 and
+gate49/49 with35 cached in54.987 seconds pass. Protected run `33355546182`
+passes. Discussions `3891672851`/`3891672854` found retained-body reprinting and
+unsafe pre-union rollback. Source `5f4a315`, tree `7c15d925`, preserves retained
+bytes and defines the union rollback floor; protected run `33357231869` passes.
+Discussion `3891772219` found AST locations omit ignored boundary bytes. Source
+`0bcdd68`, tree `7ad2f2d8`, replaces ambiguous slices with bounded explicit JSON
+body strings; Router11/11 and gate49/49 with38 cached in45.499 seconds pass.
+Evidence head `66fcab71` passed protected run `33359022739`; discussion
+`3891772219` is resolved. Confirmation discussion `3891915868` found Router
+generator-only changes could skip platform CI. Source `64fa64e`, tree `35817101`,
+routes the complete Router package through that proof; CI policy38/38 and
+gate49/49 with36 cached in64.294 seconds pass. Protected run `33360643657`
+attempt2 passed after one transient TraceQL indexing timeout and discussion
+`3891915868` is resolved. Discussion `3895588146` found the runtime proof could
+select a retained `Browse` body while sending current variables. Source
+`2286c7f`, tree `d253a5e`, joins the persisted entry to the unique current hash,
+fails closed on an absent/ambiguous join and adds retained-first coverage to the
+platform suite. Platform92/92 and gate49/49 with33 cached in98.949 seconds pass.
+Evidence head `a4e849f` passed protected run `33406328754`; discussion
+`3895588146` is resolved. Final audit then found the delivery manifest indexed
+the retained union, making its unique-current role ambiguous during overlap.
+Source `a353164`, tree `f692577`, keeps only current hashes in that index while
+the Apollo manifest and Router matcher retain both reviewed versions.
+Router11/11, verifier2/2, docs and gate49/49 with36 cached in99.305 seconds pass.
+Exact-head protected CI, confirmation and release remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 
