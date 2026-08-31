@@ -28,17 +28,26 @@ full snapshot through the archival checkpoint remains in
   and recoveries, exact cleanup, source quality, Docker-only playable demo and
   aggregate protection all passed. Bounded transcript:
   `evidence/phase-12/diagnostics/protected-run-33341630994.txt`.
+- Evidence head `cc2db4c`, tree `910678e`, passed exact-head run `33342551385`.
+  Confirmation discussions `3890928257`/`3890928260` found incomplete Catalog
+  build-input diagnostic invalidation and a stale operator-guide acceptance
+  claim. The local correction covers direct/transitive Catalog package and root
+  build inputs, makes diagnostics imply the platform job, updates the guide,
+  passes classifier tests 11/11 and the affected gate 73/73 with 60 cached in
+  50.155 seconds.
 
 ### Evidence
 
 - `node --test ./tools/classify-ci-change.test.ts ./tools/run-diagnostic-exercises.test.mjs ./tools/verify-diagnostics-profile.test.mjs`
   passes 23/23; `pnpm check:changed` passes 73/73 with 63 cached in 44.855
   seconds.
+- Latest `node --test ./tools/classify-ci-change.test.ts` passes 11/11 and
+  `pnpm check:changed` passes 73/73 with 60 cached in 50.155 seconds.
 
 ### Next action
 
-- Publish final evidence, resolve the two discussions and obtain the permitted
-  blocking-boundary confirmation after exact-head protection.
+- Publish the Catalog-build invalidation/operator-guide correction, pass exact-
+  head protection, resolve the two new discussions and obtain confirmation.
 
 ## 2026-08-30 — Corrected diagnostic protected acceptance
 

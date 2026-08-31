@@ -65,7 +65,13 @@ passes focused tests 13/13 plus the affected gate 73/73 with 60 cached in
 run `33341630994`; the [bounded transcript](diagnostics/protected-run-33341630994.txt)
 records the complete stored-trace proof, all three diagnoses/recoveries, exact
 cleanup and every protected job. Final evidence publication, confirmation and
-release remain.
+release remain. Evidence head `cc2db4c`, tree `910678e`, passed exact-head run
+`33342551385`; confirmation discussions `3890928257`/`3890928260` then found
+incomplete diagnostic invalidation for Catalog build inputs and a stale status
+in the operator guide. The local correction covers direct/transitive Catalog
+packages and root build inputs, guarantees the platform job, updates the guide,
+passes classifier tests 11/11 and passes the affected gate 73/73 with 60 cached
+in 50.155 seconds.
 
 ## Requirement traceability
 

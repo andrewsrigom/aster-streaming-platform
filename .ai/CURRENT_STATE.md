@@ -360,7 +360,13 @@ Local-platform job `99338255936` proved complete stored-trace privacy, all three
 diagnoses/recoveries and exact cleanup; source quality `99338255932`,
 documentation/security `99338255943`, dependency review `99338239593` and
 aggregate `99340328371` also passed. Final evidence publication and confirmation
-remain.
+remain. Evidence head `cc2db4c`, tree `910678e`, passed exact-head run
+`33342551385`. Confirmation discussions `3890928257`/`3890928260` found that
+Event Delivery, Object Storage, transitive Broker and root workspace/TypeScript
+Catalog build inputs did not all select diagnostics, and that the operator guide
+still called acceptance pending. The current batch covers those inputs, makes
+diagnostic selection imply the platform job, updates the guide, passes classifier
+tests 11/11 and passes the affected gate 73/73 with 60 cached in 50.155 seconds.
 Architecture, operations, runbooks and licensing are current. The
 earlier local attempt stopped during Docker Desktop image build and could not
 inspect scoped resources. The normal demo is unchanged; Phase13 has not started.

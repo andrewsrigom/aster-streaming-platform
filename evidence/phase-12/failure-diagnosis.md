@@ -361,14 +361,26 @@ documentation/security job `99338255943`, dependency review `99338239593` and
 aggregate `99340328371` passed. The bounded transcript is
 [protected-run-33341630994.txt](diagnostics/protected-run-33341630994.txt).
 
+Evidence head `cc2db4c7a572e4e1a3c74210b278175aea3a8937`, tree
+`910678e9642f3dbb7c293b05a79548590d96e519`, passed exact-head workflow
+`33342551385`, including repeated diagnostic runtime and aggregate protection.
+Confirmation discussions `3890928257` and `3890928260` found that several
+runtime-affecting Catalog image inputs did not invalidate diagnostics and that
+the primary operator guide still described corrected acceptance as pending.
+The local remediation covers Event Delivery, Object Storage, transitive Broker,
+workspace/TypeScript roots and patches; any diagnostic path now also selects
+the platform job. The guide records the successful acceptance. Classifier tests
+pass 11/11 and the affected gate passes 73/73 with 60 cached in 50.155 seconds.
+
 ## Remaining release work
 
 Before release:
 
 1. inspect and, if present, remove only the exact interrupted project above
    when that same local engine is reachable;
-2. publish the final protected evidence and pass exact-head protection;
-3. resolve discussions `3890788286`/`3890788287` and obtain the permitted
+2. publish the build-input invalidation/operator-guide correction and pass
+   exact-head protection;
+3. resolve discussions `3890928257`/`3890928260` and obtain the permitted
    blocking-boundary confirmation;
 4. squash merge PR51 and verify
    exact-main CI;

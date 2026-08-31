@@ -72,6 +72,13 @@ Finite-outcome source `58779b9` passes protected run `33336386466`.
   `99338239593` and aggregate `99340328371` also passed. Publish the bounded
   transcript, resolve the two discussions and request only the permitted
   confirmation after final exact-head protection.
+- Evidence head `cc2db4c`, tree `910678e`, passed exact-head run `33342551385`.
+  Confirmation discussions `3890928257`/`3890928260` found missing transitive
+  Catalog build-input invalidation and the stale protected-acceptance status in
+  the operator guide. The local batch covers Event Delivery, Object Storage,
+  Broker, workspace/TypeScript roots and patches, makes diagnostics imply the
+  platform job, updates the guide, passes classifier tests 11/11 and the
+  affected gate 73/73 with 60 cached in 50.155 seconds.
 
 ## Protected runtime finding
 

@@ -123,7 +123,13 @@ seconds. Corrected source `cf87b8c`, tree `30ccdf9`, then passed protected run
 `33341630994`: the full stored-trace privacy proof, all three diagnoses and
 recoveries, exact cleanup, complete source quality, Docker-only playable demo
 and aggregate protection passed. Evidence publication, discussion resolution,
-confirmation, merge and exact-main CI remain. Phase13 has not started.
+confirmation, merge and exact-main CI remain. Evidence head `cc2db4c`, tree
+`910678e`, passed exact-head run `33342551385`; confirmation discussions
+`3890928257`/`3890928260` then found incomplete Catalog-build diagnostic
+invalidation and a stale operator-guide status. The current batch covers every
+runtime-affecting Catalog package/root input, guarantees diagnostics select the
+platform job, updates the guide, passes classifier tests 11/11 and passes the
+affected gate 73/73 with 60 cached in 50.155 seconds. Phase13 has not started.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

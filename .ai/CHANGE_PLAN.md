@@ -109,7 +109,15 @@ Local-platform job `99338255936` validated the full stored OTLP trace, diagnosed
 and recovered all three required failures, and cleaned its exact project.
 Source-quality job `99338255932`, documentation/security job `99338255943`,
 dependency review `99338239593` and aggregate `99340328371` also passed. Final
-evidence publication, discussion resolution and permitted confirmation remain.
+evidence head `cc2db4c`, tree `910678e`, passed exact-head run `33342551385`.
+Its permitted confirmation found two remaining blockers: diagnostic CI omitted
+Catalog's Event Delivery/Object Storage/transitive Broker and root workspace/
+TypeScript build inputs, and the primary operator guide retained a superseded
+pending-acceptance claim. The current batch makes every diagnostic path imply
+the platform job, covers those Catalog build inputs and records the completed
+acceptance in the guide. Classifier tests pass 11/11 and the affected gate
+passes 73/73 with 60 cached in 50.155 seconds. Corrected protection and confirmation
+remain.
 
 ## Proposed behavior
 

@@ -190,10 +190,11 @@ Catalog, PostgreSQL and Redis failures. Collector reaches Tempo only through
 internal `diagnostics-ingest`; Grafana reaches it only through internal
 `diagnostics-query`; Tempo has no product network attachment. The runner sends
 bounded TraceQL reads through Grafana's UID-scoped data-source proxy, requires
-the exact Router trace ID and selected finite boundary fields, correlates that
-span set with sanitized Router/Catalog logs, rejects raw and JSON-escaped
-GraphQL document canaries, restores each service and verifies a real
-TitleDetail recovery request.
+the exact Router trace ID and selected finite boundary fields, then fetches a
+bounded stable copy of the complete trace, validates every OTLP span ID and
+rejects raw and JSON-escaped GraphQL document canaries across the serialized
+trace. It correlates the finite boundary set with sanitized Router/Catalog logs,
+restores each service and verifies a real TitleDetail recovery request.
 PostgreSQL injection blocks one
 known fixture read with the exact `aster-p12-diagnostic-lock` application name
 before pausing the disposable database; cleanup terminates only that holder.
@@ -205,8 +206,8 @@ printed project UUID. After the same engine is healthy, inspect and remove only
 that exact Compose project; never use a prefix deletion, global prune, retained
 `aster` reset or WSL shutdown as diagnostic cleanup.
 
-The source policy and focused tests are implemented. The command is not yet a
-verified acceptance path. After the interrupted local build, protected run
+The source policy, focused tests and protected acceptance are implemented.
+After the interrupted local build, protected run
 `33331974187` passed Catalog diagnosis, PostgreSQL recovery and exact cleanup,
 then exposed premature V1 trace retrieval before the PostgreSQL boundary became
 query-visible; Redis did not run. Corrected run `33332980729` proved that exact
@@ -223,9 +224,13 @@ the causal PostgreSQL span as `cancelled` with intrinsic status `unset`. The
 current query and polling condition require the exact dependency plus one of
 `timeout`, `cancelled`, `unavailable` or `error`; `success` and `rejected` do
 not end the wait. Protected run `33336386466` passes all three scenarios,
-recovery after each and exact clean teardown. Targeted confirmation then required
-the network, Grafana-health and escaped-document corrections above; corrected
-protected acceptance remains. Current status and all attempts are recorded in
+recovery after each and exact clean teardown. Targeted confirmation then
+required the network, Grafana-health and escaped-document corrections above.
+Corrected source `cf87b8c` and protected run `33341630994` now pass complete
+stored-trace privacy, all three diagnoses and recoveries, exact cleanup, source
+quality, the Docker-only playable demo and aggregate protection. Final review
+confirmation, merge and exact-main release verification remain. Current status
+and all attempts are recorded in
 [failure-diagnosis evidence](../../evidence/phase-12/failure-diagnosis.md).
 
 Local full-profile evidence proves real HTTP/dependency/CPU/memory/event-loop/export metrics, Collector loss with Identity still live/ready, explicit unhealthy telemetry status and recovery. Failed exports reappear under `aster_export_result="failure"` after recovery. Collector-down shutdown completed naturally in 4223 ms including the Docker stop call, exit 143, with degraded telemetry delivery rather than a false flush success.

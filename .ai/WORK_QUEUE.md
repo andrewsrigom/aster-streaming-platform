@@ -297,7 +297,12 @@ cached in 54.407 seconds. Corrected source `cf87b8c`, tree `30ccdf9`, passed
 protected run `33341630994`, including complete stored-trace privacy, all three
 diagnoses/recoveries, exact cleanup, source quality, the Docker-only playable
 demo and aggregate protection. Final evidence publication, confirmation and
-release remain.
+release remain. Evidence head `cc2db4c`, tree `910678e`, passed exact-head run
+`33342551385`; confirmation discussions `3890928257`/`3890928260` then found
+missing Catalog transitive/root build-input diagnostic invalidation and a stale
+operator-guide status. The current batch covers those paths, guarantees a
+diagnostic path also selects the platform job, updates the guide, passes
+classifier tests 11/11 and the affected gate 73/73 with 60 cached in 50.155 seconds.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

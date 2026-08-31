@@ -10,6 +10,7 @@ const MAX_OUTPUT_PATH_BYTES = 4_096;
 const GIT_OBJECT = /^[a-f\d]{40}$/u;
 const ZERO_OBJECT = /^0{40}$/u;
 const DOCUMENTATION_PREFIXES = [".ai/", "docs/", "evidence/", "skills/"] as const;
+const EXECUTABLE_EVIDENCE_FILES = new Set(["evidence/phase-05/generated-media.json"]);
 const PLATFORM_PREFIXES = [
   "apps/web/",
   "infra/compose/",
@@ -80,20 +81,20 @@ const PLATFORM_FILES = new Set([
 ]);
 const DIAGNOSTIC_PREFIXES = [
   "services/catalog/",
-  "packages/http-express/",
-  "packages/runtime/",
-  "packages/telemetry/",
-  "packages/postgres/",
-  "packages/redis/",
+  "packages/",
+  "patches/",
   "infra/router/",
   "infra/grafana/",
 ] as const;
 const DIAGNOSTIC_FILES = new Set([
   ".github/workflows/ci.yml",
   ".dockerignore",
+  "LICENSE",
   "package.json",
   "pnpm-lock.yaml",
+  "pnpm-workspace.yaml",
   "turbo.json",
+  "tsconfig.base.json",
   "tools/classify-ci-change.ts",
   "tools/classify-ci-change.test.ts",
   "infra/compose/compose.yml",
@@ -110,6 +111,10 @@ const DIAGNOSTIC_FILES = new Set([
   "infra/docker/tempo.Dockerfile",
   "infra/observability/tempo.yml",
   "infra/observability/slo-rules.yml",
+  "evidence/phase-05/generated-media.json",
+  "tools/media/fixture-export.mjs",
+  "tools/media/generate-hls.mjs",
+  "tools/media/hls-contract.mjs",
   "tools/verify-diagnostics-profile.mjs",
   "tools/verify-diagnostics-profile.test.mjs",
   "tools/run-diagnostic-exercises.mjs",
@@ -145,8 +150,9 @@ function validateChangedPath(path: string): void {
 
 function isDocumentationOnlyPath(path: string): boolean {
   return (
-    path.toLocaleLowerCase("en-US").endsWith(".md") ||
-    DOCUMENTATION_PREFIXES.some((prefix) => path.startsWith(prefix))
+    !EXECUTABLE_EVIDENCE_FILES.has(path) &&
+    (path.toLocaleLowerCase("en-US").endsWith(".md") ||
+      DOCUMENTATION_PREFIXES.some((prefix) => path.startsWith(prefix)))
   );
 }
 
@@ -190,7 +196,7 @@ export function classifyChangedPaths(paths: string[]): ChangeClassification {
     changedFiles: uniquePaths.length,
     diagnostics: uniquePaths.some(isDiagnosticPath),
     full: true,
-    platform: uniquePaths.some(isPlatformPath),
+    platform: uniquePaths.some((path) => isPlatformPath(path) || isDiagnosticPath(path)),
     reason: "executable-change",
   };
 }
