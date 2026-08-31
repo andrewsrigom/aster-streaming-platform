@@ -48,6 +48,7 @@ export const GRAPHQL_DEMAND_POLICY: DemandPolicy = Object.freeze({
 });
 
 const MAXIMUM_PARSER_TOKENS = 2_000;
+const MAXIMUM_REQUEST_BYTES = 32_768;
 
 export type OperationDemandProfile = Readonly<{
   aliases: number;
@@ -431,12 +432,23 @@ export function analyzeOperationDemand(
   policy: DemandPolicy = GRAPHQL_DEMAND_POLICY,
 ): OperationDemandProfile {
   positivePolicy(policy);
+  const encodedRequestBytes = Buffer.byteLength(
+    JSON.stringify({
+      operationName: operation.name,
+      query: operation.body,
+      variables: {},
+    }),
+    "utf8",
+  );
   if (
-    Buffer.byteLength(operation.body, "utf8") > 131_072 ||
+    encodedRequestBytes > MAXIMUM_REQUEST_BYTES ||
     !/^[a-f0-9]{64}$/u.test(operation.id) ||
     createHash("sha256").update(operation.body).digest("hex") !== operation.id
   ) {
-    return reject(operation.name, "body or exact hash is invalid");
+    return reject(
+      operation.name,
+      "encoded request exceeds the Router body limit or hash is invalid",
+    );
   }
   let source: DocumentNode;
   try {

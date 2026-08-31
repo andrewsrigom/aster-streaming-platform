@@ -249,6 +249,26 @@ test("trusted operation analysis uses the same parser-token ceiling as Router", 
   );
 });
 
+test("trusted operation analysis includes the GraphQL envelope in the Router body limit", () => {
+  const name = "OversizedRequest";
+  const base = `query ${name} { books(first: 1) { tags } }`;
+  const envelopeBytes = Buffer.byteLength(
+    JSON.stringify({ operationName: name, query: base, variables: {} }),
+    "utf8",
+  );
+  const body = base + " ".repeat(32_768 - envelopeBytes + 1);
+  assert.ok(Buffer.byteLength(body, "utf8") < 32_768);
+  assert.ok(
+    Buffer.byteLength(JSON.stringify({ operationName: name, query: body, variables: {} }), "utf8") >
+      32_768,
+  );
+  const schema = buildSchema(schemaSource);
+  assert.throws(
+    () => analyzeOperationDemand(schema, schema, demandOperation(body)),
+    /encoded request exceeds the Router body limit/u,
+  );
+});
+
 test("the manifest preserves exact name, type and hash cardinality", () => {
   const schema = buildSchema(schemaSource);
   const operations = [

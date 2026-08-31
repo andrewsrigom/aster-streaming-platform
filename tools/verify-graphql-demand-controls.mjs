@@ -16,7 +16,7 @@ export function parserTokenFlood() {
 
 export function assertSafeGraphqlRejection(response, label) {
   assert.ok(
-    [400, 413, 422, 429].includes(response.status),
+    [200, 400, 413, 422, 429].includes(response.status),
     `${label} returned ${response.status}.`,
   );
   assert.ok(
@@ -30,9 +30,16 @@ export function assertSafeGraphqlRejection(response, label) {
     /TokenFlood|IntrospectionProbe|OversizedBody|aster-private-batch-canary|__schema|\bf\d{1,4}\b|catalog:3200|identity:3100|postgres|redis|node_modules|\bat\s+[^\n]+:\d+/iu,
     `${label} exposed request or topology detail.`,
   );
+  if (response.status === 200) {
+    assert.ok(response.body, `${label} returned an unstructured successful response.`);
+  }
   if (response.body !== undefined) {
     assert.equal(response.body?.data, undefined, `${label} returned data.`);
-    assert.ok(Array.isArray(response.body?.errors) && response.body.errors.length <= 4);
+    assert.ok(
+      Array.isArray(response.body?.errors) &&
+        response.body.errors.length >= 1 &&
+        response.body.errors.length <= 4,
+    );
   }
 }
 

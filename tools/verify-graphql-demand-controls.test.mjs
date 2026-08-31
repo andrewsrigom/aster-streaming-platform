@@ -21,11 +21,24 @@ test("GraphQL demand rejection accepts only bounded responses without data or to
       "fixture",
     ),
   );
+  assert.doesNotThrow(() =>
+    assertSafeGraphqlRejection(
+      {
+        status: 200,
+        text: '{"errors":[{"message":"GraphQL operation failed."}]}',
+        body: { errors: [{}] },
+      },
+      "fixture",
+    ),
+  );
   assert.throws(() =>
     assertSafeGraphqlRejection(
       { status: 200, text: '{"data":{}}', body: { data: {}, errors: [] } },
       "fixture",
     ),
+  );
+  assert.throws(() =>
+    assertSafeGraphqlRejection({ status: 200, text: "not-json", body: undefined }, "fixture"),
   );
   assert.throws(() =>
     assertSafeGraphqlRejection(
