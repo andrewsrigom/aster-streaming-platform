@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-08-30
+Last updated: 2026-08-31
 
 ## Active phase
 
@@ -20,8 +20,10 @@ one deterministic first-party operation manifest, exact admission under an
 explicit environment policy, a bounded local/integration audit workflow and a
 safe schema/client rollout. Initial PR52 run `33350909056` and review found four
 real integration/contract blockers. Corrected source `0e4a4b3`, tree `61b32535`,
-passes the affected candidate gate; corrected packaged Router CI, confirmation
-and release remain. Full Phase00–14 goal stays active.
+passes the affected candidate gate and protected run `33352310376`. Confirmation
+discussion `3891493400` found a verifier-only CI-classification gap. Source
+`b85230d`, tree `05532b63`, corrects it; exact-head CI, blocker-focused
+confirmation and release remain. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -67,9 +69,15 @@ Playback, while review found source/wire hash drift and the missing rollout unio
 Corrected source `0e4a4b3d5742f2458d082b59bac1efedf1651783`, tree
 `61b325350149c9d5ba07b4ddc3c41cb324526984`, addresses the complete initial
 round. Router11/11, Web118/118, focused policy36/36 and the affected gate49/49
-with35 cached in72.599 seconds pass. Corrected protected CI, one confirmation
-review and release remain. APQ stays disabled. PostgreSQL/data ownership, owner
-authorization, schemas, Redis, events and media remain unchanged.
+with35 cached in72.599 seconds pass. Protected run `33352310376` then passed
+every job, including enforce-mode Router telemetry and the playable demo.
+Confirmation discussion `3891493400` found only that a future verifier-only
+change could skip the Local platform lane. Source `b85230d`, tree `05532b63`,
+adds the exact path to the finite classifier; classifier12/12 and affected
+gate49/49 with36 cached in50.442 seconds pass. Exact-head protected CI and one
+permitted blocker-focused confirmation remain. APQ stays disabled.
+PostgreSQL/data ownership, owner authorization, schemas, Redis, events and media
+remain unchanged.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and

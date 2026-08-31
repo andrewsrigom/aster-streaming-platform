@@ -1,6 +1,6 @@
 P13-R01/R02/R12 trusted-operation evidence
-Date: 2026-08-30
-Status: corrected implementation and affected candidate gate pass; protected runtime/release pending
+Date: 2026-08-31
+Status: packaged runtime verified; confirmation CI-classifier correction pending protected release
 
 Environment
 - Branch: feat/p13-trusted-operations
@@ -9,6 +9,10 @@ Environment
 - Initial protected run: 33350909056 (failed; invalidated by the correction below)
 - Corrected source: 0e4a4b3d5742f2458d082b59bac1efedf1651783
 - Corrected tree: 61b325350149c9d5ba07b4ddc3c41cb324526984
+- Protected evidence head: 24e37c280af130de114f8e7c3e4fc47ba7475746
+- Protected run: 33352310376 (passed)
+- Confirmation CI correction: b85230d21bd733cc27337f2d8e9e8fd8068bb6f6
+- Confirmation correction tree: 05532b639091e8fb54e547e282230ccbfa313258
 - Node.js: 24.19.0
 - pnpm: 11.24.0
 - Runtime target: Apollo Router Core 2.17.0, explicit integration/enforce proof
@@ -35,6 +39,8 @@ Focused commands and results
 - Focused Router/SLO/CI policy command: pass; 36/36.
 - CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm
   check:changed: pass; 49/49 tasks, 35 cached, 72.599 seconds.
+- Confirmation correction: classifier test 12/12 and affected candidate gate
+  49/49 tasks, 36 cached, 50.442 seconds.
 - pnpm typecheck and pnpm ci:test: pass; CI policy 37/37.
 - pnpm security:check (inside the candidate gate): pass; zero findings.
 
@@ -55,14 +61,28 @@ Initial protected findings and correction
   file is parser-validated but formatter-ignored; all transport tests now assert
   the wire body. The final candidate gate passes.
 
+Protected acceptance and confirmation correction
+- Protected run 33352310376 passed every required job at evidence head 24e37c2.
+  Apollo Router 2.17.0 loaded the generated policy, enforce mode accepted the
+  canonical operation and rejected altered, unknown and missing inputs. All
+  three finite metric labels, every owner runtime and the Docker-only playable
+  demo passed; the disposable Compose projects were removed.
+- The two initial review threads were answered and resolved after that proof.
+- Confirmation discussion 3891493400 found that a future change limited to
+  `tools/verify-trusted-operations.mjs` would not select the Local platform job.
+  Source b85230d adds that verifier to the finite platform classifier and a
+  regression proves verifier-only changes select full plus platform checks.
+  This does not change Router or verifier behavior, but exact-head protected CI
+  and one blocker-focused confirmation remain required before merge.
+
 Pending acceptance
-- Protected CI must build the Router, accept canonical Browse, reject altered,
-  unknown and missing operations, expose matched/unknown/missing metric labels,
-  preserve the playable demo and clean the Compose project.
+- Publish the batched classifier/evidence correction once, pass exact-head
+  protected CI, resolve discussion 3891493400 and obtain the permitted
+  blocker-focused confirmation before squash merge and exact-main verification.
 
 Interpretation and limitations
 The corrected results prove deterministic source generation, actual current Web
-wire compatibility, bounded rollout overlap and adverse repository policy. They
-do not yet prove the corrected Rhai script loads in the pinned binary or that
-rejected-operation metrics reach the packaged Prometheus endpoint. The protected
-real-Router lane owns that proof; no local Docker or host restart loop is used.
+wire compatibility, bounded rollout overlap, adverse repository policy and the
+packaged pinned-Router enforcement/telemetry path. The final source-only
+classifier correction cannot alter that runtime behavior, but the protected
+branch policy still requires an exact-head run. No hosted deployment is claimed.

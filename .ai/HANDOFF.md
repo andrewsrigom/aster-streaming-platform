@@ -12,7 +12,8 @@ Phases00–12 are released. P12-R10 final source
 Item64 (P13-R01/R02/R12) is the sole `IN_PROGRESS` item on
 `feat/p13-trusted-operations`, based exactly on that main. Its active plan is
 `.ai/CHANGE_PLAN.md`. PR52 is open. Initial protected run `33350909056` failed
-and its complete initial review produced four blockers, all corrected locally.
+and its complete initial review produced four blockers. Their correction passed
+protected run `33352310376`; confirmation then found one CI-classification gap.
 
 ## Current behavior
 
@@ -31,7 +32,11 @@ and its complete initial review produced four blockers, all corrected locally.
 - Corrected source `0e4a4b3d5742f2458d082b59bac1efedf1651783`, tree
   `61b325350149c9d5ba07b4ddc3c41cb324526984`, passes Router11/11, Web118/118,
   focused policy36/36 and the affected gate49/49 with35 cached in72.599 seconds.
-  The corrected real pinned-Router proof is pending protected CI.
+  Protected run `33352310376` verifies the real pinned-Router proof, all owner
+  runtimes and the playable demo. Confirmation discussion `3891493400` found
+  that verifier-only changes could skip that lane. Source `b85230d`, tree
+  `05532b63`, adds the verifier to the finite platform classifier; classifier
+  12/12 and the affected gate49/49 with36 cached in50.442 seconds pass.
 
 ## Accepted design and implementation
 
@@ -51,12 +56,11 @@ and its complete initial review produced four blockers, all corrected locally.
 
 ## Exact next actions
 
-1. Commit this exact evidence checkpoint and push the existing PR52 once.
-2. Require corrected protected CI to load the generated module in Apollo Router 2.17.0,
-   prove canonical/altered/unknown/missing behavior, all three metric labels,
-   the playable demo and exact cleanup.
-3. Request one confirmation review; remediate only a requirement,
-   security/privacy, availability or public-contract blocker.
+1. Commit the evidence checkpoint and push the batched correction to PR52 once.
+2. Require exact-head protected CI; its classifier change must select the Local
+   platform lane containing the trusted-operation proof.
+3. Answer and resolve discussion `3891493400`; obtain one permitted
+   blocker-focused confirmation because the correction changes a CI boundary.
 4. Squash merge, verify exact-main CI, close item64 and activate item65.
 
 ## Execution boundary

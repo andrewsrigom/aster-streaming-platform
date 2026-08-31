@@ -116,7 +116,9 @@ retains the finite classification. Neither mode logs query text or hashes.
 - Raw artifact path: `evidence/phase-13/trusted-operations.txt` and generated artifacts under `infra/router/generated/`.
 - Acceptance result: corrected source `0e4a4b3`, Router11/11, Web118/118,
   focused policy36/36 and the 49/49 affected candidate gate pass; the corrected
-  pinned packaged Router proof, confirmation and release remain.
+  pinned packaged Router proof passed protected run `33352310376`. Confirmation
+  review discussion `3891493400` identified that verifier-only changes could skip
+  that proof; the bounded CI-classifier correction and repeated gates remain.
 - Iteration gate: Router composition tests plus Router source/runtime policy tests and `git diff --check`.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed`, documentation/AI checks and zero-finding secret scan.
 - Heavyweight repeat triggers: repeat the real Router enforce-mode proof when operation generation, matcher logic, startup mode policy, Router image/config/Rhai packaging or rejection telemetry changes; repeat the Docker playable journey when canonical client documents or admission behavior changes.

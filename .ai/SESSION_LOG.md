@@ -4,6 +4,31 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — Trusted-operation confirmation CI correction
+
+### Completed
+
+- Corrected evidence head `24e37c2` passed protected run `33352310376`, including
+  the pinned Router enforce/telemetry proof, every owner runtime and playable demo.
+- Initial review threads `3891343084` and `3891343087` were answered and resolved.
+  Confirmation discussion `3891493400` found that verifier-only changes could
+  skip the Local platform job.
+- Source `b85230d21bd733cc27337f2d8e9e8fd8068bb6f6`, tree
+  `05532b639091e8fb54e547e282230ccbfa313258`, routes that exact verifier through
+  platform CI. Classifier12/12 and affected gate49/49 with36 cached in50.442
+  seconds pass.
+
+### Evidence
+
+- `evidence/phase-13/trusted-operations.txt` records the protected run, review
+  thread, correction and remaining exact-head release gate.
+
+### Next action
+
+- Publish the batched correction once, require exact-head protected CI, resolve
+  the confirmation thread, obtain one blocker-focused confirmation, then merge
+  and verify exact main.
+
 ## 2026-08-30 — Trusted-operation protected findings corrected
 
 ### Completed
