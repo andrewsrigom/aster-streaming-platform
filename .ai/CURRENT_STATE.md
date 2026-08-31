@@ -58,9 +58,11 @@ document hash. Explicit local/integration `audit` preserves diagnostics;
 missing, unknown and altered documents before planning and emits only
 `matched`, `unknown` or `missing`. All 19 Web documents match the generated
 manifest. The affected gate passes 49/49 tasks with 35 cached in 52.315 seconds;
-the protected packaged Router proof, review and release remain. APQ stays
-disabled. PostgreSQL/data ownership, owner authorization, schemas, Redis,
-events and media remain unchanged.
+implementation source `f531298dd5fd1526c260ab411213189f16ccfdf0`, tree
+`81860cc5d803f2170afa6650a563a646a1bbf4cc`, records that candidate. The
+protected packaged Router proof, review and release remain. APQ stays disabled.
+PostgreSQL/data ownership, owner authorization, schemas, Redis, events and media
+remain unchanged.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and

@@ -5,6 +5,8 @@ Status: implementation and affected candidate gate pass; packaged runtime/releas
 Environment
 - Branch: feat/p13-trusted-operations
 - Base main: 2b77a32f43a87fcdfc5032faf856f369de183998
+- Implementation source: f531298dd5fd1526c260ab411213189f16ccfdf0
+- Implementation tree: 81860cc5d803f2170afa6650a563a646a1bbf4cc
 - Node.js: 24.19.0
 - pnpm: 11.24.0
 - Runtime target: Apollo Router Core 2.17.0, explicit integration/enforce proof

@@ -24,7 +24,9 @@ Item64 (P13-R01/R02/R12) is the sole `IN_PROGRESS` item on
 - Telemetry exposes only `matched`, `unknown` or `missing`; Web's 19 documents
   exactly match the generated manifest.
 - Focused tests and the affected candidate gate pass 49/49 tasks, 35 cached, in
-  52.315 seconds. The real pinned-Router proof is intentionally pending CI.
+  52.315 seconds. Implementation source `f531298dd5fd1526c260ab411213189f16ccfdf0`,
+  tree `81860cc5d803f2170afa6650a563a646a1bbf4cc`, records the candidate. The real
+  pinned-Router proof is intentionally pending CI.
 
 ## Accepted design and implementation
 
@@ -44,14 +46,13 @@ Item64 (P13-R01/R02/R12) is the sole `IN_PROGRESS` item on
 
 ## Exact next actions
 
-1. Commit the coherent implementation candidate and record its exact source/tree.
-2. Publish once and open one PR for item64.
-3. Require protected CI to load the generated module in Apollo Router 2.17.0,
+1. Commit this exact evidence checkpoint, publish once and open one PR for item64.
+2. Require protected CI to load the generated module in Apollo Router 2.17.0,
    prove canonical/altered/unknown/missing behavior, all three metric labels,
    the playable demo and exact cleanup.
-4. Complete the initial blocker review and one confirmation review; remediate
+3. Complete the initial blocker review and one confirmation review; remediate
    only a requirement, security/privacy, availability or public-contract blocker.
-5. Squash merge, verify exact-main CI, close item64 and activate item65.
+4. Squash merge, verify exact-main CI, close item64 and activate item65.
 
 ## Execution boundary
 

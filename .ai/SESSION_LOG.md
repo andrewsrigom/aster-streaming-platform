@@ -17,6 +17,8 @@ full snapshot through the archival checkpoint remains in
 - Focused Router tests pass 10/10, Web 117/117, Router/SLO policy 11/11 and CI
   policy 37/37. The affected gate passes 49/49 tasks, 35 cached, in 52.315
   seconds; the included secret scan has zero findings.
+- Implementation source `f531298dd5fd1526c260ab411213189f16ccfdf0`, tree
+  `81860cc5d803f2170afa6650a563a646a1bbf4cc`, records the coherent candidate.
 
 ### Evidence
 
