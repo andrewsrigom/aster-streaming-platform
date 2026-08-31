@@ -177,8 +177,10 @@ protected run `33417515807`, and initial discussion `3896477418` is resolved.
 Confirmation discussion `3896804794` found implicit non-root entity field cost.
 Source `8395f79`, tree `0a026a6a`, requires explicit cost for every selected
 field on a cost-owned type while preserving all calibrated profiles; Router20/20
-and gate51/51 with32 cached in88.328 seconds pass. Corrected packaged proof,
-blocking-boundary confirmation and release remain.
+and gate51/51 with32 cached in88.328 seconds pass. Exact head `9f23640` passed
+protected run `33420810495` attempt2; discussion `3896804794` and both review
+threads are resolved, and clean confirmation comment `5482516972` found no major
+issue. Final evidence publication, merge and exact-main release remain.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

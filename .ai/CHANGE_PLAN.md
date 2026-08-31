@@ -60,8 +60,12 @@ implicit scalar/composite weight. Source
 `0a026a6a00cf481b0b9709a098e3b185668b07e8`, requires direct field cost for
 every selected non-root field on a cost-owned type and explicitly marks all
 current `Title`/`Profile` fields without changing any calibrated profile.
-Router20/20 and the affected gate51/51 pass. Corrected protected proof,
-blocking-boundary confirmation and release remain pending.
+Router20/20 and the affected gate51/51 pass. Exact candidate head
+`9f23640a65df42c89dc4ecfc645a0c5cf543e3f7` passed protected run
+`33420810495` attempt2 after attempt1 exposed an unrelated transient storage
+fixture assertion. Discussion `3896804794` is resolved, all review threads are
+resolved and clean confirmation comment `5482516972` found no major issue.
+Release remains pending.
 
 ## Proposed behavior
 
@@ -176,10 +180,10 @@ and retains the playable journey.
 
 - Raw artifact: `evidence/phase-13/graphql-demand-controls.txt` and generated
   demand manifest.
-- Acceptance: protected run `33417515807` proves the packaged runtime at its
-  exact head. Its confirmation cost-drift blocker is corrected locally with
-  unchanged calibrated profiles; corrected protected proof, confirmation and
-  release remain pending.
+- Acceptance: protected run `33420810495` attempt2 proves the corrected packaged
+  runtime at exact source/evidence head `9f23640`; all review threads are
+  resolved and confirmation comment `5482516972` is clean. Release remains
+  pending.
 - Iteration gate: Router analyzer/composition tests, affected owner schema tests,
   format/lint and `git diff --check`.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536

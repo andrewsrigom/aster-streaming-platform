@@ -80,9 +80,10 @@ head `0fd6c78` passed protected run `33417515807`; initial discussion
 fallback could hide removed non-root entity field cost. Source `8395f79`, tree
 `0a026a6a`, now requires direct cost on every selected field of a cost-owned
 type; Router20/20 and gate51/51 with32 cached in88.328 seconds pass without
-changing calibrated profiles. Corrected protected proof and
-blocking-boundary confirmation remain. No hosted deployment is claimed;
-Phase14 still owns provider and deployment decisions.
+changing calibrated profiles. Exact head `9f23640` passed protected run
+`33420810495` attempt2; both threads are resolved and confirmation comment
+`5482516972` found no major issue. Release remains. No hosted deployment is
+claimed; Phase14 still owns provider and deployment decisions.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

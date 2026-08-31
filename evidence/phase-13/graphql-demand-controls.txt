@@ -1,6 +1,6 @@
 P13-R03/R04/R05/R10 GraphQL demand-control candidate evidence
 Date: 2026-08-31
-Status: packaged runtime verified; confirmation cost-drift blocker corrected locally; release pending
+Status: corrected candidate verified with clean confirmation; release pending
 
 Environment
 - Branch: feat/p13-graphql-demand-controls; PR55
@@ -15,6 +15,10 @@ Environment
 - Protected runtime run: 33417515807
 - Entity-field-cost source: 8395f7985173bb10af7dcb6f3aaafee298ed1452
 - Entity-field-cost tree: 0a026a6a00cf481b0b9709a098e3b185668b07e8
+- Corrected evidence head: 9f23640a65df42c89dc4ecfc645a0c5cf543e3f7
+- Corrected evidence tree: 7812620d0c4fe0862944884f5ed5504cb08a75fc
+- Corrected protected run: 33420810495 attempt 2
+- Clean confirmation comment: 5482516972
 - Node.js: 24.19.0
 - pnpm: 11.24.0
 - Runtime target: Apollo Router Core 2.17.0
@@ -108,6 +112,9 @@ Focused and candidate results
 - Entity-field-cost correction passes Router20/20 and the repeated affected gate
   passes51/51 tasks,32 cached, in88.328 seconds on source `8395f79`. All 25
   calibrated demand profiles remain byte-identical.
+- Exact evidence head `9f23640` passes protected run `33420810495` attempt2. All
+  required jobs pass, including packaged demand/trust rejection, owner runtimes,
+  diagnostics and the Docker playable demo.
 - `git diff --check`: pass before commit.
 - Commit hook: staged secret scan zero findings; lockfile policy and format pass.
 
@@ -142,6 +149,14 @@ Initial protected run and review
   implicit scalar/composite fallback. Source `8395f79` requires direct field
   cost whenever the selected parent type owns a type cost and explicitly records
   the previous finite weights for current `Title`/`Profile` fields.
+- Run `33420810495` attempt1 passed the packaged GraphQL/local-platform job but
+  an unrelated Identity storage fixture observed a transient conditional-write
+  count `0` instead of `1`. No storage source changed. The single bounded failed
+  rerun passed that unchanged integration and every subsequent service/demo job
+  as attempt2 on the same exact head.
+- Discussion `3896804794` was answered by reply `3897061253` and resolved. Both
+  review threads are resolved. Confirmation comment `5482516972` reviewed exact
+  `9f23640` and found no major issue.
 
 Dependency security re-review
 - `pnpm audit --json` on the exact tree reports zero high/critical and one
@@ -171,11 +186,8 @@ Adverse coverage
   canary, topology, stack or internal dependency leakage.
 
 Pending acceptance
-- A corrected protected run must prove source `8395f79` while retaining the
-  packaged adverse verifier and Docker playable journey already proven by run
-  `33417515807` before the schema-cost correction.
-- Answer and resolve confirmation discussion `3896804794`, then obtain the
-  permitted blocking-boundary confirmation before squash merge and exact-main
+- Publish this final evidence checkpoint, require its proportional exact-head
+  protected gate, then squash merge PR55 with tree identity and exact-main
   verification for item65.
 
 Interpretation and limitations

@@ -46,10 +46,12 @@ gate. Exact head `0fd6c78` passed protected run `33417515807`; discussion
 `3896477418` is resolved. Confirmation discussion `3896804794` found implicit
 non-root entity field cost. Source `8395f79`, tree `0a026a6a`, requires direct
 cost on selected fields of cost-owned types; Router20/20 and gate51/51 with32
-cached in88.328 seconds pass with unchanged profiles. Its active plan is
-`.ai/CHANGE_PLAN.md`; local evidence is
-`evidence/phase-13/graphql-demand-controls.txt`. Corrected protected packaged
-proof, blocking-boundary confirmation and release remain.
+cached in88.328 seconds pass with unchanged profiles. Exact head `9f23640`, tree
+`7812620d`, passed protected run `33420810495` attempt2. Discussion `3896804794`
+and both review threads are resolved; confirmation comment `5482516972` found no
+major issue. Its active plan is `.ai/CHANGE_PLAN.md`; evidence is
+`evidence/phase-13/graphql-demand-controls.txt`. Final evidence publication,
+merge and exact-main release remain.
 
 ## Current behavior
 
@@ -117,7 +119,9 @@ proof, blocking-boundary confirmation and release remain.
   `33417515807` proves that packaged boundary. Source `8395f79`, tree `0a026a6a`,
   corrects confirmation discussion `3896804794` by requiring explicit cost on
   selected fields of cost-owned entity types. Router20/20 and the affected
-  gate51/51 pass; corrected protected proof remains pending.
+  gate51/51 pass. Exact head `9f23640` passed protected run `33420810495`
+  attempt2 and clean confirmation `5482516972`; corrected packaged proof is
+  verified.
 
 ## Accepted design and implementation
 
@@ -142,9 +146,8 @@ proof, blocking-boundary confirmation and release remain.
 
 ## Exact next actions
 
-1. Commit this item65 correction evidence and push the corrected PR55 head once.
-2. Require exact-head protected proof, answer/resolve discussion `3896804794`
-   and obtain the permitted blocking-boundary confirmation.
+1. Commit and publish the final item65 evidence checkpoint once.
+2. Require its proportional exact-head protected gate.
 3. Squash merge, verify tree identity and exact-main CI before item66.
 
 ## Execution boundary

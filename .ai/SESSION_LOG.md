@@ -17,6 +17,11 @@ full snapshot through the archival checkpoint remains in
   non-root field of a cost-owned type and annotates current `Title`/`Profile`
   fields with their prior implicit values. The 25 profiles remain unchanged.
 - Router20/20 and the affected gate51/51 with32 cached in88.328 seconds pass.
+- Exact evidence head `9f23640`, tree `7812620d`, passed protected run
+  `33420810495` attempt2. Attempt1's unrelated storage fixture assertion passed
+  on the bounded rerun; every required job is green.
+- Discussion `3896804794` and both review threads are resolved. Confirmation
+  comment `5482516972` found no major issue on exact `9f23640`.
 
 ### Evidence
 
@@ -25,9 +30,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish this correction/evidence once, require exact-head protected CI,
-  resolve discussion `3896804794`, obtain the permitted boundary confirmation,
-  then release item65.
+- Publish the final evidence checkpoint once, require its proportional
+  exact-head protected gate, then merge and verify exact-main before item66.
 
 ## 2026-08-31 — GraphQL demand initial protected findings corrected
 

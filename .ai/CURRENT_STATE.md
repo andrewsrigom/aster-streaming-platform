@@ -173,8 +173,13 @@ field cost could silently fall back to an implicit weight. Source
 selected non-root field of a cost-owned type and explicitly annotates all
 current `Title`/`Profile` fields. The demand profiles are unchanged. Router20/20
 and the affected gate51/51 with32 cached in88.328 seconds pass. Corrected
-protected proof, blocking-boundary confirmation and release remain; this is not
-a released claim.
+candidate head `9f23640a65df42c89dc4ecfc645a0c5cf543e3f7`, tree
+`7812620d0c4fe0862944884f5ed5504cb08a75fc`, passed protected run
+`33420810495` attempt2. Attempt1's only failure was an unrelated transient
+storage fixture assertion; the same unchanged integration and every later job
+passed on the bounded rerun. Discussion `3896804794` is resolved, both review
+threads are resolved and confirmation comment `5482516972` found no major
+issue. Release remains; this is not a released claim.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -726,7 +731,8 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 P13-R01/R02/R12 is released through exact-main run `33412728404`. GraphQL
 shape/list/cost controls have prior exact-head packaged proof in item65; the
-latest entity-field-cost correction still needs protected proof and release.
+latest entity-field-cost correction has protected proof and clean confirmation;
+release remains.
 Execution/rate/cache controls,
 N+1/query-count proof, owner-authorization abuse tests and the remaining Phase13
 requirements are planned in items66–67. Phase14 capacity validation and hosted
@@ -734,13 +740,11 @@ deployment remain planned.
 
 ## Next outcome
 
-For P13-R03 item65, commit this correction evidence, push the corrected PR55
-head once, obtain exact-head protected proof, answer/resolve discussion
-`3896804794` and obtain the permitted blocking-boundary confirmation. Treat only
-requirement, budget-integrity, security, availability or public-contract
-blockers, then squash merge and verify exact-main CI. Do not start item66 before
-item65 is released. Inspect the exact historical interrupted Phase12 project
-only when that same Docker engine becomes reachable.
+For P13-R03 item65, commit and publish the final evidence checkpoint, require its
+proportional exact-head protected gate, then squash merge PR55, prove tree
+identity and verify exact-main CI. Activate item66 only after item65 is released.
+Inspect the exact historical interrupted Phase12 project only when that same
+Docker engine becomes reachable.
 
 ## Runtime and recovery
 
