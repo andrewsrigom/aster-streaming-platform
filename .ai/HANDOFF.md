@@ -23,6 +23,10 @@ at both wire boundaries.
 The explicit-body evidence head `66fcab71` passed protected run `33359022739`,
 and that discussion is resolved. Confirmation discussion `3891915868` then
 found Router generator-only changes could skip the packaged platform proof.
+Source `64fa64e`, tree `35817101`, corrected it. Protected run `33360643657`
+attempt2 passed after attempt1's transient TraceQL indexing timeout and the
+discussion is resolved. Blocker-focused discussion `3895588146` then found the
+runtime verifier could select a retained `Browse` body with current variables.
 
 ## Current behavior
 
@@ -67,7 +71,13 @@ found Router generator-only changes could skip the packaged platform proof.
   `64fa64e7650e422e4b1a4405555521afc95921bd`, tree
   `35817101dd1cb1126b2bddb2a2e9646938f760d0`, routes the complete Router package
   through the platform proof. CI policy38/38 and gate49/49 with36 cached in
-  64.294 seconds pass.
+  64.294 seconds pass. Run `33360643657` attempt2 passes every required job and
+  discussion `3891915868` is resolved. Discussion `3895588146` found selection
+  by name could choose the retained version. Source
+  `2286c7f71a82011c2eb083cdf52de07dc7301f51`, tree
+  `d253a5e8e69abf18c29e8dd432b3c4225958aa73`, joins the persisted entry to the
+  unique current schema-manifest hash and fails closed otherwise. Platform92/92
+  and gate49/49 with33 cached in98.949 seconds pass.
 
 ## Accepted design and implementation
 
@@ -87,10 +97,10 @@ found Router generator-only changes could skip the packaged platform proof.
 
 ## Exact next actions
 
-1. Commit the CI-classification evidence checkpoint and push the correction once.
-2. Require exact-head protected CI.
-3. Answer and resolve discussion `3891915868`; confirm earlier threads remain
-   resolved, then obtain one permitted blocker-focused confirmation.
+1. Commit the runtime-proof evidence checkpoint and push the correction once.
+2. Require exact-head protected CI, including the real two-version-safe proof.
+3. Answer and resolve discussion `3895588146`; confirm earlier threads remain
+   resolved, then obtain the permitted blocker-focused confirmation.
 4. Squash merge, verify exact-main CI, close item64 and activate item65.
 
 ## Execution boundary

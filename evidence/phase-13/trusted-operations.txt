@@ -28,6 +28,10 @@ Environment
 - Router-classification review discussion: 3891915868
 - Router-classification correction: 64fa64e7650e422e4b1a4405555521afc95921bd
 - Router-classification correction tree: 35817101dd1cb1126b2bddb2a2e9646938f760d0
+- Router-classification protected run: 33360643657 attempt 2 (passed)
+- Current-operation review discussion: 3895588146
+- Current-operation correction: 2286c7f71a82011c2eb083cdf52de07dc7301f51
+- Current-operation correction tree: d253a5e8e69abf18c29e8dd432b3c4225958aa73
 - Node.js: 24.19.0
 - pnpm: 11.24.0
 - Runtime target: Apollo Router Core 2.17.0, explicit integration/enforce proof
@@ -65,6 +69,8 @@ Focused commands and results
   tasks, 38 cached, 45.499 seconds.
 - Router-classification correction: CI policy 38/38 and affected candidate gate
   49/49 tasks, 36 cached, 64.294 seconds.
+- Current-operation correction: focused2/2, platform92/92 and affected candidate
+  gate49/49 tasks, 33 cached, 98.949 seconds.
 - pnpm typecheck and pnpm ci:test: pass; CI policy 37/37.
 - pnpm security:check (inside the candidate gate): pass; zero findings.
 
@@ -135,16 +141,30 @@ Protected acceptance and confirmation correction
   Router package as platform work and tests composition, artifact writer, main,
   package and verifier paths. CI policy38/38 and the repeated49/49 candidate gate
   pass with36 cached in64.294 seconds.
+- Protected run33360643657 attempt1 passed source quality, owners and the playable
+  demo but its unchanged diagnostic exercise timed out waiting for one TraceQL
+  search after PostgreSQL recovery. The bounded diagnostic project still cleaned
+  completely. One failed-job rerun, attempt2, passed every required job for exact
+  head61b85a2, including the packaged Router proof and diagnostics. Discussion
+  3891915868 was answered and resolved.
+- Blocker-focused confirmation discussion3895588146 found `.find()` selected
+  `Browse` by name alone. With a retained same-name body ordered first, the proof
+  could send current variables to that obsolete document and block a valid union
+  rollout. Source2286c7f reads the schema manifest's unique current hash, joins
+  it to exactly one persisted name/ID entry and fails closed when either side is
+  missing or ambiguous. The regression places the retained version first and
+  covers absent/ambiguous joins; focused2/2, platform92/92 and the repeated49/49
+  candidate gate pass with33 cached in98.949 seconds.
 
 Pending acceptance
-- Publish the Router-classification/evidence correction once, pass exact-head
-  protected CI, answer and resolve discussion3891915868 (and confirm earlier
+- Publish the current-operation/evidence correction once, pass exact-head
+  protected CI, answer and resolve discussion3895588146 (and confirm earlier
   threads remain resolved), then obtain the permitted blocker-focused
   confirmation before squash merge and exact-main verification.
 
 Interpretation and limitations
 The corrected results prove deterministic source generation, actual current Web
 wire compatibility, bounded rollout overlap, adverse repository policy and the
-packaged pinned-Router enforcement/telemetry path. Boundary-exact retained bodies
-and the rollback floor are source/contract behavior and require the final
-protected run. No hosted deployment is claimed.
+packaged pinned-Router enforcement/telemetry path. Boundary-exact retained bodies,
+the rollback floor and current-version proof selection are source/contract
+behavior and require the final protected run. No hosted deployment is claimed.

@@ -4,6 +4,31 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — Trusted-operation runtime proof selects current version
+
+### Completed
+
+- Router-classification source `64fa64e`, tree `35817101`, passed protected run
+  `33360643657` attempt2 after attempt1's isolated TraceQL indexing timeout.
+  Discussion `3891915868` is answered and resolved.
+- Blocker-focused discussion `3895588146` found the runtime proof selected
+  `Browse` only by name, so a retained version could receive current variables.
+- Source `2286c7f71a82011c2eb083cdf52de07dc7301f51`, tree
+  `d253a5e8e69abf18c29e8dd432b3c4225958aa73`, joins the persisted entry to the
+  schema manifest's unique current hash and fails closed on missing/ambiguous
+  joins. Retained-first focused2/2, platform92/92 and gate49/49 with33 cached in
+  98.949 seconds pass; the included secret scan has zero findings.
+
+### Evidence
+
+- `evidence/phase-13/trusted-operations.txt` records both protected attempts,
+  the review finding, exact correction and accepted local gates.
+
+### Next action
+
+- Publish once, pass exact-head protected CI, resolve discussion `3895588146`,
+  obtain the permitted confirmation, then merge and verify exact main.
+
 ## 2026-08-31 — Trusted-operation boundary bytes corrected
 
 ### Completed

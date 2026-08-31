@@ -36,7 +36,13 @@ protected run `33359022739`; discussion `3891772219` is resolved. Confirmation
 discussion `3891915868` found Router generator-only changes could skip platform
 CI. Source `64fa64e`, tree `35817101`, routes the complete Router package through
 that proof; CI policy38/38 and gate49/49 with36 cached in64.294 seconds pass.
-Exact-head CI, blocker-focused confirmation and release remain. Full
+Protected run `33360643657` attempt1 had one transient TraceQL indexing timeout;
+attempt2 passed every required job and discussion `3891915868` is resolved.
+Blocker-focused discussion `3895588146` then found the packaged proof could pair
+a retained `Browse` body with current variables. Source `2286c7f`, tree
+`d253a5e`, joins the persisted body to the unique current schema-manifest hash
+and fails closed on missing/ambiguous joins. Platform92/92 and gate49/49 with33
+cached in98.949 seconds pass. Exact-head CI and confirmation remain. Full
 Phase00–14 goal stays active.
 
 ## Verified
@@ -110,8 +116,16 @@ that `apps/router/` itself did not select platform CI. Source
 `64fa64e7650e422e4b1a4405555521afc95921bd`, tree
 `35817101dd1cb1126b2bddb2a2e9646938f760d0`, adds that complete prefix and a
 five-path generator/writer/main/package/verifier regression. CI policy38/38 and
-the repeated gate49/49 with36 cached in64.294 seconds pass. Exact-head CI and
-blocker-focused confirmation remain. APQ stays disabled.
+the repeated gate49/49 with36 cached in64.294 seconds pass. Protected run
+`33360643657` attempt2 passed after attempt1's isolated TraceQL indexing timeout;
+discussion `3891915868` is resolved. Discussion `3895588146` found the runtime
+verifier selected `Browse` by name only. Source
+`2286c7f71a82011c2eb083cdf52de07dc7301f51`, tree
+`d253a5e8e69abf18c29e8dd432b3c4225958aa73`, selects the exact current hash from
+the schema manifest, proves retained-first and missing/ambiguous cases, and adds
+that regression to the platform gate. Platform92/92 and gate49/49 with33 cached
+in98.949 seconds pass. Exact-head protected proof and confirmation remain. APQ
+stays disabled.
 PostgreSQL/data ownership, owner authorization, schemas, Redis, events and media
 remain unchanged.
 
@@ -672,11 +686,11 @@ deployment remain planned.
 
 ## Next outcome
 
-For item64 (P13-R01), commit the CI-classification evidence checkpoint and push
-the correction once. Require protected CI to load the generated Rhai
-policy in the pinned Router, accept the canonical operation, reject
+For item64 (P13-R01), commit the current-operation evidence checkpoint and push
+the correction once. Require protected CI to load the generated Rhai policy in
+the pinned Router, select the current manifest version, accept it, reject
 altered/unknown/missing documents and expose all three finite metric labels.
-Resolve discussion `3891915868`, obtain the permitted blocker-focused
+Resolve discussion `3895588146`, obtain the permitted blocker-focused
 confirmation, merge, verify exact-main CI and then activate item65. Inspect the
 exact historical interrupted Phase12 project only when that same Docker engine
 becomes reachable.

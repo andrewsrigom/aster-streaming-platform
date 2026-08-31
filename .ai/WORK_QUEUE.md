@@ -347,8 +347,14 @@ Evidence head `66fcab71` passed protected run `33359022739`; discussion
 `3891772219` is resolved. Confirmation discussion `3891915868` found Router
 generator-only changes could skip platform CI. Source `64fa64e`, tree `35817101`,
 routes the complete Router package through that proof; CI policy38/38 and
-gate49/49 with36 cached in64.294 seconds pass. Exact-head protected CI,
-blocker-focused confirmation and release remain.
+gate49/49 with36 cached in64.294 seconds pass. Protected run `33360643657`
+attempt2 passed after one transient TraceQL indexing timeout and discussion
+`3891915868` is resolved. Discussion `3895588146` found the runtime proof could
+select a retained `Browse` body while sending current variables. Source
+`2286c7f`, tree `d253a5e`, joins the persisted entry to the unique current hash,
+fails closed on an absent/ambiguous join and adds retained-first coverage to the
+platform suite. Platform92/92 and gate49/49 with33 cached in98.949 seconds pass.
+Exact-head protected CI, confirmation and release remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 
