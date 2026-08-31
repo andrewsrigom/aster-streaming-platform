@@ -21,7 +21,15 @@ full snapshot through the archival checkpoint remains in
   only one same-name manifest version by hash order. Source
   `effc7fd705f149eba193a619d70c0e0039f767ea`, tree
   `0acdba2a73e63841513c54950aeaffe8cf7356fa`, indexes every reviewed version;
-  Web119/119 and gate49/49 with35 cached in54.987 seconds pass.
+  Web119/119 and gate49/49 with35 cached in54.987 seconds pass. Protected run
+  `33355546182` passes every required job.
+- Follow-up discussions `3891672851`/`3891672854` found retained operations were
+  reprinted rather than byte-preserved and rollback could restore a pre-union
+  Router after new-client exposure. Source
+  `5f4a3150ba4085677b710168d64d22195de48a0c`, tree
+  `7c15d92500209b72a80fa46a276958cf86a3332f`, preserves exact retained source
+  slices and makes the union Router the tested/documented rollback floor.
+  Router11/11 and gate49/49 with35 cached in53.095 seconds pass.
 
 ### Evidence
 
@@ -30,9 +38,9 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish the batched Web-test correction once, require exact-head protected CI,
-  resolve discussion `3891588767`, obtain one blocker-focused confirmation,
-  then merge and verify exact main.
+- Publish the batched byte-exact rollout correction once, require exact-head CI,
+  resolve discussions `3891672851`/`3891672854`, obtain one blocker-focused
+  confirmation, then merge and verify exact main.
 
 ## 2026-08-30 — Trusted-operation protected findings corrected
 

@@ -74,12 +74,12 @@ retains the finite classification. Neither mode logs query text or hashes.
 | Unknown name or altered body | enforce rejects before planning; audit records and executes | `aster.trusted_operation=unknown`, finite operation label |
 | Generated artifact is stale or malformed | schema check/build fails; no image publication | deterministic build failure without document output |
 | Matcher/module fails to load | Router remains unready | bounded container startup logs |
-| Manifest and active client drift | rollout gate blocks promotion or rollback restores prior compatible artifacts | rejected-operation rate and named release evidence |
+| Manifest and active client drift | rollout gate blocks promotion; after new-hash exposure rollback keeps or restores the last healthy union Router | rejected-operation rate and named release evidence |
 
 ## Data and contracts
 
 - Schema/migration: no GraphQL schema or database migration.
-- GraphQL: the existing 25 canonical operations become the first trusted-operation set; exact link-ready Apollo documents remain the client transport and one obsolete reviewed body per name may overlap during rollout.
+- GraphQL: the existing 25 canonical operations become the first trusted-operation set; exact link-ready Apollo documents remain the client transport and one obsolete reviewed byte-exact wire body per name may overlap during rollout.
 - Events: none.
 - Cache: APQ remains disabled; no response-cache or Redis change.
 - Compatibility: local/integration audit mode preserves ad hoc diagnostic requests; enforce mode accepts the canonical Apollo Client printer output.
@@ -121,7 +121,11 @@ retains the finite classification. Neither mode logs query text or hashes.
   that proof; source `b85230d` corrected the classifier and protected run
   `33354040239` passed. Blocker-focused confirmation discussion `3891588767`
   then found that Web manifest checks selected only one same-name version by
-  hash order; the bounded multi-version test correction and repeated gates remain.
+  hash order; source `effc7fd` corrected the tests and protected run
+  `33355546182` passed. Follow-up discussions `3891672851` and `3891672854`
+  found that retained bodies were reprinted instead of byte-preserved and that
+  the rollback path could restore a pre-union Router after new-client exposure;
+  the bounded source, test and runbook correction plus repeated gates remain.
 - Iteration gate: Router composition tests plus Router source/runtime policy tests and `git diff --check`.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed`, documentation/AI checks and zero-finding secret scan.
 - Heavyweight repeat triggers: repeat the real Router enforce-mode proof when operation generation, matcher logic, startup mode policy, Router image/config/Rhai packaging or rejection telemetry changes; repeat the Docker playable journey when canonical client documents or admission behavior changes.
@@ -129,11 +133,13 @@ retains the finite classification. Neither mode logs query text or hashes.
 
 ## Rollback or recovery
 
-Restore the previous Router image/config/Rhai and eight-artifact composition
-set. No schema, database, Redis, event, media or credential rollback is needed.
-During a compatible rollout, retain the old reviewed wire body in
-`infra/router/retained-operations.graphql`; generation permits at most two
-distinct bodies per name. Remove it only after active clients no longer use it.
+Before new-hash exposure, restore the previous Router image/config/Rhai and
+complete composition set. After exposure, roll back the Web client while keeping
+or redeploying the last healthy union Router; roll forward a faulty union Router
+to another union-compatible image. No schema, database, Redis, event, media or
+credential rollback is needed. Retain the old reviewed byte-exact wire body in
+`infra/router/retained-operations.graphql` until telemetry and the compatibility
+window prove both client populations drained.
 
 ## Documentation updates
 

@@ -1,6 +1,6 @@
 P13-R01/R02/R12 trusted-operation evidence
 Date: 2026-08-31
-Status: packaged runtime verified; confirmation CI-classifier correction pending protected release
+Status: packaged runtime verified; byte-exact rollout correction pending protected release
 
 Environment
 - Branch: feat/p13-trusted-operations
@@ -16,6 +16,9 @@ Environment
 - Classifier-corrected protected run: 33354040239 (passed)
 - Multi-version Web-test correction: effc7fd705f149eba193a619d70c0e0039f767ea
 - Multi-version correction tree: 0acdba2a73e63841513c54950aeaffe8cf7356fa
+- Multi-version protected run: 33355546182 (passed)
+- Byte-exact rollout correction: 5f4a3150ba4085677b710168d64d22195de48a0c
+- Byte-exact rollout tree: 7c15d92500209b72a80fa46a276958cf86a3332f
 - Node.js: 24.19.0
 - pnpm: 11.24.0
 - Runtime target: Apollo Router Core 2.17.0, explicit integration/enforce proof
@@ -25,8 +28,8 @@ Implemented contract
 - IDs are SHA-256 of the exact link-ready Apollo wire body, including Apollo's
   deterministic `__typename` transform.
 - One generated Rhai matcher returns only matched or unknown; main policy adds missing.
-- A reviewed retained-operation source permits at most two distinct hashes per
-  operation name during Router-first client rollout.
+- A reviewed retained-operation source preserves obsolete wire bytes and permits
+  at most two distinct hashes per operation name during Router-first client rollout.
 - Local/integration may explicitly audit. Staging/production require enforce.
 - Enforce rejects missing, unknown and altered documents before query planning.
 - Web's 19 runtime documents and their actual `HttpLink` request bodies exactly
@@ -38,7 +41,7 @@ Implemented contract
 Focused commands and results
 - pnpm schema:update: pass; 5 subgraphs, 10 artifacts, compatibility base 2b77a32.
 - pnpm --filter @aster/router test: pass; 11/11.
-- pnpm --filter @aster/web test: pass; 118/118.
+- pnpm --filter @aster/web test: pass; 119/119.
 - Focused Router/SLO/CI policy command: pass; 36/36.
 - CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm
   check:changed: pass; 49/49 tasks, 35 cached, 72.599 seconds.
@@ -46,6 +49,8 @@ Focused commands and results
   49/49 tasks, 36 cached, 50.442 seconds.
 - Multi-version correction: Web 119/119 and affected candidate gate 49/49
   tasks, 35 cached, 54.987 seconds.
+- Byte-exact rollout correction: Router 11/11 and affected candidate gate 49/49
+  tasks, 35 cached, 53.095 seconds.
 - pnpm typecheck and pnpm ci:test: pass; CI policy 37/37.
 - pnpm security:check (inside the candidate gate): pass; zero findings.
 
@@ -84,15 +89,27 @@ Protected acceptance and confirmation correction
   indexes every version per name and accepts the current source and actual wire
   body when either matches any reviewed version. A regression places a
   later-sorting retained body after the current body and Web119/119 passes.
+  Exact-head protected run 33355546182 then passed every required job.
+- Follow-up discussions 3891672851 and 3891672854 found two rollout failures:
+  retained operations were parsed and reprinted by the current toolchain rather
+  than hashed as the obsolete client sent them, and the documented rollback
+  could restore a pre-union Router after a new client hash had served traffic.
+- Source 5f4a315 parses and schema-validates each retained definition but slices,
+  hashes and emits its reviewed source bytes without the current printer or
+  Apollo transform. The retained test uses deliberately noncanonical formatting,
+  proves its exact body/hash and proves a manifest without the retained hash
+  rejects it. ADR-0045 and the release runbook make the healthy union Router the
+  rollback floor after new-hash exposure; client rollback keeps the union and a
+  faulty union Router rolls forward to another compatible union image.
 
 Pending acceptance
-- Publish the batched Web-test/evidence correction once, pass exact-head
-  protected CI, resolve discussion 3891588767 and obtain the permitted
+- Publish the batched byte-exact rollout/evidence correction once, pass exact-head
+  protected CI, resolve discussions 3891672851/3891672854 and obtain the permitted
   blocker-focused confirmation before squash merge and exact-main verification.
 
 Interpretation and limitations
 The corrected results prove deterministic source generation, actual current Web
 wire compatibility, bounded rollout overlap, adverse repository policy and the
-packaged pinned-Router enforcement/telemetry path. The final test-only correction
-does not alter runtime behavior, but the protected branch policy still requires
-an exact-head run. No hosted deployment is claimed.
+packaged pinned-Router enforcement/telemetry path. Byte-exact retained bodies and
+the rollback floor are source/contract behavior and require the final protected
+run. No hosted deployment is claimed.

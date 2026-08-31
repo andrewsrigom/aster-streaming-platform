@@ -25,7 +25,11 @@ discussion `3891493400` found a verifier-only CI-classification gap. Source
 `b85230d`, tree `05532b63`, corrected it and run `33354040239` passed.
 Blocker-focused discussion `3891588767` then found same-name manifest versions
 collapsed by Web tests. Source `effc7fd`, tree `0acdba2a`, corrects it; exact-head
-CI, blocker-focused confirmation and release remain. Full Phase00–14 goal stays active.
+run `33355546182` passes. Discussions `3891672851`/`3891672854` then found
+retained-body reprinting and unsafe pre-union rollback. Source `5f4a315`, tree
+`7c15d925`, preserves retained bytes and defines the union rollback floor;
+exact-head CI, blocker-focused confirmation and release remain. Full Phase00–14
+goal stays active.
 
 ## Verified
 
@@ -80,7 +84,12 @@ gate49/49 with36 cached in50.442 seconds pass. Protected run `33354040239`
 passes. Blocker-focused discussion `3891588767` then found that Web tests kept
 only one same-name manifest version by hash order. Source `effc7fd`, tree
 `0acdba2a`, indexes all reviewed versions; Web119/119 and gate49/49 with35 cached
-in54.987 seconds pass. Exact-head CI and confirmation remain. APQ stays disabled.
+in54.987 seconds pass. Protected run `33355546182` passes. Follow-up discussions
+`3891672851`/`3891672854` found retained-body reprinting and an unsafe pre-union
+rollback after new-client exposure. Source `5f4a315`, tree `7c15d925`, now hashes
+retained source bytes without reprinting and keeps the union Router as rollback
+floor; Router11/11 and gate49/49 with35 cached in53.095 seconds pass. Exact-head
+CI and confirmation remain. APQ stays disabled.
 PostgreSQL/data ownership, owner authorization, schemas, Redis, events and media
 remain unchanged.
 

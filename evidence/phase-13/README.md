@@ -13,7 +13,12 @@ changes. Source `b85230d21bd733cc27337f2d8e9e8fd8068bb6f6`, tree
 then found same-name manifest versions collapsed by the Web tests. Source
 `effc7fd705f149eba193a619d70c0e0039f767ea`, tree
 `0acdba2a73e63841513c54950aeaffe8cf7356fa`, indexes every version per name and
-passes Web119/119 plus the 49/49 gate; exact-head CI and confirmation remain.
+passes Web119/119 plus the 49/49 gate and protected run `33355546182`. Follow-up
+discussions `3891672851`/`3891672854` found retained-body reprinting and an
+unsafe pre-union rollback. Source `5f4a3150ba4085677b710168d64d22195de48a0c`,
+tree `7c15d92500209b72a80fa46a276958cf86a3332f`, preserves reviewed retained
+bytes and defines the union Router rollback floor; Router11/11 and gate49/49 pass.
+Exact-head protected CI, blocker-focused confirmation and release remain.
 
 ## Requirement traceability
 

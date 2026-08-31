@@ -15,7 +15,8 @@ Item64 (P13-R01/R02/R12) is the sole `IN_PROGRESS` item on
 and its complete initial review produced four blockers. Their correction passed
 protected run `33352310376`; confirmation then found one CI-classification gap.
 That correction passed run `33354040239`; blocker-focused confirmation found
-one same-name multi-version Web-test gap.
+one same-name multi-version Web-test gap. Its correction passed run
+`33355546182`; follow-up confirmation found byte-preservation and rollback gaps.
 
 ## Current behavior
 
@@ -42,6 +43,11 @@ one same-name multi-version Web-test gap.
   run `33354040239` passes. Discussion `3891588767` then found that Web tests
   retained only one hash per name. Source `effc7fd`, tree `0acdba2a`, indexes
   every version per name; Web119/119 and gate49/49 with35 cached in54.987 pass.
+  Protected run `33355546182` passes. Discussions `3891672851`/`3891672854`
+  then found retained-body reprinting and unsafe pre-union rollback after client
+  exposure. Source `5f4a315`, tree `7c15d925`, preserves retained bytes and
+  defines/tests the union Router rollback floor; Router11/11 and gate49/49 with35
+  cached in53.095 seconds pass.
 
 ## Accepted design and implementation
 
@@ -61,10 +67,10 @@ one same-name multi-version Web-test gap.
 
 ## Exact next actions
 
-1. Commit the evidence checkpoint and push the Web-test correction to PR52 once.
+1. Commit the evidence checkpoint and push the byte-exact rollout correction once.
 2. Require exact-head protected CI.
-3. Answer and resolve discussion `3891588767`; obtain one permitted
-   blocker-focused confirmation because the correction closes a rollout boundary.
+3. Answer and resolve discussions `3891672851`/`3891672854`; obtain one permitted
+   blocker-focused confirmation because the correction changes rollout/rollback.
 4. Squash merge, verify exact-main CI, close item64 and activate item65.
 
 ## Execution boundary
