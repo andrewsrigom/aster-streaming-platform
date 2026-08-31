@@ -1,0 +1,38 @@
+P12-R10 protected diagnostic runtime checkpoint
+Date: 2026-08-30
+Source: 20110ec3fad5a47646bd26133c71d62e8f0e71ac
+Workflow run: 33335707261
+Local platform job: 99322173557
+
+project=aster-p12-diagnostics-f47c4035-ce5b-4fd5-a66c-a19a48900f75
+
+catalog:
+traceId=1997ca9650ca0d5910756e4f2cf5fe16
+diagnosis=catalog_service_unavailable
+userOutcome=failed
+populationDelta=1
+goodDelta=0
+recovery=passed
+
+postgresql:
+traceId=f698c255d53862db915c287d18737fdd
+errorStatusTraceQL=timed_out_after_45s
+recovery=passed
+diagnosis=not_completed
+
+redis:
+status=not_run_after_postgresql_failure
+
+cleanup:
+status=clean
+
+result=failure
+cause=the admitted PostgreSQL operation can end as cancelled when the request
+deadline wins; telemetry intentionally maps cancelled to intrinsic status unset,
+so requiring status=error excluded that causal dependency span.
+remediation=match only the finite dependency outcomes timeout, cancelled,
+unavailable or error and reject success/rejected facts.
+
+This bounded transcript contains no request body, SQL, credentials, signed URL,
+title/profile identifier or product data. The GitHub job log remains the
+authoritative raw execution record.

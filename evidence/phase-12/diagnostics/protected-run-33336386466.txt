@@ -1,0 +1,48 @@
+P12-R10 protected diagnostic runtime acceptance
+Date: 2026-08-30
+Source: 58779b98c991a81617f52894fd34368542a2e365
+Workflow run: 33336386466
+Local platform job: 99323989054
+Source quality job: 99323989060
+
+project=aster-p12-diagnostics-41589061-7eb4-451b-b726-92f157ceda2b
+
+catalog:
+traceId=b85d10cf690ce6bc773fe0a99f75dc77
+diagnosis=catalog_service_unavailable
+userOutcome=failed
+populationDelta=1
+goodDelta=0
+recovery=passed
+
+postgresql:
+traceId=c0ab6f7d53b2478cbeb52bb5716f9e81
+diagnosis=catalog_postgresql_unavailable
+userOutcome=failed
+populationDelta=1
+goodDelta=0
+dependencyOutcome=cancelled
+recovery=passed
+
+redis:
+traceId=7ea995a0eab0453fcdbb20219a7c77a9
+diagnosis=catalog_redis_degraded
+userOutcome=latency_qualified
+populationDelta=1
+goodDelta=1
+dependencyOutcome=unavailable
+recovery=passed
+
+cleanup:
+status=clean
+
+protected jobs:
+local-platform=passed
+source-quality=passed
+ci-required=passed
+
+result=success
+
+This bounded transcript contains no request body, SQL, credentials, signed URL,
+title/profile identifier or product data. The GitHub job log remains the
+authoritative raw execution record.

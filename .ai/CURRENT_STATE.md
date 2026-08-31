@@ -54,14 +54,12 @@ final head `72d5656`, tree `2374279`, protected run `33313090638` attempt2,
 clean confirmation, squash main `a99d3d5` and exact-main run `33314309449`.
 P12-R12 reviewed head `ba3de93`, tree `73ee596`, passed protected run
 `33318672382` and clean confirmation. PR49 squash main `c297d32` has that tree;
-valid exact-main run `33319514232` passed every required job. P12-R07 burn-rate
-alerts are active from that exact main. Its local candidate now implements the
-finite policy, complete-window guards, seven packaged alert instances and linked
-runbook. Exact Prometheus tests, the isolated packaged proof and the affected
-15/15 gate pass. Exact correction `8185a81`, tree `51dc011`, passed protected
-run `33323508793`, resolved the initial review and received a clean exact-head
-confirmation. Evidence closeout, merge and exact-main CI remain. Full Phase00–14
-goal stays active.
+valid exact-main run `33319514232` passed every required job. P12-R07 corrected
+source `8185a81`, evidence head `4b6db71`, protected run `33324696622`, clean
+confirmation, PR50 squash main `633e819` and exact-main run `33325544350`
+release the finite burn-rate alerts. P12-R10 is active from that exact main on
+`feat/p12-diagnostic-exercises`; it owns three telemetry-led failure diagnoses
+and Phase12 closeout. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -240,8 +238,8 @@ protected run `33318672382` and clean confirmation. PR49 squash main `c297d32`
 retained that tree, and valid exact-main run `33319514232` passed every required
 job; earlier same-SHA run `33319497475` was superseded by concurrency.
 
-P12-R07 is the sole active item on `feat/p12-burn-rate-alerts` from exact main
-`c297d32`. The working-tree candidate implements the reviewed rapid 1h/5m and
+P12-R07 is released. Its candidate from exact main `c297d32` implements the
+reviewed rapid 1h/5m and
 6h/30m pairs for three page-class SLIs and sustained 1d/2h and 3d/6h pairs for
 all four. Complete sampled coverage suppresses fresh/evicted partial windows.
 Prometheus 3.14.0 reports 9 valid SLI rules and 26 valid alert-policy rules; all
@@ -273,8 +271,120 @@ passed every required protected job in run `33323508793`, including exact
 Prometheus rule tests, the 35-rule/seven-alert packaged assertion, all owner
 integrations and the playable demo. Discussion `3889911170` is answered with
 that evidence and resolved. The single exact-head confirmation comment
-`5470101517` reports no major issue. Evidence closeout, merge and exact-main CI
-remain.
+`5470101517` reports no major issue. Evidence head `4b6db71` passed protected
+run `33324696622`; PR50 squash main `633e819` passed exact-main run
+`33325544350` and closes the item.
+
+P12-R10 is the sole active item on `feat/p12-diagnostic-exercises` from exact
+main `633e819`. ADR-0044 and published candidate `e0d1975` implement a diagnostics-only,
+digest-pinned Tempo profile plus one no-argument UUID-scoped runner. It uses the
+released Catalog SLI source, the exact Router trace, privacy-filtered Tempo
+search and correlated bounded logs to diagnose Catalog service loss, a
+PostgreSQL failure after request admission and Redis degradation. Recovery and
+cleanup target only the disposable project. Protected run `33331974187` passed
+Catalog diagnosis, PostgreSQL recovery and exact cleanup, then failed because
+V1 trace retrieval preceded query visibility of the required PostgreSQL span.
+Correction `b732be2` and run `33332980729` proved the exact PostgreSQL TraceQL
+match plus recovery/cleanup, but the subsequent V2 read remained incomplete;
+Redis still did not run. The refined runner uses the exact finite TraceQL span
+directly. Focused diagnostic/profile tests pass12/12, platform tests pass87/87
+and the refined aggregate gate passes 73/73 with 60 cached in 63.796 seconds.
+Protected run `33333896159` then passed Catalog diagnosis/recovery and clean
+teardown, but its PostgreSQL TraceQL predicate filtered on failure outcome
+before selection and timed out; PostgreSQL recovered and Redis did not run. The
+current correction selects the exact dependency span and leaves the mandatory
+failure-outcome check in the classifier. Its aggregate gate passes 73/73 with
+60 cached in 64.055 seconds.
+Protected run `33334497056` then passed Catalog diagnosis/recovery and clean
+teardown. Its exact PostgreSQL dependency search returned a selected fact, but
+the classifier ignored intrinsic error status when the optional outcome/name
+projection was absent; PostgreSQL recovered and Redis did not run. The current
+correction requires exact dependency plus either intrinsic error status or one
+finite failure outcome.
+Its aggregate gate passes 73/73 with 60 cached in 53.918 seconds.
+Protected run `33335112383` then passed Catalog diagnosis/recovery and clean
+teardown but stopped on a selected PostgreSQL fact that was not failure-marked;
+PostgreSQL recovered and Redis did not run. The current correction requires
+exact dependency plus intrinsic error status in TraceQL and keeps polling until
+the parsed finite facts also contain a failure signal.
+Its aggregate gate passes 73/73 with 60 cached in 52.91 seconds.
+Protected run `33335707261` then passed Catalog diagnosis/recovery and clean
+teardown but its PostgreSQL trace did not match intrinsic error status because
+the request deadline can produce causal outcome `cancelled`, which maps to
+status `unset`; PostgreSQL recovered and Redis did not run. The current
+correction matches only the finite outcomes `timeout`, `cancelled`,
+`unavailable` and `error`. Its aggregate gate passes 73/73 with 60 cached in
+56.093 seconds.
+Initial review corrected execution/cleanup headroom, signal handling, listener
+scope, diagnostic output categories and CI invalidation. Finite-outcome source
+`58779b98c991a81617f52894fd34368542a2e365` passed protected run `33336386466`:
+Catalog, PostgreSQL and Redis diagnoses/recoveries, exact project cleanup,
+source quality and aggregate protection all passed. Targeted confirmation at
+evidence head `ab09592` found three blockers: multiline GraphQL canaries were
+not matched after JSON escaping, Tempo shared product networks, and the runner
+read Grafana provisioning without calling data-source health. The local batch
+checks escaped canaries, places Tempo only on dedicated internal ingest/query
+networks and requires Grafana health `OK`; focused diagnostics pass 12/12. The
+platform suite passes 87/87 and the affected gate passes 73/73 with 59 cached in
+50.323 seconds. The prior runtime remains supporting evidence, but this
+topology/acceptance change requires the protected three-scenario run again.
+Published source `00dfc26` and protected run `33338133771` then started the
+isolated profile but failed at startup because the runner requested a direct
+Tempo host port that its internal-only networks correctly do not provide. The
+exact diagnostic project was cleaned to zero. The current correction publishes
+no Tempo port and sends bounded TraceQL reads through Grafana's UID-scoped
+data-source proxy; focused diagnostic/profile tests pass 12/12, platform tests
+pass 87/87 and the affected gate passes 73/73 with 59 cached in 62.801 seconds.
+Corrected source `0288555`, tree `1ceeb20`, passed protected run `33338774702`.
+Local-platform job `99330472682` diagnosed and recovered Catalog, PostgreSQL and
+Redis failures through the isolated topology and cleaned exact project
+`aster-p12-diagnostics-3be252e8-469d-4c05-8846-2154bcbbdca1`. Source-quality
+job `99330472705`, the Docker-only playable demo and aggregate job
+`99332541219` also passed. Evidence head `3aca9e5` passed protected run
+`33339712525`. Its exact-head confirmation discussions `3890788286` and
+`3890788287` found two remaining proof gaps: privacy inspected only the
+TraceQL-selected fields, and a lockfile-only dependency change skipped the
+diagnostic runtime. The local remediation waits for three identical bounded
+full-trace snapshots through Grafana, checks the complete stored trace for raw
+and escaped canaries, and classifies `pnpm-lock.yaml` as diagnostic-changing.
+Focused tests pass 23/23; the affected gate passes 73/73 with 63 cached in
+44.855 seconds. Published `bf10756` selected diagnostics in protected run
+`33341130651`; local-platform job `99336871735` reached the first full-trace
+check and exposed Tempo's OTLP JSON Base64 span-ID representation. The exact
+project cleaned successfully. The current correction converts the hexadecimal
+query ID to Base64, requires all returned span IDs to match, and then checks the
+complete trace for privacy. Focused diagnostic/profile tests pass 13/13 and the
+affected gate passes 73/73 with 60 cached in 54.407 seconds. Corrected protected
+runtime source `cf87b8c`, tree `30ccdf9`, passed run `33341630994`.
+Local-platform job `99338255936` proved complete stored-trace privacy, all three
+diagnoses/recoveries and exact cleanup; source quality `99338255932`,
+documentation/security `99338255943`, dependency review `99338239593` and
+aggregate `99340328371` also passed. Final evidence publication and confirmation
+remain. Evidence head `cc2db4c`, tree `910678e`, passed exact-head run
+`33342551385`. Confirmation discussions `3890928257`/`3890928260` found that
+Event Delivery, Object Storage, transitive Broker and root workspace/TypeScript
+Catalog build inputs did not all select diagnostics, and that the operator guide
+still called acceptance pending. The current batch covers those inputs, makes
+diagnostic selection imply the platform job, updates the guide, passes classifier
+tests 11/11 and passes the affected gate 73/73 with 60 cached in 50.155 seconds.
+Corrected source `089f656`, tree `d9abb88`, passed protected run `33344001503`.
+Classifier `99344592918`, local-platform `99344620047`, source quality
+`99344620051`, documentation/security `99344620049`, dependency review
+`99344593060` and aggregate `99347035124` passed. Discussions
+`3890928257`/`3890928260` are answered and resolved; final evidence publication
+head `21d9d06` passed exact-head run `33345010435`; every required job,
+three-scenario diagnostic runtime and playable demo passed. The permitted
+confirmation found discussion `3891065894`: the admitted PostgreSQL request
+could reject while the runner awaited barrier/pause work and terminate Node
+before recovery/cleanup. The local remediation immediately observes request
+and injection through `Promise.allSettled`; runner tests pass 10/10 and the
+affected gate passes 73/73 with 63 cached in 53.89 seconds. Repeated protected
+runtime and corrected confirmation remain.
+Architecture, operations, runbooks and licensing are current. The
+earlier local attempt stopped during Docker Desktop image build and could not
+inspect scoped resources. The normal demo is unchanged; Phase13 has not started.
+One post-review read-only WSL check returned `docker-client-unavailable`; no
+restart or repeated probe was attempted.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -528,14 +638,20 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P12-R07 evidence closeout/release and three diagnostic exercises remain.
+P12-R10 complete stored-trace acceptance passes at source `cf87b8c`, and final
+evidence head `21d9d06` passes exact-head run `33345010435`. Its confirmation
+found the temporary request-rejection cleanup risk now corrected locally.
+Repeated protected acceptance, corrected confirmation, merge, exact-main CI
+and Phase12 closeout remain.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Publish the P12-R07 evidence closeout, pass its protected documentation gate,
-then merge/release the reviewed source before activating the first remaining
-Phase12 diagnostic exercise.
+For P12-R10, publish the request-observation correction, repeat its protected
+three-scenario runtime, resolve discussion `3891065894`, obtain one corrected
+confirmation, merge after final exact-head protection, verify exact-main CI,
+close Phase12 and check Phase13 prerequisites. Inspect the exact interrupted
+local project only when that same Docker engine becomes reachable.
 
 ## Runtime and recovery
 

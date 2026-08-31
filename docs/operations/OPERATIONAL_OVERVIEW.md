@@ -66,11 +66,69 @@ Stop the exact profile while preserving PostgreSQL and Prometheus volumes:
 docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile "*" down
 ```
 
+## Disposable trace-led exercise
+
+The P12-R10 candidate adds an automated diagnostic lane without changing the
+retained `aster` project:
+
+```bash
+pnpm diagnostics:run
+```
+
+The command accepts no target or flags. It creates one random
+`aster-p12-diagnostics-<uuid>` project, starts the targeted Catalog diagnostic
+topology on ephemeral IPv4 loopback ports and checks Grafana's immutable
+`aster-tempo` data source.
+It then drives three Catalog title-read scenarios in order:
+
+1. Catalog service unavailable: the SLI source records a failed request and the
+   trace identifies the Router-to-Catalog boundary.
+2. PostgreSQL unavailable during an admitted authoritative read: the request
+   fails and the same trace identifies the Catalog-to-PostgreSQL boundary.
+3. Redis unavailable: PostgreSQL remains authoritative, the request completes
+   and trace/log signals identify cache degradation.
+
+Each result is emitted as one bounded JSON event containing the diagnosis,
+source-counter delta, released five-minute ratio when present and finite
+boundary categories. It contains no GraphQL document, canary ID, credential,
+SQL text or media URL. Recovery is exercised after each failure. Final teardown
+uses only the exact generated project and requires zero matching containers,
+networks and volumes.
+
+This candidate uses Tempo only for disposable trace search. Docker's bounded
+structured logs remain the log source; Loki is not provisioned. The normal
+dashboard at port 3001 and the playable demo do not gain Tempo. Real runtime
+acceptance passed in protected run `33336386466`. Earlier run `33331974187` passed Catalog
+diagnosis, PostgreSQL recovery and clean teardown, but its V1 trace read preceded
+the PostgreSQL boundary's query visibility and Redis did not run. Run
+`33332980729` then proved the exact PostgreSQL TraceQL boundary, recovery and
+cleanup while its subsequent V2 read remained incomplete. The refined runner
+uses the finite TraceQL-selected span as evidence. Run `33333896159` passed
+Catalog and clean recovery/teardown but showed that PostgreSQL outcome must be
+validated after exact dependency selection. Run `33334497056` returned the exact
+dependency and exposed the classifier's missing intrinsic-error-status fallback;
+run `33335112383` then stopped on an earlier dependency fact without a failure
+mark. Run `33335707261` showed that the request deadline records the causal
+PostgreSQL span as `cancelled` with intrinsic status `unset`. The current
+TraceQL query and polling condition require the exact dependency plus one of
+`timeout`, `cancelled`, `unavailable` or `error`, excluding
+`success`/`rejected`. Run `33336386466` passed Catalog service-loss,
+PostgreSQL-`cancelled` and Redis-`unavailable` diagnosis, recovery after every
+scenario and exact clean teardown.
+
+The corrected profile keeps Tempo off product networks. Collector exports over
+internal `diagnostics-ingest`; Grafana queries over internal
+`diagnostics-query`. Tempo publishes no host port; the runner requires Grafana's
+Tempo data-source health endpoint to return `OK` and sends bounded TraceQL reads
+through Grafana's UID-scoped proxy. It rejects raw or JSON-escaped GraphQL
+document canaries before any failure exercise is accepted. These
+targeted-confirmation corrections still require protected runtime acceptance.
+
 ## Limits
 
 The dashboard refreshes every 30 seconds. Prometheus keeps at most three days/
 128 MB and limits query duration, concurrency and samples. This is enough to
 demonstrate diagnosis and the burn-alert mechanics locally but cannot establish
 28/30-day reliability. Alert labels do not imply external delivery. Three
-recorded diagnostic exercises and hosted identity/retention remain later
-Phase 12/14 work.
+diagnostic exercises remain P12-R10 acceptance work; hosted identity, durable
+telemetry retention and notification delivery remain Phase 14 work.

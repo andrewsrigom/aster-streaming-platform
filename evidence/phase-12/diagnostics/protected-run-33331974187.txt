@@ -1,0 +1,39 @@
+P12-R10 protected diagnostic runtime checkpoint
+Date: 2026-08-30
+Source: e0d197507f8627349c747b3ebc6400f1265cf1e9
+Workflow run: 33331974187
+Local platform job: 99311978785
+
+project=aster-p12-diagnostics-508ea1e9-6421-4497-a538-aaa9951b8af9
+
+catalog:
+traceId=79b8bc23b20f97208fb71159a32fea44
+diagnosis=catalog_service_unavailable
+userOutcome=failed
+populationDelta=1
+goodDelta=0
+boundary=router.catalog_subgraph:error
+recovery=passed
+
+postgresql:
+traceId=18e610d67847ed530e6830d61f43b568
+collectorObserved=aster.dependency.operation:postgresql:query:timeout
+tempoV1BoundaryPoll=timed_out_after_30s
+recovery=passed
+diagnosis=not_completed
+
+redis:
+status=not_run_after_postgresql_failure
+
+cleanup:
+status=clean
+
+result=failure
+cause=trace-by-ID polling read the trace before the required PostgreSQL span
+was query-visible; the runner queried TraceQL only after that polling step.
+remediation=poll an exact scenario-boundary TraceQL query first, then use the
+Tempo V2 trace-by-ID API and continue polling until the required span is present.
+
+This bounded transcript contains no request body, SQL, credentials, signed URL,
+title/profile identifier or product data. The GitHub job log remains the
+authoritative raw execution record.

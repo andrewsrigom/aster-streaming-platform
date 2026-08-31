@@ -2,6 +2,21 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0044](../docs/adr/0044-bounded-local-trace-diagnostics.md) resolves the
+trace-backend portion of the Phase 12 deferral with unmodified, digest-pinned
+Tempo 3.0.0 in one disposable diagnostics-only profile. The Collector exports
+privacy-filtered traces through one bounded queue and deadline; Tempo stores at
+most one hour on a 128 MiB tmpfs and exposes only ephemeral loopback query
+access. Tempo joins only dedicated internal Collector-ingest and Grafana-query
+networks; it has no product network attachment or published host port. Runtime
+TraceQL reads pass through Grafana's UID-scoped data-source proxy. Existing
+bounded Docker logs provide correlation. Loki remains deferred until a real
+ingestion, label, retention and deletion contract exists. Runtime diagnostics
+require Grafana data-source health `OK`, raw/JSON-escaped document-canary checks,
+the exact trace ID and finite scenario fields from TraceQL's matched span set.
+Recent trace-by-ID completeness is not an acceptance precondition because two
+protected runs measured its delayed partial behavior.
+
 [ADR-0043](../docs/adr/0043-multi-window-slo-burn-alerts.md) evaluates rapid
 14.4x 1h/5m and 6x 6h/30m pairs plus sustained 3x 1d/2h and 1x 3d/6h pairs for
 each released SLI. Both windows must burn above the threshold derived from the
@@ -202,7 +217,7 @@ Resolved Phase 02 persistence selection: retain pg 8.23.0, explicit parameterize
 
 | Decision | Resolution phase | Required evidence | Safe behavior before resolution | Blocks |
 |---|---:|---|---|---|
-| Additional trace/log backends | 12 | A concrete diagnostic requirement, bounded resources and verified operation before adding Tempo/Loki | Collector, Prometheus and the bounded Grafana overview are selected; no trace/log backend or capacity guarantee is claimed | Phase 12 diagnostic exercises |
+| Additional trace/log backends | 12 | P12-R10 supplies the concrete trace-search requirement; ADR-0044 bounds Tempo resources, isolated networks, privacy, retention and cleanup. Loki still requires a concrete ingestion/label/retention contract | Tempo is implemented only in the disposable diagnostic candidate; corrected protected three-scenario acceptance is pending and no log backend or hosted capacity guarantee is claimed | P12-R10 candidate and `evidence/phase-12/failure-diagnosis.md` |
 | Player-control component strategy | 07 | HLS.js and React compatibility, SSR boundary, captions, quality, keyboard and screen-reader behavior, browser coverage, bundle impact, maintenance, customization ownership, and license | Native media controls remain the early technical fallback; Media Chrome is the preferred candidate | Phase 07 verification |
 | Hosted compute and deployment controller | 14 | Capacity, operational fit, cost, rollback, and artifact requirements | Local and integration environments only | Hosted release |
 | Hosted PostgreSQL provider | 14 | Version support, backup/restore, connection limits, observability, migration, and cost | PostgreSQL-compatible ports and local containers | Hosted release |

@@ -154,7 +154,8 @@ Historical stashes are superseded.
 | 59 | Define bounded browser playback telemetry and complete local QoE measurement | P12-R11 | DONE |
 | 60 | Define executable SLIs, initial SLOs and error budgets | P12-R05 | DONE |
 | 61 | Provision a bounded three-layer operational overview | P12-R12 | DONE |
-| 62 | Implement multi-window SLO burn-rate alerts linked to runbooks | P12-R07 | IN_PROGRESS |
+| 62 | Implement multi-window SLO burn-rate alerts linked to runbooks | P12-R07 | DONE |
+| 63 | Diagnose three injected failures from telemetry and close Phase 12 | P12-R10 | IN_PROGRESS |
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head
@@ -240,9 +241,72 @@ dedicated regression are corrected. Classification/CI tests pass34/34 and the
 final corrected affected gate passes15/15 with11 cached in3.476 seconds.
 Exact correction `8185a81`, tree `51dc011`, passed protected run `33323508793`
 with every required job. Discussion `3889911170` is answered/resolved, and the
-single confirmation comment `5470101517` reports no major issue. Evidence
-closeout, squash merge and exact-main CI remain. Diagnostic exercises stay later
-work.
+single confirmation comment `5470101517` reports no major issue. Evidence head
+`4b6db71` then passed protected run `33324696622`; PR50 squash main `633e819`
+passed exact-main run `33325544350` and releases item62. Item63 starts from that
+exact main on `feat/p12-diagnostic-exercises`. It owns the three trace-led
+failure exercises, the concrete local trace-backend decision and Phase12
+closeout; no Phase13 demand-control work starts early. ADR-0044, bounded Tempo/
+Collector/Grafana configuration, the no-argument UUID-scoped runner,
+proportional CI routing and focused tests are implemented. One local run stopped
+during Docker Desktop image build. Published candidate `e0d1975` then passed
+Catalog diagnosis, PostgreSQL recovery and clean teardown in protected run
+`33331974187`, but its V1 trace read preceded dependency-span visibility and
+Redis did not run. Correction `b732be2` then proved the exact PostgreSQL TraceQL
+match, recovery and cleanup in run `33332980729`, but its V2 read remained
+incomplete and Redis still did not run. The refined runner classifies the finite
+TraceQL-selected span directly. Run `33333896159` passed Catalog/recovery and
+cleanup but showed that prefiltering PostgreSQL by outcome was too restrictive;
+the current correction selects the exact dependency first and validates its
+failure outcome afterward. Run `33334497056` returned that dependency but
+showed the classifier ignored intrinsic error status when its optional
+outcome/name projection was absent. The current correction accepts only exact
+dependency plus error status or a finite failure outcome. Run `33335112383`
+then showed polling could stop on an earlier non-failure-marked dependency fact.
+The current correction requires intrinsic error status in both TraceQL and
+polling. Run `33335707261` then showed the request deadline can produce causal
+outcome `cancelled` with status `unset`. The current correction matches only the
+finite outcomes `timeout`, `cancelled`, `unavailable` or `error`; its affected
+gate passes 73/73 with 60 cached in 56.093 seconds. Finite-outcome source
+`58779b9` and protected run `33336386466` then passed all three diagnoses and
+recoveries, exact zero-resource cleanup, source quality and aggregate
+protection. Evidence head `ab09592` repeated the local-platform path, but
+targeted confirmation found escaped-document privacy, Tempo product-network
+reachability and missing Grafana data-source-health blockers. The local batch
+corrects all three and passes focused diagnostics 12/12, platform tests 87/87
+and the affected gate 73/73 with 59 cached in 50.323 seconds. Item63 remains
+`IN_PROGRESS`. Published `00dfc26` and run `33338133771` then proved exact
+cleanup but exposed the runner's direct Tempo host-port lookup as incompatible
+with the accepted internal-only topology. The current correction publishes no
+Tempo port and routes TraceQL through Grafana's UID-scoped proxy; focused tests
+pass 12/12, platform tests pass 87/87 and the affected gate passes 73/73 with 59
+cached in 62.801 seconds. Corrected source `0288555`, tree `1ceeb20`, passed
+protected run `33338774702`: all three diagnoses/recoveries, exact cleanup,
+source quality, playable demo and aggregate protection passed. Evidence head
+`3aca9e5` passed run `33339712525`, but confirmation discussions `3890788286`
+and `3890788287` found incomplete stored-trace privacy inspection and missing
+lockfile-only diagnostic invalidation. The local batch checks a bounded stable
+full trace, selects `pnpm-lock.yaml`, passes focused tests 23/23 and passes the
+affected gate 73/73 with 63 cached in 44.855 seconds. Protected acceptance,
+blocking-boundary confirmation and release remain. Published `bf10756` and run
+`33341130651` selected the intended runtime but exposed Tempo's OTLP JSON Base64
+span-ID encoding at the first complete-trace check; cleanup remained exact. The
+local correction converts the hexadecimal expected ID, validates all stored
+spans, passes focused tests 13/13 and passes the affected gate 73/73 with 60
+cached in 54.407 seconds. Corrected source `cf87b8c`, tree `30ccdf9`, passed
+protected run `33341630994`, including complete stored-trace privacy, all three
+diagnoses/recoveries, exact cleanup, source quality, the Docker-only playable
+demo and aggregate protection. Final evidence publication, confirmation and
+release remain. Evidence head `cc2db4c`, tree `910678e`, passed exact-head run
+`33342551385`; confirmation discussions `3890928257`/`3890928260` then found
+missing Catalog transitive/root build-input diagnostic invalidation and a stale
+operator-guide status. The current batch covers those paths, guarantees a
+diagnostic path also selects the platform job, updates the guide, passes
+classifier tests 11/11 and the affected gate 73/73 with 60 cached in 50.155 seconds.
+Corrected source `089f656`, tree `d9abb88`, passed protected run `33344001503`,
+including the selected diagnostic job and aggregate protection. Discussions
+`3890928257`/`3890928260` are answered and resolved. Final evidence publication,
+blocking-boundary confirmation and release remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

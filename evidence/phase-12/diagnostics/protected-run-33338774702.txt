@@ -1,0 +1,60 @@
+P12-R10 corrected protected diagnostic runtime acceptance
+Date: 2026-08-30
+Source: 0288555badad27ec1334e8640dd9984eff021b25
+Tree: 1ceeb203cdeea39460ea69d20feba6f9fcb5de8e
+Workflow run: 33338774702
+Local platform job: 99330472682
+Source quality job: 99330472705
+Aggregate job: 99332541219
+
+project=aster-p12-diagnostics-3be252e8-469d-4c05-8846-2154bcbbdca1
+
+catalog:
+traceId=de999a112edfa3c2c5b34ca46a559e1b
+diagnosis=catalog_service_unavailable
+userOutcome=failed
+populationDelta=1
+goodDelta=0
+recovery=passed
+
+postgresql:
+traceId=6d8f1878744c36d85a2b1aa666768990
+diagnosis=catalog_postgresql_unavailable
+userOutcome=failed
+populationDelta=1
+goodDelta=0
+releasedRatio=0.4982083694175413
+dependencyOutcome=cancelled
+recovery=passed
+
+redis:
+traceId=eb50206531a8a8697b3168faf4c5ac92
+diagnosis=catalog_redis_degraded
+userOutcome=latency_qualified
+populationDelta=1
+goodDelta=1
+releasedRatio=0.7496297320293562
+dependencyReadOutcome=unavailable
+dependencyWriteOutcome=unavailable
+recovery=passed
+
+cleanup:
+status=clean
+
+protected jobs:
+local-platform=passed
+source-quality=passed
+documentation-security=passed
+dependency-review=passed
+ci-required=passed
+
+result=success
+
+The isolated topology exposed no Tempo host port. The runner required Grafana's
+Tempo data-source health result to be OK and performed bounded TraceQL searches
+through Grafana's UID-scoped data-source proxy. The privacy assertion covered
+raw and JSON-escaped GraphQL document canaries.
+
+This bounded transcript contains no request body, SQL, credentials, signed URL,
+title/profile identifier or product data. The GitHub job log remains the
+authoritative raw execution record.

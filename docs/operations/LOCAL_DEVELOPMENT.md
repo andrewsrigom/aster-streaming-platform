@@ -108,6 +108,7 @@ If localhost fails, inspect `ps --all`, Router/owner logs and port 4000. An inte
 | `integration` | Router, Identity, Catalog, Playback, Engagement, Kafka, S3 | 4000 |
 | `observability` + overlay | Router, Identity, Catalog, Playback, Engagement, Collector, Prometheus, Grafana | 3001, 4000, 9090 |
 | `full` + overlay | Router, Identity, Catalog, Playback, Engagement, Kafka, S3, Collector, Prometheus, Grafana | 3001, 4000, 9090 |
+| `diagnostics:run` candidate | Full profile plus Tempo in a fresh disposable project | ephemeral loopback Router, Prometheus and Grafana ports; Tempo only through Grafana proxy |
 
 Discovery is intentionally absent from the base profiles. Start released search
 and home rails with the event and Discovery overlays:
@@ -161,7 +162,76 @@ for the three-layer diagnostic view. [Dashboard questions, limits and
 recovery](OPERATIONAL_OVERVIEW.md). Alert states link to the
 [critical-journey burn runbook](RUNBOOKS.md#runbook-critical-journey-slo-burn).
 Three-day local data cannot prove a 28/30-day SLO, and no external alert
-delivery, tracing/log backend or historical compliance result is claimed.
+delivery, released tracing/log backend or historical compliance result is
+claimed. The diagnostics-only Tempo candidate below is not part of this
+retained profile.
+
+### Disposable trace-diagnostic candidate
+
+After the pinned repository installation, run the complete P12-R10 exercise
+from POSIX/WSL with a working local Linux Docker engine:
+
+```bash
+pnpm diagnostics:run
+```
+
+The command accepts no arguments, external endpoint or retained project name.
+It validates the Compose model and local engine, creates one UUID-scoped
+`aster-p12-diagnostics-*` project and starts the targeted Catalog diagnostic
+topology plus Tempo. Router, Prometheus and Grafana receive random IPv4
+loopback ports; Tempo publishes no host port, while Catalog, Playback and their
+dependencies remain private.
+PostgreSQL and Tempo use bounded tmpfs state, so this fixture contains no
+retained Aster data.
+
+The runner requires the immutable Grafana Tempo data-source health endpoint to
+return `OK` and verifies the released Catalog SLI source before injecting
+Catalog, PostgreSQL and Redis failures. Collector reaches Tempo only through
+internal `diagnostics-ingest`; Grafana reaches it only through internal
+`diagnostics-query`; Tempo has no product network attachment. The runner sends
+bounded TraceQL reads through Grafana's UID-scoped data-source proxy, requires
+the exact Router trace ID and selected finite boundary fields, then fetches a
+bounded stable copy of the complete trace, validates every OTLP span ID and
+rejects raw and JSON-escaped GraphQL document canaries across the serialized
+trace. It correlates the finite boundary set with sanitized Router/Catalog logs,
+restores each service and verifies a real TitleDetail recovery request.
+PostgreSQL injection blocks one
+known fixture read with the exact `aster-p12-diagnostic-lock` application name
+before pausing the disposable database; cleanup terminates only that holder.
+
+The finalizer runs a project-scoped `down --volumes --remove-orphans` and
+requires zero matching containers, networks and volumes. If the Docker engine
+exits or the parent is force-killed before that finalizer completes, retain the
+printed project UUID. After the same engine is healthy, inspect and remove only
+that exact Compose project; never use a prefix deletion, global prune, retained
+`aster` reset or WSL shutdown as diagnostic cleanup.
+
+The source policy, focused tests and protected acceptance are implemented.
+After the interrupted local build, protected run
+`33331974187` passed Catalog diagnosis, PostgreSQL recovery and exact cleanup,
+then exposed premature V1 trace retrieval before the PostgreSQL boundary became
+query-visible; Redis did not run. Corrected run `33332980729` proved that exact
+PostgreSQL TraceQL boundary and clean recovery/teardown, but the subsequent V2
+read still did not return the recent boundary before its deadline. The refined
+runner uses the exact TraceQL-selected span as evidence instead of assuming
+recent trace-by-ID completeness. Run `33333896159` passed Catalog and clean
+recovery/teardown, then showed that PostgreSQL outcome must be checked after
+selecting the exact dependency span. Run `33334497056` then returned that
+selected dependency but exposed the classifier's missing intrinsic-error-status
+fallback. Run `33335112383` then stopped on an earlier dependency fact without a
+failure mark. Run `33335707261` then showed that the request deadline records
+the causal PostgreSQL span as `cancelled` with intrinsic status `unset`. The
+current query and polling condition require the exact dependency plus one of
+`timeout`, `cancelled`, `unavailable` or `error`; `success` and `rejected` do
+not end the wait. Protected run `33336386466` passes all three scenarios,
+recovery after each and exact clean teardown. Targeted confirmation then
+required the network, Grafana-health and escaped-document corrections above.
+Corrected source `cf87b8c` and protected run `33341630994` now pass complete
+stored-trace privacy, all three diagnoses and recoveries, exact cleanup, source
+quality, the Docker-only playable demo and aggregate protection. Final review
+confirmation, merge and exact-main release verification remain. Current status
+and all attempts are recorded in
+[failure-diagnosis evidence](../../evidence/phase-12/failure-diagnosis.md).
 
 Local full-profile evidence proves real HTTP/dependency/CPU/memory/event-loop/export metrics, Collector loss with Identity still live/ready, explicit unhealthy telemetry status and recovery. Failed exports reappear under `aster_export_result="failure"` after recovery. Collector-down shutdown completed naturally in 4223 ms including the Docker stop call, exit 143, with degraded telemetry delivery rather than a false flush success.
 

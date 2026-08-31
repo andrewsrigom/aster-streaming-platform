@@ -1,0 +1,39 @@
+P12-R10 protected diagnostic runtime checkpoint
+Date: 2026-08-30
+Source: b732be2773be2f7153166bb5cbe0fbea05cda5dc
+Workflow run: 33332980729
+Local platform job: 99314814021
+
+project=aster-p12-diagnostics-a55e436f-ae61-4f8c-a882-141418397304
+
+catalog:
+traceId=1a1398fe98eaf4e847ab9a1f704b71a2
+diagnosis=catalog_service_unavailable
+userOutcome=failed
+populationDelta=1
+goodDelta=0
+recovery=passed
+
+postgresql:
+traceId=99e0a5052407fb076b462cb8203a201b
+exactBoundaryTraceQL=passed
+tempoV2BoundaryPoll=timed_out_after_30s
+recovery=passed
+diagnosis=not_completed
+
+redis:
+status=not_run_after_postgresql_failure
+
+cleanup:
+status=clean
+
+result=failure
+cause=the exact TraceQL query returned the PostgreSQL boundary, but the
+subsequent trace-by-ID read did not return that recent span within its deadline.
+remediation=use the exact TraceQL result's selected finite span fields as the
+diagnostic evidence; do not make recent trace-by-ID completeness an acceptance
+precondition.
+
+This bounded transcript contains no request body, SQL, credentials, signed URL,
+title/profile identifier or product data. The GitHub job log remains the
+authoritative raw execution record.

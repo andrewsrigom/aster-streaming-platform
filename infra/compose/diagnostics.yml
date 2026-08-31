@@ -1,0 +1,62 @@
+services:
+  collector:
+    build:
+      dockerfile: infra/docker/collector.diagnostics.Dockerfile
+    networks: !override [platform, diagnostics-ingest]
+    depends_on:
+      tempo:
+        condition: service_started
+
+  grafana:
+    build:
+      dockerfile: infra/docker/grafana.diagnostics.Dockerfile
+    environment:
+      GF_EXPLORE_ENABLED: "true"
+      GF_USERS_VIEWERS_CAN_EDIT: "true"
+    networks: !override [edge, diagnostics-query]
+    depends_on:
+      tempo:
+        condition: service_started
+
+  tempo:
+    profiles: [full]
+    build:
+      context: ../..
+      dockerfile: infra/docker/tempo.Dockerfile
+    labels:
+      com.aster.authority: disposable-local
+      com.aster.environment: local
+      com.aster.scope: diagnostics
+    command: ["-target=all", "-config.file=/etc/aster/tempo.yml"]
+    environment:
+      GOMEMLIMIT: 320MiB
+      GOMAXPROCS: "2"
+    networks: [diagnostics-ingest, diagnostics-query]
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /var/tempo:size=128m,uid=10001,gid=10001,mode=0700
+      - /tmp:size=8m,uid=10001,gid=10001,mode=0700
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 0.5
+    mem_limit: 384m
+    pids_limit: 128
+    restart: "no"
+    stop_grace_period: 5s
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+networks:
+  diagnostics-ingest:
+    internal: true
+    labels:
+      com.aster.environment: local
+      com.aster.scope: diagnostics-ingest
+  diagnostics-query:
+    internal: true
+    labels:
+      com.aster.environment: local
+      com.aster.scope: diagnostics-query

@@ -1,0 +1,65 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+        max_request_body_size: 1048576
+
+processors:
+  span/router_names:
+    name:
+      from_attributes: [otel.original_name]
+  attributes/router_privacy:
+    actions:
+      - key: graphql.operation.name
+        action: delete
+      - key: graphql.document
+        action: delete
+      - key: otel.name
+        action: delete
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 96
+    spike_limit_mib: 32
+
+exporters:
+  debug:
+    verbosity: detailed
+    sampling_initial: 10
+    sampling_thereafter: 100
+  otlphttp/tempo:
+    endpoint: http://tempo:4318
+    timeout: 1s
+    retry_on_failure:
+      enabled: true
+      initial_interval: 100ms
+      max_interval: 500ms
+      max_elapsed_time: 2s
+    sending_queue:
+      enabled: true
+      num_consumers: 1
+      queue_size: 128
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    metric_expiration: 1m
+    translation_strategy: UnderscoreEscapingWithSuffixes
+    without_scope_info: true
+    resource_to_telemetry_conversion:
+      enabled: false
+
+service:
+  telemetry:
+    logs:
+      level: info
+      encoding: json
+    metrics:
+      level: none
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, span/router_names, attributes/router_privacy]
+      exporters: [debug, otlphttp/tempo]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter]
+      exporters: [prometheus]

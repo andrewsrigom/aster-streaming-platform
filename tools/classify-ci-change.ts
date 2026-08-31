@@ -10,10 +10,12 @@ const MAX_OUTPUT_PATH_BYTES = 4_096;
 const GIT_OBJECT = /^[a-f\d]{40}$/u;
 const ZERO_OBJECT = /^0{40}$/u;
 const DOCUMENTATION_PREFIXES = [".ai/", "docs/", "evidence/", "skills/"] as const;
+const EXECUTABLE_EVIDENCE_FILES = new Set(["evidence/phase-05/generated-media.json"]);
 const PLATFORM_PREFIXES = [
   "apps/web/",
   "infra/compose/",
   "infra/docker/",
+  "infra/grafana/",
   "infra/observability/",
   "infra/router/",
   "services/identity/",
@@ -72,6 +74,51 @@ const PLATFORM_FILES = new Set([
   "tools/verify-playback-runtime.test.mjs",
   "tools/run-media-fixture.mjs",
   "tools/verify-optional-platform.mjs",
+  "tools/verify-diagnostics-profile.mjs",
+  "tools/verify-diagnostics-profile.test.mjs",
+  "tools/run-diagnostic-exercises.mjs",
+  "tools/run-diagnostic-exercises.test.mjs",
+]);
+const DIAGNOSTIC_PREFIXES = [
+  "services/catalog/",
+  "packages/",
+  "patches/",
+  "infra/router/",
+  "infra/grafana/",
+] as const;
+const DIAGNOSTIC_FILES = new Set([
+  ".github/workflows/ci.yml",
+  ".dockerignore",
+  "LICENSE",
+  "package.json",
+  "pnpm-lock.yaml",
+  "pnpm-workspace.yaml",
+  "turbo.json",
+  "tsconfig.base.json",
+  "tools/classify-ci-change.ts",
+  "tools/classify-ci-change.test.ts",
+  "infra/compose/compose.yml",
+  "infra/compose/observability.yml",
+  "infra/compose/prometheus.local.yml",
+  "infra/compose/collector.diagnostics.yml",
+  "infra/compose/diagnostics.yml",
+  "infra/compose/diagnostics-proof.yml",
+  "infra/docker/catalog.Dockerfile",
+  "infra/docker/prometheus.Dockerfile",
+  "infra/docker/router.Dockerfile",
+  "infra/docker/collector.diagnostics.Dockerfile",
+  "infra/docker/grafana.diagnostics.Dockerfile",
+  "infra/docker/tempo.Dockerfile",
+  "infra/observability/tempo.yml",
+  "infra/observability/slo-rules.yml",
+  "evidence/phase-05/generated-media.json",
+  "tools/media/fixture-export.mjs",
+  "tools/media/generate-hls.mjs",
+  "tools/media/hls-contract.mjs",
+  "tools/verify-diagnostics-profile.mjs",
+  "tools/verify-diagnostics-profile.test.mjs",
+  "tools/run-diagnostic-exercises.mjs",
+  "tools/run-diagnostic-exercises.test.mjs",
 ]);
 const repositoryRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 
@@ -79,6 +126,7 @@ export const GIT_DIFF_FILTER = "ACMRD";
 
 export interface ChangeClassification {
   changedFiles: number;
+  diagnostics: boolean;
   full: boolean;
   platform: boolean;
   reason: "docs-only" | "empty-diff" | "executable-change" | "fallback";
@@ -102,13 +150,20 @@ function validateChangedPath(path: string): void {
 
 function isDocumentationOnlyPath(path: string): boolean {
   return (
-    path.toLocaleLowerCase("en-US").endsWith(".md") ||
-    DOCUMENTATION_PREFIXES.some((prefix) => path.startsWith(prefix))
+    !EXECUTABLE_EVIDENCE_FILES.has(path) &&
+    (path.toLocaleLowerCase("en-US").endsWith(".md") ||
+      DOCUMENTATION_PREFIXES.some((prefix) => path.startsWith(prefix)))
   );
 }
 
 function isPlatformPath(path: string): boolean {
   return PLATFORM_FILES.has(path) || PLATFORM_PREFIXES.some((prefix) => path.startsWith(prefix));
+}
+
+function isDiagnosticPath(path: string): boolean {
+  return (
+    DIAGNOSTIC_FILES.has(path) || DIAGNOSTIC_PREFIXES.some((prefix) => path.startsWith(prefix))
+  );
 }
 
 export function classifyChangedPaths(paths: string[]): ChangeClassification {
@@ -120,15 +175,28 @@ export function classifyChangedPaths(paths: string[]): ChangeClassification {
     validateChangedPath(path);
   }
   if (uniquePaths.length === 0) {
-    return { changedFiles: 0, full: true, platform: true, reason: "empty-diff" };
+    return {
+      changedFiles: 0,
+      diagnostics: true,
+      full: true,
+      platform: true,
+      reason: "empty-diff",
+    };
   }
   if (uniquePaths.every(isDocumentationOnlyPath)) {
-    return { changedFiles: uniquePaths.length, full: false, platform: false, reason: "docs-only" };
+    return {
+      changedFiles: uniquePaths.length,
+      diagnostics: false,
+      full: false,
+      platform: false,
+      reason: "docs-only",
+    };
   }
   return {
     changedFiles: uniquePaths.length,
+    diagnostics: uniquePaths.some(isDiagnosticPath),
     full: true,
-    platform: uniquePaths.some(isPlatformPath),
+    platform: uniquePaths.some((path) => isPlatformPath(path) || isDiagnosticPath(path)),
     reason: "executable-change",
   };
 }
@@ -182,7 +250,7 @@ async function writeGitHubOutputs(classification: ChangeClassification): Promise
   }
   await appendFile(
     outputPath,
-    `full=${classification.full ? "true" : "false"}\nplatform=${classification.platform ? "true" : "false"}\nclassification=${classification.reason}\n`,
+    `full=${classification.full ? "true" : "false"}\nplatform=${classification.platform ? "true" : "false"}\ndiagnostics=${classification.diagnostics ? "true" : "false"}\nclassification=${classification.reason}\n`,
     { encoding: "utf8", flag: "a" },
   );
 }
@@ -192,13 +260,25 @@ export async function runChangeClassification(base: string, head: string): Promi
     const paths = changedPaths(base, head);
     const classification = paths
       ? classifyChangedPaths(paths)
-      : ({ changedFiles: 0, full: true, platform: true, reason: "fallback" } as const);
+      : ({
+          changedFiles: 0,
+          diagnostics: true,
+          full: true,
+          platform: true,
+          reason: "fallback",
+        } as const);
     await writeGitHubOutputs(classification);
     console.log(JSON.stringify({ check: "ci-change", status: "ok", ...classification }));
     return 0;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    const fallback = { changedFiles: 0, full: true, platform: true, reason: "fallback" } as const;
+    const fallback = {
+      changedFiles: 0,
+      diagnostics: true,
+      full: true,
+      platform: true,
+      reason: "fallback",
+    } as const;
     try {
       await writeGitHubOutputs(fallback);
     } catch {

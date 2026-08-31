@@ -53,6 +53,7 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`.ai/QUALITY_GATES.md`](../../.ai/QUALITY_GATES.md) — Quality Gates
 - [`.ai/README.md`](../../.ai/README.md) — Repository Memory
 - [`.ai/SESSION_LOG.md`](../../.ai/SESSION_LOG.md) — Session Log
+- [`.ai/SESSION_LOG_ARCHIVE.txt`](../../.ai/SESSION_LOG_ARCHIVE.txt) — Immutable Full Session-Log Snapshot
 - [`.ai/WORK_QUEUE.md`](../../.ai/WORK_QUEUE.md) — Work Queue
 
 ## skills
@@ -173,6 +174,7 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`docs/adr/0011-express-http-adapter.md`](../adr/0011-express-http-adapter.md) — ADR-0011: Use Express 5 behind a Bounded HTTP Adapter
 - [`docs/adr/0042-bounded-local-operational-overview.md`](../adr/0042-bounded-local-operational-overview.md) — ADR-0042: Provision a bounded local operational overview
 - [`docs/adr/0043-multi-window-slo-burn-alerts.md`](../adr/0043-multi-window-slo-burn-alerts.md) — ADR-0043: Evaluate finite multi-window SLO burn-rate alerts
+- [`docs/adr/0044-bounded-local-trace-diagnostics.md`](../adr/0044-bounded-local-trace-diagnostics.md) — ADR-0044: Add a bounded local trace-diagnostic profile
 
 ## docs/specs
 

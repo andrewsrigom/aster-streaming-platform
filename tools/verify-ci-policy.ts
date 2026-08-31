@@ -323,6 +323,18 @@ export function validateWorkflowPolicy(
       "local-platform job must use a unique run-scoped Compose project",
     ],
     [
+      /diagnostics:\s*\$\{\{ steps\.change\.outputs\.diagnostics \}\}/u,
+      "classifier must expose the heavyweight diagnostic invalidation decision",
+    ],
+    [
+      /- name: Remove the base project before diagnostic exercises\s+if: needs\.classify\.outputs\.diagnostics == 'true'\s+timeout-minutes: 2\s+run: docker compose --file "\$COMPOSE_FILE" --file infra\/compose\/observability\.yml --profile "\*" down --volumes --remove-orphans --timeout 10/u,
+      "diagnostic exercises must run after bounded base-project cleanup",
+    ],
+    [
+      /- name: Diagnose three injected failures from telemetry\s+if: needs\.classify\.outputs\.diagnostics == 'true'\s+timeout-minutes: 15\s+run: node \.\/tools\/run-diagnostic-exercises\.mjs/u,
+      "diagnostic-invalidating changes require one bounded real telemetry exercise",
+    ],
+    [
       /docker compose --file "\$COMPOSE_FILE" config --quiet/u,
       "local-platform job must validate the Compose model",
     ],
@@ -518,6 +530,10 @@ export function validateWorkflowPolicy(
       /PLATFORM_PATH:\s*\$\{\{ needs\.classify\.outputs\.platform \}\}/u,
       "aggregate must receive the platform path decision",
     ],
+    [
+      /DIAGNOSTICS_PATH:\s*\$\{\{ needs\.classify\.outputs\.diagnostics \}\}/u,
+      "aggregate must receive the diagnostic invalidation decision",
+    ],
     [/EVENT_NAME:\s*\$\{\{ github\.event_name \}\}/u, "aggregate must receive the event name"],
     [
       /IS_DRAFT:\s*\$\{\{ github\.event\.pull_request\.draft \|\| false \}\}/u,
@@ -526,6 +542,14 @@ export function validateWorkflowPolicy(
     [
       /\[\[ "\$FULL_PATH" != "true" && "\$FULL_PATH" != "false" \]\]/u,
       "aggregate must reject a missing or invalid path decision",
+    ],
+    [
+      /\[\[ "\$DIAGNOSTICS_PATH" != "true" && "\$DIAGNOSTICS_PATH" != "false" \]\]/u,
+      "aggregate must reject a missing or invalid diagnostic decision",
+    ],
+    [
+      /"\$DIAGNOSTICS_PATH" == "true" && "\$PLATFORM_PATH" != "true"/u,
+      "aggregate must reject a diagnostic path that bypasses the platform job",
     ],
     [
       /"\$quality_expected" == "false" && "\$QUALITY_RESULT" != "skipped"/u,

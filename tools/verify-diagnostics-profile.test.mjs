@@ -1,0 +1,110 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import {
+  readDiagnosticsSources,
+  validateDiagnosticProjectName,
+  validateDiagnosticsProfile,
+} from "./verify-diagnostics-profile.mjs";
+
+const valid = await readDiagnosticsSources();
+
+test("accepts the bounded diagnostic profile", () => {
+  assert.deepEqual(validateDiagnosticsProfile(valid), []);
+});
+
+test("accepts only internally generated UUID-scoped diagnostic projects", () => {
+  assert.equal(
+    validateDiagnosticProjectName("aster-p12-diagnostics-00000000-0000-4000-8000-000000000001"),
+    true,
+  );
+  for (const value of [
+    "aster",
+    "aster-p04-development",
+    "aster-p12-diagnostics-00000000-0000-0000-0000-000000000000",
+    "aster-p12-diagnostics-00000000-0000-4000-8000-000000000001;rm",
+  ]) {
+    assert.equal(validateDiagnosticProjectName(value), false, value);
+  }
+});
+
+test("rejects weakened storage, network, resource, retention and exporter bounds", () => {
+  for (const [file, before, after] of [
+    [
+      "proof",
+      '  grafana:\n    ports: !override ["127.0.0.1::3000"]',
+      '  grafana:\n    ports: !override ["127.0.0.1::3000"]\n  tempo:\n    ports: !override ["127.0.0.1::3200"]',
+    ],
+    ["compose", "mem_limit: 384m", "mem_limit: 4g"],
+    ["compose", "/var/tempo:size=128m", "/var/tempo:size=1g"],
+    ["compose", "networks: [diagnostics-ingest, diagnostics-query]", "networks: [platform, edge]"],
+    [
+      "compose",
+      "networks: !override [platform, diagnostics-ingest]",
+      "networks: !override [platform]",
+    ],
+    ["compose", "networks: !override [edge, diagnostics-query]", "networks: !override [edge]"],
+    ["compose", "diagnostics-ingest:\n    internal: true", "diagnostics-ingest:"],
+    [
+      "compose",
+      '    networks: [diagnostics-ingest, diagnostics-query]\n    user: "10001:10001"',
+      '    ports:\n      - "127.0.0.1:3200:3200"\n    networks: [diagnostics-ingest, diagnostics-query]\n    user: "10001:10001"',
+    ],
+    ["compose", 'restart: "no"', "restart: always"],
+    ["proof", "ports: !override", "ports:"],
+    ["proof", "volumes: !reset []", "volumes: [postgres-data:/var/lib/postgresql]"],
+    ["tempo", "block_retention: 1h", "block_retention: 24h"],
+    ["tempo", "max_traces_per_user: 256", "max_traces_per_user: 0"],
+    ["tempo", "max_query_expression_size_bytes: 4096", "max_query_expression_size_bytes: 0"],
+    ["collector", "queue_size: 128", "queue_size: 0"],
+    ["collector", "max_elapsed_time: 2s", "max_elapsed_time: 0s"],
+    ["collector", "span/router_names, attributes/router_privacy", "span/router_names"],
+    ["datasource", "editable: false", "editable: true"],
+    ["tempoDockerfile", "@sha256:", "@changed:"],
+  ]) {
+    const changed = { ...valid, [file]: valid[file].replace(before, after) };
+    assert.ok(validateDiagnosticsProfile(changed).length > 0, `${file}: ${before}`);
+  }
+});
+
+test("rejects an externally selected or broadly destructive runner", () => {
+  for (const value of ["process.argv[2]", "docker system prune", "wsl --shutdown"]) {
+    const changed = { ...valid, runner: `${valid.runner}\n// ${value}` };
+    assert.ok(validateDiagnosticsProfile(changed).length > 0, value);
+  }
+  for (const [before, after] of [
+    ["signal: operationSignal(timeout),", "timeout,"],
+    ["const RUN_BUDGET_MS = 12 * 60 * 1000;", "const RUN_BUDGET_MS = 24 * 60 * 1000;"],
+    ['process.once("SIGTERM", interrupt);', ""],
+    ['killSignal: "SIGKILL",', 'killSignal: "SIGTERM",'],
+    [
+      "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE application_name = 'aster-p12-diagnostic-lock';",
+      "SELECT pg_terminate_backend(pid) FROM pg_stat_activity;",
+    ],
+    [
+      "const search = await tempoSearch(ports.grafana, traceId, scenario);\n    const facts = traceSearchFacts(search, traceId);",
+      "const facts = traceSearchFacts(search, traceId);\n    const search = await tempoSearch(ports.grafana, traceId, scenario);",
+    ],
+    ["/api/datasources/proxy/uid/aster-tempo/api/search?", "/api/search?"],
+    [
+      "/api/datasources/proxy/uid/aster-tempo/api/v2/traces/${traceId}",
+      "/api/v2/traces/${traceId}",
+    ],
+    ['Buffer.from(traceId, "hex").toString("base64")', "traceId"],
+    ["      assertStoredTraceMatches(value, traceId);", "      assert.ok(value);"],
+    ["| select(", "| unbounded("],
+    ["diagnosticTraceReady(response, traceId, scenario)", "true"],
+    ["/api/datasources/uid/aster-tempo/health", "/api/health"],
+    ['response.value?.status === "OK"', "response.status === 200"],
+    ["const escapedCanary = JSON.stringify(canary).slice(1, -1);", "const escapedCanary = canary;"],
+    [
+      "assertTelemetryPrivacy(JSON.stringify(storedTrace), canaries);",
+      "assertTelemetryPrivacy(JSON.stringify(search), canaries);",
+    ],
+    ['"timeout|cancelled|unavailable|error"', '"timeout|unavailable|error"'],
+    ['fact.status === "error"', "false"],
+  ]) {
+    const changed = { ...valid, runner: valid.runner.replace(before, after) };
+    assert.ok(validateDiagnosticsProfile(changed).length > 0, before);
+  }
+});

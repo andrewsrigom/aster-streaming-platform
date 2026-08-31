@@ -8,13 +8,16 @@ Local target:
 - OpenTelemetry Collector;
 - Prometheus-compatible metrics store;
 - Tempo-compatible trace store;
-- Loki-compatible log store;
 - Grafana dashboards.
 
-The currently implemented local path is Collector `0.159.0`, Prometheus
-`3.14.0` and the single provisioned Grafana OSS `13.2.0` operational overview.
-Tempo-compatible traces and Loki-compatible log storage remain planned; their
-names here describe the target architecture, not running backends.
+The released local path is Collector `0.159.0`, Prometheus `3.14.0` and the
+single provisioned Grafana OSS `13.2.0` operational overview. The P12-R10
+candidate adds Tempo `3.0.0` only to an explicit disposable diagnostic profile;
+protected run `33336386466` verifies its three-scenario runtime acceptance and
+exact cleanup. The normal demo retains
+the released stack and resource footprint. A Loki-compatible log store is not
+implemented because no reviewed ingestion, label, retention or deletion path
+exists.
 
 The hosted implementation may use managed backends while preserving OpenTelemetry instrumentation and semantic conventions.
 
@@ -112,9 +115,61 @@ queries, panel questions and recovery behavior are documented in the
 [operational overview](../operations/OPERATIONAL_OVERVIEW.md) and selected by
 [ADR-0042](../adr/0042-bounded-local-operational-overview.md).
 
+## Bounded trace diagnostics candidate
+
+P12-R10 adds a diagnostics-only overlay selected by
+[ADR-0044](../adr/0044-bounded-local-trace-diagnostics.md). It preserves the
+released metric path, exports the already privacy-filtered traces to Tempo and
+provisions one immutable Grafana Tempo data source. Tempo is non-authoritative,
+uses a 128 MiB tmpfs, retains blocks for at most one hour and publishes no host
+port. The disposable runner reaches its query API only through Grafana's
+UID-scoped data-source proxy on Grafana's IPv4 loopback listener. The Collector
+has one trace-export consumer, a 128-item memory queue, a one-second request
+deadline and a two-second retry budget.
+
+The automated exercise creates a fresh `aster-p12-diagnostics-<uuid>` project,
+uses ephemeral loopback ports and diagnoses Catalog service loss, an
+authoritative PostgreSQL read failure and Redis degradation. It begins with the
+released Catalog-read SLI source, requires the Grafana Tempo data-source health
+endpoint to return `OK`, obtains the Router trace ID, waits for the
+exact scenario boundary through a UID-scoped Grafana proxy call to TraceQL with
+a finite `select`, correlates that matched span set with bounded structured
+logs, verifies recovery and removes only that exact project with its disposable
+state. Source policy and focused tests pass. Two protected runs proved Catalog
+diagnosis, PostgreSQL recovery and clean teardown; the second also proved the
+exact PostgreSQL TraceQL match while
+showing that recent trace-by-ID completeness is not a valid acceptance
+precondition. A third run proved the selected-span Catalog path and clean
+recovery, then showed that dependency outcome must be validated after selecting
+the exact dependency span rather than in the TraceQL match predicate. A fourth
+run returned that dependency and showed classification must accept its intrinsic
+error status when optional selected attributes are absent. A fifth run showed
+polling must not stop on an earlier non-failure-marked dependency fact. The
+sixth showed that the request deadline can record the causal PostgreSQL span as
+outcome `cancelled` with intrinsic status `unset`. The current query and
+readiness condition require the exact dependency plus `timeout`, `cancelled`,
+`unavailable` or `error`, and exclude `success`/`rejected`. Protected run
+`33336386466` verifies the corrected Docker exercise for Catalog service loss,
+PostgreSQL `cancelled` and Redis `unavailable`, including recovery after each
+scenario and exact clean teardown.
+
+Tempo is not attached to the product `platform` or `edge` networks. The
+Collector reaches it only through internal `diagnostics-ingest`; Grafana reaches
+it only through internal `diagnostics-query`. Product-facing Collector and
+Grafana attachments remain separate, so the trace store has no route to owner
+services, PostgreSQL, Redis, broker or object storage. Tempo publishes no host
+port. Privacy assertions reject both raw and JSON-escaped multiline GraphQL
+document canaries.
+
+No log backend is part of this profile. Size-rotated Docker logs remain the
+correlated log source, which prevents an empty Loki service from being mistaken
+for implemented log ingestion.
+
 ## Logs
 
-Pino-compatible structured logs are emitted to stdout and collected.
+Pino-compatible structured logs are emitted to stdout. Local Compose retains
+them through Docker's bounded rotating log driver; no searchable log backend is
+currently implemented.
 
 Required context:
 

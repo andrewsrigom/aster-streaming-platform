@@ -78,6 +78,9 @@
 !infra/docker/collector.Dockerfile
 !infra/docker/prometheus.Dockerfile
 !infra/docker/grafana.Dockerfile
+!infra/docker/tempo.Dockerfile
+!infra/docker/collector.diagnostics.Dockerfile
+!infra/docker/grafana.diagnostics.Dockerfile
 !infra/docker/router.Dockerfile
 !infra/docker/router-trust.Dockerfile
 !infra/router/router.yaml
@@ -86,10 +89,13 @@
 !infra/router/LICENSE-APOLLO-ROUTER
 !infra/router/generated/supergraph.graphql
 !infra/compose/collector.integration.yml
+!infra/compose/collector.diagnostics.yml
 !infra/compose/prometheus.local.yml
 !infra/observability/slo-rules.yml
 !infra/observability/slo-alerts.yml
+!infra/observability/tempo.yml
 !infra/grafana/provisioning/**/*.yml
+!infra/grafana/diagnostics/*.yml
 !infra/grafana/dashboards/*.json
 !tools/media/*.mjs
 **/node_modules/**

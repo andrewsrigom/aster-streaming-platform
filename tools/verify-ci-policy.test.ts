@@ -196,6 +196,33 @@ test("rejects duplicate feature pushes and missing cancellation", async () => {
   assert.ok(rules.includes("concurrency"));
 });
 
+test("diagnostic failure exercises cannot be omitted, broadened or run for every change", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const changed of [
+    source.replace("run: node ./tools/run-diagnostic-exercises.mjs", "run: true"),
+    source.replace(
+      "Diagnose three injected failures from telemetry\n        if: needs.classify.outputs.diagnostics == 'true'",
+      "Diagnose three injected failures from telemetry\n        if: false",
+    ),
+    source.replace(
+      "timeout-minutes: 15\n        run: node ./tools/run-diagnostic-exercises.mjs",
+      "timeout-minutes: 90\n        run: node ./tools/run-diagnostic-exercises.mjs",
+    ),
+    source.replace(
+      '--profile "*" down --volumes --remove-orphans --timeout 10',
+      '--profile "*" down --remove-orphans --timeout 10',
+    ),
+    source.replace("diagnostics: ${{ steps.change.outputs.diagnostics }}", "diagnostics: true"),
+  ]) {
+    assert.notEqual(changed, source);
+    assert.ok(
+      validateWorkflowPolicy(changed).some(({ detail }) =>
+        detail.toLowerCase().includes("diagnostic"),
+      ),
+    );
+  }
+});
+
 test("rejects a weakened or missing aggregate decision", async () => {
   const source = await readFile(workflowPath, "utf8");
   const weakened = source
