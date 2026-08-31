@@ -23,7 +23,18 @@ import type {
 const RECEIPT_LIMIT = PROFILE_RETENTION.maximumReceipts;
 const JOURNAL_LIMIT = PROFILE_RETENTION.maximumJournalEntries;
 const RECEIPT_LIFETIME = PROFILE_RETENTION.receiptSeconds;
-type MutationKind = "create" | "update" | "delete";
+export type ProfileMutationKind = "create" | "update" | "delete";
+
+export type ProfileMutationReplayProbe =
+  | Readonly<{
+      kind: "missing";
+      accountId: string;
+      admissionIdentity: string;
+    }>
+  | Readonly<{
+      kind: "replay";
+      result: ProfileMutationResult;
+    }>;
 
 export function createIdentityProfiles(ports: IdentityProfilePorts) {
   const now = (): number => {
@@ -46,6 +57,45 @@ export function createIdentityProfiles(ports: IdentityProfilePorts) {
       throw new Error("Identity digest unavailable.");
     }
     return hashed;
+  };
+
+  const mutationInput = (kind: ProfileMutationKind, value: unknown) => {
+    const input = profileInput(
+      value,
+      kind === "create"
+        ? ["mutationId", "profile"]
+        : kind === "update"
+          ? ["mutationId", "profileId", "expectedVersion", "profile"]
+          : ["mutationId", "profileId", "expectedVersion"],
+    );
+    if (!input || !profileIdentifier(input["mutationId"])) {
+      return undefined;
+    }
+    const mutationId = input["mutationId"];
+    const requestedId = kind === "create" ? null : input["profileId"];
+    const expectedVersion = kind === "create" ? null : input["expectedVersion"];
+    if (
+      kind !== "create" &&
+      (!profileIdentifier(requestedId) || !profileVersion(expectedVersion))
+    ) {
+      return undefined;
+    }
+    const preferences =
+      kind === "delete" ? undefined : normalizeProfilePreferences(input["profile"], ports.policy);
+    if (kind !== "delete" && !preferences) {
+      return undefined;
+    }
+    const requestDigest = digest(
+      JSON.stringify([kind, requestedId, expectedVersion, preferences ?? null]),
+    );
+    return Object.freeze({
+      mutationId,
+      requestedId,
+      expectedVersion,
+      preferences,
+      requestDigest,
+      admissionIdentity: `${mutationId}\0${requestDigest}`,
+    });
   };
 
   const run = async <T>(
@@ -105,39 +155,16 @@ export function createIdentityProfiles(ports: IdentityProfilePorts) {
   };
 
   const mutate = (
-    kind: MutationKind,
+    kind: ProfileMutationKind,
     request: ProfileRequest,
     value: unknown,
   ): Promise<ProfileResult<ProfileMutationResult>> =>
     run(request, async (tx, session) => {
-      const input = profileInput(
-        value,
-        kind === "create"
-          ? ["mutationId", "profile"]
-          : kind === "update"
-            ? ["mutationId", "profileId", "expectedVersion", "profile"]
-            : ["mutationId", "profileId", "expectedVersion"],
-      );
-      if (!input || !profileIdentifier(input["mutationId"])) {
+      const input = mutationInput(kind, value);
+      if (!input) {
         return { status: "invalid_input" };
       }
-      const mutationId = input["mutationId"];
-      const requestedId = kind === "create" ? null : input["profileId"];
-      const expectedVersion = kind === "create" ? null : input["expectedVersion"];
-      if (
-        kind !== "create" &&
-        (!profileIdentifier(requestedId) || !profileVersion(expectedVersion))
-      ) {
-        return { status: "invalid_input" };
-      }
-      const preferences =
-        kind === "delete" ? undefined : normalizeProfilePreferences(input["profile"], ports.policy);
-      if (kind !== "delete" && !preferences) {
-        return { status: "invalid_input" };
-      }
-      const requestDigest = digest(
-        JSON.stringify([kind, requestedId, expectedVersion, preferences ?? null]),
-      );
+      const { mutationId, requestedId, expectedVersion, preferences, requestDigest } = input;
       const accountId = session.account.id;
       const timestamp = now();
       await tx.pruneReceiptsAndAudit(accountId, timestamp);
@@ -243,6 +270,40 @@ export function createIdentityProfiles(ports: IdentityProfilePorts) {
     });
 
   return Object.freeze({
+    probeMutationReplay: (
+      kind: ProfileMutationKind,
+      request: ProfileRequest,
+      value: unknown,
+    ): Promise<ProfileResult<ProfileMutationReplayProbe>> =>
+      run<ProfileMutationReplayProbe>(request, async (tx, session) => {
+        const input = mutationInput(kind, value);
+        if (!input) {
+          return { status: "invalid_input" };
+        }
+        const timestamp = now();
+        const receipt = await tx.findReceipt(session.account.id, input.mutationId, timestamp);
+        if (!receipt) {
+          return {
+            status: "completed",
+            value: Object.freeze({
+              kind: "missing",
+              accountId: session.account.id,
+              admissionIdentity: input.admissionIdentity,
+            }),
+          };
+        }
+        if (
+          receipt.accountId !== session.account.id ||
+          receipt.mutationId !== input.mutationId ||
+          receipt.requestDigest !== input.requestDigest
+        ) {
+          return { status: "conflict" };
+        }
+        return {
+          status: "completed",
+          value: Object.freeze({ kind: "replay", result: receipt.result }),
+        };
+      }),
     authorize: (request: ProfileRequest, profileId: unknown) =>
       run(request, async (tx, session) => {
         if (!profileIdentifier(profileId)) {

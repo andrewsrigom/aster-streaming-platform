@@ -7,7 +7,6 @@ import {
   type RateLimitedIdentityProfilesOptions,
 } from "../src/application/profile-operation-limit.js";
 import type { ProfileRequest } from "../src/application/profile-ports.js";
-import { createProfilePolicy } from "../src/domain/profile.js";
 
 const digest = (value: string) => createHash("sha256").update(value).digest("hex");
 const accountId = "00000000-0000-4000-8000-000000000001";
@@ -30,6 +29,7 @@ function applications(
   events: string[],
   admission: "allowed" | "rejected" | "unavailable",
   admissionIds: string[] = [],
+  probe: "missing" | "replay" | "conflict" = "missing",
 ) {
   const profile = {
     id: "00000000-0000-4000-8000-000000000021",
@@ -41,6 +41,34 @@ function applications(
     version: 1,
   };
   const profiles = {
+    probeMutationReplay: (_kind: unknown, _request: unknown, input: unknown) => {
+      events.push("base.probe");
+      const value = input as { mutationId?: unknown };
+      if (typeof value.mutationId !== "string" || !/^00000000-/u.test(value.mutationId)) {
+        return Promise.resolve({ status: "invalid_input" as const });
+      }
+      if (probe === "conflict") {
+        return Promise.resolve({ status: "conflict" as const });
+      }
+      return Promise.resolve(
+        probe === "replay"
+          ? {
+              status: "completed" as const,
+              value: {
+                kind: "replay" as const,
+                result: { profileId: profile.id, version: 1 },
+              },
+            }
+          : {
+              status: "completed" as const,
+              value: {
+                kind: "missing" as const,
+                accountId,
+                admissionIdentity: digest(JSON.stringify(input)),
+              },
+            },
+      );
+    },
     authorize: () => Promise.resolve({ status: "not_found" as const }),
     create: () => {
       events.push("base.create");
@@ -90,7 +118,6 @@ function applications(
     },
     nextId: () => `00000000-0000-4000-8000-${String(++generated).padStart(12, "0")}`,
     digest,
-    policy: createProfilePolicy(),
   });
 }
 
@@ -100,7 +127,7 @@ test("authorizes, admits outside the base transaction and then re-enters owner v
   assert.equal((await profiles.create(request(), createInput)).status, "completed");
   assert.equal((await profiles.select(request(), "profile")).status, "completed");
   assert.deepEqual(events, [
-    "sessions.restore",
+    "base.probe",
     "limiter.profile_mutation",
     "base.create",
     "sessions.restore",
@@ -117,7 +144,7 @@ test("a rejected or unavailable admission never reaches the profile write", asyn
     const events: string[] = [];
     const profiles = applications(events, admission);
     assert.equal((await profiles.create(request(), createInput)).status, expected);
-    assert.deepEqual(events, ["sessions.restore", "limiter.profile_mutation"]);
+    assert.deepEqual(events, ["base.probe", "limiter.profile_mutation"]);
   }
 });
 
@@ -148,7 +175,24 @@ test("rejects malformed mutation identity before rate admission", async () => {
     (await profiles.create(request(), { mutationId: "raw", profile: {} })).status,
     "invalid_input",
   );
-  assert.deepEqual(events, ["sessions.restore"]);
+  assert.deepEqual(events, ["base.probe"]);
+});
+
+test("durable replay bypasses exhausted admission after the short marker lifetime", async () => {
+  const events: string[] = [];
+  const profiles = applications(events, "rejected", [], "replay");
+  assert.deepEqual(await profiles.create(request(), createInput), {
+    status: "completed",
+    value: { profileId: "00000000-0000-4000-8000-000000000021", version: 1 },
+  });
+  assert.deepEqual(events, ["base.probe"]);
+});
+
+test("changed payload for a retained mutation conflicts before admission", async () => {
+  const events: string[] = [];
+  const profiles = applications(events, "allowed", [], "conflict");
+  assert.equal((await profiles.create(request(), createInput)).status, "conflict");
+  assert.deepEqual(events, ["base.probe"]);
 });
 
 test("read-only profile paths bypass mutation admission", async () => {

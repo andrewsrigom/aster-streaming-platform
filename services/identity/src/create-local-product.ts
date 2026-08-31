@@ -87,7 +87,6 @@ export async function createLocalIdentityProduct(
         limiter,
         nextId: shared.nextId,
         digest: shared.digest,
-        policy: profilePolicy,
       }),
     },
     onOperation: (trace) => {

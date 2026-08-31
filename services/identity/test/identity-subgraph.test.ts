@@ -54,6 +54,7 @@ function applications() {
       signOut: () => Promise.resolve({ status: "completed", value: undefined }),
     },
     profiles: {
+      probeMutationReplay: unavailable,
       authorize: unavailable,
       list: (request) => {
         calls.push({ operation: "list", request });

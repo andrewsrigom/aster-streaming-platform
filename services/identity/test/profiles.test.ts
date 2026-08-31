@@ -388,6 +388,47 @@ test("canonical duplicate create and unknown commit replay without duplicate sta
   );
 });
 
+test("replay probe reads durable receipts without changing profile state", async () => {
+  const { app, store, request } = fixture();
+  const create = input(10);
+  const created = await app.create(request(), create);
+  assert.equal(created.status, "completed");
+  const before = structuredClone({
+    profiles: store.profiles,
+    receipts: store.receipts,
+    audit: store.audit,
+    outbox: store.outbox,
+  });
+
+  assert.deepEqual(await app.probeMutationReplay("create", request(), create), {
+    status: "completed",
+    value: { kind: "replay", result: created.value },
+  });
+  assert.equal(
+    (
+      await app.probeMutationReplay("create", request(), {
+        ...create,
+        profile: { ...preferences, displayName: "Changed" },
+      })
+    ).status,
+    "conflict",
+  );
+  const missing = await app.probeMutationReplay("create", request(), input(11));
+  assert.equal(missing.status, "completed");
+  assert.equal(missing.value.kind, "missing");
+  assert.equal(missing.value.accountId, id(1));
+  assert.match(missing.value.admissionIdentity, new RegExp(`^${id(11)}\\u0000[a-f0-9]{64}$`, "u"));
+  assert.deepEqual(
+    {
+      profiles: store.profiles,
+      receipts: store.receipts,
+      audit: store.audit,
+      outbox: store.outbox,
+    },
+    before,
+  );
+});
+
 test("versioned update, no-op and deletion are atomic and replayable", async () => {
   const { app, store, request } = fixture();
   const created = await app.create(request(), input(10));
