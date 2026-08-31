@@ -17,6 +17,9 @@ protected run `33352310376`; confirmation then found one CI-classification gap.
 That correction passed run `33354040239`; blocker-focused confirmation found
 one same-name multi-version Web-test gap. Its correction passed run
 `33355546182`; follow-up confirmation found byte-preservation and rollback gaps.
+Source `5f4a315` corrected those gaps and protected run `33357231869` passed.
+Discussion `3891772219` then found AST source locations still omit ignored bytes
+at both wire boundaries.
 
 ## Current behavior
 
@@ -47,7 +50,13 @@ one same-name multi-version Web-test gap. Its correction passed run
   then found retained-body reprinting and unsafe pre-union rollback after client
   exposure. Source `5f4a315`, tree `7c15d925`, preserves retained bytes and
   defines/tests the union Router rollback floor; Router11/11 and gate49/49 with35
-  cached in53.095 seconds pass.
+  cached in53.095 seconds pass. Protected run `33357231869` passes. Discussion
+  `3891772219` then found AST locations omit ignored leading/trailing bytes.
+  Source `0bcdd68833c23f1ae61a1c07f5f93ac5d9d989e1`, tree
+  `7ad2f2d88d5c2848265f6bbf568ba4168aee3562`, stores each retained wire body as
+  one explicit versioned JSON string. Its regression proves leading whitespace,
+  a leading comment, trailing newline/whitespace and their exact SHA-256.
+  Router11/11 and the final gate49/49 with38 cached in45.499 seconds pass.
 
 ## Accepted design and implementation
 
@@ -67,10 +76,10 @@ one same-name multi-version Web-test gap. Its correction passed run
 
 ## Exact next actions
 
-1. Commit the evidence checkpoint and push the byte-exact rollout correction once.
+1. Commit the evidence checkpoint and push the boundary-exact correction once.
 2. Require exact-head protected CI.
-3. Answer and resolve discussions `3891672851`/`3891672854`; obtain one permitted
-   blocker-focused confirmation because the correction changes rollout/rollback.
+3. Answer and resolve discussion `3891772219`; confirm the earlier addressed
+   threads remain resolved, then obtain one permitted blocker-focused confirmation.
 4. Squash merge, verify exact-main CI, close item64 and activate item65.
 
 ## Execution boundary

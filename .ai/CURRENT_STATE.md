@@ -27,9 +27,13 @@ Blocker-focused discussion `3891588767` then found same-name manifest versions
 collapsed by Web tests. Source `effc7fd`, tree `0acdba2a`, corrects it; exact-head
 run `33355546182` passes. Discussions `3891672851`/`3891672854` then found
 retained-body reprinting and unsafe pre-union rollback. Source `5f4a315`, tree
-`7c15d925`, preserves retained bytes and defines the union rollback floor;
-exact-head CI, blocker-focused confirmation and release remain. Full Phase00–14
-goal stays active.
+`7c15d925`, preserves retained bytes and defines the union rollback floor; run
+`33357231869` passes. Discussion `3891772219` found AST locations still omit
+ignored boundary bytes. Source `0bcdd68`, tree `7ad2f2d8`, now retains explicit
+JSON body strings including every leading/trailing byte; Router11/11 and the
+final gate49/49 with38 cached in45.499 seconds pass. Exact-head CI,
+blocker-focused confirmation and release remain. Full Phase00–14 goal stays
+active.
 
 ## Verified
 
@@ -88,8 +92,14 @@ in54.987 seconds pass. Protected run `33355546182` passes. Follow-up discussions
 `3891672851`/`3891672854` found retained-body reprinting and an unsafe pre-union
 rollback after new-client exposure. Source `5f4a315`, tree `7c15d925`, now hashes
 retained source bytes without reprinting and keeps the union Router as rollback
-floor; Router11/11 and gate49/49 with35 cached in53.095 seconds pass. Exact-head
-CI and confirmation remain. APQ stays disabled.
+floor; Router11/11 and gate49/49 with35 cached in53.095 seconds pass. Protected
+run `33357231869` passes. Discussion `3891772219` then found source locations
+exclude ignored leading/trailing bytes. Source
+`0bcdd68833c23f1ae61a1c07f5f93ac5d9d989e1`, tree
+`7ad2f2d88d5c2848265f6bbf568ba4168aee3562`, replaces the ambiguous source
+slice with bounded versioned JSON body strings and proves a boundary-inclusive
+body/hash. Router11/11 and the final affected gate49/49 with38 cached in45.499
+seconds pass. Exact-head CI and confirmation remain. APQ stays disabled.
 PostgreSQL/data ownership, owner authorization, schemas, Redis, events and media
 remain unchanged.
 
@@ -641,20 +651,23 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P13-R01/R02/R12 is implemented and source-verified on the active branch but is
-not yet verified in the pinned packaged Router or released. GraphQL shape/cost
-controls, N+1/query-count proof, owner-authorization abuse tests and the
-remaining Phase13 requirements are planned in items65–67. Phase14 capacity
-validation and hosted deployment remain planned.
+P13-R01/R02/R12 is implemented and the latest boundary-exact correction is
+source-verified on the active branch, but that exact head is not yet verified in
+the pinned packaged Router or released. GraphQL shape/cost controls,
+N+1/query-count proof, owner-authorization abuse tests and the remaining Phase13
+requirements are planned in items65–67. Phase14 capacity validation and hosted
+deployment remain planned.
 
 ## Next outcome
 
-For item64 (P13-R01), commit and publish the coherent candidate once, require
-protected CI to load the generated Rhai policy in the pinned Router, accept the
-canonical operation, reject altered/unknown/missing documents and expose all
-three finite metric labels. Complete the initial/confirmation review, merge,
-verify exact-main CI and then activate item65. Inspect the exact historical
-interrupted Phase12 project only when that same Docker engine becomes reachable.
+For item64 (P13-R01), commit the evidence checkpoint and publish the coherent
+boundary-exact candidate once. Require protected CI to load the generated Rhai
+policy in the pinned Router, accept the canonical operation, reject
+altered/unknown/missing documents and expose all three finite metric labels.
+Resolve discussion `3891772219`, obtain the permitted blocker-focused
+confirmation, merge, verify exact-main CI and then activate item65. Inspect the
+exact historical interrupted Phase12 project only when that same Docker engine
+becomes reachable.
 
 ## Runtime and recovery
 

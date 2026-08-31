@@ -17,8 +17,13 @@ passes Web119/119 plus the 49/49 gate and protected run `33355546182`. Follow-up
 discussions `3891672851`/`3891672854` found retained-body reprinting and an
 unsafe pre-union rollback. Source `5f4a3150ba4085677b710168d64d22195de48a0c`,
 tree `7c15d92500209b72a80fa46a276958cf86a3332f`, preserves reviewed retained
-bytes and defines the union Router rollback floor; Router11/11 and gate49/49 pass.
-Exact-head protected CI, blocker-focused confirmation and release remain.
+bytes and defines the union Router rollback floor; protected run `33357231869`
+passes. Discussion `3891772219` then found AST source locations omit ignored
+leading/trailing bytes. Source `0bcdd68833c23f1ae61a1c07f5f93ac5d9d989e1`,
+tree `7ad2f2d88d5c2848265f6bbf568ba4168aee3562`, uses bounded versioned JSON with
+explicit body strings and proves boundary-inclusive bodies/hashes. Router11/11
+and the final gate49/49 with38 cached in45.499 seconds pass. Exact-head protected
+CI, blocker-focused confirmation and release remain.
 
 ## Requirement traceability
 

@@ -1,6 +1,6 @@
 P13-R01/R02/R12 trusted-operation evidence
 Date: 2026-08-31
-Status: packaged runtime verified; byte-exact rollout correction pending protected release
+Status: packaged runtime verified; boundary-exact rollout correction pending protected release
 
 Environment
 - Branch: feat/p13-trusted-operations
@@ -19,6 +19,10 @@ Environment
 - Multi-version protected run: 33355546182 (passed)
 - Byte-exact rollout correction: 5f4a3150ba4085677b710168d64d22195de48a0c
 - Byte-exact rollout tree: 7c15d92500209b72a80fa46a276958cf86a3332f
+- Byte-exact protected run: 33357231869 (passed)
+- Boundary-byte review discussion: 3891772219
+- Explicit-body correction: 0bcdd68833c23f1ae61a1c07f5f93ac5d9d989e1
+- Explicit-body correction tree: 7ad2f2d88d5c2848265f6bbf568ba4168aee3562
 - Node.js: 24.19.0
 - pnpm: 11.24.0
 - Runtime target: Apollo Router Core 2.17.0, explicit integration/enforce proof
@@ -28,8 +32,9 @@ Implemented contract
 - IDs are SHA-256 of the exact link-ready Apollo wire body, including Apollo's
   deterministic `__typename` transform.
 - One generated Rhai matcher returns only matched or unknown; main policy adds missing.
-- A reviewed retained-operation source preserves obsolete wire bytes and permits
-  at most two distinct hashes per operation name during Router-first client rollout.
+- A reviewed versioned JSON source stores each obsolete operation as an explicit
+  string, preserves all wire bytes and permits at most two distinct hashes per
+  operation name during Router-first client rollout.
 - Local/integration may explicitly audit. Staging/production require enforce.
 - Enforce rejects missing, unknown and altered documents before query planning.
 - Web's 19 runtime documents and their actual `HttpLink` request bodies exactly
@@ -51,6 +56,8 @@ Focused commands and results
   tasks, 35 cached, 54.987 seconds.
 - Byte-exact rollout correction: Router 11/11 and affected candidate gate 49/49
   tasks, 35 cached, 53.095 seconds.
+- Explicit-body correction: Router 11/11 and affected candidate gate 49/49
+  tasks, 38 cached, 45.499 seconds.
 - pnpm typecheck and pnpm ci:test: pass; CI policy 37/37.
 - pnpm security:check (inside the candidate gate): pass; zero findings.
 
@@ -101,15 +108,28 @@ Protected acceptance and confirmation correction
   rejects it. ADR-0045 and the release runbook make the healthy union Router the
   rollback floor after new-hash exposure; client rollback keeps the union and a
   faulty union Router rolls forward to another compatible union image.
+- Protected run 33357231869 passed every required job for source 5f4a315.
+  Discussion 3891772219 then found GraphQL AST locations exclude ignored bytes
+  before the first and after the last token, so the slice was not boundary-exact.
+- Source 0bcdd68 replaces the ambiguous GraphQL source with a bounded versioned
+  JSON envelope whose entries contain one explicit body string. It parses and
+  schema-validates that string while hashing and emitting the exact decoded
+  string. The regression includes leading whitespace, a leading comment, a
+  trailing newline and trailing whitespace and proves the exact body and hash.
+- Early candidate attempts correctly failed formatting and then strict index-
+  signature checks. After formatting and typed untrusted-object access, build,
+  lint and Router11/11 pass; the final affected gate passes49/49 with38 cached
+  in45.499 seconds and the included secret scan has zero findings.
 
 Pending acceptance
-- Publish the batched byte-exact rollout/evidence correction once, pass exact-head
-  protected CI, resolve discussions 3891672851/3891672854 and obtain the permitted
-  blocker-focused confirmation before squash merge and exact-main verification.
+- Publish the boundary-exact rollout/evidence correction once, pass exact-head
+  protected CI, answer and resolve discussion3891772219 (and confirm earlier
+  addressed threads remain resolved), then obtain the permitted blocker-focused
+  confirmation before squash merge and exact-main verification.
 
 Interpretation and limitations
 The corrected results prove deterministic source generation, actual current Web
 wire compatibility, bounded rollout overlap, adverse repository policy and the
-packaged pinned-Router enforcement/telemetry path. Byte-exact retained bodies and
-the rollback floor are source/contract behavior and require the final protected
-run. No hosted deployment is claimed.
+packaged pinned-Router enforcement/telemetry path. Boundary-exact retained bodies
+and the rollback floor are source/contract behavior and require the final
+protected run. No hosted deployment is claimed.

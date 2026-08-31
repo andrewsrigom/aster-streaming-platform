@@ -339,9 +339,11 @@ Source `effc7fd`, tree `0acdba2a`, indexes all reviewed versions; Web119/119 and
 gate49/49 with35 cached in54.987 seconds pass. Protected run `33355546182`
 passes. Discussions `3891672851`/`3891672854` found retained-body reprinting and
 unsafe pre-union rollback. Source `5f4a315`, tree `7c15d925`, preserves retained
-bytes and defines the union rollback floor; Router11/11 and gate49/49 with35
-cached in53.095 seconds pass. Exact-head protected CI, blocker-focused
-confirmation and release remain.
+bytes and defines the union rollback floor; protected run `33357231869` passes.
+Discussion `3891772219` found AST locations omit ignored boundary bytes. Source
+`0bcdd68`, tree `7ad2f2d8`, replaces ambiguous slices with bounded explicit JSON
+body strings; Router11/11 and gate49/49 with38 cached in45.499 seconds pass.
+Exact-head protected CI, blocker-focused confirmation and release remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

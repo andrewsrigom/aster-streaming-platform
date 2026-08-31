@@ -125,7 +125,15 @@ retains the finite classification. Neither mode logs query text or hashes.
   `33355546182` passed. Follow-up discussions `3891672851` and `3891672854`
   found that retained bodies were reprinted instead of byte-preserved and that
   the rollback path could restore a pre-union Router after new-client exposure;
-  the bounded source, test and runbook correction plus repeated gates remain.
+  source `5f4a315` corrected both and protected run `33357231869` passed.
+  Follow-up discussion `3891772219` then found AST locations still omit ignored
+  leading/trailing wire bytes. Source
+  `0bcdd68833c23f1ae61a1c07f5f93ac5d9d989e1`, tree
+  `7ad2f2d88d5c2848265f6bbf568ba4168aee3562`, replaces location-derived slices
+  with bounded versioned JSON body strings and proves leading/comment/trailing
+  bytes remain in both the manifest body and SHA-256. Router11/11 and the final
+  affected gate49/49 with38 cached in45.499 seconds pass; exact-head protected
+  CI, thread resolution and blocker-focused confirmation remain.
 - Iteration gate: Router composition tests plus Router source/runtime policy tests and `git diff --check`.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed`, documentation/AI checks and zero-finding secret scan.
 - Heavyweight repeat triggers: repeat the real Router enforce-mode proof when operation generation, matcher logic, startup mode policy, Router image/config/Rhai packaging or rejection telemetry changes; repeat the Docker playable journey when canonical client documents or admission behavior changes.
@@ -138,7 +146,7 @@ complete composition set. After exposure, roll back the Web client while keeping
 or redeploying the last healthy union Router; roll forward a faulty union Router
 to another union-compatible image. No schema, database, Redis, event, media or
 credential rollback is needed. Retain the old reviewed byte-exact wire body in
-`infra/router/retained-operations.graphql` until telemetry and the compatibility
+`infra/router/retained-operations.json` until telemetry and the compatibility
 window prove both client populations drained.
 
 ## Documentation updates

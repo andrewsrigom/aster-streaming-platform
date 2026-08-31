@@ -5,7 +5,8 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 [ADR-0045](../docs/adr/0045-source-owned-trusted-operations.md) generates one
 Apollo manifest and finite Rhai matcher from the bounded first-party operation
 source. Exact name plus link-ready Apollo wire-document SHA-256 is required. A
-reviewed retained source preserves obsolete wire bytes and permits at most two
+reviewed versioned JSON source preserves each obsolete operation as one explicit
+wire-body string, including ignored boundary bytes, and permits at most two
 bodies per name during client rollout. After new-hash exposure the union Router
 is the rollback floor until both client populations drain. Local/integration
 audit preserves explicit development queries and only

@@ -4,6 +4,33 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — Trusted-operation boundary bytes corrected
+
+### Completed
+
+- Source `5f4a315`, tree `7c15d925`, passed protected run `33357231869`.
+  Discussion `3891772219` found its AST locations omitted ignored leading and
+  trailing bytes, so retained operation hashes were still not wire-exact.
+- Source `0bcdd68833c23f1ae61a1c07f5f93ac5d9d989e1`, tree
+  `7ad2f2d88d5c2848265f6bbf568ba4168aee3562`, replaces location-derived slices
+  with bounded versioned JSON entries containing explicit body strings.
+- The regression proves leading whitespace/comment plus trailing newline/
+  whitespace remain in the manifest body and SHA-256. Router11/11 pass. The
+  final affected gate passes49/49 with38 cached in45.499 seconds; zero secret
+  findings. Earlier formatting and strict untrusted-object typing failures were
+  corrected before the accepted gate.
+
+### Evidence
+
+- `evidence/phase-13/trusted-operations.txt` records the finding, exact source,
+  commands, accepted results and remaining protected release gate.
+
+### Next action
+
+- Commit the evidence checkpoint, push once, require exact-head protected CI,
+  resolve discussion `3891772219`, obtain the permitted blocker-focused
+  confirmation, then merge and verify exact main.
+
 ## 2026-08-31 — Trusted-operation confirmation CI correction
 
 ### Completed
