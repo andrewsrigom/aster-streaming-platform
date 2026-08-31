@@ -371,6 +371,12 @@ The local remediation covers Event Delivery, Object Storage, transitive Broker,
 workspace/TypeScript roots and patches; any diagnostic path now also selects
 the platform job. The guide records the successful acceptance. Classifier tests
 pass 11/11 and the affected gate passes 73/73 with 60 cached in 50.155 seconds.
+Corrected source `089f656f10c8a924157a94a9ba220e32384b47bd`, tree
+`d9abb88193d25c66840176c5bbcb7f4184c44beb`, passed protected workflow
+`33344001503`: classifier `99344592918`, diagnostic local-platform
+`99344620047`, source quality `99344620051`, documentation/security
+`99344620049`, dependency review `99344593060` and aggregate `99347035124` all
+passed. Discussions `3890928257`/`3890928260` are answered and resolved.
 
 ## Remaining release work
 
@@ -378,10 +384,8 @@ Before release:
 
 1. inspect and, if present, remove only the exact interrupted project above
    when that same local engine is reachable;
-2. publish the build-input invalidation/operator-guide correction and pass
-   exact-head protection;
-3. resolve discussions `3890928257`/`3890928260` and obtain the permitted
-   blocking-boundary confirmation;
+2. publish the final run evidence and pass exact-head protection;
+3. obtain the permitted blocking-boundary confirmation;
 4. squash merge PR51 and verify
    exact-main CI;
 5. record the released source/tree and close Phase 12.

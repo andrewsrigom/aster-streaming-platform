@@ -130,6 +130,10 @@ invalidation and a stale operator-guide status. The current batch covers every
 runtime-affecting Catalog package/root input, guarantees diagnostics select the
 platform job, updates the guide, passes classifier tests 11/11 and passes the
 affected gate 73/73 with 60 cached in 50.155 seconds. Phase13 has not started.
+Corrected source `089f656`, tree `d9abb88`, passed protected run `33344001503`,
+including diagnostic runtime, source quality and aggregate protection. Both
+confirmation discussions are answered and resolved. Final evidence publication,
+blocking-boundary confirmation, merge and exact-main CI remain.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

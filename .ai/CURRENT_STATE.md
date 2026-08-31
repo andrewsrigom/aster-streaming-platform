@@ -367,12 +367,17 @@ Catalog build inputs did not all select diagnostics, and that the operator guide
 still called acceptance pending. The current batch covers those inputs, makes
 diagnostic selection imply the platform job, updates the guide, passes classifier
 tests 11/11 and passes the affected gate 73/73 with 60 cached in 50.155 seconds.
+Corrected source `089f656`, tree `d9abb88`, passed protected run `33344001503`.
+Classifier `99344592918`, local-platform `99344620047`, source quality
+`99344620051`, documentation/security `99344620049`, dependency review
+`99344593060` and aggregate `99347035124` passed. Discussions
+`3890928257`/`3890928260` are answered and resolved; final evidence publication
+and confirmation remain.
 Architecture, operations, runbooks and licensing are current. The
 earlier local attempt stopped during Docker Desktop image build and could not
 inspect scoped resources. The normal demo is unchanged; Phase13 has not started.
 One post-review read-only WSL check returned `docker-client-unavailable`; no
-restart or repeated probe was attempted. Protected diagnostic CI is the next
-eligible real execution.
+restart or repeated probe was attempted.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run

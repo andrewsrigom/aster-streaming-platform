@@ -35,6 +35,10 @@ full snapshot through the archival checkpoint remains in
   build inputs, makes diagnostics imply the platform job, updates the guide,
   passes classifier tests 11/11 and the affected gate 73/73 with 60 cached in
   50.155 seconds.
+- Corrected source `089f656`, tree `d9abb88`, passed protected run
+  `33344001503`; classifier, diagnostic local-platform, source quality,
+  documentation/security, dependency review and aggregate jobs all passed.
+  Discussions `3890928257`/`3890928260` are answered and resolved.
 
 ### Evidence
 
@@ -46,8 +50,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish the Catalog-build invalidation/operator-guide correction, pass exact-
-  head protection, resolve the two new discussions and obtain confirmation.
+- Publish final run evidence, pass exact-head protection and obtain the
+  blocking-boundary confirmation.
 
 ## 2026-08-30 — Corrected diagnostic protected acceptance
 

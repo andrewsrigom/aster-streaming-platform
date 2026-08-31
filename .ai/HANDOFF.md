@@ -79,6 +79,11 @@ Finite-outcome source `58779b9` passes protected run `33336386466`.
   Broker, workspace/TypeScript roots and patches, makes diagnostics imply the
   platform job, updates the guide, passes classifier tests 11/11 and the
   affected gate 73/73 with 60 cached in 50.155 seconds.
+- Corrected source `089f656`, tree `d9abb88`, passed protected run
+  `33344001503`; all six required jobs passed. Discussions
+  `3890928257`/`3890928260` are answered and resolved. Publish the final run
+  evidence, pass exact-head protection and obtain the blocking-boundary
+  confirmation before merge.
 
 ## Protected runtime finding
 

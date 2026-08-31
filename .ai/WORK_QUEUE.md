@@ -303,6 +303,10 @@ missing Catalog transitive/root build-input diagnostic invalidation and a stale
 operator-guide status. The current batch covers those paths, guarantees a
 diagnostic path also selects the platform job, updates the guide, passes
 classifier tests 11/11 and the affected gate 73/73 with 60 cached in 50.155 seconds.
+Corrected source `089f656`, tree `d9abb88`, passed protected run `33344001503`,
+including the selected diagnostic job and aggregate protection. Discussions
+`3890928257`/`3890928260` are answered and resolved. Final evidence publication,
+blocking-boundary confirmation and release remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

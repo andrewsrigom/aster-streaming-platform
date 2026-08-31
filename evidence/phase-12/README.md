@@ -72,6 +72,10 @@ in the operator guide. The local correction covers direct/transitive Catalog
 packages and root build inputs, guarantees the platform job, updates the guide,
 passes classifier tests 11/11 and passes the affected gate 73/73 with 60 cached
 in 50.155 seconds.
+Corrected source `089f656`, tree `d9abb88`, passed protected run `33344001503`;
+classifier, diagnostic local-platform, source quality, documentation/security,
+dependency review and aggregate jobs all passed. Both discussions are answered
+and resolved. Final evidence publication, confirmation and release remain.
 
 ## Requirement traceability
 

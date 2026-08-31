@@ -118,6 +118,12 @@ the platform job, covers those Catalog build inputs and records the completed
 acceptance in the guide. Classifier tests pass 11/11 and the affected gate
 passes 73/73 with 60 cached in 50.155 seconds. Corrected protection and confirmation
 remain.
+Corrected source `089f656`, tree `d9abb88`, passed protected run `33344001503`:
+classifier `99344592918`, diagnostic local-platform `99344620047`, source
+quality `99344620051`, documentation/security `99344620049`, dependency review
+`99344593060` and aggregate `99347035124` all passed. Discussions
+`3890928257`/`3890928260` are answered and resolved. Final evidence publication
+and blocking-boundary confirmation remain.
 
 ## Proposed behavior
 
