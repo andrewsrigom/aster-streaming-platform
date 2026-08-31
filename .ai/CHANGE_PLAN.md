@@ -20,16 +20,18 @@ closes Phase 13 without changing the public schema.
 
 Item66 is frozen on PR56 at second corrected exact head `1e115fe`, based on
 released item65 main `8cd6c0b`. Its second corrected source `bf14e2c`, tree
-`0084c67`, passes the affected gate57/57, all11 real integration scenarios and
-the exact-source removed-marker replay proof; protected CI run `33442875698`
-and blocker-focused confirmation remain external.
-The pre-rebase item67 source `8007444`, tree `eb87e5f`, exactly audits 12 public
-lists, 10 entity returns and 5 contributors. Router 25/25 and the five-owner
-19/19 task gate pass. Disposable PostgreSQL fixtures record TitleDetail 1 query,
-SearchTitles 3, HomePublic 5 and ContinueWatching 1 with exact cleanup. The
-12-case matrix covers all five owners and all three required abuse categories.
-This is implemented and locally evidenced; the predecessor change requires the
-current rebase and affected-gate repeat before publication.
+`0084c67`, passes the affected gate57/57, all11 real integration scenarios, the
+exact-source removed-marker replay proof and protected run `33442875698`.
+Discussion `3898385895` is resolved; blocker-focused confirmation and release
+remain external.
+Rebased item67 source `4d02211`, tree `fe8ded4`, exactly audits 12 public lists,
+10 entity returns and 5 contributors. Router 25/25, the five-owner 19/19 task
+gate and the post-rebase affected gate57/57 pass. Disposable PostgreSQL fixtures
+record TitleDetail 1 query, SearchTitles 3, HomePublic 5 and ContinueWatching 1
+with exact cleanup. The 12-case matrix covers all five owners and all three
+required abuse categories. An exact old/new source diff proves that the audit,
+matrix and three measured owner paths did not change during rebase, so their
+heavyweight PostgreSQL evidence remains applicable.
 
 Protected run `33442875698` passes exact head `1e115fe`. The blocker-focused
 confirmation found two remaining acceptance gaps: the packaged runtime verifier
@@ -149,8 +151,9 @@ executable identifier/role/profile matrix.
   PostgreSQL fixtures; affected candidate gate; protected CI.
 - Raw artifact path: `evidence/phase-13/query-count-authorization.txt` plus
   `evidence/phase-13/query-count-measurements.jsonl`.
-- Acceptance result: local source/fixtures pass; predecessor release,
-  post-rebase candidate, protected, review, merge and exact-main gates pending.
+- Acceptance result: post-rebase local source, focused and affected candidate
+  gates pass; predecessor release, publication, protected review, merge and
+  exact-main gates remain.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.

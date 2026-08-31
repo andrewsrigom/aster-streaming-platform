@@ -96,8 +96,8 @@ records all three corrections. Third protected CI, final confirmation and
 release remain.
 
 Item67 is the one dependent P13-R07/R08/R09 candidate on second corrected item66
-head `1e115fe`. Pre-rebase source `8007444`, tree `eb87e5f`, encodes an exact audit of 12 public
-list paths, 10 entity-return paths and 5 federated contributors, with owner,
+head `1e115fe`. Rebased source `4d02211`, tree `fe8ded4`, encodes an exact audit
+of 12 public list paths, 10 entity-return paths and 5 federated contributors, with owner,
 authorization scope, list/parent/batch bounds and owner-query budget. Four real
 PostgreSQL observations record TitleDetail 1 query/52.727 ms, SearchTitles 3/
 23.948 ms, HomePublic 5/18.454 ms and ContinueWatching 1/3.744 ms. The
@@ -107,9 +107,11 @@ commands, query-plan interpretation and limitations. Catalog and Discovery
 fixtures passed on their first changed-path execution. Engagement's first run
 exposed a later wall-clock-sensitive test; the deterministic-clock correction
 then passed the whole fixture, and both attempts cleaned their exact container.
-Router 25/25 and the five-owner 19/19 task gate pass. Publication and the
-post-rebase candidate/protected/review/release gates correctly wait for item66
-release.
+Router 25/25, the five-owner 19/19 task gate and post-rebase affected gate57/57
+with43 cached in65.902 seconds pass. An exact source diff proves the audit,
+matrix and measured owner paths are unchanged from their fixture execution, so
+the heavyweight PostgreSQL results carry forward. Publication and the protected/
+review/release gates correctly wait for item66 release.
 
 ## Requirement traceability
 
@@ -126,7 +128,7 @@ release.
 
 - Docker server26.0.0 was reachable for item66's owned full integration and
   isolated packaged Router proof; all owned resources were removed. Protected
-  packaged acceptance now passes on exact head `82ba630`.
+  packaged acceptance now passes on exact head `1e115fe`.
 - Audit mode intentionally accepts ad hoc local/integration documents and is not
   a public-deployment security control.
 - A trusted document is not user authority. Owner authorization remains required.

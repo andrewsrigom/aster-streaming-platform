@@ -2,9 +2,11 @@ Phase 13 — GraphQL execution-path, query-count and authorization acceptance
 Date: 2026-08-31
 Requirements: P13-R07, P13-R08, P13-R09
 Branch: feat/p13-n-plus-one-authorization
-Predecessor head: 82ba630da7ccc64e4c82329701ff2c11f41d5508 (item66 PR56)
-Source commit: 8007444b24406c0b81d87156ab98197a727bb858
-Source tree: eb87e5f717031f82e257817e1c47541758ed41d6
+Predecessor head: 1e115fe9d43fe21ede9d555bc34e074df1439326 (item66 PR56)
+Candidate source commit: 4d0221167199c74a8477b946fb19962a92bbdeab
+Candidate source tree: fe8ded4ba75ee681ac3ed3cbe3aa8b8b7ae0634b
+Measurement source commit: 8007444b24406c0b81d87156ab98197a727bb858
+Measurement source tree: eb87e5f717031f82e257817e1c47541758ed41d6
 
 IMPLEMENTED LOCAL DEPENDENT CANDIDATE (NOT PUBLISHED OR RELEASED)
 
@@ -123,6 +125,19 @@ Results:
   PASS — affected builds 15/15 with 13 cached; Router 25/25 plus deterministic
   composition; five-owner gate 19/19 tasks with 14 cached.
 
+Post-rebase candidate:
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    pnpm check:changed
+Result:
+  PASS — 57/57 tasks, 43 cached, in 65.902 seconds.
+
+The exact diff from measurement source 8007444 to rebased source 4d02211 is
+empty for the Router audit/test, authorization matrix and Catalog, Discovery
+and Engagement measurement fixtures. Item66 changed Identity execution control,
+not any measured query path, adapter, migration, authorization policy or
+measurement. The PostgreSQL fixtures therefore remain supporting evidence and
+were not repeated.
+
 Commands:
   pnpm --filter @aster/engagement typecheck
   pnpm ai:check
@@ -134,17 +149,19 @@ Results:
 
 PENDING RELEASE EVIDENCE
 
-- Item66 PR56 passes protected CI; confirmation, squash merge and exact-main CI
-  remain before this dependent item can publish.
-- Rebase this source onto released main and repeat affected local gates. Repeat
-  a PostgreSQL fixture only if the rebase changes its query path, adapter,
-  migration, authorization or measurement.
-- Then run the item67 candidate gate, publish once, require protected CI and one
+- Item66 PR56 protected run `33442875698` passes and discussion `3898385895` is
+  resolved; confirmation, squash merge and exact-main CI remain before this
+  dependent item can publish.
+- Rebase this source onto released main after item66 merges and repeat only the
+  gates invalidated by the history change. Repeat a PostgreSQL fixture only if
+  that rebase changes its query path, adapter, migration, authorization or
+  measurement.
+- Then publish item67 once, require protected CI and one
   bounded initial/confirmation review, merge and confirm exact-main CI before
   declaring P13-R07/R08/R09 or Phase13 verified/released.
 
 ROLLBACK
 
-Revert source commit 8007444b24406c0b81d87156ab98197a727bb858 and its evidence
+Revert source commit 4d0221167199c74a8477b946fb19962a92bbdeab and its evidence
 checkpoint. No schema, migration, event, cache, retained media or durable data
 change exists. Fixtures own only exact random-name disposable containers.

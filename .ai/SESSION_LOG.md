@@ -32,6 +32,32 @@ full snapshot through the archival checkpoint remains in
   CI, resolve both discussions, complete one final blocker-focused confirmation,
   then merge and verify exact-main CI before item67 publication.
 
+## 2026-08-31 — Execution controls protected; query audit accepted after rebase
+
+### Completed
+
+- Item66 exact head `1e115fe` passed protected run `33442875698`, including all
+  source, owner integration, platform, diagnostics and Docker playable-demo
+  jobs. Discussion `3898385895` is answered and resolved; blocker-focused
+  confirmation was requested once in comment `5485316364`.
+- Item67 rebased source `4d02211`, tree `fe8ded4`, passes Router25/25 and the
+  five-owner gate19/19. Its complete post-rebase affected gate passes57/57 with
+  43 cached in65.902 seconds.
+- An exact old/new diff proves the Router audit, authorization matrix and
+  Catalog, Discovery and Engagement measurement paths did not change during
+  rebase. Their real PostgreSQL evidence remains applicable and was not rerun.
+
+### Evidence
+
+- `evidence/phase-13/query-count-authorization.txt` and the raw JSONL record the
+  rebased source, affected gate and explicit heavyweight carry-forward basis.
+
+### Next action
+
+- Require the pending PR56 blocker-focused confirmation, merge item66 and prove
+  exact-main CI. Then rebase item67 onto released main, repeat only invalidated
+  gates and publish it once.
+
 ## 2026-08-31 — Durable profile replay precedes short-lived admission
 
 ### Completed

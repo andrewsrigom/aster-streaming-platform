@@ -55,5 +55,5 @@ projects.
 
 ## Do not do yet
 
-Do not publish item67, merge it, start Phase14, add GraphOS/hosted credentials,
-or repeat unchanged browser/media evidence while PR56 remains unreleased.
+Do not publish item67, start Phase14, add GraphOS/hosted credentials, or repeat
+unchanged PostgreSQL/browser/media evidence while PR56 remains unreleased.
