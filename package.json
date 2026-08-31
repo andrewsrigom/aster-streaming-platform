@@ -77,7 +77,7 @@
     "diagnostics:test": "node --test ./tools/verify-diagnostics-profile.test.mjs ./tools/run-diagnostic-exercises.test.mjs",
     "platform:check": "node ./tools/verify-local-platform.mjs && node ./tools/verify-slo-contract.mjs && node ./tools/verify-diagnostics-profile.mjs",
     "platform:compose:check": "docker compose -f ./infra/compose/compose.yml config --quiet",
-    "platform:test": "node --test ./tools/verify-local-platform.test.mjs ./tools/verify-slo-contract.test.mjs ./tools/verify-diagnostics-profile.test.mjs ./tools/run-diagnostic-exercises.test.mjs ./tools/verify-catalog-runtime.test.mjs ./tools/verify-playback-runtime.test.mjs ./tools/verify-engagement-runtime.test.mjs ./tools/verify-discovery-runtime.test.mjs ./tools/verify-router-runtime.test.mjs ./tools/reset-local-platform.test.mjs ./tools/media/*.test.mjs ./tools/run-media-candidate.test.mjs ./tools/media-origin.test.mjs",
+    "platform:test": "node --test ./tools/verify-local-platform.test.mjs ./tools/verify-slo-contract.test.mjs ./tools/verify-diagnostics-profile.test.mjs ./tools/run-diagnostic-exercises.test.mjs ./tools/verify-catalog-runtime.test.mjs ./tools/verify-playback-runtime.test.mjs ./tools/verify-engagement-runtime.test.mjs ./tools/verify-discovery-runtime.test.mjs ./tools/verify-router-runtime.test.mjs ./tools/verify-trusted-operations.test.mjs ./tools/reset-local-platform.test.mjs ./tools/media/*.test.mjs ./tools/run-media-candidate.test.mjs ./tools/media-origin.test.mjs",
     "security:check": "node ./tools/scan-secrets.ts --all",
     "security:staged": "node ./tools/scan-secrets.ts --staged",
     "security:test": "node --test ./tools/scan-secrets.test.ts",

@@ -1,31 +1,50 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { request } from "node:http";
+import { pathToFileURL } from "node:url";
 
-const args = process.argv.slice(2);
-assert.deepEqual(args, args[0] === "--metrics" ? ["--metrics"] : []);
 const timeout = () => globalThis.AbortSignal.timeout(10_000);
 
-if (args[0] === "--metrics") {
-  const response = await globalThis.fetch("http://router:9091/metrics", { signal: timeout() });
-  assert.equal(response.status, 200);
-  const source = await response.text();
-  assert.ok(source.length > 0 && source.length <= 2_000_000);
-  for (const result of ["matched", "unknown", "missing"]) {
-    assert.ok(
-      source.includes(`aster_trusted_operation="${result}"`),
-      `Missing Router metric for ${result} trusted-operation result.`,
-    );
-  }
-  process.stdout.write(
-    JSON.stringify({ event: "aster.router.trusted_operation_metrics_verified" }) + "\n",
+export function selectCurrentOperation(persistedManifest, schemaManifest, name) {
+  assert.ok(Array.isArray(persistedManifest?.operations));
+  assert.ok(Array.isArray(schemaManifest?.operations));
+  const current = schemaManifest.operations.filter((entry) => entry?.name === name);
+  assert.equal(current.length, 1);
+  assert.equal(typeof current[0]?.sha256, "string");
+  const matching = persistedManifest.operations.filter(
+    (entry) => entry?.name === name && entry?.id === current[0].sha256,
   );
-} else {
-  const source = JSON.parse(
+  assert.equal(matching.length, 1);
+  assert.equal(typeof matching[0]?.body, "string");
+  return matching[0];
+}
+
+async function main() {
+  const args = process.argv.slice(2);
+  assert.deepEqual(args, args[0] === "--metrics" ? ["--metrics"] : []);
+
+  if (args[0] === "--metrics") {
+    const response = await globalThis.fetch("http://router:9091/metrics", { signal: timeout() });
+    assert.equal(response.status, 200);
+    const source = await response.text();
+    assert.ok(source.length > 0 && source.length <= 2_000_000);
+    for (const result of ["matched", "unknown", "missing"]) {
+      assert.ok(
+        source.includes(`aster_trusted_operation="${result}"`),
+        `Missing Router metric for ${result} trusted-operation result.`,
+      );
+    }
+    process.stdout.write(
+      JSON.stringify({ event: "aster.router.trusted_operation_metrics_verified" }) + "\n",
+    );
+    return;
+  }
+
+  const persistedManifest = JSON.parse(
     await readFile("infra/router/generated/persisted-query-manifest.json", "utf8"),
   );
-  const canonical = source.operations.find((entry) => entry.name === "Browse");
-  assert.ok(canonical);
+  const schemaManifest = JSON.parse(await readFile("infra/router/generated/manifest.json", "utf8"));
+  const canonical = selectCurrentOperation(persistedManifest, schemaManifest, "Browse");
 
   const call = async (body) => {
     const encoded = JSON.stringify(body);
@@ -95,4 +114,8 @@ if (args[0] === "--metrics") {
       rejected: { altered: 1, unknown: 1, missing: 1 },
     }) + "\n",
   );
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await main();
 }

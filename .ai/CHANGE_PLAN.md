@@ -139,8 +139,15 @@ retains the finite classification. Neither mode logs query text or hashes.
   platform proof. Source `64fa64e7650e422e4b1a4405555521afc95921bd`, tree
   `35817101dd1cb1126b2bddb2a2e9646938f760d0`, classifies the complete Router
   package as platform work. CI policy38/38 and the repeated gate49/49 with36
-  cached in64.294 seconds pass; exact-head protected CI, thread resolution and
-  blocker-focused confirmation remain.
+  cached in64.294 seconds pass. Protected run `33360643657` attempt1 had one
+  transient TraceQL indexing timeout in unchanged diagnostics; attempt2 passed
+  every required job and discussion `3891915868` is resolved. Blocker-focused
+  confirmation discussion `3895588146` then found the runtime proof could select
+  a retained `Browse` body while sending current variables. The proof now joins
+  the persisted entry to the unique current hash in the schema manifest and
+  fails closed on a missing or ambiguous join. A retained-first regression and
+  the complete platform suite92/92 pass. The affected candidate gate passes
+  49/49 with33 cached in98.949 seconds; protected proof and confirmation remain.
 - Iteration gate: Router composition tests plus Router source/runtime policy tests and `git diff --check`.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed`, documentation/AI checks and zero-finding secret scan.
 - Heavyweight repeat triggers: repeat the real Router enforce-mode proof when operation generation, matcher logic, startup mode policy, Router image/config/Rhai packaging or rejection telemetry changes; repeat the Docker playable journey when canonical client documents or admission behavior changes.
