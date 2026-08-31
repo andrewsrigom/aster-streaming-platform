@@ -19,19 +19,25 @@ report.
 
 ## Current behavior
 
-Item64 source `2286c7f71a82011c2eb083cdf52de07dc7301f51`, tree
-`d253a5e8e69abf18c29e8dd432b3c4225958aa73`, plus evidence head
-`a4e849f7c1f23ce7a9326f132a157fd04cd3c047` are frozen in PR52. Protected run
-`33406328754` and exact-head confirmation are pending. This dependent item is
-local only and cannot publish, merge or release first.
+Item64 final source correction `a353164b36a7124c1721915ee07be09ca561de78`,
+evidence head `de50b3ee98a3a8686c359a96e00113a709ce5dad`, passed protected
+run `33410126892` and clean confirmation. PR52 squash main
+`fb5cf0147a3a306f4186b1717fee53ed787bd3a6` retained candidate tree
+`a78f09598f19b05cd552664c1ad68e5bdcd2d43a`; exact-main run `33412728404`
+passed. The predecessor is released and this item is rebased onto it.
 
 The Router already enforces 32 KiB bodies, 2,000 parser tokens, recursion32,
 512 recursive selections, three-second execution, concurrency8 and a finite
 global burst. Introspection, APQ, sandbox, homepage, batching and subgraph error
 detail are disabled. Exact trusted-operation admission prevents arbitrary
-hosted shapes. Owners enforce finite page/input bounds. Composition does not yet
-calculate depth, aliases, roots, list expansion or backend-weighted cost for a
-new reviewed operation, nor produce the required calibration and adverse proof.
+hosted shapes. Owners enforce finite page/input bounds. Source
+`36b6af2cb114aa4dad2afddc39142ad5e5878c28`, tree
+`e8fc58bbcbe3899b7b420adcdedfbd867173de0b`, now calculates depth, aliases,
+roots, selections, list expansion and backend-weighted cost for every exact
+reviewed operation, fails excessive or incomplete metadata, and emits a bounded
+25-operation calibration artifact. Router18/18 and the rebased affected
+candidate gate51/51 pass; the packaged protected runtime proof and release
+remain pending.
 
 ## Proposed behavior
 
@@ -146,7 +152,8 @@ and retains the playable journey.
 
 - Raw artifact: `evidence/phase-13/graphql-demand-controls.txt` and generated
   demand manifest.
-- Acceptance: pending implementation.
+- Acceptance: rebased source/candidate evidence passes; packaged runtime, review
+  and release remain pending.
 - Iteration gate: Router analyzer/composition tests, affected owner schema tests,
   format/lint and `git diff --check`.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536
@@ -175,6 +182,6 @@ before raising any reviewed budget.
 - [ ] Requirements satisfied
 - [ ] Tests pass
 - [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
+- [x] Documentation current
+- [x] `.ai/` state updated
 - [x] Remaining risks recorded

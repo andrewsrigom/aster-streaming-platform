@@ -63,13 +63,14 @@ source `b646e496d0946262a688f34a118a896f6c40ebda`, tree
 `789007d5f48d4a16c0a1b47b8e2554e1ee0e294a`, passed protected run
 `33346575787` attempt 2 and clean confirmation. PR51 squash main
 `2b77a32f43a87fcdfc5032faf856f369de183998` retained that tree; exact-main run
-`33348247619` passed every required job and releases Phase12. Item64 is frozen
-as `WAITING_EXTERNAL` in PR52 at exact head `a4e849f`; protected run
-`33406328754`, confirmation and merge remain. Item65 is the sole local active
-dependent on `feat/p13-graphql-demand-controls`; it owns parser, shape, list,
-cost and environment controls and cannot publish before item64 passes exact-main
-CI. No hosted deployment is claimed; Phase14 still owns provider and deployment
-decisions.
+`33348247619` passed every required job and releases Phase12. Item64 final head
+`de50b3e` passed protected run `33410126892` and clean confirmation; PR52 squash
+main `fb5cf014` retained candidate tree `a78f095`, and exact-main run
+`33412728404` passed. Item65 is the sole active item on
+`feat/p13-graphql-demand-controls`, rebased onto that release. Source `36b6af2`,
+tree `e8fc58b`, owns parser, shape, list, cost and environment controls and
+passes the affected gate51/51. No hosted deployment is claimed; Phase14 still
+owns provider and deployment decisions.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

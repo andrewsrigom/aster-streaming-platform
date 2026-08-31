@@ -9,9 +9,11 @@ Phases00–12 are released. P12-R10 final source
 `2b77a32f43a87fcdfc5032faf856f369de183998` retained the tree; exact-main run
 `33348247619` passed every required job.
 
-Item64 (P13-R01/R02/R12) is frozen as `WAITING_EXTERNAL` on
-`feat/p13-trusted-operations` at exact head `a4e849f`. PR52 is open and protected
-run `33406328754` is active. Initial protected run `33350909056` failed
+Item64 (P13-R01/R02/R12) is released. Exact head `de50b3e` passed protected run
+`33410126892` and clean confirmation; all ten review threads are resolved. PR52
+squash main `fb5cf014` retained candidate tree `a78f095`; exact-main run
+`33412728404` passed every required job. Initial protected
+run `33350909056` failed
 and its complete initial review produced four blockers. Their correction passed
 protected run `33352310376`; confirmation then found one CI-classification gap.
 That correction passed run `33354040239`; blocker-focused confirmation found
@@ -28,11 +30,15 @@ attempt2 passed after attempt1's transient TraceQL indexing timeout and the
 discussion is resolved. Blocker-focused discussion `3895588146` then found the
 runtime verifier could select a retained `Browse` body with current variables.
 Source `2286c7f`, tree `d253a5e`, corrects it; platform92/92 and gate49/49 pass.
+Final source `a353164`, tree `f6925778`, separates the unique current delivery
+index from the bounded current-plus-retained enforcement union.
 
-Item65 (P13-R03/R04/R05/R10) is the sole `IN_PROGRESS` dependent on
-`feat/p13-graphql-demand-controls`, based on exact frozen head `a4e849f`. Its
-active plan is `.ai/CHANGE_PLAN.md`. It cannot publish, merge or release before
-item64 passes exact-main CI.
+Item65 (P13-R03/R04/R05/R10) is the sole `IN_PROGRESS` item on
+`feat/p13-graphql-demand-controls`, rebased onto released main. Source `36b6af2`,
+tree `e8fc58b`, implements ADR-0046 and passes Router18/18, verifier2/2 and the
+affected51/51 candidate gate. Its active plan is `.ai/CHANGE_PLAN.md`; local
+evidence is `evidence/phase-13/graphql-demand-controls.txt`. Publication,
+protected packaged proof, review and release remain.
 
 ## Current behavior
 
@@ -84,6 +90,18 @@ item64 passes exact-main CI.
   `d253a5e8e69abf18c29e8dd432b3c4225958aa73`, joins the persisted entry to the
   unique current schema-manifest hash and fails closed otherwise. Platform92/92
   and gate49/49 with33 cached in98.949 seconds pass.
+- Item64 final source `a353164`, tree `f6925778`, keeps persisted/Rhai admission
+  as the bounded current-plus-retained union and `manifest.json` as the unique
+  current delivery index. Evidence head `de50b3e` passed protected run
+  `33410126892`, clean confirmation and tree-identical squash; exact-main run
+  `33412728404` passes.
+- Item65 source `36b6af2`, tree `e8fc58b`, adds Federation v2.9 owner cost/list
+  metadata and one deterministic profile for each of 25 admitted hashes.
+  Policy bounds aliases8, cost2048, depth12, list expansion512, roots4 and
+  selections256. Browse is the maximum cost/list profile at1089/320; HomePublic
+  is the largest shape at95 selections. Router18/18, verifier2/2 and the
+  affected rebased gate51/51 pass. The real packaged adverse proof remains
+  pending.
 
 ## Accepted design and implementation
 
@@ -100,18 +118,18 @@ item64 passes exact-main CI.
 - Local development stays in explicit audit mode; CI contains one disposable
   enforce-mode real-Router proof.
 - Both generated artifacts are packaged; APQ remains disabled.
-- Item65 will upgrade Federation links only as needed for standard `@cost` and
-  `@listSize`, calculate deterministic trusted-operation demand at build time,
-  fail excessive/missing metadata, emit one bounded calibration artifact and
-  prove early Router rejection. This is planned, not implemented.
+- Item65 upgrades Federation links to v2.9 for standard `@cost` and `@listSize`,
+  calculates deterministic trusted-operation demand at build time, fails
+  excessive/missing metadata and emits one bounded calibration artifact. The
+  source candidate is implemented; protected early-Router rejection and release
+  remain pending.
 
 ## Exact next actions
 
-1. Draft ADR-0046 and implement item65's smallest source-owned analyzer slice
-   locally without publishing.
-2. Observe item64 run `33406328754`; when green, answer/resolve discussion
-   `3895588146`, obtain confirmation, squash merge and verify exact main.
-3. Rebase item65 onto released main, repeat affected gates, then publish it.
+1. Publish item65 once and require its protected packaged demand/trusted proof.
+2. Complete one initial review and one blocker-focused confirmation, treating
+   only requirement/security/availability/public-contract findings.
+3. Squash merge, verify tree identity and exact-main CI before item66.
 
 ## Execution boundary
 

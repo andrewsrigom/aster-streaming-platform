@@ -1,0 +1,133 @@
+P13-R03/R04/R05/R10 GraphQL demand-control candidate evidence
+Date: 2026-08-31
+Status: rebased source and affected gate pass; packaged runtime and release pending
+
+Environment
+- Branch: feat/p13-graphql-demand-controls (rebased; not yet published)
+- Released base main: fb5cf0147a3a306f4186b1717fee53ed787bd3a6
+- Source commit: 36b6af2cb114aa4dad2afddc39142ad5e5878c28
+- Source tree: e8fc58bbcbe3899b7b420adcdedfbd867173de0b
+- Node.js: 24.19.0
+- pnpm: 11.24.0
+- Runtime target: Apollo Router Core 2.17.0
+- Generated demand artifact SHA-256:
+  2669dcd5b894dc73084c42c991af8d2e088397e26f0aa20584f673ad909fe0ac
+
+Implemented contract
+- All five owners link Federation v2.9 and publish standard `@cost` and
+  `@listSize` metadata for the fields reachable from current trusted operations.
+- Root work has an explicit owner weight. Every reachable list has a finite
+  owner-backed assumed maximum; literal slices may lower but never raise that
+  maximum, while variables conservatively use it.
+- Composition parses at most 2,000 tokens, validates the exact body and SHA-256,
+  expands fragments under finite cycle/count limits and calculates aliases,
+  depth, root fields, selections, maximum nested list expansion and static cost.
+- Invalid/missing metadata, an excessive literal, numeric overflow, a stale
+  artifact or any operation above policy fails generation before image delivery.
+- Hosted admission remains the exact analyzed trusted name/hash union. The
+  schema delivery index remains current-only during a bounded retained overlap.
+- The generated manifest is packaged in the Router image and contains reviewed
+  names, hashes and finite numeric profiles, never variables or request data.
+- CI packages the pinned Router and must accept canonical Browse while rejecting
+  parser-token, body-size, batching and introspection probes with bounded,
+  sanitized responses before the existing trusted-operation/runtime journey.
+
+Policy
+- maximum aliases: 8
+- maximum cost: 2048
+- maximum depth: 12
+- maximum nested list expansion: 512
+- maximum root fields: 4
+- maximum selections: 256
+
+Calibrated exact trusted-operation profiles
+name                         type      aliases depth roots selections list cost
+Browse                       query           0     6     1         46  320 1089
+ContinueWatching             query           0     7     1         26   20  194
+CreateProfile                mutation        0     2     1          6    1   28
+DeleteProfile                mutation        0     2     1          6    1   28
+DemoSignIn                   mutation        0     3     1          8    1   23
+HomePersonalized             query           0     7     2         55   20  410
+HomePublic                   query           0     7     1         95   36  606
+PlayerProgress               query           0     3     1         15    1   12
+Profile                      query           0     2     2         12    1    8
+Profiles                     query           0     3     1         11   16   70
+ProfileWithEngagement        query           0     3     1         10    1   18
+ProgressHistory              query           0     7     1         26   20  194
+RecordProgress               mutation        0     3     1         17    1   31
+SearchTitles                 query           0     6     1         24   20  176
+SelectProfile                mutation        0     3     1          8    1   26
+SetWatchlist                 mutation        0     3     1         13    1   29
+SignOut                      mutation        0     3     1          7    1   23
+StartPlayback                mutation        0     3     1         10    1   35
+TitleDetail                  query           0     4     1         37   16   53
+TitlesWithEngagement         query           0     5     1         20   20  449
+UpdateProfile                mutation        0     2     1          6    1   28
+Viewer                       query           0     2     1          4    1    4
+ViewerAndTitle               query           0     3     2          9    1   11
+Watchlist                    query           0     7     1         25   20  194
+WatchlistMembership          query           0     2     1          4    1   10
+
+Observed maxima and margin
+- Aliases: 0/8.
+- Cost: 1089/2048 (Browse).
+- Depth: 7/12.
+- Nested list expansion: 320/512 (Browse).
+- Root fields: 2/4.
+- Selections: 95/256 (HomePublic).
+
+Focused and candidate results
+- Router build/typecheck and tests: pass; 18/18 after explicit mutation,
+  fragment-cycle and repeated-metadata coverage.
+- Runtime-demand verifier unit tests: pass; 2/2.
+- CI policy suite: pass; 38/38 within the candidate gate.
+- First complete candidate attempt ran every selected task and passed 53/54;
+  lint alone rejected unsafe enum/string comparisons and two test non-null
+  assertions. Both findings were corrected before the accepted gate.
+- `pnpm lint:workspace`: pass after correction.
+- The final pre-rebase gate passed54/54 tasks,49 cached, in8.549 seconds.
+- After item64 release and autosquash rebase, `CI=true
+  NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm
+  check:changed` passes51/51 tasks,38 cached, in75.853 seconds. The gate includes
+  format, lint, strict typecheck, owner/Router tests, architecture, documentation,
+  AI-memory, CI policy, staged/commit policy and secret scanning.
+- `git diff --check`: pass before commit.
+- Commit hook: staged secret scan zero findings; lockfile policy and format pass.
+
+Dependency security re-review
+- `pnpm audit --json` on the exact tree reports zero high/critical and one
+  moderate advisory: UUID 9.0.1, GHSA-w5hq-g745-h8pq, transitive only through
+  pinned Apollo Federation 2.14.4 packages.
+- The advisory affects v3/v5/v6 only when a caller supplies a buffer. The exact
+  installed Apollo Federation internals call `v1()` without arguments in
+  `dist/operations.js`; query-graphs calls `v4()` without arguments in
+  `dist/graphPath.js`. No installed affected v3/v5/v6 buffer call was found.
+- A forced unsupported transitive-major override was not introduced. The
+  high-severity release gate remains unchanged, and the moderate advisory stays
+  visible for upstream remediation/re-review before hosted release.
+
+Adverse coverage
+- Build tests reject missing root cost, missing/invalid list metadata, owner-list
+  literal overflow, aliases, depth, roots, selections, list expansion, static
+  cost, parser-token amplification, fragment cycles and numeric overflow.
+- Cardinality tests require one finite profile for every exact admitted hash,
+  including a retained overlap while keeping one current delivery entry.
+- Runtime proof sends one sub-32-KiB document above the 2,000-token ceiling, one
+  body above 32 KiB, an introspection document and a JSON batch containing a
+  private canary. The verifier bounds status/body/error count and rejects query,
+  canary, topology, stack or internal dependency leakage.
+
+Pending acceptance
+- Protected CI must prove the new packaged adverse verifier against the pinned
+  real Router and retain the Docker playable journey. Local source results do
+  not claim that runtime proof.
+- One initial review and one confirmation remain before squash merge and
+  exact-main verification for item65.
+
+Interpretation and limitations
+The source and gate evidence prove deterministic pre-publication demand analysis,
+finite owner metadata, artifact cardinality and adverse repository policy. Static
+cost is a conservative review budget, not measured query-plan, SQL-count or
+latency telemetry. Item66 owns execution/concurrency/rate/cache controls; item67
+owns measured N+1/query-count and authorization matrices. No hosted deployment,
+field SLO or Phase13 closeout is claimed.

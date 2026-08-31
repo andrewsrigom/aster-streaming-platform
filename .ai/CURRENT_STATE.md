@@ -14,8 +14,8 @@ runtime. Discussion `3891065894` is resolved and the final confirmation found
 no blocker. PR51 squash-merged as tree-identical main
 `2b77a32f43a87fcdfc5032faf856f369de183998`; exact-main run `33348247619`
 passed every required job, including source quality, every owner integration,
-the diagnostic runtime and Docker-only playable demo. Item64 is active on
-`feat/p13-trusted-operations` from that exact main. It implements P13-R01/R02/R12:
+the diagnostic runtime and Docker-only playable demo. Item64 implemented
+P13-R01/R02/R12 on `feat/p13-trusted-operations` from that exact main:
 one deterministic first-party operation manifest, exact admission under an
 explicit environment policy, a bounded local/integration audit workflow and a
 safe schema/client rollout. Initial PR52 run `33350909056` and review found four
@@ -42,10 +42,13 @@ Blocker-focused discussion `3895588146` then found the packaged proof could pair
 a retained `Browse` body with current variables. Source `2286c7f`, tree
 `d253a5e`, joins the persisted body to the unique current schema-manifest hash
 and fails closed on missing/ambiguous joins. Platform92/92 and gate49/49 with33
-cached in98.949 seconds pass. Exact-head CI and confirmation remain. Full
-Phase00–14 goal stays active. Item64 is a coherent `WAITING_EXTERNAL` candidate
-at head `a4e849f`; protected run `33406328754` is active. Item65 is the sole
-local `IN_PROGRESS` dependent and cannot publish before item64 exact-main CI.
+cached in98.949 seconds pass. Final source `a353164`, tree `f6925778`, separates
+the current delivery index from the current-plus-retained enforcement union.
+Evidence head `de50b3e` passed exact-head protected run `33410126892` and clean
+confirmation; all ten review threads are resolved. PR52 squash main `fb5cf014`
+retained candidate tree `a78f095`; exact-main run `33412728404` passed every
+required job. Item64 is released. Full Phase00–14 goal stays active. Item65 is
+the sole `IN_PROGRESS` item, rebased onto that release.
 
 ## Verified
 
@@ -76,7 +79,7 @@ and Catalog/Playback isolation pass their recorded Web110/110, browser8/8 and
 
 ## Current work
 
-P13-R01/R02/R12 item64 is frozen as `WAITING_EXTERNAL`. Its candidate generates an
+P13-R01/R02/R12 item64 is released. It generates an
 Apollo manifest and finite Rhai matcher from the 25 reviewed operations,
 packages both with Apollo Router 2.17.0 Core and binds each operation name to the
 exact link-ready Apollo wire-document hash. Actual `HttpLink` bodies for all 19
@@ -126,16 +129,27 @@ verifier selected `Browse` by name only. Source
 `d253a5e8e69abf18c29e8dd432b3c4225958aa73`, selects the exact current hash from
 the schema manifest, proves retained-first and missing/ambiguous cases, and adds
 that regression to the platform gate. Platform92/92 and gate49/49 with33 cached
-in98.949 seconds pass. Exact-head protected proof and confirmation remain. APQ
-stays disabled.
-PostgreSQL/data ownership, owner authorization, schemas, Redis, events and media
-remain unchanged.
+in98.949 seconds pass. Final source
+`a353164b36a7124c1721915ee07be09ca561de78`, tree
+`f69257780d003d75ef575101a8e3c358fd9923cb`, keeps persisted/Rhai enforcement
+as the bounded current-plus-retained union while the schema delivery manifest
+identifies exactly one current version. Evidence head `de50b3e` passed protected
+run `33410126892` and clean confirmation; PR52 squash main `fb5cf014` retained
+tree `a78f095`, and exact-main run `33412728404` passed. APQ stays disabled.
+PostgreSQL/data ownership, owner authorization, public GraphQL fields, Redis,
+events and media remain unchanged.
 
-P13-R03/R04/R05/R10 item65 is the sole active dependent on
-`feat/p13-graphql-demand-controls` at item64 head `a4e849f`. The accepted plan
-adds source-owned depth/alias/root/list/cost analysis to exact trusted-operation
-generation, owner-backed Federation metadata, one bounded calibration artifact
-and packaged adverse proofs. No implementation or acceptance claim exists yet.
+P13-R03/R04/R05/R10 item65 is the sole active item on
+`feat/p13-graphql-demand-controls`. Local source
+`36b6af2cb114aa4dad2afddc39142ad5e5878c28`, tree
+`e8fc58bbcbe3899b7b420adcdedfbd867173de0b`, upgrades owner metadata to
+Federation v2.9, analyzes every exact current/retained trusted operation for
+aliases, depth, roots, selections, nested list expansion and static owner cost,
+and emits one bounded 25-operation demand artifact. Missing/invalid metadata,
+overflow, parser amplification and every policy boundary fail closed. Router
+18/18, verifier2/2 and the exact rebased affected candidate gate51/51 pass; the
+calibration and limitations are recorded in Phase13 evidence. Packaged protected
+runtime, review and release remain; this is not a verified/released claim.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -685,21 +699,21 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P13-R01/R02/R12 is implemented and the latest boundary-exact correction is
-source-verified on the active branch, but that exact head is not yet verified in
-the pinned packaged Router or released. GraphQL shape/cost controls,
+P13-R01/R02/R12 is released through exact-main run `33412728404`. GraphQL
+shape/list/cost controls are implemented only in the rebased item65 candidate;
+its packaged proof and release remain. Execution/rate/cache controls,
 N+1/query-count proof, owner-authorization abuse tests and the remaining Phase13
-requirements are planned in items65–67. Phase14 capacity validation and hosted
+requirements are planned in items66–67. Phase14 capacity validation and hosted
 deployment remain planned.
 
 ## Next outcome
 
-For P13-R03 item65, implement ADR-0046, owner-backed Federation metadata and a
-deterministic demand analyzer locally while observing item64 protected
-run `33406328754`. Do not publish item65 first. When item64 passes, resolve
-discussion `3895588146`, obtain confirmation, merge and verify exact-main CI;
-then rebase item65 and repeat only affected gates. Inspect the exact historical
-interrupted Phase12 project only when that same Docker engine becomes reachable.
+For P13-R03 item65, publish rebased source `36b6af2` once, obtain the protected
+packaged Router adverse proof and one initial/confirmation review round, treat
+only requirement/security/availability/public-contract blockers, then squash
+merge and verify exact-main CI. Do not start item66 before item65 is a coherent
+waiting or released candidate. Inspect the exact historical interrupted Phase12
+project only when that same Docker engine becomes reachable.
 
 ## Runtime and recovery
 
@@ -717,5 +731,9 @@ Retained project aster-p04-development: Web3000/Router4000/origin9001, Catalog00
   compatibility precursor now verified by exact-main CI33244657936.
 - ADR-0026 permits only exact stopped/expired disposable scratch cleanup. Hosted lifecycle/fencing/storage budgets remain P14-R11.
 - Shared-host timings are laboratory observations, not field SLOs. No host investigation is required.
-- Last audit: zero high/critical, one known moderate UUID advisory with inspected Apollo callers unaffected; revisit before hosted release.
+- Phase13 re-review on source `36b6af2` reports zero high/critical and one known
+  moderate UUID advisory. Exact installed Apollo callers use argument-free
+  `v1()`/`v4()`, not the advisory's v3/v5/v6 buffer paths. Keep it visible and
+  re-review upstream remediation before hosted release; no unsupported
+  transitive-major override.
 - Preserve MIT/upstream notices. No paid resources, invented media rights or global Docker cleanup.

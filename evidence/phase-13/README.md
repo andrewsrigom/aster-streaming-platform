@@ -38,12 +38,21 @@ the unique current schema-manifest hash and fails closed on missing/ambiguous
 joins. Platform92/92 and gate49/49 with33 cached in98.949 seconds pass. Evidence
 head `a4e849f` passed protected run `33406328754` and discussion `3895588146` is
 resolved. Final audit found the delivery manifest still indexed the retained
-union, so that unique-current join would fail during overlap. Source
-`a353164b36a7124c1721915ee07be09ca561de78`, tree
-`f69257780d003d75ef575101a8e3c358fd9923cb`, keeps the Apollo manifest and
-matcher union while indexing exactly one current hash per name. Router11/11,
-verifier2/2, docs and gate49/49 with36 cached in99.305 seconds pass. Exact-head
-protected CI, confirmation and release remain.
+union, so that unique-current join would fail during overlap. Final source
+`a353164b36a7124c1721915ee07be09ca561de78`, evidence head `de50b3e`, keeps the
+Apollo manifest/matcher union while indexing exactly one current hash per name.
+Protected run `33410126892` and clean exact-head confirmation pass. PR52
+squash-merged as tree-identical main `fb5cf014`; exact-main run `33412728404`
+passes every required job. Item64 is released.
+
+Item65 rebased source `36b6af2cb114aa4dad2afddc39142ad5e5878c28`, tree
+`e8fc58bbcbe3899b7b420adcdedfbd867173de0b`, implements the local
+P13-R03/R04/R05/R10 candidate. Federation v2.9 owner metadata and deterministic
+trusted-operation analysis now bound aliases, depth, roots, selections, list
+expansion and cost. The 25-operation calibration, adverse source coverage and
+pre-rebase 54/54 gate and exact rebased 51/51 affected candidate gate pass.
+Packaged protected runtime, review and release remain; no verified runtime claim
+is made.
 
 ## Requirement traceability
 
@@ -52,7 +61,8 @@ protected CI, confirmation and release remain.
 | P13-R01 | [Apollo manifest](../../infra/router/generated/persisted-query-manifest.json), [finite matcher](../../infra/router/generated/trusted-operations.rhai) and [trusted-operation evidence](trusted-operations.txt) |
 | P13-R02 | Explicit local/integration audit, hosted enforce policy and passed disposable real-Router proof in [trusted-operation evidence](trusted-operations.txt) |
 | P13-R12 | [ADR-0045](../../docs/adr/0045-source-owned-trusted-operations.md), GraphQL architecture and release sequence |
-| P13-R03–R11 | Planned in queue items65–67; no closeout claim |
+| P13-R03/R04/R05/R10 | Local candidate in [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json) and [demand-control evidence](graphql-demand-controls.txt); packaged runtime/release pending |
+| P13-R06–R09/R11 | Planned in queue items66–67; no implementation or closeout claim |
 
 ## Current limitations
 
@@ -61,6 +71,7 @@ protected CI, confirmation and release remain.
 - Audit mode intentionally accepts ad hoc local/integration documents and is not
   a public-deployment security control.
 - A trusted document is not user authority. Owner authorization remains required.
-- Shape/cost, identity-aware rate, cache-scope, N+1/query-count and authorization
-  matrices remain later Phase 13 work.
+- Static shape/list/cost generation is implemented only in the local item65
+  candidate; packaged proof and release remain. Identity-aware rate, cache-scope,
+  N+1/query-count and authorization matrices remain later Phase 13 work.
 - Hosted providers, credentials, deployment and capacity remain Phase 14.

@@ -4,6 +4,55 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — Trusted operations released; demand candidate rebased
+
+### Completed
+
+- Item64 exact head `de50b3e` passed protected run `33410126892`, clean
+  confirmation and all resolved threads. PR52 squash main `fb5cf014` retained
+  candidate tree `a78f095`; exact-main run `33412728404` passed every job.
+- Autosquash-rebased item65 onto that release. Source `36b6af2`, tree `e8fc58b`,
+  includes explicit mutation, fragment-cycle and repeated-metadata coverage.
+- Router18/18, verifier2/2 and the exact rebased affected gate51/51 with38 cached
+  in75.853 seconds pass; no protected packaged-runtime claim is made yet.
+
+### Evidence
+
+- `evidence/phase-13/trusted-operations.txt` closes item64. Demand-control
+  evidence records the exact rebased source, calibration, dependency re-review
+  and pending runtime limitations.
+
+### Next action
+
+- Publish item65 once, require protected packaged proof and complete its bounded
+  initial/confirmation review before merge and exact-main CI.
+
+## 2026-08-31 — GraphQL demand-control candidate implemented
+
+### Completed
+
+- PR52 final head `de50b3e` passed exact-head protected run `33410126892`; one
+  exact-head blocker-focused confirmation was requested once.
+- Implemented pre-rebase item65 source
+  `9e5bd3c931b5fa1d53d03c788d7f2482bd109f44`,
+  tree `dcd4ddc35b14544b142658f845fdc01032de1e7f`: Federation v2.9
+  owner cost/list metadata, deterministic current/retained demand profiles,
+  stale-artifact failure and packaged parser/body/batching/introspection proof.
+- Corrected the first complete gate's only lint findings. Router17/17,
+  verifier2/2 and the final affected candidate gate54/54 pass; staged secret
+  scan reports zero findings.
+
+### Evidence
+
+- `evidence/phase-13/graphql-demand-controls.txt`, generated demand manifest and
+  ADR-0046 record policy, 25 calibrated profiles, adverse coverage and pending
+  protected-runtime limitations.
+
+### Next action
+
+- Complete PR52 confirmation/merge/exact-main CI, then rebase item65, repeat its
+  affected gate and publish once.
+
 ## 2026-08-31 — GraphQL demand controls activated locally
 
 ### Completed
