@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { Kind, parse, print } from "graphql";
 import { createPlaybackClient } from "../features/playback/client.ts";
+import { apolloOperationBody } from "../lib/apollo/trusted-operation.ts";
 import {
   START_PLAYBACK,
   playerManifestUrl,
@@ -111,7 +112,7 @@ test("player client uses one fixed anonymous operation, bounded cancellation and
     assert.ok(typeof request.body === "string");
     assert.deepEqual(JSON.parse(request.body), {
       operationName: "StartPlayback",
-      query: print(START_PLAYBACK),
+      query: apolloOperationBody(START_PLAYBACK),
       variables: { titleId },
     });
     assert.ok(!JSON.stringify(runtime.client.cache.extract()).includes(manifestUrl));

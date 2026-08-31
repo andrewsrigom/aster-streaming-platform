@@ -21,8 +21,9 @@ Both root schema commands first build Identity, Catalog, Playback, Engagement, D
 The generated set contains five subgraph SDLs, the public API SDL, Router-ready
 supergraph SDL, an Apollo persisted-query manifest, a generated finite Router
 matcher and a format-version-1 delivery manifest with exact tool versions, file
-hashes, field/entity ownership and 25 trusted-operation hashes. Routing URLs are
-internal service names, not public endpoints. Composition uses the existing
+hashes, field/entity ownership and the current 25 trusted-operation hashes.
+Manifest bodies use the exact link-ready Apollo `HttpLink` representation.
+Routing URLs are internal service names, not public endpoints. Composition uses the existing
 approved Apollo 2.14.4 and GraphQL 16.14.2 pins; [ADR-0003](../../docs/adr/0003-federation.md)
 and [ADR-0014](../../docs/adr/0014-apollo-federation-license-policy.md) remain applicable.
 
@@ -31,13 +32,24 @@ and [ADR-0014](../../docs/adr/0014-apollo-federation-license-policy.md) remain a
 The [known operations](../../infra/router/known-operations.graphql) cover all
 current root fields, profile commands, Catalog metadata/attribution, bounded
 Discovery search, public/personalized home composition and mixed entity queries.
-They are build-time compatibility contracts and the sole source for the generated
-runtime trusted-operation artifacts. An ownership collision, invalid operation,
-stale output or breaking baseline API rejects the candidate.
+They are build-time compatibility contracts and the current source for generated
+runtime trusted-operation artifacts. During a reviewed client transition,
+[retained operations](../../infra/router/retained-operations.graphql) can hold
+one obsolete body per name; generation accepts at most two distinct wire hashes
+for a name and zero retained bodies outside an overlap window. An ownership
+collision, invalid operation, stale output or breaking baseline API rejects the
+candidate.
 
 CI compares against the PR base SHA (or previous push SHA), never merely the candidate's regenerated API. Manual runs resolve the merge base with `origin/main`; when that is the candidate itself, they use its first parent. A missing baseline/history or explicit self-comparison fails before the source gate. It reads the previous API and operation file directly from that commit, so deleting or rewriting current fixtures cannot hide a broken existing operation. `ASTER_SCHEMA_BASE` accepts only a full commit SHA; local commands default to local `main`. A pre-supergraph commit with neither file is the initial bootstrap; one missing file is an error. Intentional breaking evolution requires a separate reviewed migration, not bypassing this check.
 
-SDL and operation sources are capped at 128 KiB and 20,000 tokens, known operations at 32, generated files at 1 MiB. Schema printers have a five-second deadline, 128 KiB output cap and no inherited environment. Git reads have five-second deadlines and output caps. Invalid UTF-8 and symbolic artifact files are rejected. Regeneration failure can leave an incomplete local output set; rerun the explicit update or restore its Git version, and never publish until read-only verification passes.
+SDL and operation sources are capped at 128 KiB and 20,000 tokens, current and
+retained operations at 32 each, the trusted union at 64 and versions per name at
+two; generated files remain capped at 1 MiB. Schema printers have a five-second
+deadline, 128 KiB output cap and no inherited environment. Git reads have
+five-second deadlines and output caps. Invalid UTF-8 and symbolic artifact files
+are rejected. Regeneration failure can leave an incomplete local output set;
+rerun the explicit update or restore its Git version, and never publish until
+read-only verification passes.
 
 The existing source gate runs this package's tests and artifact check. Compiler outputs are cached; the small schema test/check is uncached because a local Git baseline can move without a source change. Root artifact inputs and owner dependency edges select it for affected checks. No additional workflow, remote cache or hosted resource was created.
 

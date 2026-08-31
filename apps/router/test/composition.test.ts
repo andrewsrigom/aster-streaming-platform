@@ -10,7 +10,7 @@ import { readGitBaseline } from "../src/baseline.js";
 import { fileURLToPath } from "node:url";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { Kind, parse, print } from "graphql";
+import { Kind, parse } from "graphql";
 
 const root = new URL("../../../../", import.meta.url);
 const sources = {
@@ -63,18 +63,52 @@ test("every first-party operation has one exact Apollo manifest entry and finite
     }
     assert.ok(definition.name);
     const entry = persisted.operations.find(({ name }) => name === definition.name?.value);
-    assert.deepEqual(entry, {
-      body: print(definition),
-      id: sha256(print(definition)),
-      name: definition.name.value,
-      type: definition.operation,
-    });
+    assert.ok(entry);
+    assert.equal(entry.name, definition.name.value);
+    assert.equal(entry.type, definition.operation);
+    assert.equal(entry.id, sha256(entry.body));
+    assert.match(entry.body, /__typename/u);
     assert.match(matcher, new RegExp(`name == "${definition.name.value}"`, "u"));
     assert.match(matcher, new RegExp(entry.id, "u"));
     assert.notEqual(sha256(entry.body + "\n"), entry.id);
   }
+  assert.match(matcher, /fn operation_label\(name\)/u);
+  assert.match(matcher, /return "Browse"/u);
+  assert.match(matcher, /"other"/u);
   assert.match(matcher, /"unknown"/u);
   assert.doesNotMatch(matcher, /query |mutation |subscription |variables/u);
+});
+
+test("a bounded retained wire version supports Router-first client rollout", () => {
+  const retained = "query Viewer { me { accountId } }";
+  const artifacts = composeLocalSupergraph(sources, operations, undefined, undefined, retained);
+  const persisted = JSON.parse(artifacts["persisted-query-manifest.json"] ?? "null") as {
+    operations: { body: string; id: string; name: string }[];
+  };
+  const viewers = persisted.operations.filter(({ name }) => name === "Viewer");
+  assert.equal(viewers.length, 2);
+  assert.equal(new Set(viewers.map(({ id }) => id)).size, 2);
+  const matcher = artifacts["trusted-operations.rhai"] ?? "";
+  for (const entry of viewers) {
+    assert.match(matcher, new RegExp(entry.id, "u"));
+  }
+  assert.match(matcher, /hash == "[a-f0-9]{64}" \|\| hash == "[a-f0-9]{64}"/u);
+  assert.throws(
+    () =>
+      composeLocalSupergraph(sources, operations, undefined, undefined, retained + "\n" + retained),
+    /two distinct reviewed bodies/u,
+  );
+  assert.throws(
+    () =>
+      composeLocalSupergraph(
+        sources,
+        operations,
+        undefined,
+        undefined,
+        "query RetainedBroken { missingField }",
+      ),
+    /Retained operation incompatible/u,
+  );
 });
 
 test("an ownership collision or mismatched type fails composition", () => {

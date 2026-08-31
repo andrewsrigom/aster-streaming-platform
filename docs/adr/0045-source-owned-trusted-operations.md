@@ -23,12 +23,13 @@ and plan constraints that belong to Phase 14.
 
 ## Decision
 
-`infra/router/known-operations.graphql` remains the authoritative first-party
-source. The existing bounded composition command prints every named operation,
-hashes the exact UTF-8 body with SHA-256 and deterministically generates:
+`infra/router/known-operations.graphql` remains the authoritative current
+first-party source. The bounded composition command applies Apollo Client's
+link-ready `__typename` transform, prints every named operation, hashes that
+exact UTF-8 wire body with SHA-256 and deterministically generates:
 
 - Apollo persisted-query manifest format version 1, containing operation name,
-  type, exact body and ID;
+  type, exact link-ready body and ID;
 - a finite Rhai matcher containing only operation names and hashes;
 - the existing delivery manifest, which hashes both generated artifacts.
 
@@ -42,15 +43,19 @@ Startup requires explicit `ASTER_ENV` and
 `integration`; it records the finite result while allowing ad hoc diagnostic
 documents. `enforce` rejects every non-match before query planning and is
 mandatory for `staging` and `production`. Missing, unknown or contradictory
-values fail startup. Local Compose sets `local`/`audit` explicitly. A disposable
-integration overlay proves `enforce` against the real Router.
+values fail startup. Known names retain their finite operation label in audit
+mode so local SLI diagnostics remain useful; an unknown name is always `other`.
+Local Compose sets `local`/`audit` explicitly. A disposable integration overlay
+proves `enforce` against the real Router.
 
-The Web build must keep using documents represented by the generated manifest.
-Schema changes use add-first evolution: add compatible owner fields, update and
-deploy the manifest and Router policy, deploy the client, observe the old
-operation window, then remove obsolete schema and operation entries in a later
-reviewed release. Rollback restores the prior complete generated set and Router
-image; never hand-edit one artifact.
+The Web build must keep sending documents represented by the generated manifest,
+and a test captures the actual `HttpLink` request body. Schema changes use
+add-first evolution. During a document transition,
+`infra/router/retained-operations.graphql` may retain one obsolete reviewed body
+per name, so the generated matcher accepts at most two distinct hashes for that
+name. Deploy the union and Router policy before the client, observe the overlap,
+then remove the obsolete body in a later reviewed release. Rollback restores the
+prior complete generated set and Router image; never hand-edit one artifact.
 
 ## Consequences
 
@@ -64,8 +69,8 @@ image; never hand-edit one artifact.
 
 ### Negative
 
-- Any client document formatting change changes its hash and must ship through
-  the manifest rollout.
+- Any client wire-document formatting change changes its hash and must ship
+  through the bounded overlap rollout.
 - Audit mode deliberately does not protect a public deployment and must never be
   accepted for staging or production.
 - This slice does not yet replace parser, shape, cost, rate or owner authorization
@@ -101,12 +106,14 @@ queries. Audit mode makes that exception visible and impossible in hosted modes.
 
 ## Validation
 
-Composition tests prove deterministic one-to-one name/body/hash generation,
-artifact bounds and altered-hash rejection. Source policy tests prove explicit
-environment/mode validation, artifact packaging, finite telemetry and absence of
-query/hash labels. The disposable Router proof accepts one canonical operation
-and rejects altered, unknown and missing operations in enforce mode. Protected CI
-must pass before merge.
+Composition tests prove deterministic current and retained name/body/hash
+generation, artifact bounds, the two-version ceiling and altered-hash rejection.
+Web tests capture actual Apollo `HttpLink` request bodies and compare them with
+the manifest. Source policy tests prove explicit environment/mode validation,
+artifact packaging, finite telemetry and absence of query/hash labels. The
+disposable Router proof accepts one canonical operation and rejects altered,
+unknown and missing operations in enforce mode. Protected CI must pass before
+merge.
 
 ## Migration and rollback
 

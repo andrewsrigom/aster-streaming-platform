@@ -41,12 +41,13 @@ The exact order depends on compatibility. A common sequence:
 
 Trusted operations are published before clients that need them.
 
-For a document change, retain the old and new operations together, regenerate
-and review the complete artifact set, deploy the Router image containing that
-set, then deploy the client. Observe finite matched/unknown/missing outcomes
-before deleting the old operation in a later release. Rollback uses the prior
-Router image and its matching complete manifest; never combine artifacts from
-different source revisions.
+For a document change, place the obsolete reviewed body in
+`infra/router/retained-operations.graphql`, regenerate and review the old/new
+union, deploy the Router image containing that set, then deploy the client. The
+generator allows at most two distinct wire bodies per operation name. Observe
+finite matched/unknown/missing outcomes before deleting the old body in a later
+release. Rollback uses the prior Router image and its matching complete manifest;
+never combine artifacts from different source revisions.
 
 ## Canary
 

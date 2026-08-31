@@ -74,13 +74,14 @@ fn operation(request) {
     let mode = trusted_mode();
     let name = request.body.operation_name;
     let query = request.body.query;
+    let label = if name == () { "other" } else { trusted::operation_label(name) };
     let result = if name == () || query == () || name.len == 0 || query.len == 0 {
         "missing"
     } else {
         trusted::match_operation(name, sha256::digest(query))
     };
     request.context["aster.trusted_operation"] = result;
-    request.context["aster.operation"] = if result == "matched" { name } else { "other" };
+    request.context["aster.operation"] = if result == "matched" || mode == "audit" { label } else { "other" };
     request.context["aster.started_ms"] = unix_ms_now();
     if mode == "enforce" && result != "matched" {
         request.context["aster.outcome"] = "rejected";

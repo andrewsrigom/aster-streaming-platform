@@ -21,6 +21,7 @@ import {
   createWatchlistIntent,
   type WatchlistIntentState,
 } from "../features/engagement/watchlist-intent.ts";
+import { apolloOperationBody } from "../lib/apollo/trusted-operation.ts";
 
 const id = (n: number) => "00000000-0000-4000-8000-" + String(n).padStart(12, "0");
 const variables = { profileId: id(1), first: 20, after: null };
@@ -187,7 +188,7 @@ test("real Apollo library requests replace pages, preserve bounded views and use
       );
       assert.ok(match);
       const [kind, op] = match;
-      assert.equal(request.query, print(op.document));
+      assert.equal(request.query, apolloOperationBody(op.document));
       assert.equal(request.variables.profileId, scope.profileId);
       calls.push(request.operationName);
       return Promise.resolve(

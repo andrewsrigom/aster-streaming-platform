@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
-import { Kind, print, type DocumentNode } from "graphql";
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import { Kind, OperationTypeNode, type DocumentNode } from "graphql";
 import { HOME_PERSONALIZED, HOME_PUBLIC, SEARCH_TITLES } from "../features/discovery/operations.ts";
 import {
   libraryOperations,
@@ -20,6 +21,7 @@ import {
 } from "../features/identity/operations.ts";
 import { START_PLAYBACK } from "../features/playback/operations.ts";
 import { BROWSE, TITLE_DETAIL } from "../lib/apollo/operations.ts";
+import { apolloOperationBody } from "../lib/apollo/trusted-operation.ts";
 
 const documents: readonly DocumentNode[] = [
   BROWSE,
@@ -59,10 +61,53 @@ test("every Web GraphQL document exactly matches the deployed trusted-operation 
     assert.equal(definitions.length, 1);
     const definition = definitions[0];
     assert.ok(definition?.name);
-    const body = print(definition);
+    const body = apolloOperationBody({ kind: Kind.DOCUMENT, definitions: [definition] });
     const entry = trusted.get(definition.name.value);
     assert.ok(entry, definition.name.value + " is absent from the trusted manifest");
     assert.equal(entry.body, body);
     assert.equal(entry.id, createHash("sha256").update(body).digest("hex"));
+  }
+});
+
+test("the actual Apollo HttpLink wire document matches every Web manifest entry", async () => {
+  const manifest = JSON.parse(
+    await readFile(
+      new URL("../../../infra/router/generated/persisted-query-manifest.json", import.meta.url),
+      "utf8",
+    ),
+  ) as { operations: { body: string; name: string }[] };
+  const trusted = new Map(manifest.operations.map((entry) => [entry.name, entry.body]));
+
+  for (const document of documents) {
+    const definition = document.definitions.find(
+      (entry) => entry.kind === Kind.OPERATION_DEFINITION,
+    );
+    assert.ok(definition?.name);
+    let wire: Record<string, unknown> | undefined;
+    const client = new ApolloClient({
+      cache: new InMemoryCache(),
+      link: new HttpLink({
+        uri: "http://router.invalid/graphql",
+        fetch: (_input, init) => {
+          assert.ok(typeof init?.body === "string");
+          wire = JSON.parse(init.body) as Record<string, unknown>;
+          return Promise.resolve(Response.json({ data: null }));
+        },
+      }),
+    });
+    try {
+      if (definition.operation === OperationTypeNode.MUTATION) {
+        await client.mutate({ mutation: document, variables: {} }).catch(() => undefined);
+      } else {
+        await client
+          .query({ query: document, variables: {}, fetchPolicy: "no-cache" })
+          .catch(() => undefined);
+      }
+      assert.ok(wire);
+      assert.equal(wire["operationName"], definition.name.value);
+      assert.equal(wire["query"], trusted.get(definition.name.value));
+    } finally {
+      client.stop();
+    }
   }
 });

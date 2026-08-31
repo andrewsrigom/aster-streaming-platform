@@ -443,7 +443,8 @@ export function validateSloContract(sources) {
 
   const routerPolicy = sources.routerPolicy ?? "";
   for (const required of [
-    'request.context["aster.operation"] = if result == "matched" { name } else { "other" }',
+    'let label = if name == () { "other" } else { trusted::operation_label(name) }',
+    'request.context["aster.operation"] = if result == "matched" || mode == "audit" { label } else { "other" }',
     'request.context["aster.trusted_operation"] = result',
     'response.context["aster.outcome"] = if failed { "failed" } else if rejected { "rejected" } else { "completed" }',
     '"GRAPHQL_VALIDATION_FAILED", "GRAPHQL_PARSE_FAILED"',

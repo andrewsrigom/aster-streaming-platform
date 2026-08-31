@@ -166,7 +166,8 @@ Loaders batch entity and list joins, cap batch sizes, preserve order, and return
 ## Operation controls
 
 The generated Apollo manifest and finite Rhai matcher now bind every first-party
-operation name to its exact SHA-256 document hash. Router starts only with an
+operation name to the exact SHA-256 of the link-ready Apollo wire document.
+Router starts only with an
 explicit environment and trusted-operation mode. Local/integration `audit`
 preserves diagnostics; staging/production require `enforce`, which rejects
 missing, unknown or altered documents before query planning. Telemetry retains
@@ -193,7 +194,8 @@ Hosted environments additionally enforce the complete Phase 13 control set:
 Engagement's history/continue-watching connections resolve nullable Title metadata through Catalog. Continue-watching additionally uses a private, purpose-separated current visibility batch before pagination; @inaccessible hides that owner contract but does not authorize it. [ADR-0031](../adr/0031-current-catalog-visibility.md) bounds the scan, validity window and failure behavior. No recursive Router request or cross-owner SQL is used.
 
 1. add the new shape in backward-compatible owners;
-2. add the new client document while retaining the old document in the trusted manifest;
+2. add the new client document while retaining the old reviewed body in
+   `infra/router/retained-operations.graphql` (at most two hashes per name);
 3. deploy the owner, complete manifest and Router policy before the client;
 4. deploy the client and observe finite operation outcomes;
 5. deprecate the old field and remove its operation only after the compatibility window;

@@ -125,8 +125,9 @@ retains the finite classification. Neither mode logs query text or hashes.
 
 Restore the previous Router image/config/Rhai and eight-artifact composition
 set. No schema, database, Redis, event, media or credential rollback is needed.
-During a compatible rollout, retain the union of old and new operation bodies;
-remove an old operation only after active clients no longer use it.
+During a compatible rollout, retain the old reviewed wire body in
+`infra/router/retained-operations.graphql`; generation permits at most two
+distinct bodies per name. Remove it only after active clients no longer use it.
 
 ## Documentation updates
 

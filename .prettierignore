@@ -10,3 +10,4 @@ node_modules/
 LICENSE
 pnpm-lock.yaml
 infra/router/generated/
+infra/router/retained-operations.graphql

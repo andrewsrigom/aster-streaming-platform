@@ -185,6 +185,13 @@ test("Router packaging and config reject unsafe limits, notices and propagation"
       'request.context["aster.trusted_operation"] = result;',
       "log_info(query);",
     ],
+    ["infra/router/main.rhai", "trusted::operation_label(name)", "name.to_string()"],
+    ["infra/router/main.rhai", 'result == "matched" || mode == "audit"', 'result == "matched"'],
+    [
+      "infra/router/generated/trusted-operations.rhai",
+      "fn operation_label(name)",
+      "fn label(name)",
+    ],
     ["infra/router/generated/trusted-operations.rhai", '"unknown"', "log_info(hash);"],
     ["infra/router/router.yaml", "    catalog:\n", "    catalog:\n      named: cookie\n"],
     ["infra/router/router.yaml", "limits:\n", "limits:\n  max_depth: 12\n"],
