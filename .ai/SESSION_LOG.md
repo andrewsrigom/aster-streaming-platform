@@ -4,6 +4,31 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-30 — Trusted-operation protected findings corrected
+
+### Completed
+
+- Initial PR52 run `33350909056` exposed lost audit-mode SLI labels in Local
+  platform and Playback runtime. Initial review also found Apollo wire/source
+  hash drift and an impossible same-name old/new rollout.
+- Corrected source `0e4a4b3d5742f2458d082b59bac1efedf1651783`, tree
+  `61b325350149c9d5ba07b4ddc3c41cb324526984`, hashes Apollo link-ready documents,
+  proves all 19 actual `HttpLink` bodies and supports at most two reviewed hashes
+  per name through an explicit retained source.
+- Audit restores finite known-name diagnostics without weakening enforce mode.
+  Router 11/11, Web 118/118 and focused policy 36/36 pass. The corrected affected
+  gate passes 49/49 tasks with 35 cached in 72.599 seconds and zero secret findings.
+
+### Evidence
+
+- `evidence/phase-13/trusted-operations.txt` records the failed run, review
+  findings, correction, local gates and remaining protected acceptance.
+
+### Next action
+
+- Publish the corrected evidence head once, pass protected packaged acceptance,
+  obtain one clean confirmation review, squash merge and verify exact main.
+
 ## 2026-08-30 — Trusted-operation candidate implemented
 
 ### Completed

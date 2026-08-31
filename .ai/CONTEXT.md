@@ -65,9 +65,9 @@ source `b646e496d0946262a688f34a118a896f6c40ebda`, tree
 `2b77a32f43a87fcdfc5032faf856f369de183998` retained that tree; exact-main run
 `33348247619` passed every required job and releases Phase12. Item64 is active
 on `feat/p13-trusted-operations` from that exact main. It owns deterministic
-first-party operation artifacts, explicit audit/enforce environment policy,
-exact Router enforcement, finite rejection telemetry and safe schema/client
-rollout. No hosted deployment is claimed; Phase14 still owns provider and
+first-party link-ready operation artifacts, explicit audit/enforce environment
+policy, exact Router enforcement, finite rejection telemetry and a bounded
+two-version schema/client rollout. No hosted deployment is claimed; Phase14 still owns provider and
 deployment decisions.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.

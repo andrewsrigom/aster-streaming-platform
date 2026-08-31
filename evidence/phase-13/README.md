@@ -2,11 +2,12 @@
 
 Status: **in progress**. Item64 implements P13-R01/R02/R12 in the current
 candidate: deterministic trusted-operation artifacts, explicit audit/enforce
-startup policy, exact name/document-hash admission, finite telemetry and safe
-schema/client rollout. Focused tests and the 49/49 affected candidate gate pass.
-Implementation source `f531298dd5fd1526c260ab411213189f16ccfdf0`, tree
-`81860cc5d803f2170afa6650a563a646a1bbf4cc`, records that result. The real
-packaged Router proof, protected CI, review and release are not yet verified.
+startup policy, exact name/link-ready-wire-hash admission, finite telemetry and
+safe two-version schema/client rollout. Focused tests and the corrected 49/49
+affected candidate gate pass. Corrected source
+`0e4a4b3d5742f2458d082b59bac1efedf1651783`, tree
+`61b325350149c9d5ba07b4ddc3c41cb324526984`, records that result. The corrected
+packaged Router proof, confirmation and release are not yet verified.
 
 ## Requirement traceability
 

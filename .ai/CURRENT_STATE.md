@@ -18,8 +18,10 @@ the diagnostic runtime and Docker-only playable demo. Item64 is active on
 `feat/p13-trusted-operations` from that exact main. It implements P13-R01/R02/R12:
 one deterministic first-party operation manifest, exact admission under an
 explicit environment policy, a bounded local/integration audit workflow and a
-safe schema/client rollout. The affected candidate gate passes; packaged Router
-CI, review and release remain. Full Phase00–14 goal stays active.
+safe schema/client rollout. Initial PR52 run `33350909056` and review found four
+real integration/contract blockers. Corrected source `0e4a4b3`, tree `61b32535`,
+passes the affected candidate gate; corrected packaged Router CI, confirmation
+and release remain. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -50,19 +52,24 @@ and Catalog/Playback isolation pass their recorded Web110/110, browser8/8 and
 
 ## Current work
 
-P13-R01/R02/R12 is the sole active item. The candidate generates an Apollo
-manifest and finite Rhai matcher from the 25 reviewed operation ASTs, packages
-both with Apollo Router 2.17.0 Core and binds each operation name to its exact
-document hash. Explicit local/integration `audit` preserves diagnostics;
-`staging` and `production` fail startup outside `enforce`. Enforce mode rejects
-missing, unknown and altered documents before planning and emits only
-`matched`, `unknown` or `missing`. All 19 Web documents match the generated
-manifest. The affected gate passes 49/49 tasks with 35 cached in 52.315 seconds;
-implementation source `f531298dd5fd1526c260ab411213189f16ccfdf0`, tree
-`81860cc5d803f2170afa6650a563a646a1bbf4cc`, records that candidate. The
-protected packaged Router proof, review and release remain. APQ stays disabled.
-PostgreSQL/data ownership, owner authorization, schemas, Redis, events and media
-remain unchanged.
+P13-R01/R02/R12 is the sole active item. The corrected candidate generates an
+Apollo manifest and finite Rhai matcher from the 25 reviewed operations,
+packages both with Apollo Router 2.17.0 Core and binds each operation name to the
+exact link-ready Apollo wire-document hash. Actual `HttpLink` bodies for all 19
+Web operations match. One explicit retained source permits at most two reviewed
+hashes per name during Router-first rollout. Explicit local/integration `audit`
+preserves finite known-name diagnostics; `staging` and `production` fail startup
+outside `enforce`. Enforce rejects missing, unknown and altered documents before
+planning and emits only `matched`, `unknown` or `missing` trust results.
+
+Initial PR52 run `33350909056` exposed audit SLI label loss in Local platform and
+Playback, while review found source/wire hash drift and the missing rollout union.
+Corrected source `0e4a4b3d5742f2458d082b59bac1efedf1651783`, tree
+`61b325350149c9d5ba07b4ddc3c41cb324526984`, addresses the complete initial
+round. Router11/11, Web118/118, focused policy36/36 and the affected gate49/49
+with35 cached in72.599 seconds pass. Corrected protected CI, one confirmation
+review and release remain. APQ stays disabled. PostgreSQL/data ownership, owner
+authorization, schemas, Redis, events and media remain unchanged.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and

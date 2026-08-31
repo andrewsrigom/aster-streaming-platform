@@ -11,31 +11,36 @@ Phases00–12 are released. P12-R10 final source
 
 Item64 (P13-R01/R02/R12) is the sole `IN_PROGRESS` item on
 `feat/p13-trusted-operations`, based exactly on that main. Its active plan is
-`.ai/CHANGE_PLAN.md`.
+`.ai/CHANGE_PLAN.md`. PR52 is open. Initial protected run `33350909056` failed
+and its complete initial review produced four blockers, all corrected locally.
 
 ## Current behavior
 
 - The 25 reviewed operations generate one deterministic Apollo manifest and one
-  finite Rhai matcher; the Router image packages both.
+  finite Rhai matcher from the exact link-ready Apollo wire documents; the
+  Router image packages both.
 - `main.rhai` validates explicit environment/mode configuration and binds every
-  operation name to its exact raw-document SHA-256 before planning.
+  operation name to its exact link-ready wire-document SHA-256 before planning.
 - Local/integration audit remains explicit. Staging/production require enforce;
   enforce rejects missing, unknown and altered documents with a sanitized error.
-- Telemetry exposes only `matched`, `unknown` or `missing`; Web's 19 documents
-  exactly match the generated manifest.
-- Focused tests and the affected candidate gate pass 49/49 tasks, 35 cached, in
-  52.315 seconds. Implementation source `f531298dd5fd1526c260ab411213189f16ccfdf0`,
-  tree `81860cc5d803f2170afa6650a563a646a1bbf4cc`, records the candidate. The real
-  pinned-Router proof is intentionally pending CI.
+- One explicit retained source permits at most two reviewed wire bodies per name
+  during Router-first client rollout.
+- Trust telemetry exposes only `matched`, `unknown` or `missing`; audit-mode SLI
+  diagnostics preserve only finite known operation labels. All 19 actual Web
+  `HttpLink` request bodies match the manifest.
+- Corrected source `0e4a4b3d5742f2458d082b59bac1efedf1651783`, tree
+  `61b325350149c9d5ba07b4ddc3c41cb324526984`, passes Router11/11, Web118/118,
+  focused policy36/36 and the affected gate49/49 with35 cached in72.599 seconds.
+  The corrected real pinned-Router proof is pending protected CI.
 
 ## Accepted design and implementation
 
 - ADR-0045 records a source-owned Apollo manifest plus Apollo Router Core Rhai
   enforcement; no GraphOS/plan-protected PQL feature is activated.
 - `persisted-query-manifest.json` and `trusted-operations.rhai` come from the
-  same parsed operations used by composition.
-- Admission matches exact operation name plus SHA-256 of the received raw query.
-  Name and query are required.
+  same parsed operations used by composition after the Apollo link transform.
+- Admission matches exact operation name plus SHA-256 of the received wire
+  query. Name and query are required.
 - `ASTER_ENV` and `ASTER_ROUTER_TRUSTED_OPERATIONS_MODE` are explicit.
   `audit` is valid only in local/integration; staging/production require `enforce`.
   Missing/invalid configuration fails Router startup.
@@ -46,12 +51,12 @@ Item64 (P13-R01/R02/R12) is the sole `IN_PROGRESS` item on
 
 ## Exact next actions
 
-1. Commit this exact evidence checkpoint, publish once and open one PR for item64.
-2. Require protected CI to load the generated module in Apollo Router 2.17.0,
+1. Commit this exact evidence checkpoint and push the existing PR52 once.
+2. Require corrected protected CI to load the generated module in Apollo Router 2.17.0,
    prove canonical/altered/unknown/missing behavior, all three metric labels,
    the playable demo and exact cleanup.
-3. Complete the initial blocker review and one confirmation review; remediate
-   only a requirement, security/privacy, availability or public-contract blocker.
+3. Request one confirmation review; remediate only a requirement,
+   security/privacy, availability or public-contract blocker.
 4. Squash merge, verify exact-main CI, close item64 and activate item65.
 
 ## Execution boundary

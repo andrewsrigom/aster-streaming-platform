@@ -1,44 +1,68 @@
 P13-R01/R02/R12 trusted-operation evidence
 Date: 2026-08-30
-Status: implementation and affected candidate gate pass; packaged runtime/release pending
+Status: corrected implementation and affected candidate gate pass; protected runtime/release pending
 
 Environment
 - Branch: feat/p13-trusted-operations
 - Base main: 2b77a32f43a87fcdfc5032faf856f369de183998
-- Implementation source: f531298dd5fd1526c260ab411213189f16ccfdf0
-- Implementation tree: 81860cc5d803f2170afa6650a563a646a1bbf4cc
+- Initial evidence head: 7f26b6d97ac9a834695baa42d1f00a11f4c8fb15
+- Initial protected run: 33350909056 (failed; invalidated by the correction below)
+- Corrected source: 0e4a4b3d5742f2458d082b59bac1efedf1651783
+- Corrected tree: 61b325350149c9d5ba07b4ddc3c41cb324526984
 - Node.js: 24.19.0
 - pnpm: 11.24.0
 - Runtime target: Apollo Router Core 2.17.0, explicit integration/enforce proof
 
 Implemented contract
 - 25 named operations generate Apollo persisted-query manifest version 1.
-- IDs are SHA-256 of the exact GraphQL printer body.
+- IDs are SHA-256 of the exact link-ready Apollo wire body, including Apollo's
+  deterministic `__typename` transform.
 - One generated Rhai matcher returns only matched or unknown; main policy adds missing.
+- A reviewed retained-operation source permits at most two distinct hashes per
+  operation name during Router-first client rollout.
 - Local/integration may explicitly audit. Staging/production require enforce.
 - Enforce rejects missing, unknown and altered documents before query planning.
-- Web's 19 runtime documents exactly match entries in the deployed manifest.
+- Web's 19 runtime documents and their actual `HttpLink` request bodies exactly
+  match entries in the deployed manifest.
+- Audit mode preserves only finite known operation labels for local diagnostics;
+  unknown names remain `other`. Enforce still rejects every hash mismatch.
 - Query text, hashes and variables are excluded from telemetry.
 
 Focused commands and results
 - pnpm schema:update: pass; 5 subgraphs, 10 artifacts, compatibility base 2b77a32.
-- pnpm --filter @aster/router test: pass; 10/10.
-- pnpm --filter @aster/web test: pass; 117/117.
-- node --test tools/verify-router-runtime.test.mjs tools/verify-slo-contract.test.mjs: pass; 11/11.
+- pnpm --filter @aster/router test: pass; 11/11.
+- pnpm --filter @aster/web test: pass; 118/118.
+- Focused Router/SLO/CI policy command: pass; 36/36.
 - CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm
-  check:changed: pass; 49/49 tasks, 35 cached, 52.315 seconds.
+  check:changed: pass; 49/49 tasks, 35 cached, 72.599 seconds.
 - pnpm typecheck and pnpm ci:test: pass; CI policy 37/37.
 - pnpm security:check (inside the candidate gate): pass; zero findings.
 
+Initial protected findings and correction
+- The Local platform job lost the existing `supergraph` and
+  `catalog_title_read` SLI series because audit-mode ad hoc diagnostic documents
+  were classified as `other` after exact-hash admission was introduced.
+- The Playback packaged proof completed its federated scenarios but missed its
+  finite `StartPlayback` log label for the same reason.
+- Initial review correctly found that Apollo Client adds `__typename` before
+  `HttpLink`, while the initial manifest hashed the source AST, and that one
+  hash per name made the documented old/new rollout impossible.
+- Corrected source hashes the link-ready body, captures the actual wire request,
+  supports a bounded reviewed two-version union and restores finite known labels
+  only in audit mode. Enforce admission remains exact and fail-closed.
+- The first corrected candidate attempt found only a comment-only GraphQL file
+  unsupported by Prettier and one stale source-body test expectation. The exact
+  file is parser-validated but formatter-ignored; all transport tests now assert
+  the wire body. The final candidate gate passes.
+
 Pending acceptance
-- Record the exact candidate source/tree.
 - Protected CI must build the Router, accept canonical Browse, reject altered,
   unknown and missing operations, expose matched/unknown/missing metric labels,
   preserve the playable demo and clean the Compose project.
 
 Interpretation and limitations
-The focused results prove deterministic source generation, current Web document
-compatibility and adverse repository policy. They do not prove the Rhai script
-loads in the pinned binary or that rejected-operation metrics reach the packaged
-Prometheus endpoint. The protected real-Router lane owns that proof because the
-bounded local Docker check found no engine; no host restart or retry loop is used.
+The corrected results prove deterministic source generation, actual current Web
+wire compatibility, bounded rollout overlap and adverse repository policy. They
+do not yet prove the corrected Rhai script loads in the pinned binary or that
+rejected-operation metrics reach the packaged Prometheus endpoint. The protected
+real-Router lane owns that proof; no local Docker or host restart loop is used.

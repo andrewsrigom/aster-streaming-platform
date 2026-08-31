@@ -324,6 +324,12 @@ Docker-only playable demo. Item63 and Phase12 are released. Item64 starts from
 that exact main on `feat/p13-trusted-operations`; it owns the source-generated
 trusted-operation manifest, explicit local/integration audit workflow,
 staging/production enforcement and safe schema/client rollout sequence.
+PR52 initial run `33350909056` and review found audit diagnostic-label loss,
+Apollo wire/source hash drift and a missing same-name rollout union. Corrected
+source `0e4a4b3`, tree `61b32535`, hashes actual link-ready documents, proves 19
+`HttpLink` bodies, retains at most two reviewed hashes per name and restores only
+finite audit labels. Router11/11, Web118/118, focused policy36/36 and the corrected
+49/49 affected gate pass. Protected corrected CI and confirmation remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

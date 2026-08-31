@@ -79,7 +79,7 @@ retains the finite classification. Neither mode logs query text or hashes.
 ## Data and contracts
 
 - Schema/migration: no GraphQL schema or database migration.
-- GraphQL: the existing 25 canonical operations become the first trusted-operation set; full canonical documents remain the client transport for this slice.
+- GraphQL: the existing 25 canonical operations become the first trusted-operation set; exact link-ready Apollo documents remain the client transport and one obsolete reviewed body per name may overlap during rollout.
 - Events: none.
 - Cache: APQ remains disabled; no response-cache or Redis change.
 - Compatibility: local/integration audit mode preserves ad hoc diagnostic requests; enforce mode accepts the canonical Apollo Client printer output.
@@ -114,8 +114,9 @@ retains the finite classification. Neither mode logs query text or hashes.
 
 - Commands: focused Router build/tests, schema check/update, Router source/platform policy, exact Router config/startup proof, `pnpm check:changed`, documentation/AI checks, secret scan and protected CI.
 - Raw artifact path: `evidence/phase-13/trusted-operations.txt` and generated artifacts under `infra/router/generated/`.
-- Acceptance result: implementation and the 49/49 affected candidate gate pass;
-  the pinned packaged Router proof, protected review and release remain.
+- Acceptance result: corrected source `0e4a4b3`, Router11/11, Web118/118,
+  focused policy36/36 and the 49/49 affected candidate gate pass; the corrected
+  pinned packaged Router proof, confirmation and release remain.
 - Iteration gate: Router composition tests plus Router source/runtime policy tests and `git diff --check`.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed`, documentation/AI checks and zero-finding secret scan.
 - Heavyweight repeat triggers: repeat the real Router enforce-mode proof when operation generation, matcher logic, startup mode policy, Router image/config/Rhai packaging or rejection telemetry changes; repeat the Docker playable journey when canonical client documents or admission behavior changes.
