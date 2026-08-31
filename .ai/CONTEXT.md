@@ -90,12 +90,13 @@ deployment is claimed; Phase14 still owns provider and deployment decisions.
 
 Item67 is the one permitted dependent active item on
 `feat/p13-n-plus-one-authorization` from third corrected exact item66 head
-`e6134ae`. Pre-rebase source `8007444`, tree `eb87e5f`, implements the exact
+`e6134ae`. Rebased source `40b7db8`, tree `3e5c0a3`, implements the exact
 12-list/10-entity-return/5-contributor audit, four real PostgreSQL query-count
 observations and the 12-case owner matrix. Router25/25, five-owner19/19 tasks and
-all three changed owner fixtures pass with exact cleanup. Evidence is under
-`evidence/phase-13/`. The current rebase must repeat its affected gates, and it
-cannot publish before PR56 releases.
+the post-rebase affected gate57/57 with41 cached in69.406 seconds pass. Exact
+source comparison proves the measured/audited paths unchanged, so all clean
+PostgreSQL evidence carries forward. Evidence is under `evidence/phase-13/`.
+Item67 cannot publish before PR56 releases.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

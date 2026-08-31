@@ -4,6 +4,30 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — Query audit accepted on third execution-control predecessor
+
+### Completed
+
+- Rebased item67 onto frozen PR56 head `e6134ae`. Source `40b7db8`, tree
+  `3e5c0a3`, preserves the 12-list/10-entity-return/5-contributor audit and the
+  12-case five-owner authorization matrix.
+- Exact comparison with measurement source `8007444` proves no audited or
+  measured path changed. The four clean PostgreSQL observations carry forward
+  without repeating Docker fixtures.
+- Router25/25, the five-owner19/19 task gate and the complete affected gate57/57
+  with41 cached in69.406 seconds pass.
+
+### Evidence
+
+- `evidence/phase-13/query-count-authorization.txt` and its JSONL record the
+  third-predecessor source, exact carry-forward basis and local acceptance.
+
+### Next action
+
+- Keep item67 unpublished. Complete PR56 exact-head CI, discussion resolution,
+  final confirmation, merge and exact-main CI; then rebase item67 onto main and
+  publish it once.
+
 ## 2026-08-31 — Retained rollout and failover marker remediation
 
 ### Completed

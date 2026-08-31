@@ -18,27 +18,29 @@ closes Phase 13 without changing the public schema.
 
 ## Current behavior
 
-Item66 is frozen on PR56 at second corrected exact head `1e115fe`, based on
-released item65 main `8cd6c0b`. Its second corrected source `bf14e2c`, tree
-`0084c67`, passes the affected gate57/57, all11 real integration scenarios, the
-exact-source removed-marker replay proof and protected run `33442875698`.
-Discussion `3898385895` is resolved; blocker-focused confirmation and release
-remain external.
-Rebased item67 source `4d02211`, tree `fe8ded4`, exactly audits 12 public lists,
+Item66 is frozen on PR56 at third corrected exact head `e6134ae`, based on
+released item65 main `8cd6c0b`. Its source `af47c62`, tree `bb2d476`, fixes the
+bounded retained-operation verifier and expired local-marker pruning after
+protected run `33442875698` exposed those review gaps. Exact-head protected CI,
+discussion resolution, final confirmation and release remain external.
+Rebased item67 source `40b7db8`, tree `3e5c0a3`, exactly audits 12 public lists,
 10 entity returns and 5 contributors. Router 25/25, the five-owner 19/19 task
-gate and the post-rebase affected gate57/57 pass. Disposable PostgreSQL fixtures
+gate and the latest post-rebase affected gate57/57 with41 cached in69.406
+seconds pass. Disposable PostgreSQL fixtures
 record TitleDetail 1 query, SearchTitles 3, HomePublic 5 and ContinueWatching 1
 with exact cleanup. The 12-case matrix covers all five owners and all three
 required abuse categories. An exact old/new source diff proves that the audit,
 matrix and three measured owner paths did not change during rebase, so their
-heavyweight PostgreSQL evidence remains applicable.
+heavyweight PostgreSQL evidence remains applicable after the third predecessor
+correction.
 
 Protected run `33442875698` passes exact head `1e115fe`. The blocker-focused
 confirmation found two remaining acceptance gaps: the packaged runtime verifier
 hard-codes 25 demand profiles instead of accepting the bounded current-plus-
 retained trusted union, and healthy Redis admissions do not prune expired local
 failover markers before enforcing their 8,192-entry capacity. Both are blocking
-rollout/availability boundaries and are remediated together before release.
+rollout/availability boundaries and are remediated in published head `e6134ae`
+before release.
 
 ## Proposed behavior
 
@@ -151,9 +153,11 @@ executable identifier/role/profile matrix.
   PostgreSQL fixtures; affected candidate gate; protected CI.
 - Raw artifact path: `evidence/phase-13/query-count-authorization.txt` plus
   `evidence/phase-13/query-count-measurements.jsonl`.
-- Acceptance result: post-rebase local source, focused and affected candidate
-  gates pass; predecessor release, publication, protected review, merge and
-  exact-main gates remain.
+- Acceptance result: source `40b7db8`, tree `3e5c0a3`, passes Router25/25,
+  five-owner19/19 and affected57/57. The exact source diff keeps every measured
+  path unchanged, so the four real PostgreSQL observations carry forward;
+  predecessor release, publication, protected review, merge and exact-main
+  gates remain.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.

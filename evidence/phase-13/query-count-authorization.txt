@@ -2,9 +2,9 @@ Phase 13 — GraphQL execution-path, query-count and authorization acceptance
 Date: 2026-08-31
 Requirements: P13-R07, P13-R08, P13-R09
 Branch: feat/p13-n-plus-one-authorization
-Predecessor head: 1e115fe9d43fe21ede9d555bc34e074df1439326 (item66 PR56)
-Candidate source commit: 4d0221167199c74a8477b946fb19962a92bbdeab
-Candidate source tree: fe8ded4ba75ee681ac3ed3cbe3aa8b8b7ae0634b
+Predecessor head: e6134ae0d570f0cd9c7376f6d5cc79f1538708e7 (item66 PR56)
+Candidate source commit: 40b7db8ce256a1cfe187f734d09312c279dea6cd
+Candidate source tree: 3e5c0a3fb533155cae86b01b82535f64c52e8c7d
 Measurement source commit: 8007444b24406c0b81d87156ab98197a727bb858
 Measurement source tree: eb87e5f717031f82e257817e1c47541758ed41d6
 
@@ -129,14 +129,16 @@ Post-rebase candidate:
   CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
     pnpm check:changed
 Result:
-  PASS — 57/57 tasks, 43 cached, in 65.902 seconds.
+  PASS — 57/57 tasks, 41 cached, in 69.406 seconds on the third corrected
+  predecessor.
 
-The exact diff from measurement source 8007444 to rebased source 4d02211 is
+The exact diff from measurement source 8007444 to rebased source 40b7db8 is
 empty for the Router audit/test, authorization matrix and Catalog, Discovery
-and Engagement measurement fixtures. Item66 changed Identity execution control,
-not any measured query path, adapter, migration, authorization policy or
-measurement. The PostgreSQL fixtures therefore remain supporting evidence and
-were not repeated.
+and Engagement measurement fixtures. Item66 changed the Identity execution
+control and packaged Router verifier, not any measured/audited path, adapter,
+migration, authorization policy or measurement. The PostgreSQL fixtures
+therefore remain supporting evidence and were not repeated. Router25/25 and the
+five-owner19/19 gate passed again on this exact source.
 
 Commands:
   pnpm --filter @aster/engagement typecheck
@@ -149,9 +151,9 @@ Results:
 
 PENDING RELEASE EVIDENCE
 
-- Item66 PR56 protected run `33442875698` passes and discussion `3898385895` is
-  resolved; confirmation, squash merge and exact-main CI remain before this
-  dependent item can publish.
+- Item66 PR56 third corrected head `e6134ae` awaits protected exact-head CI,
+  resolution of discussions `3898857100`/`3898857110`, final confirmation,
+  squash merge and exact-main CI before this dependent item can publish.
 - Rebase this source onto released main after item66 merges and repeat only the
   gates invalidated by the history change. Repeat a PostgreSQL fixture only if
   that rebase changes its query path, adapter, migration, authorization or
@@ -162,6 +164,6 @@ PENDING RELEASE EVIDENCE
 
 ROLLBACK
 
-Revert source commit 4d0221167199c74a8477b946fb19962a92bbdeab and its evidence
+Revert source commit 40b7db8ce256a1cfe187f734d09312c279dea6cd and its evidence
 checkpoint. No schema, migration, event, cache, retained media or durable data
 change exists. Fixtures own only exact random-name disposable containers.

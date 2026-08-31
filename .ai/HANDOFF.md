@@ -11,10 +11,10 @@ and expired local-marker pruning. Identity163/163, Router verifier6/6 and both
 
 Item67 (P13-R07/R08/R09) is the one dependent `IN_PROGRESS` item on
 `feat/p13-n-plus-one-authorization`, worktree `/tmp/aster-p13-final`, rebased
-onto `e6134ae`. Pre-rebase source `8007444`, tree `eb87e5f`, implements and
+onto `e6134ae`. Source `40b7db8`, tree `3e5c0a3`, implements and
 locally proves the exact path audit, four PostgreSQL measurements and owner
-matrix. The rebase and affected gate must complete, and it must not publish or
-merge before item66 releases.
+matrix. The latest affected gate passes, but it must not publish or merge before
+item66 releases.
 
 ## Active outcome
 
@@ -25,25 +25,22 @@ merge before item66 releases.
 
 ## Current local evidence
 
-- Source before this predecessor rebase: `4d02211`, tree `fe8ded4`.
+- Source after the third predecessor rebase: `40b7db8`, tree `3e5c0a3`.
 - Router focused tests pass25/25; the five-owner Turbo gate passes19/19.
-- The complete affected gate passes57/57 with43 cached in65.902 seconds.
+- The complete affected gate passes57/57 with41 cached in69.406 seconds.
 - Real PostgreSQL home, title, continue-watching and search measurements remain
   valid because the exact predecessor diff did not touch their measurement
-  paths. Reconfirm that invariant after this rebase before carrying them.
-- Post-rebase documentation checkpoint before this latest predecessor change:
-  `b0ec35d`.
+  or audited paths.
 
 ## Exact next actions
 
-1. Complete this rebase onto `e6134ae`, preserving item67's active plan and the
-   latest item66 evidence.
-2. Prove whether the predecessor changed any measured/audited path. Repeat only
-   invalidated focused or real PostgreSQL evidence.
-3. Run the affected candidate gate and update exact source/evidence heads.
-4. Keep item67 unpublished while PR56 completes protected CI and final review.
-5. After item66 releases and exact-main CI passes, rebase item67 onto main,
-   publish once and complete its protected review/release gates.
+1. Keep item67 unpublished while PR56 completes protected CI and final review.
+2. Resolve discussions `3898857100`/`3898857110` after exact-head CI is green and
+   request one final blocker-focused confirmation.
+3. Merge item66 only after those gates and require exact-main CI.
+4. After item66 releases, rebase item67 onto tree-identical main, repeat only
+   invalidated local gates and refresh exact evidence.
+5. Publish item67 once and complete its protected review/release gates.
 
 ## Execution boundary
 

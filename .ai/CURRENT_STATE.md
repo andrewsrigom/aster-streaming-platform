@@ -253,16 +253,16 @@ Third corrected source `af47c625bc937cb6e41325bcbd9b64914db7b3b2`, tree
 persisted name/hash union with at most two versions per name. Identity prunes
 expired markers before capacity on successful Redis and degraded local paths.
 Identity163/163, Router verifier6/6 and the complete affected gate57/57 with39
-cached in66.529 seconds pass. This is an implemented third corrected local
-candidate, not verified or released; publication, protected exact-head CI,
-discussion resolution, final confirmation, merge and exact-main CI remain.
+cached in66.529 seconds pass. Evidence head `e6134ae` is published on PR56. This
+candidate is not verified or released; protected exact-head CI, discussion
+resolution, final confirmation, merge and exact-main CI remain.
 
 P13-R07/R08/R09 item67 is active from frozen item66 head `e6134ae`. It owns an
 exact list/entity batching audit, real PostgreSQL query-count/latency evidence
 for home, title, continue-watching and search, the owner authorization abuse
-matrix and Phase13 closeout. Rebased source `4d02211`, tree `fe8ded4`, audits 12
-lists, 10 entity returns and 5 contributors. Router 25/25, the five-owner 19/19
-task gate and the post-rebase affected gate57/57 with43 cached in65.902 seconds
+matrix and Phase13 closeout. Source `40b7db8`, tree `3e5c0a3`, audits 12 lists,
+10 entity returns and 5 contributors on predecessor `e6134ae`. Router25/25, the
+five-owner19/19 task gate and the latest affected gate57/57 with41 cached in69.406 seconds
 pass. Real PostgreSQL observed TitleDetail 1 query/52.727 ms,
 SearchTitles 3/23.948 ms, HomePublic 5/18.454 ms and ContinueWatching 1/3.744 ms;
 all exact fixtures cleaned. The 12-case matrix covers all five owners and three
@@ -830,12 +830,11 @@ hosted deployment remain planned.
 
 ## Next outcome
 
-For P13-R07/P13-R08/P13-R09 item67, repeat the affected gate and refresh exact
-evidence after rebasing its implemented audit, PostgreSQL measurements and
-authorization matrix onto predecessor `e6134ae`. Do not publish item67 before
-item66 releases. When PR56 CI passes, reply to and resolve discussions
+For P13-R07/P13-R08/P13-R09 item67, preserve the accepted dependent candidate on
+predecessor `e6134ae` without publishing. When PR56 CI passes, reply to and resolve discussions
 `3898857100` and `3898857110`, request one final blocker-focused confirmation
-and release item66 before item67 publication.
+and release item66 before rebasing item67 onto tree-identical main. Repeat only
+invalidated gates, then publish item67 once.
 Inspect the exact historical interrupted Phase12 project only when that same
 Docker engine becomes reachable.
 
