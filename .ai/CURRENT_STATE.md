@@ -51,16 +51,13 @@ required job. Item64 is released. Item65 final candidate head `94c17b9`, tree
 `d034c03`, passed protected run `33424006919`; PR55 squash main `8cd6c0b`
 retained that tree, and exact-main run `33425758870` passed on attempt2 after
 one isolated TraceQL indexing timeout. Item65 is released. Full Phase00–14 goal
-stays active. Item66 is the sole `IN_PROGRESS` item on
-`feat/p13-execution-rate-cache-controls` from exact main `8cd6c0b`. PR56's
-published head `59b7215` failed protected run `33432579598` and initial review
-found one durable-retry blocker. Corrected head `82ba630` passed protected run
-`33437257163` and resolved that thread; confirmation discussion `3898385895`
-found the shorter admission marker could expire before the durable receipt.
-Second corrected head `1e115fe` passed protected run `33442875698`. The
-blocker-focused review found retained-union verification and expired-marker
-pruning gaps. Third corrected source `af47c62`, tree `bb2d476`, passes the
-complete local remediation gate; third protected correction remains.
+stays active. Item66 is `WAITING_EXTERNAL` on PR56 at third corrected exact
+head `e6134ae`, based on exact main `8cd6c0b`; protected CI, two discussion
+resolutions and final confirmation remain. Third source `af47c62`, tree
+`bb2d476`, corrects the retained-union verifier and expired-marker pruning.
+Item67 is the one dependent `IN_PROGRESS` item on
+`feat/p13-n-plus-one-authorization`, rebased onto that frozen third corrected
+head.
 
 ## Verified
 
@@ -259,6 +256,12 @@ Identity163/163, Router verifier6/6 and the complete affected gate57/57 with39
 cached in66.529 seconds pass. This is an implemented third corrected local
 candidate, not verified or released; publication, protected exact-head CI,
 discussion resolution, final confirmation, merge and exact-main CI remain.
+
+P13-R07/R08/R09 item67 is active from frozen item66 head `e6134ae`. It owns an
+exact list/entity batching audit, real PostgreSQL query-count/latency evidence
+for home, title, continue-watching and search, the owner authorization abuse
+matrix and Phase13 closeout. It may verify locally but cannot publish before
+item66 releases; a changed predecessor requires rebase and affected evidence.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -814,17 +817,17 @@ shape/list/cost controls are released through tree-identical PR55 merge
 controls are implemented locally in third corrected item66; protected/release
 gates remain.
 N+1/query-count proof, owner-authorization abuse tests and the remaining Phase13
-requirements are planned in item67. Phase14 capacity validation and hosted
+requirements are active in item67. Phase14 capacity validation and hosted
 deployment remain planned.
 
 ## Next outcome
 
-For P13-R06/P13-R11 item66, publish the third corrected evidence head once and
-require protected exact-head CI including the packaged Router proof. Reply to
-and resolve discussions `3898857100` and `3898857110`, then request one final
-blocker-focused confirmation because rollout and availability boundaries
-changed. Squash merge only after those gates, then verify exact-main CI before
-item67 publication.
+For P13-R07/P13-R08/P13-R09 item67, repeat the affected gate and refresh exact
+evidence after rebasing its implemented audit, PostgreSQL measurements and
+authorization matrix onto predecessor `e6134ae`. Do not publish item67 before
+item66 releases. When PR56 CI passes, reply to and resolve discussions
+`3898857100` and `3898857110`, request one final blocker-focused confirmation
+and release item66 before item67 publication.
 Inspect the exact historical interrupted Phase12 project only when that same
 Docker engine becomes reachable.
 

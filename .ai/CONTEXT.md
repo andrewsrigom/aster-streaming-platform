@@ -71,7 +71,7 @@ passed protected run `33424006919`; all review threads were resolved. PR55
 squash main `8cd6c0b` retained that exact tree. Exact-main run `33425758870`
 passed on attempt2 after attempt1's isolated TraceQL indexing timeout; every
 source and product job was unchanged and cleanup was clean. Item65 is released.
-Item66 is the sole active item on `feat/p13-execution-rate-cache-controls` from
+Item66 is frozen on PR56 from
 that exact main. ADR-0047, exact runtime/cache classification, authorized-account
 Identity admission and optional-Redis readiness are implemented locally.
 Initial source `a090285`, tree `98d3064`, passed gate54/54; PR56 head `59b7215`
@@ -84,9 +84,15 @@ discussion. Blocker-focused review found a fixed-count retained-union verifier
 and missing expired-marker pruning. Third corrected source `af47c62`, tree
 `bb2d476`, derives the exact bounded union and prunes before local capacity.
 Identity163/163, Router verifier6/6 and gate57/57 with39 cached in66.529 seconds
-pass. Third correction publication, protected CI, final confirmation and release
-remain. No hosted deployment is
-claimed; Phase14 still owns provider and deployment decisions.
+pass. Third corrected evidence head `e6134ae` is published on PR56; protected CI,
+discussion resolution, final confirmation and release remain. No hosted
+deployment is claimed; Phase14 still owns provider and deployment decisions.
+
+Item67 is the one permitted dependent active item on
+`feat/p13-n-plus-one-authorization` from third corrected exact item66 head
+`e6134ae`. It owns the complete list/entity audit, four-operation PostgreSQL
+query-count evidence, owner authorization matrix and Phase13 closeout. It cannot
+publish before PR56 releases.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

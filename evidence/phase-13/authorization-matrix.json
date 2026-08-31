@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "requirements": ["P13-R09"],
+  "cases": [
+    {
+      "id": "identity-cross-account-profile",
+      "category": "cross_profile",
+      "owner": "identity",
+      "file": "services/identity/test/profiles.test.ts",
+      "test": "a supplied foreign profile or account cannot authorize reads, writes or selection",
+      "expected": "no_disclosure_or_write"
+    },
+    {
+      "id": "identity-session-claim-substitution",
+      "category": "identifier_substitution",
+      "owner": "identity",
+      "file": "services/identity/test/sessions.test.ts",
+      "test": "account, digest, signer and stored lifetime substitution fail closed",
+      "expected": "unauthenticated"
+    },
+    {
+      "id": "identity-forwarded-role",
+      "category": "role_escalation",
+      "owner": "identity",
+      "file": "services/identity/test/identity-subgraph.test.ts",
+      "test": "local origin, CSRF and forged identity are rejected before application execution",
+      "expected": "forbidden_before_owner_work"
+    },
+    {
+      "id": "engagement-aggregate-substitution",
+      "category": "identifier_substitution",
+      "owner": "engagement",
+      "file": "services/engagement/test/progress.test.ts",
+      "test": "profile, title, account and aggregate substitutions cannot reuse another state",
+      "expected": "conflict_without_state_reuse"
+    },
+    {
+      "id": "engagement-cross-profile-read",
+      "category": "cross_profile",
+      "owner": "engagement",
+      "file": "services/engagement/test/read-progress.test.ts",
+      "test": "foreign, expired, future and malformed Identity snapshots disclose nothing",
+      "expected": "no_disclosure"
+    },
+    {
+      "id": "engagement-forged-transport",
+      "category": "role_escalation",
+      "owner": "engagement",
+      "file": "services/engagement/test/engagement-graphql.test.ts",
+      "test": "HTTP progress exposes only committed result fields and rejects forged transport before dispatch",
+      "expected": "forbidden_before_owner_work"
+    },
+    {
+      "id": "playback-session-context-substitution",
+      "category": "identifier_substitution",
+      "owner": "playback",
+      "file": "services/playback/test/inspect-session.test.ts",
+      "test": "expired, substituted and hostile stored contexts fail closed without getters",
+      "expected": "not_found"
+    },
+    {
+      "id": "playback-forged-application",
+      "category": "role_escalation",
+      "owner": "playback",
+      "file": "services/playback/test/playback-graphql.test.ts",
+      "test": "a forged GraphQL context cannot supply a session application or authority",
+      "expected": "forbidden_before_owner_work"
+    },
+    {
+      "id": "catalog-owner-substitution",
+      "category": "identifier_substitution",
+      "owner": "catalog",
+      "file": "services/catalog/test/catalog-domain.test.ts",
+      "test": "rights and media gates reject wrong owners, stale revisions, missing evidence and changed publication",
+      "expected": "conflict_without_publication"
+    },
+    {
+      "id": "catalog-viewer-operator-escalation",
+      "category": "role_escalation",
+      "owner": "catalog",
+      "file": "services/catalog/test/catalog-workflow.test.ts",
+      "test": "missing/copied/foreign/viewer authority cannot enter a transaction; expiry/revocation fail closed",
+      "expected": "forbidden_before_transaction"
+    },
+    {
+      "id": "catalog-directive-escalation",
+      "category": "role_escalation",
+      "owner": "catalog",
+      "file": "services/catalog/test/playback-transport.test.ts",
+      "test": "directive is not authorization: public preflight and resolver both deny the private field",
+      "expected": "forbidden_before_owner_work"
+    },
+    {
+      "id": "discovery-trust-substitution",
+      "category": "role_escalation",
+      "owner": "discovery",
+      "file": "services/discovery/test/discovery-subgraph.test.ts",
+      "test": "subgraph rejects substituted trust and malformed operations before search",
+      "expected": "forbidden_before_projection_read"
+    }
+  ]
+}

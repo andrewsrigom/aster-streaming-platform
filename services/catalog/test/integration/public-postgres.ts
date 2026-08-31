@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { performance } from "node:perf_hooks";
 import { setTimeout as delay } from "node:timers/promises";
 import type { Pool } from "pg";
 import type { AsterPostgresAdapter } from "@aster/postgres";
@@ -407,6 +408,25 @@ export async function verifyPublicCatalog(
 
     const http = await catalogHttpFixture(queries);
     try {
+      const titleStart = statements.length;
+      const titleStartedAt = performance.now();
+      const title = await http.send({
+        query: 'query Detail { title(id: "' + id(110) + '") { id genres credits { name } } }',
+      });
+      const titleMeasurement = {
+        queries: statements.length - titleStart,
+        durationMs: Number((performance.now() - titleStartedAt).toFixed(3)),
+      };
+      assert.equal(title.status, 200);
+      assert.equal(title.json.errors, undefined);
+      assert.equal((title.json.data?.["title"] as { id?: string } | undefined)?.id, id(110));
+      assert.equal(titleMeasurement.queries, 1);
+      output("phase13_title_query_count", {
+        operation: "TitleDetail",
+        workload: "one published title with materialized list metadata",
+        ...titleMeasurement,
+        limitation: "single local fixture observation; not a throughput or SLO claim",
+      });
       const before = statements.length;
       const response = await http.send({
         query:

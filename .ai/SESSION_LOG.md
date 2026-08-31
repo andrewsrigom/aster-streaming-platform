@@ -96,9 +96,32 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Push the corrected evidence checkpoint once, require corrected protected CI,
-  resolve the initial discussion and request one exact-head confirmation before
-  merge.
+- Require corrected protected run `33437257163`, then request one exact-head
+  confirmation before merge.
+
+## 2026-08-31 — Phase13 closing audit activated behind frozen PR56
+
+### Completed
+
+- Item66 correction head `82ba630` is frozen on PR56 after source `8d2633d`,
+  tree `d75aca0`, passed the affected gate57/57, all11 real integration scenarios
+  and isolated packaged Router proof. Protected run `33437257163` is active;
+  initial discussion `3897861197` is resolved.
+- Rebased item67 on that corrected exact head and kept it as the one dependent
+  `IN_PROGRESS` item under the repository rule.
+- Defined the complete list/entity audit, four representative real PostgreSQL
+  measurements, owner authorization matrix and no-migration rollback boundary.
+
+### Evidence
+
+- PR56 dependency/documentation/security checks pass on corrected head;
+  protected source/platform jobs and confirmation remain external. Item67 has
+  no acceptance claim yet.
+
+### Next action
+
+- Encode the exact path audit, instrument existing disposable fixtures and add
+  focused owner-side authorization cases without publishing before PR56.
 
 ## 2026-08-31 — GraphQL execution, account rate and cache-scope candidate
 

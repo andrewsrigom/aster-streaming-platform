@@ -158,8 +158,8 @@ Historical stashes are superseded.
 | 63 | Diagnose three injected failures from telemetry and close Phase 12 | P12-R10 | DONE |
 | 64 | Generate trusted operations, enforce the environment rollout and document safe schema delivery (also P13-R02/R12) | P13-R01 | DONE |
 | 65 | Enforce GraphQL parser, shape, list, cost and introspection controls (also P13-R04/R05/R10) | P13-R03 | DONE |
-| 66 | Enforce execution, concurrency, identity-rate and cache-scope controls (also P13-R11) | P13-R06 | IN_PROGRESS |
-| 67 | Prove N+1/query counts and owner authorization; close Phase 13 (also P13-R08/R09) | P13-R07 | READY |
+| 66 | Enforce execution, concurrency, identity-rate and cache-scope controls (also P13-R11) | P13-R06 | WAITING_EXTERNAL |
+| 67 | Prove N+1/query counts and owner authorization; close Phase 13 (also P13-R08/R09) | P13-R07 | IN_PROGRESS |
 
 Item64 final source `a353164`, evidence head `de50b3e`, passed protected run
 `33410126892`, clean confirmation and all resolved threads. PR52 squash main
@@ -208,8 +208,15 @@ Published head `1e115fe` passed protected run `33442875698`. Blocker-focused
 review found a fixed-count retained-union verifier and missing expired-marker
 pruning. Third source `af47c62`, tree `bb2d476`, fixes both; Identity163/163,
 Router verifier6/6 and gate57/57 with39 cached in66.529 seconds pass. One third
-correction evidence-head push, protected exact-head CI, final confirmation and
+correction evidence head `e6134ae` is published; protected exact-head CI,
+resolution of discussions `3898857100`/`3898857110`, final confirmation and
 release remain.
+
+Item66 third corrected evidence head `e6134ae` is frozen on PR56. Protected
+source/platform jobs and confirmation remain.
+Item67 is the one permitted dependent `IN_PROGRESS` item on
+`feat/p13-n-plus-one-authorization`, rebasing exactly on that frozen head. It may
+build and verify locally but must not publish or merge before item66 releases.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

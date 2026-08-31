@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash, randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
+import { performance } from "node:perf_hooks";
 import { Pool } from "pg";
 import { createAsterPostgresAdapter, type AsterPostgresQuery } from "@aster/postgres";
 import { createPostgresProgressRead } from "../../src/infrastructure/postgres-progress-read.js";
@@ -542,12 +543,25 @@ try {
     savedRows.slice(20).map((row) => row.id),
   );
   assert.equal(secondPage.value.pageInfo.hasNextPage, false);
+  const continueStart = readSql.length;
+  const continueStartedAt = performance.now();
   const resumable = await readPage("continue");
+  const continueMeasurement = {
+    queries: readSql.length - continueStart,
+    durationMs: Number((performance.now() - continueStartedAt).toFixed(3)),
+  };
   assert.equal(resumable.status, "completed");
   assert.deepEqual(
     resumable.value.edges.map((edge) => edge.node.id),
     savedRows.filter((row) => row.status === "IN_PROGRESS").map((row) => row.id),
   );
+  assert.equal(continueMeasurement.queries, 1);
+  output("phase13_continue_watching_query_count", {
+    operation: "ContinueWatching",
+    workload: "25 owned progress aggregates, first 20, current visibility batch",
+    ...continueMeasurement,
+    limitation: "single local fixture observation; not a throughput or SLO claim",
+  });
   assert.deepEqual(await counts(history.profileId), { progress: 25, receipts: 25, outbox: 25 });
   for (const kind of ["history", "continue"] as const) {
     const query = readSql.find(
@@ -613,24 +627,36 @@ try {
   assert.deepEqual(denseRead.value, denseRows);
   const visibleId = denseRows.at(-1)?.titleId;
   assert.ok(visibleId);
+  const denseReadAt = now();
   let batches = 0;
   const filtered = await createProgressQueries({
-    identity: dense.ports.identity,
+    identity: {
+      authorizeProfile: () =>
+        Promise.resolve({
+          status: "completed",
+          value: {
+            accountId: dense.accountId,
+            profileId: dense.profileId,
+            checkedAt: denseReadAt,
+            expiresAt: denseReadAt + 300,
+          },
+        }),
+    },
     catalog: {
       visibility: (ids) => {
         batches++;
         return Promise.resolve({
           status: "completed",
           value: {
-            checkedAt: now(),
-            expiresAt: now() + 2,
+            checkedAt: denseReadAt,
+            expiresAt: denseReadAt + 2,
             titles: ids.map((titleId) => ({ titleId, visible: titleId === visibleId })),
           },
         });
       },
     },
     store: readStore,
-    now,
+    now: () => denseReadAt,
   }).page(
     "continue",
     { profileId: dense.profileId, first: 1, after: null },
