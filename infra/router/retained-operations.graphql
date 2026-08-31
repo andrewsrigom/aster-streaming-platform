@@ -1,2 +1,3 @@
 # Reviewed obsolete wire documents live here only during a bounded client rollout.
+# Paste the reviewed query string byte-for-byte; generation validates but never reformats it.
 # This file intentionally has no retained operation outside an active overlap window.

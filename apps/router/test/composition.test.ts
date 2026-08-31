@@ -80,7 +80,7 @@ test("every first-party operation has one exact Apollo manifest entry and finite
 });
 
 test("a bounded retained wire version supports Router-first client rollout", () => {
-  const retained = "query Viewer { me { accountId } }";
+  const retained = "query Viewer{me{accountId}}";
   const artifacts = composeLocalSupergraph(sources, operations, undefined, undefined, retained);
   const persisted = JSON.parse(artifacts["persisted-query-manifest.json"] ?? "null") as {
     operations: { body: string; id: string; name: string }[];
@@ -88,11 +88,17 @@ test("a bounded retained wire version supports Router-first client rollout", () 
   const viewers = persisted.operations.filter(({ name }) => name === "Viewer");
   assert.equal(viewers.length, 2);
   assert.equal(new Set(viewers.map(({ id }) => id)).size, 2);
+  const retainedEntry = viewers.find(({ body }) => body === retained);
+  assert.ok(retainedEntry);
+  assert.equal(retainedEntry.id, sha256(retained));
   const matcher = artifacts["trusted-operations.rhai"] ?? "";
   for (const entry of viewers) {
     assert.match(matcher, new RegExp(entry.id, "u"));
   }
   assert.match(matcher, /hash == "[a-f0-9]{64}" \|\| hash == "[a-f0-9]{64}"/u);
+  const newOnlyMatcher = composeLocalSupergraph(sources, operations)["trusted-operations.rhai"];
+  assert.ok(newOnlyMatcher);
+  assert.doesNotMatch(newOnlyMatcher, new RegExp(retainedEntry.id, "u"));
   assert.throws(
     () =>
       composeLocalSupergraph(sources, operations, undefined, undefined, retained + "\n" + retained),

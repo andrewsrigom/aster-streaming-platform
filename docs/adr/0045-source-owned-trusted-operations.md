@@ -53,9 +53,15 @@ and a test captures the actual `HttpLink` request body. Schema changes use
 add-first evolution. During a document transition,
 `infra/router/retained-operations.graphql` may retain one obsolete reviewed body
 per name, so the generated matcher accepts at most two distinct hashes for that
-name. Deploy the union and Router policy before the client, observe the overlap,
-then remove the obsolete body in a later reviewed release. Rollback restores the
-prior complete generated set and Router image; never hand-edit one artifact.
+name. Retained operations are parsed and schema-validated, but their reviewed
+source slices are preserved and hashed byte-for-byte rather than reprinted by
+the current GraphQL/Apollo toolchain. Deploy the union and Router policy before
+the client, observe the overlap, then remove the obsolete body in a later
+reviewed release. Once the new client hash has served traffic, the union Router
+image becomes the rollback floor: a client rollback keeps that Router until
+old browser bundles drain and telemetry proves the new hash is absent. A faulty
+union Router must roll forward to another image containing both hashes; never
+restore a pre-union Router while either client version may remain active.
 
 ## Consequences
 
@@ -106,8 +112,9 @@ queries. Audit mode makes that exception visible and impossible in hosted modes.
 
 ## Validation
 
-Composition tests prove deterministic current and retained name/body/hash
-generation, artifact bounds, the two-version ceiling and altered-hash rejection.
+Composition tests prove deterministic current generation, byte-exact retained
+name/body/hash preservation, artifact bounds, the two-version ceiling, the union
+rollback floor and altered-hash rejection.
 Web tests capture actual Apollo `HttpLink` request bodies and compare them with
 the manifest. Source policy tests prove explicit environment/mode validation,
 artifact packaging, finite telemetry and absence of query/hash labels. The
@@ -119,8 +126,12 @@ merge.
 
 Generate and commit the complete artifact set, build Router with both artifacts,
 run local audit-mode compatibility, then run the disposable enforce-mode proof.
-Hosted deployment may use only enforce mode. Rollback deploys the preceding
-Router image and its preceding complete manifest/matcher set; there is no data,
+Hosted deployment may use only enforce mode. Before any new client traffic, the
+preceding Router image remains a valid rollback. After the new hash serves, roll
+back the client while retaining the union Router; existing browser bundles are
+not assumed to drain immediately. Remove either hash only after the compatibility
+window and telemetry prove it inactive. If the union Router itself fails after
+new-client exposure, roll forward to a compatible union image. There is no data,
 schema, event, cache or credential migration.
 
 ## Sources

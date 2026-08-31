@@ -195,11 +195,13 @@ Engagement's history/continue-watching connections resolve nullable Title metada
 
 1. add the new shape in backward-compatible owners;
 2. add the new client document while retaining the old reviewed body in
-   `infra/router/retained-operations.graphql` (at most two hashes per name);
+   `infra/router/retained-operations.graphql` byte-for-byte (at most two hashes per name);
 3. deploy the owner, complete manifest and Router policy before the client;
 4. deploy the client and observe finite operation outcomes;
-5. deprecate the old field and remove its operation only after the compatibility window;
-6. remove the old shape in a later reviewed release.
+5. keep the union Router as the rollback floor while either browser bundle may
+   remain active, even when rolling back the Web client;
+6. deprecate the old field and remove its operation only after the compatibility window;
+7. remove the old shape in a later reviewed release.
 
 Field ownership changes use a dedicated migration plan and an ADR when the boundary changes.
 

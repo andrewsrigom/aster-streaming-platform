@@ -43,11 +43,23 @@ Trusted operations are published before clients that need them.
 
 For a document change, place the obsolete reviewed body in
 `infra/router/retained-operations.graphql`, regenerate and review the old/new
-union, deploy the Router image containing that set, then deploy the client. The
-generator allows at most two distinct wire bodies per operation name. Observe
-finite matched/unknown/missing outcomes before deleting the old body in a later
-release. Rollback uses the prior Router image and its matching complete manifest;
-never combine artifacts from different source revisions.
+union, and verify that its manifest preserves the retained wire body byte-for-byte.
+Deploy the Router image containing that set, then deploy the client. The generator
+allows at most two distinct wire bodies per operation name. Observe finite
+matched/unknown/missing outcomes before deleting the old body in a later release.
+
+The rollback sequence depends on client exposure:
+
+1. before the new client serves traffic, the pre-union Router remains safe;
+2. after any new-hash traffic, roll back the Web client but keep or redeploy the
+   last healthy union Router because existing browser bundles may remain active;
+3. if that union Router is faulty, roll forward to another image containing both
+   reviewed hashes rather than restoring the pre-union image;
+4. remove a hash or permit pre-union Router rollback only after the compatibility
+   window and trusted-operation telemetry prove that hash inactive.
+
+The union Router is therefore the rollback floor during overlap. Never combine
+artifacts from different source revisions.
 
 ## Canary
 

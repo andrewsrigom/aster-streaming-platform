@@ -96,6 +96,24 @@ function trustedOperations(definitions: readonly OperationDefinitionNode[]): Tru
     .sort((a, b) => a.name.localeCompare(b.name, "en") || a.id.localeCompare(b.id, "en"));
 }
 
+function retainedTrustedOperations(
+  definitions: readonly OperationDefinitionNode[],
+  source: string,
+): TrustedOperation[] {
+  return definitions.map((entry) => {
+    if (!entry.loc) {
+      throw new Error("Retained operation is missing its exact source location.");
+    }
+    const body = source.slice(entry.loc.start, entry.loc.end);
+    return {
+      body,
+      id: sha256(body),
+      name: entry.name?.value ?? "",
+      type: entry.operation,
+    };
+  });
+}
+
 function trustedOperationsRhai(operations: readonly TrustedOperation[]): string {
   const grouped = Map.groupBy(operations, ({ name }) => name);
   const names = [...grouped.keys()].sort((a, b) => a.localeCompare(b, "en"));
@@ -259,7 +277,10 @@ export function composeLocalSupergraph(
   for (const subgraph of subgraphs) {
     artifacts[subgraph.name + ".graphql"] = print(subgraph.typeDefs) + "\n";
   }
-  const trusted = trustedOperations([...definitions, ...retainedDefinitions]);
+  const trusted = [
+    ...trustedOperations(definitions),
+    ...retainedTrustedOperations(retainedDefinitions, retainedOperations),
+  ].sort((a, b) => a.name.localeCompare(b.name, "en") || a.id.localeCompare(b.id, "en"));
   const operationVersions = Map.groupBy(trusted, ({ name }) => name);
   if (
     trusted.length > 64 ||

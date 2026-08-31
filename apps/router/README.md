@@ -35,10 +35,12 @@ Discovery search, public/personalized home composition and mixed entity queries.
 They are build-time compatibility contracts and the current source for generated
 runtime trusted-operation artifacts. During a reviewed client transition,
 [retained operations](../../infra/router/retained-operations.graphql) can hold
-one obsolete body per name; generation accepts at most two distinct wire hashes
-for a name and zero retained bodies outside an overlap window. An ownership
-collision, invalid operation, stale output or breaking baseline API rejects the
-candidate.
+one obsolete byte-exact wire body per name. It is parsed and schema-validated but
+not reprinted by the current toolchain. Generation accepts at most two distinct
+wire hashes for a name and zero retained bodies outside an overlap window. The
+union Router remains the rollback floor after new-hash traffic until both client
+populations drain. An ownership collision, invalid operation, stale output or
+breaking baseline API rejects the candidate.
 
 CI compares against the PR base SHA (or previous push SHA), never merely the candidate's regenerated API. Manual runs resolve the merge base with `origin/main`; when that is the candidate itself, they use its first parent. A missing baseline/history or explicit self-comparison fails before the source gate. It reads the previous API and operation file directly from that commit, so deleting or rewriting current fixtures cannot hide a broken existing operation. `ASTER_SCHEMA_BASE` accepts only a full commit SHA; local commands default to local `main`. A pre-supergraph commit with neither file is the initial bootstrap; one missing file is an error. Intentional breaking evolution requires a separate reviewed migration, not bypassing this check.
 
