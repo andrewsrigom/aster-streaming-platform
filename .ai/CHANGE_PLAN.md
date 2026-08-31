@@ -123,7 +123,17 @@ classifier `99344592918`, diagnostic local-platform `99344620047`, source
 quality `99344620051`, documentation/security `99344620049`, dependency review
 `99344593060` and aggregate `99347035124` all passed. Discussions
 `3890928257`/`3890928260` are answered and resolved. Final evidence publication
-and blocking-boundary confirmation remain.
+head `21d9d06` then passed exact-head workflow `33345010435`, including the
+complete three-scenario diagnostic exercise and Docker-only playable demo.
+The permitted blocking-boundary confirmation found discussion `3891065894`:
+the admitted PostgreSQL request could reject before the runner reached its
+later `await`, temporarily leaving the rejection unobserved and allowing Node
+to terminate before recovery/cleanup. The remediation immediately observes the
+request and failure injection together with `Promise.allSettled`, preserves
+injection-error precedence and rethrows only after both settle. Its focused
+runner tests pass 10/10 and the affected gate passes 73/73 with 63 cached in
+53.89 seconds. Repeated protected diagnostic acceptance and corrected
+confirmation remain.
 
 ## Proposed behavior
 

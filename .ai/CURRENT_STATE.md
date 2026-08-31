@@ -372,7 +372,14 @@ Classifier `99344592918`, local-platform `99344620047`, source quality
 `99344620051`, documentation/security `99344620049`, dependency review
 `99344593060` and aggregate `99347035124` passed. Discussions
 `3890928257`/`3890928260` are answered and resolved; final evidence publication
-and confirmation remain.
+head `21d9d06` passed exact-head run `33345010435`; every required job,
+three-scenario diagnostic runtime and playable demo passed. The permitted
+confirmation found discussion `3891065894`: the admitted PostgreSQL request
+could reject while the runner awaited barrier/pause work and terminate Node
+before recovery/cleanup. The local remediation immediately observes request
+and injection through `Promise.allSettled`; runner tests pass 10/10 and the
+affected gate passes 73/73 with 63 cached in 53.89 seconds. Repeated protected
+runtime and corrected confirmation remain.
 Architecture, operations, runbooks and licensing are current. The
 earlier local attempt stopped during Docker Desktop image build and could not
 inspect scoped resources. The normal demo is unchanged; Phase13 has not started.
@@ -631,20 +638,20 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P12-R10 supporting protected acceptance passes at source `0288555`; the current
-full-trace privacy and lockfile-invalidation remediation passes protected run
-`33341630994` at source `cf87b8c`. Final evidence publication, confirmation,
-merge, exact-main CI and Phase12 closeout remain.
+P12-R10 complete stored-trace acceptance passes at source `cf87b8c`, and final
+evidence head `21d9d06` passes exact-head run `33345010435`. Its confirmation
+found the temporary request-rejection cleanup risk now corrected locally.
+Repeated protected acceptance, corrected confirmation, merge, exact-main CI
+and Phase12 closeout remain.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-For P12-R10, publish the full-trace privacy and lockfile-invalidation remediation,
-pass its protected three-scenario runtime, resolve discussions `3890788286` and
-`3890788287`, obtain the permitted blocking-boundary confirmation, merge after
-final exact-head protection, verify exact-main CI, close Phase12 and check
-Phase13 prerequisites. Inspect the exact interrupted local project only when
-that same Docker engine becomes reachable.
+For P12-R10, publish the request-observation correction, repeat its protected
+three-scenario runtime, resolve discussion `3891065894`, obtain one corrected
+confirmation, merge after final exact-head protection, verify exact-main CI,
+close Phase12 and check Phase13 prerequisites. Inspect the exact interrupted
+local project only when that same Docker engine becomes reachable.
 
 ## Runtime and recovery
 

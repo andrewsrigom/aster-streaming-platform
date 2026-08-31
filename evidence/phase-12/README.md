@@ -75,7 +75,15 @@ in 50.155 seconds.
 Corrected source `089f656`, tree `d9abb88`, passed protected run `33344001503`;
 classifier, diagnostic local-platform, source quality, documentation/security,
 dependency review and aggregate jobs all passed. Both discussions are answered
-and resolved. Final evidence publication, confirmation and release remain.
+and resolved. Final evidence head `21d9d06` passed exact-head run
+`33345010435`, including the complete diagnostic runtime and playable demo.
+The permitted confirmation then found discussion `3891065894`: the admitted
+PostgreSQL request was not observed while the barrier and pause work ran, so a
+near-deadline rejection could terminate Node before recovery/cleanup. The local
+remediation observes request and injection concurrently with
+`Promise.allSettled`, retains deterministic error precedence, passes runner
+tests 10/10 and the affected gate 73/73 with 63 cached in 53.89 seconds.
+Repeated protected runtime, corrected confirmation and release remain.
 
 ## Requirement traceability
 

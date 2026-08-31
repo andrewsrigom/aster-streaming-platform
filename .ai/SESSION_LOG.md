@@ -4,6 +4,33 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-30 — Final diagnostic request-observation correction
+
+### Completed
+
+- Final evidence head `21d9d06` passed protected run `33345010435`; every
+  required job, the complete diagnostic exercise, cleanup and playable demo
+  passed.
+- Permitted confirmation discussion `3891065894` found that the admitted
+  PostgreSQL request could reject before the later `await`, temporarily becoming
+  unhandled and allowing Node to exit before recovery/cleanup.
+- The correction observes request and disruption immediately with
+  `Promise.allSettled`, preserves injection-error precedence and rethrows only
+  through the existing recovery/finally path. Runner tests pass 10/10. After
+  correcting one test-only lint error, the affected gate passes 73/73 with 63
+  cached in 53.89 seconds.
+
+### Evidence
+
+- `node --test tools/run-diagnostic-exercises.test.mjs` passes 10/10;
+  `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm
+  check:changed` passes 73/73 with 63 cached in 53.89 seconds.
+
+### Next action
+
+- Publish the correction, repeat protected three-scenario acceptance, resolve
+  the discussion, obtain corrected confirmation, merge and verify exact-main.
+
 ## 2026-08-30 — Full-trace privacy and diagnostic invalidation correction
 
 ### Completed

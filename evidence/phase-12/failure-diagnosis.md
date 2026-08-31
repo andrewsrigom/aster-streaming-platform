@@ -378,14 +378,42 @@ Corrected source `089f656f10c8a924157a94a9ba220e32384b47bd`, tree
 `99344620049`, dependency review `99344593060` and aggregate `99347035124` all
 passed. Discussions `3890928257`/`3890928260` are answered and resolved.
 
+## Exact-head confirmation and request-observation remediation
+
+Final evidence head `21d9d069373c8f629cc53e803be5abaf7faaab47` passed
+protected workflow `33345010435`. Dependency review, classifier, diagnostic
+local-platform, source quality, documentation/security and aggregate jobs all
+passed. The local-platform job repeated the complete stored-trace privacy
+proof, all three diagnoses/recoveries, exact teardown and Docker-only playable
+demo.
+
+The permitted blocking-boundary confirmation reviewed that exact source and
+opened discussion `3891065894`. In the PostgreSQL scenario, the admitted
+`titleDetail` promise was created before the barrier wait and database pause,
+but no rejection handler was attached until the later `await`. If the barrier
+or pause approached the request's five-second deadline, Node 24 could treat the
+temporary rejection as unhandled and terminate the runner before its recovery
+and final project cleanup.
+
+The remediation coordinates the request and disruption promises immediately
+through `Promise.allSettled`. It waits for both outcomes, reports an injection
+failure before a derivative request failure, and otherwise rethrows the request
+failure through the existing recovery/finally path. The focused runner suite
+passes 10/10. The candidate gate initially found only an undefined
+`setImmediate` in the new test; replacing it with a microtask checkpoint makes
+the repeated affected gate pass 73/73 with 63 cached in 53.89 seconds. Because
+scenario orchestration changed, the written heavyweight trigger requires one
+new protected three-scenario run before release.
+
 ## Remaining release work
 
 Before release:
 
 1. inspect and, if present, remove only the exact interrupted project above
    when that same local engine is reachable;
-2. publish the final run evidence and pass exact-head protection;
-3. obtain the permitted blocking-boundary confirmation;
+2. publish the request-observation remediation and repeat exact-head protected
+   three-scenario acceptance;
+3. resolve discussion `3891065894` and obtain one corrected confirmation;
 4. squash merge PR51 and verify
    exact-main CI;
 5. record the released source/tree and close Phase 12.

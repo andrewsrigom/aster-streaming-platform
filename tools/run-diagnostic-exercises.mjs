@@ -86,6 +86,17 @@ export function diagnosticTimeout(requested, deadline, now) {
   return Math.max(1, Math.min(requested, remaining));
 }
 
+export async function settleDiagnosticInjection(responseWork, disruptionWork) {
+  const [response, disruption] = await Promise.allSettled([responseWork, disruptionWork]);
+  if (disruption.status === "rejected") {
+    throw disruption.reason;
+  }
+  if (response.status === "rejected") {
+    throw response.reason;
+  }
+  return response.value;
+}
+
 function boundedTimeout(requested) {
   return diagnosticTimeout(requested, runDeadline, Date.now());
 }
@@ -819,16 +830,20 @@ async function exercise(scenario, ports) {
   let error;
   try {
     const canary = randomUUID();
-    let responseWork;
+    let response;
     if (service === "postgres") {
       await startPostgresFailureBarrier();
-      responseWork = titleDetail(ports.router, canary);
-      await waitForBlockedCatalogQuery();
-      await compose(["pause", service], 30_000);
+      response = await settleDiagnosticInjection(
+        titleDetail(ports.router, canary),
+        (async () => {
+          await waitForBlockedCatalogQuery();
+          await compose(["pause", service], 30_000);
+        })(),
+      );
     } else {
       await compose(["stop", "--timeout", "5", service], 30_000);
+      response = await titleDetail(ports.router, canary);
     }
-    const response = await (responseWork ?? titleDetail(ports.router, canary));
     const router = await operationEvent(since);
     const traceId = router.event.trace_id;
     const catalogOperation =

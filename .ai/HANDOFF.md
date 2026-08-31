@@ -84,6 +84,14 @@ Finite-outcome source `58779b9` passes protected run `33336386466`.
   `3890928257`/`3890928260` are answered and resolved. Publish the final run
   evidence, pass exact-head protection and obtain the blocking-boundary
   confirmation before merge.
+- Final evidence head `21d9d06` passed exact-head run `33345010435`, including
+  the diagnostic runtime and playable demo. Confirmation discussion
+  `3891065894` found that the admitted PostgreSQL request could reject before a
+  handler was attached, terminating Node before recovery/cleanup. The local
+  correction observes request and injection immediately with
+  `Promise.allSettled`; runner tests pass 10/10 and the affected gate passes
+  73/73 with 63 cached in 53.89 seconds. Its protected heavyweight repeat and
+  corrected confirmation remain.
 
 ## Protected runtime finding
 
@@ -124,12 +132,12 @@ restart, cleanup or repeated probe followed.
 
 ## Exact next actions
 
-1. Publish the full-trace privacy and lockfile-invalidation remediation, then
-   require the protected three-scenario runtime.
-2. Resolve discussions `3890788286`/`3890788287`, obtain the permitted
-   blocking-boundary confirmation, merge after final protection, verify
-   exact-main CI and close Phase12. Inspect/remove only the exact interrupted
-   local project when its original engine is reachable.
+1. Publish the request-observation correction and require the protected
+   three-scenario runtime because scenario orchestration changed.
+2. Resolve discussion `3891065894`, obtain one corrected confirmation, merge
+   after final protection, verify exact-main CI and close Phase12.
+3. Inspect/remove only the exact interrupted local project when its original
+   engine is reachable.
 
 ## Execution boundary
 

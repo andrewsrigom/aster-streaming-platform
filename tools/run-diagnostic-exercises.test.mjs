@@ -11,6 +11,7 @@ import {
   diagnosticTraceReady,
   diagnosticTimeout,
   parseJsonLines,
+  settleDiagnosticInjection,
   traceSearchFacts,
 } from "./run-diagnostic-exercises.mjs";
 
@@ -91,6 +92,25 @@ test("bounds every operation under one execution deadline with cleanup headroom"
   assert.equal(diagnosticTimeout(20_000, 100_000, 90_000), 10_000);
   assert.equal(diagnosticTimeout(5_000, Number.POSITIVE_INFINITY, 90_000), 5_000);
   assert.throws(() => diagnosticTimeout(5_000, 90_000, 90_000));
+});
+
+test("observes the diagnostic request and disruption concurrently before rethrowing failures", async () => {
+  let releaseDisruption;
+  const disruption = new Promise((resolve) => {
+    releaseDisruption = resolve;
+  });
+  const failure = new Error("request deadline");
+  const outcome = settleDiagnosticInjection(Promise.reject(failure), disruption);
+
+  await Promise.resolve();
+  releaseDisruption();
+  await assert.rejects(outcome, failure);
+
+  const injectionFailure = new Error("pause failed");
+  await assert.rejects(
+    settleDiagnosticInjection(Promise.reject(failure), Promise.reject(injectionFailure)),
+    injectionFailure,
+  );
 });
 
 test("requires Catalog operation logs to expose declared and consistent active trace context", () => {
