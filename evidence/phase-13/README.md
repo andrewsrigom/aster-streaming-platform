@@ -55,7 +55,10 @@ PR55 run `33415238912` exposed an HTTP-status mismatch in the runtime verifier;
 initial review discussion `3896477418` found the 32 KiB bound omitted the JSON
 operation envelope. Corrected source `96dc6ea`, tree `c708f9e`, passes
 Router19/19, verifier2/2 and the corrected 51/51 gate. Corrected packaged
-runtime, confirmation and release remain; no verified runtime claim is made.
+run `33416680451` then exposed the verifier's guessed introspection code/location.
+Source `55875ce`, tree `9ac71a9`, matches pinned Router's exact finite redaction
+and passes the repeated 51/51 gate. Corrected packaged runtime, confirmation and
+release remain; no verified runtime claim is made.
 
 ## Requirement traceability
 

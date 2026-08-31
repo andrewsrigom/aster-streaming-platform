@@ -39,7 +39,10 @@ Initial run `33415238912` exposed an HTTP-status mismatch in the new runtime
 verifier; review discussion `3896477418` found the analyzer did not include the
 GraphQL envelope in the 32 KiB bound. Corrected source `96dc6ea`, tree `c708f9e`,
 passes Router19/19, verifier2/2 and the affected51/51 candidate gate. Its active
-plan is `.ai/CHANGE_PLAN.md`; local evidence is
+protected run `33416680451` then exposed the verifier's guessed introspection
+error code/location; source `55875ce`, tree `9ac71a9`, now asserts the pinned
+Router's exact sanitized `UNAVAILABLE` response and passes the repeated51/51
+gate. Its active plan is `.ai/CHANGE_PLAN.md`; local evidence is
 `evidence/phase-13/graphql-demand-controls.txt`. Corrected protected packaged
 proof, confirmation and release remain.
 
@@ -104,8 +107,10 @@ proof, confirmation and release remain.
   selections256. Browse is the maximum cost/list profile at1089/320; HomePublic
   is the largest shape at95 selections. Correction `96dc6ea`, tree `c708f9e`,
   aligns structured HTTP 200 GraphQL rejection proof and the complete encoded
-  request limit. Router19/19, verifier2/2 and the corrected affected gate51/51
-  pass. The corrected packaged adverse proof remains pending.
+  request limit. Source `55875ce`, tree `9ac71a9`, additionally matches the exact
+  pinned Router redaction contract observed in run `33416680451`. Router19/19,
+  verifier2/2 and the repeated affected gate51/51 pass. The corrected packaged
+  adverse proof remains pending.
 
 ## Accepted design and implementation
 
@@ -130,7 +135,7 @@ proof, confirmation and release remain.
 
 ## Exact next actions
 
-1. Commit the item65 evidence checkpoint and push the corrected PR55 head once.
+1. Commit the second item65 evidence checkpoint and push the corrected PR55 head once.
 2. Require protected packaged demand/trusted proof, resolve initial discussion
    `3896477418` and request one confirmation, treating only blocking findings.
 3. Squash merge, verify tree identity and exact-main CI before item66.

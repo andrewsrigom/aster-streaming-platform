@@ -72,8 +72,11 @@ tree `e8fc58b`, owns parser, shape, list, cost and environment controls and
 opened PR55. Initial run `33415238912` and review found a runtime-verifier status
 mismatch and an encoded-request boundary gap. Corrected source `96dc6ea`, tree
 `c708f9e`, passes Router19/19, verifier2/2 and the affected gate51/51. Corrected
-protected proof remains. No hosted deployment is claimed; Phase14 still owns
-provider and deployment decisions.
+run `33416680451` then exposed only the verifier's guessed introspection error
+code/location; source `55875ce`, tree `9ac71a9`, now asserts pinned Router's
+exact sanitized `UNAVAILABLE` response and passes the repeated gate51/51.
+Corrected protected proof remains. No hosted deployment is claimed; Phase14
+still owns provider and deployment decisions.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

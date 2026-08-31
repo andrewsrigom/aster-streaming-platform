@@ -9,6 +9,8 @@ Environment
 - Initial source tree: e8fc58bbcbe3899b7b420adcdedfbd867173de0b
 - Corrected source commit: 96dc6eab7b7deacea14a1661b6491c991d0d7a0c
 - Corrected source tree: c708f9e226e3f45959afc75cd96aff4d0c776cb8
+- Redaction-verifier source: 55875ce2fcab48062c0a310593c96f14a46e3815
+- Redaction-verifier tree: 9ac71a9c3f7f78f5d4fd4b0c688bc4f5ca2964d5
 - Node.js: 24.19.0
 - pnpm: 11.24.0
 - Runtime target: Apollo Router Core 2.17.0
@@ -95,6 +97,8 @@ Focused and candidate results
   AI-memory, CI policy, staged/commit policy and secret scanning.
 - After initial protected findings, the same candidate gate passes51/51 tasks,
   38 cached, in110.103 seconds on corrected source `96dc6ea`.
+- After matching the exact pinned Router redaction, the repeated candidate gate
+  passes51/51 tasks,41 cached, in91.422 seconds on source `55875ce`.
 - `git diff --check`: pass before commit.
 - Commit hook: staged secret scan zero findings; lockfile policy and format pass.
 
@@ -114,6 +118,11 @@ Initial protected run and review
   an empty variables object in the canonical GraphQL envelope. A regression
   proves a query below 32 KiB still fails when its encoded envelope crosses the
   Router limit. No runtime limit was raised.
+- Protected run `33416680451` accepted the corrected HTTP 200 guard, then showed
+  the exact pinned Router response is `{message: "GraphQL operation failed.",
+  code: "UNAVAILABLE"}` without a source location. The verifier had guessed the
+  pre-redaction validation code/location. Source `55875ce` now asserts the exact
+  finite redacted contract instead of weakening message/body/privacy checks.
 
 Dependency security re-review
 - `pnpm audit --json` on the exact tree reports zero high/critical and one
@@ -141,7 +150,7 @@ Adverse coverage
   canary, topology, stack or internal dependency leakage.
 
 Pending acceptance
-- Corrected protected CI must prove the packaged adverse verifier against the
+- A later corrected protected run must prove the packaged adverse verifier against the
   pinned real Router and retain the Docker playable journey. The failed initial
   run is diagnostic evidence, not a passing runtime claim.
 - Answer and resolve initial discussion `3896477418`, then obtain the single

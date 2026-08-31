@@ -170,7 +170,10 @@ profiles for all 25 admitted hashes and packaged adverse-proof policy. PR55 run
 `33415238912` and review exposed an HTTP-status verifier mismatch plus a missing
 encoded-envelope request bound. Corrected source `96dc6ea`, tree `c708f9e`,
 passes Router19/19, verifier2/2 and the affected gate51/51. Corrected protected
-packaged proof, confirmation and release remain.
+run `33416680451` then exposed the verifier's guessed introspection error
+code/location. Source `55875ce`, tree `9ac71a9`, matches pinned Router's finite
+redaction and passes the repeated gate51/51. Corrected packaged proof,
+confirmation and release remain.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head
@@ -375,6 +378,7 @@ Exact-head run `33410126892`, clean confirmation, PR52 tree-identical squash mai
 `fb5cf014` and exact-main run `33412728404` complete item64. Item65 is rebased
 onto that released main. Initial source `36b6af2`, tree `e8fc58b`, opened PR55;
 corrected source `96dc6ea`, tree `c708f9e`, and its affected gate51/51 pass.
+Verifier source `55875ce`, tree `9ac71a9`, passes the repeated gate51/51.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

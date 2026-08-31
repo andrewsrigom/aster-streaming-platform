@@ -18,6 +18,10 @@ full snapshot through the archival checkpoint remains in
   200 rejections and measures the canonical GraphQL envelope. Router19/19,
   verifier2/2 and the corrected affected gate51/51 with38 cached in110.103
   seconds pass.
+- Protected run `33416680451` passed that status guard and exposed the verifier's
+  guessed introspection code/location. Source `55875ce`, tree `9ac71a9`, asserts
+  pinned Router's exact sanitized `UNAVAILABLE` contract; verifier2/2 and the
+  repeated gate51/51 with41 cached in91.422 seconds pass.
 
 ### Evidence
 
@@ -26,7 +30,7 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Push the corrected PR55 head once, require exact-head protected runtime, answer
+- Push the later corrected PR55 head once, require exact-head protected runtime, answer
   and resolve discussion `3896477418`, request one confirmation, then release.
 
 ## 2026-08-31 — Trusted operations released; demand candidate rebased

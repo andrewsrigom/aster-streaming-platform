@@ -44,7 +44,13 @@ query body instead of the complete encoded GraphQL request. Correction
 `c708f9e226e3f45959afc75cd96aff4d0c776cb8`, accepts only structured error-only
 HTTP 200 rejections and includes the operation envelope in the exact 32 KiB
 Router limit. Router19/19, verifier2/2 and the corrected affected candidate
-gate51/51 pass. Corrected protected runtime proof and release remain pending.
+gate51/51 pass. Protected run `33416680451` then reached the exact response and
+showed pinned Router redaction uses the finite code `UNAVAILABLE`, not the
+verifier's guessed validation code/location. Verifier correction
+`55875ce2fcab48062c0a310593c96f14a46e3815`, tree
+`9ac71a9c3f7f78f5d4fd4b0c688bc4f5ca2964d5`, asserts the exact sanitized
+redaction contract; verifier2/2 and the repeated affected gate51/51 pass.
+Corrected protected runtime proof and release remain pending.
 
 ## Proposed behavior
 

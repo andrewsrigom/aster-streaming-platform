@@ -156,8 +156,15 @@ bounded raw query bytes instead of the complete encoded request. Correction
 `c708f9e226e3f45959afc75cd96aff4d0c776cb8`, requires structured error-only
 HTTP 200 responses and bounds the canonical operation envelope at the Router's
 32 KiB limit. Router19/19, verifier2/2 and the corrected affected gate51/51 with
-38 cached in110.103 seconds pass. Corrected protected runtime, confirmation and
-release remain; this is not a verified/released claim.
+38 cached in110.103 seconds pass. Protected run `33416680451` accepted the HTTP
+status guard, then exposed that pinned Router redaction intentionally returns
+only `GraphQL operation failed.` with code `UNAVAILABLE`, without a location;
+the verifier had guessed `GRAPHQL_VALIDATION_FAILED`. Source
+`55875ce2fcab48062c0a310593c96f14a46e3815`, tree
+`9ac71a9c3f7f78f5d4fd4b0c688bc4f5ca2964d5`, asserts the exact finite redacted
+response. Verifier2/2 and the repeated affected gate51/51 with41 cached in91.422
+seconds pass. Corrected protected runtime, confirmation and release remain;
+this is not a verified/released claim.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -716,8 +723,8 @@ deployment remain planned.
 
 ## Next outcome
 
-For P13-R03 item65, commit the evidence checkpoint, push the corrected PR55 head
-once, obtain the protected packaged Router adverse proof, answer/resolve initial
+For P13-R03 item65, commit the second evidence checkpoint, push the corrected
+PR55 head once, obtain the protected packaged Router adverse proof, answer/resolve initial
 discussion `3896477418` and request one confirmation. Treat only requirement,
 security, availability or public-contract blockers, then squash merge and verify
 exact-main CI. Do not start item66 before item65 is a coherent waiting or
