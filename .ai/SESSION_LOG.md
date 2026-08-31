@@ -19,6 +19,14 @@ full snapshot through the archival checkpoint remains in
   final affected gate passes49/49 with38 cached in45.499 seconds; zero secret
   findings. Earlier formatting and strict untrusted-object typing failures were
   corrected before the accepted gate.
+- Evidence head `66fcab71` passed protected run `33359022739`, including the
+  packaged Router enforcement, integrations, diagnostics and playable demo.
+  Discussion `3891772219` is answered and resolved.
+- Confirmation discussion `3891915868` found Router generator-only changes
+  could skip platform CI. Source `64fa64e7650e422e4b1a4405555521afc95921bd`,
+  tree `35817101dd1cb1126b2bddb2a2e9646938f760d0`, classifies all `apps/router/`
+  changes as platform work. CI policy38/38 and the repeated gate49/49 with36
+  cached in64.294 seconds pass.
 
 ### Evidence
 
@@ -27,8 +35,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Commit the evidence checkpoint, push once, require exact-head protected CI,
-  resolve discussion `3891772219`, obtain the permitted blocker-focused
+- Commit the CI-classification evidence checkpoint, push once, require exact-head
+  protected CI, resolve discussion `3891915868`, obtain the blocker-focused
   confirmation, then merge and verify exact main.
 
 ## 2026-08-31 — Trusted-operation confirmation CI correction

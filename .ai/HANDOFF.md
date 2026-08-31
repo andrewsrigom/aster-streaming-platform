@@ -20,6 +20,9 @@ one same-name multi-version Web-test gap. Its correction passed run
 Source `5f4a315` corrected those gaps and protected run `33357231869` passed.
 Discussion `3891772219` then found AST source locations still omit ignored bytes
 at both wire boundaries.
+The explicit-body evidence head `66fcab71` passed protected run `33359022739`,
+and that discussion is resolved. Confirmation discussion `3891915868` then
+found Router generator-only changes could skip the packaged platform proof.
 
 ## Current behavior
 
@@ -57,6 +60,14 @@ at both wire boundaries.
   one explicit versioned JSON string. Its regression proves leading whitespace,
   a leading comment, trailing newline/whitespace and their exact SHA-256.
   Router11/11 and the final gate49/49 with38 cached in45.499 seconds pass.
+  Evidence head `66fcab71` passed protected run `33359022739`, including the
+  packaged Router, integrations, diagnostics and playable demo; discussion
+  `3891772219` is resolved. Confirmation discussion `3891915868` found
+  `apps/router/` did not select platform CI. Source
+  `64fa64e7650e422e4b1a4405555521afc95921bd`, tree
+  `35817101dd1cb1126b2bddb2a2e9646938f760d0`, routes the complete Router package
+  through the platform proof. CI policy38/38 and gate49/49 with36 cached in
+  64.294 seconds pass.
 
 ## Accepted design and implementation
 
@@ -76,10 +87,10 @@ at both wire boundaries.
 
 ## Exact next actions
 
-1. Commit the evidence checkpoint and push the boundary-exact correction once.
+1. Commit the CI-classification evidence checkpoint and push the correction once.
 2. Require exact-head protected CI.
-3. Answer and resolve discussion `3891772219`; confirm the earlier addressed
-   threads remain resolved, then obtain one permitted blocker-focused confirmation.
+3. Answer and resolve discussion `3891915868`; confirm earlier threads remain
+   resolved, then obtain one permitted blocker-focused confirmation.
 4. Squash merge, verify exact-main CI, close item64 and activate item65.
 
 ## Execution boundary

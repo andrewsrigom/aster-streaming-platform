@@ -132,8 +132,15 @@ retains the finite classification. Neither mode logs query text or hashes.
   `7ad2f2d88d5c2848265f6bbf568ba4168aee3562`, replaces location-derived slices
   with bounded versioned JSON body strings and proves leading/comment/trailing
   bytes remain in both the manifest body and SHA-256. Router11/11 and the final
-  affected gate49/49 with38 cached in45.499 seconds pass; exact-head protected
-  CI, thread resolution and blocker-focused confirmation remain.
+  affected gate49/49 with38 cached in45.499 seconds pass. Evidence head
+  `66fcab71d34552412eb6d6390801f74a9129f3bb` passed protected run
+  `33359022739`; discussion `3891772219` is resolved. Confirmation discussion
+  `3891915868` then found Router generator-only changes could skip the packaged
+  platform proof. Source `64fa64e7650e422e4b1a4405555521afc95921bd`, tree
+  `35817101dd1cb1126b2bddb2a2e9646938f760d0`, classifies the complete Router
+  package as platform work. CI policy38/38 and the repeated gate49/49 with36
+  cached in64.294 seconds pass; exact-head protected CI, thread resolution and
+  blocker-focused confirmation remain.
 - Iteration gate: Router composition tests plus Router source/runtime policy tests and `git diff --check`.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed`, documentation/AI checks and zero-finding secret scan.
 - Heavyweight repeat triggers: repeat the real Router enforce-mode proof when operation generation, matcher logic, startup mode policy, Router image/config/Rhai packaging or rejection telemetry changes; repeat the Docker playable journey when canonical client documents or admission behavior changes.

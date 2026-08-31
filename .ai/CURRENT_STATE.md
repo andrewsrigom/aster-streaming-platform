@@ -31,9 +31,13 @@ retained-body reprinting and unsafe pre-union rollback. Source `5f4a315`, tree
 `33357231869` passes. Discussion `3891772219` found AST locations still omit
 ignored boundary bytes. Source `0bcdd68`, tree `7ad2f2d8`, now retains explicit
 JSON body strings including every leading/trailing byte; Router11/11 and the
-final gate49/49 with38 cached in45.499 seconds pass. Exact-head CI,
-blocker-focused confirmation and release remain. Full Phase00–14 goal stays
-active.
+gate49/49 with38 cached in45.499 seconds pass. Evidence head `66fcab71` passed
+protected run `33359022739`; discussion `3891772219` is resolved. Confirmation
+discussion `3891915868` found Router generator-only changes could skip platform
+CI. Source `64fa64e`, tree `35817101`, routes the complete Router package through
+that proof; CI policy38/38 and gate49/49 with36 cached in64.294 seconds pass.
+Exact-head CI, blocker-focused confirmation and release remain. Full
+Phase00–14 goal stays active.
 
 ## Verified
 
@@ -99,7 +103,15 @@ exclude ignored leading/trailing bytes. Source
 `7ad2f2d88d5c2848265f6bbf568ba4168aee3562`, replaces the ambiguous source
 slice with bounded versioned JSON body strings and proves a boundary-inclusive
 body/hash. Router11/11 and the final affected gate49/49 with38 cached in45.499
-seconds pass. Exact-head CI and confirmation remain. APQ stays disabled.
+seconds pass. Evidence head `66fcab71` passed protected run `33359022739`,
+including the packaged Router, every integration, diagnostics and playable demo;
+discussion `3891772219` is resolved. Confirmation discussion `3891915868` found
+that `apps/router/` itself did not select platform CI. Source
+`64fa64e7650e422e4b1a4405555521afc95921bd`, tree
+`35817101dd1cb1126b2bddb2a2e9646938f760d0`, adds that complete prefix and a
+five-path generator/writer/main/package/verifier regression. CI policy38/38 and
+the repeated gate49/49 with36 cached in64.294 seconds pass. Exact-head CI and
+blocker-focused confirmation remain. APQ stays disabled.
 PostgreSQL/data ownership, owner authorization, schemas, Redis, events and media
 remain unchanged.
 
@@ -660,11 +672,11 @@ deployment remain planned.
 
 ## Next outcome
 
-For item64 (P13-R01), commit the evidence checkpoint and publish the coherent
-boundary-exact candidate once. Require protected CI to load the generated Rhai
+For item64 (P13-R01), commit the CI-classification evidence checkpoint and push
+the correction once. Require protected CI to load the generated Rhai
 policy in the pinned Router, accept the canonical operation, reject
 altered/unknown/missing documents and expose all three finite metric labels.
-Resolve discussion `3891772219`, obtain the permitted blocker-focused
+Resolve discussion `3891915868`, obtain the permitted blocker-focused
 confirmation, merge, verify exact-main CI and then activate item65. Inspect the
 exact historical interrupted Phase12 project only when that same Docker engine
 becomes reachable.

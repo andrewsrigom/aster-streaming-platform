@@ -23,6 +23,11 @@ Environment
 - Boundary-byte review discussion: 3891772219
 - Explicit-body correction: 0bcdd68833c23f1ae61a1c07f5f93ac5d9d989e1
 - Explicit-body correction tree: 7ad2f2d88d5c2848265f6bbf568ba4168aee3562
+- Explicit-body evidence head: 66fcab71d34552412eb6d6390801f74a9129f3bb
+- Explicit-body protected run: 33359022739 (passed)
+- Router-classification review discussion: 3891915868
+- Router-classification correction: 64fa64e7650e422e4b1a4405555521afc95921bd
+- Router-classification correction tree: 35817101dd1cb1126b2bddb2a2e9646938f760d0
 - Node.js: 24.19.0
 - pnpm: 11.24.0
 - Runtime target: Apollo Router Core 2.17.0, explicit integration/enforce proof
@@ -58,6 +63,8 @@ Focused commands and results
   tasks, 35 cached, 53.095 seconds.
 - Explicit-body correction: Router 11/11 and affected candidate gate 49/49
   tasks, 38 cached, 45.499 seconds.
+- Router-classification correction: CI policy 38/38 and affected candidate gate
+  49/49 tasks, 36 cached, 64.294 seconds.
 - pnpm typecheck and pnpm ci:test: pass; CI policy 37/37.
 - pnpm security:check (inside the candidate gate): pass; zero findings.
 
@@ -120,11 +127,19 @@ Protected acceptance and confirmation correction
   signature checks. After formatting and typed untrusted-object access, build,
   lint and Router11/11 pass; the final affected gate passes49/49 with38 cached
   in45.499 seconds and the included secret scan has zero findings.
+- Evidence head 66fcab71 passed protected run33359022739: exact generated
+  enforcement, all finite labels, owner integrations, diagnostics, cleanup and
+  Docker-only playable demo pass. Discussion3891772219 is answered/resolved.
+- Confirmation discussion3891915868 found a generator-only `apps/router/`
+  change could skip the platform proof. Source64fa64e classifies the complete
+  Router package as platform work and tests composition, artifact writer, main,
+  package and verifier paths. CI policy38/38 and the repeated49/49 candidate gate
+  pass with36 cached in64.294 seconds.
 
 Pending acceptance
-- Publish the boundary-exact rollout/evidence correction once, pass exact-head
-  protected CI, answer and resolve discussion3891772219 (and confirm earlier
-  addressed threads remain resolved), then obtain the permitted blocker-focused
+- Publish the Router-classification/evidence correction once, pass exact-head
+  protected CI, answer and resolve discussion3891915868 (and confirm earlier
+  threads remain resolved), then obtain the permitted blocker-focused
   confirmation before squash merge and exact-main verification.
 
 Interpretation and limitations

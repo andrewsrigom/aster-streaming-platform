@@ -22,8 +22,14 @@ passes. Discussion `3891772219` then found AST source locations omit ignored
 leading/trailing bytes. Source `0bcdd68833c23f1ae61a1c07f5f93ac5d9d989e1`,
 tree `7ad2f2d88d5c2848265f6bbf568ba4168aee3562`, uses bounded versioned JSON with
 explicit body strings and proves boundary-inclusive bodies/hashes. Router11/11
-and the final gate49/49 with38 cached in45.499 seconds pass. Exact-head protected
-CI, blocker-focused confirmation and release remain.
+and the gate49/49 with38 cached in45.499 seconds pass. Evidence head `66fcab71`
+passed protected run `33359022739`; discussion `3891772219` is resolved.
+Confirmation discussion `3891915868` found Router generator-only changes could
+skip platform CI. Source `64fa64e7650e422e4b1a4405555521afc95921bd`, tree
+`35817101dd1cb1126b2bddb2a2e9646938f760d0`, routes the complete Router package
+through that proof. CI policy38/38 and the repeated gate49/49 with36 cached in
+64.294 seconds pass. Exact-head protected CI, blocker-focused confirmation and
+release remain.
 
 ## Requirement traceability
 
