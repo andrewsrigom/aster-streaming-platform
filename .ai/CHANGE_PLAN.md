@@ -288,7 +288,9 @@ file and anchor exists.
   Correction source `7df3ff6`, tree `83e8c03`, freezes the batch. Exact-head
   review on checkpoint `47b80af` opened findings `3909484066` and `3909484071`
   for preceding-step command poisoning and an uppercase public status label.
-  The working correction closes both
+  The working correction closes both. Focused contracts pass48/48 and the
+  affected gate passes15/15. Correction source `c618464`, tree `75624f9`,
+  freezes the batch
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

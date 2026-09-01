@@ -245,10 +245,17 @@ full snapshot through the archival checkpoint remains in
   documentation tests pass32/32 and the affected gate passes15/15, including101
   platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
   or deployment behavior changed.
+- Exact-head review on checkpoint `47b80af`, tree `a25fe25`, opened findings
+  `3909484066`/`3909484071` for preceding-step command poisoning and uppercase
+  public status vocabulary.
+- Correction source `c618464`, tree `75624f9`, closes both. Focused contracts
+  pass48/48 and the affected gate passes15/15, including101 platform-policy,39
+  CI-policy and13 repository-memory tests. No product runtime or deployment
+  behavior changed.
 
 ### Next action
 
-- Publish the exact correction checkpoint, resolve its thread and request
+- Publish the exact correction checkpoint, resolve its two threads and request
   confirmation only after the PR exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.
 

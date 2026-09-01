@@ -680,6 +680,28 @@ passes15/15, including101 platform-policy,39 CI-policy and13 repository-memory
 tests. No product runtime or deployment behavior changed. Publication remains
 pending.
 
+Protected run `33571311869` on checkpoint `a5be54f` passed source quality and
+governance but failed the unchanged Catalog diagnostic when TraceQL did not
+return trace `0655257d7e898785a718bd42d922f4d1` before its deadline. Scoped cleanup
+reported clean; the run is not acceptance evidence.
+
+Checkpoint `47b80af8e388c0b5f3e8ba0bdf8e54d0ff0310eb`, tree
+`a25fe257bf64416235eebd8f652cb16cdbf41d3f`, received exact-head review at
+`2026-09-01T23:50:59Z`. It opened two findings:
+
+- `3909484066` found that a preceding governance step could use `GITHUB_PATH`
+  to replace later capability commands;
+- `3909484071` found that the public status vocabulary spelled canonical
+  `released` with an incompatible uppercase initial.
+
+Correction source `c618464b8a23de5e9f94a21867179cb0d01a5951`, tree
+`75624f9b837c4952cc9fcf5ac4a3753d41182a0c`, makes the capability check and
+focused test the first mutable governance steps after exact pinned checkout and
+Node setup, rejects any changed prelude and fixes the public label. Focused
+capability/CI-policy tests pass48/48. The affected gate passes15/15,
+including101 platform-policy,39 CI-policy and13 repository-memory tests. No
+product runtime or deployment behavior changed. Publication remains pending.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and

@@ -255,10 +255,17 @@ path/anchor validity to the existing documentation validator.
   pass48/48, documentation tests pass32/32, documentation validation covers1,646
   links and the affected gate passes15/15. No product runtime or deployment
   behavior changed.
+- Exact-head review on checkpoint `47b80af`, tree `a25fe25`, opened findings
+  `3909484066`/`3909484071` for preceding-step command poisoning and uppercase
+  public status vocabulary.
+- Correction source `c618464`, tree `75624f9`, makes the capability proof the
+  first mutable governance steps after exact pinned setup and uses canonical
+  `released`. Focused contracts pass48/48 and the affected gate passes15/15. No
+  product runtime or deployment behavior changed.
 
 ## Exact next actions
 
-1. Publish the exact correction checkpoint, resolve the review thread
+1. Publish the exact correction checkpoint, resolve the two review threads
    and request confirmation only after GitHub exposes the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating

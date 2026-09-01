@@ -302,6 +302,17 @@ pass48/48, documentation tests pass32/32, documentation validation covers1,646
 links and the affected gate passes15/15. No product runtime or deployment
 behavior changed. Publication remains pending.
 
+Checkpoint `47b80af8e388c0b5f3e8ba0bdf8e54d0ff0310eb`, tree
+`a25fe257bf64416235eebd8f652cb16cdbf41d3f`, received exact-head review at
+`2026-09-01T23:50:59Z`. Findings `3909484066`/`3909484071` showed that a
+preceding governance step could poison later command lookup and that the public
+status vocabulary used uppercase `Released` instead of canonical `released`.
+Correction source `c618464b8a23de5e9f94a21867179cb0d01a5951`, tree
+`75624f9b837c4952cc9fcf5ac4a3753d41182a0c`, makes the capability check/test
+the first mutable governance steps after exact pinned setup and fixes the
+label. Focused contracts pass48/48 and the affected gate passes15/15. No
+product runtime or deployment behavior changed. Publication remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;
