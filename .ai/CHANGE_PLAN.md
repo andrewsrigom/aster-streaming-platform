@@ -83,9 +83,10 @@ PostgreSQL transaction-timeout assertion passed on retry. Discussion
 `3900443731` is resolved. Blocker-boundary confirmation discussion
 `3900633355` then found that Catalog's audited one-query budget was lower than
 its measured cold fence/load path and omitted the single fence-change retry.
-The local correction exports Catalog's exact source-owned query plan, derives a
-four-query worst-case budget, observes that sequence in an executable
-fence-change test and consumes the same contract during Router composition.
+Source `20b5f27`, tree `700bdc4`, exports Catalog's exact source-owned query
+plan, derives a four-query worst-case budget, observes that sequence in an
+executable fence-change test and consumes the same contract during Router
+composition.
 Catalog249/249, Router26/26 and the affected73/73 gate pass.
 
 ## Proposed behavior
@@ -248,11 +249,11 @@ matrix.
   Evidence head `10bef1f` passed protected run `33465978576` attempt2 and
   discussion `3900443731` is resolved. Confirmation discussion `3900633355`
   found the Catalog budget omitted its cold two-query path and one bounded
-  fence-change retry. The local correction exports the exact owner query plan,
-  derives the worst-case maximum as four and verifies the observed call
-  sequence. Catalog249/249, Router26/26 and the affected73/73 gate with56 cached
-  pass in86.394 seconds. The query path, adapter, schema and measurement are
-  unchanged, so the prior heavyweight Router observations remain applicable.
+  fence-change retry. Source `20b5f27`, tree `700bdc4`, exports the exact owner
+  query plan, derives the worst-case maximum as four and verifies the observed
+  call sequence. Catalog249/249, Router26/26 and the affected73/73 gate with56
+  cached pass in86.394 seconds. The query path, adapter, schema and measurement
+  are unchanged, so the prior heavyweight Router observations remain applicable.
   Publication, protected CI, discussion resolution, final confirmation, merge
   and exact-main gates remain.
 - Iteration gate: Router/affected-owner builds and focused contract/security

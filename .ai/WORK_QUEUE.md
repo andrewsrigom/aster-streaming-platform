@@ -246,9 +246,15 @@ discussions are resolved. Confirmation discussion `3900443731` found
 nondeterministic rediscovery of a prior two-row profile. Source `f5fbe29`, tree
 `4f44b71`, carries the exact setup profile privately into measurement. Focused
 proof3/3, strict Engagement build, the complete runtime and gate73/73 pass; the
-runtime records ContinueWatching7 in104.127 ms and cleanup0. Record this final
-checkpoint, publish once and complete protected CI, discussion resolution,
-blocker-boundary confirmation and release.
+runtime records ContinueWatching7 in104.127 ms and cleanup0. Evidence head
+`10bef1f` passed protected run `33465978576` attempt2; discussion `3900443731`
+is resolved. Confirmation discussion `3900633355` found Catalog's query budget
+omitted its cold fence/load pair and single fence-change retry. Source `20b5f27`,
+tree `700bdc4`, exports the exact owner plan, derives the four-query worst case
+and proves the observed retry sequence. Catalog249/249, Router26/26 and the
+affected73/73 gate with56 cached in86.394 seconds pass. Record this final
+checkpoint, publish once and complete protected CI, discussion resolution, one
+final blocker-boundary confirmation and release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

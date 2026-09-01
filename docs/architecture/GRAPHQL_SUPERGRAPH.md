@@ -173,6 +173,15 @@ remain the authority for per-request cache disposal, credential isolation,
 freshness, ordering and missing values. See the [query-count and authorization
 report](../../evidence/phase-13/query-count-authorization.txt).
 
+Catalog owns and exports its exact entity-read query plan: one fence read and
+one exact projection load on a normal cold batch, plus at most one repeat of
+that pair when the fence changes between reads. The Router audit derives the
+worst-case budget of four from that owner contract instead of duplicating a
+number. An owner test observes the four calls in order, and composition rejects
+a reduced total or a removed retry plan. The recorded representative cold
+operations used the normal two-query Catalog path; four is a safety bound, not
+their measured result.
+
 ## Operation controls
 
 The generated Apollo manifest and finite Rhai matcher now bind every first-party

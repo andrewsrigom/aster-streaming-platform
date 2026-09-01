@@ -43,15 +43,21 @@ source `f5fbe29`, tree `4f44b71`, carries the exact setup profile through a
 private runner control record and removes arbitrary profile ordering. Focused
 proof3/3, strict Engagement build, the complete runtime and corrected gate73/73
 pass. ContinueWatching remains7 queries in104.127 ms; cleanup is0 and retained
-runtime was untouched. Only the final evidence checkpoint remains before
+runtime was untouched. Evidence head `10bef1f` passed protected run
+`33465978576` attempt2 and discussion `3900443731` is resolved. Confirmation
+discussion `3900633355` found Catalog's audited query maximum omitted its cold
+fence/load pair and single fence-change retry. Source `20b5f27`, tree `700bdc4`,
+exports the exact owner plan, derives the four-query maximum and proves the
+observed retry sequence. Catalog249/249, Router26/26 and affected gate73/73 with
+56 cached in86.394 seconds pass. Only its evidence checkpoint remains before
 publication.
 
 ## Active outcome
 
-- Commit the exact-profile remediation evidence, publish source `f5fbe29` and
-  its checkpoint once and close Phase13 only after protected CI, discussion
-  `3900443731` resolution, blocker-boundary confirmation, merge and exact-main
-  evidence.
+- Commit the Catalog query-plan remediation evidence, publish source `20b5f27`
+  and its checkpoint once and close Phase13 only after protected CI, discussion
+  `3900633355` resolution, final blocker-boundary confirmation, merge and
+  exact-main evidence.
 
 ## Current local evidence
 
@@ -60,20 +66,23 @@ publication.
 - Process-restart source: `c5b0eca`, tree `5dadb0a`.
 - Coordinated local recovery source: `02d6739`, tree `6d9e27b`.
 - Exact-profile source: `f5fbe29`, tree `4f44b71`.
+- Catalog query-plan source: `20b5f27`, tree `700bdc4`.
 - Router focused tests pass26/26; query proof/classification pass15/15.
+- Catalog passes249/249; the exact fence-change path observes four owner calls
+  matching the exported query plan.
 - Discovery exact Router counts: TitleDetail Catalog2; Search Catalog2/
   Discovery3; Home Catalog2/Discovery5. Runtime cleanup0.
 - Engagement exact ContinueWatching count: Catalog3/Engagement1/Identity3 at
   104.127 ms after carrying the exact setup profile. Full event/outage suite
   passes and runtime cleanup0.
-- Final affected gate passes73/73 with56 cached in79.85 seconds.
+- Latest affected gate passes73/73 with56 cached in86.394 seconds.
 - Earlier 1/3/5/1 counts are retained only as owner-local supporting evidence.
 
 ## Exact next actions
 
-1. Commit and publish the exact-profile remediation checkpoint once to existing
-   PR57.
-2. Require protected CI, resolve discussion `3900443731` and run one
+1. Commit and publish the Catalog query-plan remediation checkpoint once to
+   existing PR57.
+2. Require protected CI, resolve discussion `3900633355` and run one final
    blocker-boundary confirmation; batch only requirement, security/data,
    availability or public-contract blockers.
 3. Squash merge after all required gates, then require exact-main CI.

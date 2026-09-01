@@ -13,6 +13,8 @@ Coordinated recovery source commit: 02d67399aa89f722d44df41de719207472fa9f81
 Coordinated recovery source tree: 6d9e27b59077244a6da8b79f6e15424760ec0d7b
 Federated measurement source commit: e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0
 Federated measurement source tree: da9b02bcdc09d0438762baa299f40d4b93be4c76
+Catalog query-plan source commit: 20b5f27eafe49779bc4ac832a6436c32076d8846
+Catalog query-plan source tree: 700bdc480e9e62a65ee9e111c2e2eeaefc609d73
 
 CORRECTED LOCAL CANDIDATE (PR57 OPEN; CORRECTION NOT YET PUBLISHED OR RELEASED)
 
@@ -31,7 +33,9 @@ Observed exact inventory on the source commit:
   federated entity contributors: 5
 
 Request-scoped loaders remain owned by the subgraph request context:
-  Catalog Title: at most 20 keys and one owner query per batch;
+  Catalog Title: at most 20 keys; the normal cold path performs one fence query
+    plus one exact load, and the single fence-change retry makes the worst-case
+    budget four owner queries per batch;
   Engagement Title/Profile: at most 20 pairs, five profiles and one owner query
     per batch;
   Identity Profile: at most 16 keys and one memoized owner read per request;
@@ -39,10 +43,12 @@ Request-scoped loaders remain owned by the subgraph request context:
 
 The exact audit test rejects an added public list, changed @listSize metadata,
 removed entity contributor, parent bound above 20, a query budget assigned to a
-reference-only contributor, a swapped owner, weakened authorization scope and
-invented resolution strategy. Existing owner tests prove duplicate/order/null
-semantics, per-request cache disposal, cross-credential isolation, freshness,
-cancellation and batch overflow.
+reference-only contributor, a reduced Catalog total, removal of its retry plan,
+a swapped owner, weakened authorization scope and invented resolution strategy.
+The Catalog owner test observes the exact `findFences`/`findManyAtFences`
+initial sequence and its one fence-change retry, while existing owner tests prove
+duplicate/order/null semantics, per-request cache disposal, cross-credential
+isolation, freshness, cancellation and batch overflow.
 
 N+1 BEFORE/AFTER
 
@@ -330,13 +336,50 @@ Results:
   suite and cleans remaining0 with retainedRuntimeTouched false. The corrected
   affected gate passes73/73 with56 cached in79.85 seconds.
 
-- Publish one evidence checkpoint for f5fbe29, require protected CI and one
-  blocker-boundary confirmation, resolve discussion 3900443731, merge and
-  confirm exact-main CI before declaring P13-R07/R08/R09 or Phase13 released.
+- Evidence checkpoint 10bef1f published the exact-profile correction; its
+  protected result and subsequent confirmation are recorded below.
+
+CATALOG QUERY-BUDGET CONFIRMATION REMEDIATION
+
+Evidence head 10bef1fc04a1481d45074bf00e3d23c9f8ccaa13 passed protected
+run 33465978576 attempt2. Attempt1 had one isolated existing PostgreSQL
+transaction-timeout assertion under runner contention; the failed job alone
+passed on its single retry. Discussion 3900443731 is resolved. Confirmation
+discussion 3900633355 then found the Catalog contributor budget was still one,
+below both the measured cold fence/load path and its bounded fence-change path.
+
+Source 20b5f27eafe49779bc4ac832a6436c32076d8846, tree
+700bdc480e9e62a65ee9e111c2e2eeaefc609d73, exports Catalog's authoritative
+query plan: initial `findFences` then `findManyAtFences`, followed by at most one
+`fence_changed` retry with the same sequence. The maximum of four is derived
+from that plan; Router composition consumes the owner export and rejects a
+reduced total or removed retry. A Catalog test changes the fence between reads
+and observes all four calls in order.
+
+Commands:
+  pnpm --filter @aster/catalog build
+  pnpm --filter @aster/catalog test
+  pnpm --filter @aster/router build
+  pnpm --filter @aster/router test
+  TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm check:changed
+Results:
+  PASS — Catalog249/249 and Router26/26 pass, including exact observed retry and
+  composition drift rejection. The affected candidate gate passes73/73 with56
+  cached in86.394 seconds. The correction changes only the owner-exported audit
+  contract and its tests; it does not change the query path, adapter, schema,
+  authorization policy or measurement. The protected exact-document
+  observations therefore remain applicable and no heavyweight runtime was
+  repeated.
+
+- Publish one evidence checkpoint for source 20b5f27, resolve discussion
+  3900633355 after protected CI, run one final blocker-boundary confirmation,
+  then merge and confirm exact-main CI before declaring P13-R07/R08/R09 or
+  Phase13 released.
 
 ROLLBACK
 
-Revert exact-profile source f5fbe2972c0f844ebf1fac7868d1d4c4116e1df3,
+Revert Catalog query-plan source 20b5f27eafe49779bc4ac832a6436c32076d8846,
+exact-profile source f5fbe2972c0f844ebf1fac7868d1d4c4116e1df3,
 coordinated-recovery source 02d67399aa89f722d44df41de719207472fa9f81,
 process-restart source c5b0ecaf247406bcd66bcbc06f9f24c641a2dab0,
 initial recovery source c5ae76077cb981ccaf5a98c6e41dc47cbd2d67d7,

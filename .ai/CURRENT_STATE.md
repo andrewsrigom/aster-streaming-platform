@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-08-31
+Last updated: 2026-09-01
 
 ## Active phase
 
@@ -56,7 +56,8 @@ protected run `33447062908`, its discussions are resolved, final confirmation
 `5485910820` found no major issue, PR56 squash main `98deb52` retained the
 candidate tree and exact-main run `33448911764` passed. Item67 is the sole
 `IN_PROGRESS` item on `feat/p13-n-plus-one-authorization`, rebased onto that
-released main.
+released main. Its latest source `20b5f27`, tree `700bdc4`, corrects the final
+known Catalog query-budget blocker; local focused and affected gates pass.
 
 ## Verified
 
@@ -300,8 +301,18 @@ worker could select an earlier deleted two-row profile after setup. Source
 measurement and removes arbitrary profile ordering. Focused proof3/3, strict
 Engagement build, the complete runtime and corrected gate73/73 pass. The runtime
 records ContinueWatching7 in104.127 ms, cleanup0 and retainedRuntimeTouched
-false. New protected CI, discussion resolution, blocker-boundary confirmation
-and release remain.
+false. Evidence head `10bef1f` passed protected run `33465978576` attempt2 and
+discussion `3900443731` is resolved. Confirmation discussion `3900633355` found
+that Catalog's audited one-query maximum omitted the normal cold fence/load pair
+and its one fence-change retry. Source `20b5f27`, tree `700bdc4`, exports that
+exact owner query plan, derives the worst-case budget as four and proves the
+observed four-call retry sequence. Router consumes the owner contract and rejects
+both a reduced total and removed retry. Catalog249/249, Router26/26 and the
+affected73/73 gate with56 cached in86.394 seconds pass. No executable query
+path, adapter, schema, authorization policy or measurement changed, so existing
+heavyweight runtime evidence remains valid. Publication, protected CI,
+discussion resolution, one final blocker-boundary confirmation and release
+remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -857,16 +868,17 @@ shape/list/cost controls are released through tree-identical PR55 merge
 controls are released through PR56 squash main `98deb52` and exact-main run
 `33448911764`.
 N+1/query-count proof and owner-authorization abuse tests have corrected local
-evidence and a passing final 73/73 affected gate after PR57 initial review and a
-bounded process-restart correction, but the new protected/confirmation/release
-gates remain. Phase14 capacity validation and hosted deployment remain planned.
+evidence and a passing final 73/73 affected gate after PR57 initial review,
+bounded process-restart correction, exact-profile correction and Catalog
+query-plan correction, but the new protected/confirmation/release gates remain.
+Phase14 capacity validation and hosted deployment remain planned.
 
 ## Next outcome
 
-For P13-R07/P13-R08/P13-R09 item67, commit and publish one checkpoint for final
-source `f5fbe29`, complete exact-head protected CI, resolve confirmation
-discussion `3900443731`, request one blocker-boundary confirmation, squash merge
-and verify exact-main CI. Then close Phase13 and activate Phase14 from clean main.
+For P13-R07/P13-R08/P13-R09 item67, commit and publish one checkpoint for source
+`20b5f27`, complete exact-head protected CI, resolve discussion `3900633355`,
+request one final blocker-boundary confirmation, squash merge and verify
+exact-main CI. Then close Phase13 and activate Phase14 from clean main.
 Inspect the exact historical interrupted Phase12 project only when that same
 Docker engine becomes reachable.
 

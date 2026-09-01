@@ -4,6 +4,34 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-01 — PR57 Catalog query-budget confirmation remediation
+
+### Completed
+
+- Evidence head `10bef1f` passed protected run `33465978576` attempt2;
+  discussion `3900443731` is resolved. Confirmation discussion `3900633355`
+  found Catalog's audited one-query maximum omitted its cold fence/load path and
+  one bounded fence-change retry.
+- Source `20b5f27`, tree `700bdc4`, exports Catalog's exact initial and retry
+  owner-query sequences, derives the four-query worst-case budget and supplies
+  that owner contract to Router composition. A Catalog test observes all four
+  calls; Router rejects a reduced total or removed retry.
+- Catalog249/249, Router26/26 and the affected73/73 gate with56 cached pass in
+  86.394 seconds. No query path, adapter, schema, authorization policy or
+  measurement changed, so no heavyweight runtime was repeated.
+
+### Evidence
+
+- `evidence/phase-13/query-count-authorization.txt`, the Phase13 index and
+  GraphQL architecture record the owner plan, protected predecessor evidence,
+  correction and repeat policy.
+
+### Next action
+
+- Publish one evidence checkpoint, require exact-head protected CI, resolve
+  discussion `3900633355`, request one final blocker-boundary confirmation and
+  complete merge/exact-main acceptance.
+
 ## 2026-09-01 — PR57 exact-profile confirmation remediation
 
 ### Completed
