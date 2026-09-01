@@ -95,6 +95,18 @@ const GRAPHQL_OPERATION_RUNTIME_POLICIES = Object.freeze({
   WatchlistMembership: runtimePolicy("profile"),
 }) satisfies Readonly<Record<string, OperationRuntimePolicy>>;
 
+export function trustedOperationAuthorizationScope(name: string): OperationAuthorizationScope {
+  const policy = (
+    GRAPHQL_OPERATION_RUNTIME_POLICIES as Readonly<
+      Record<string, OperationRuntimePolicy | undefined>
+    >
+  )[name];
+  if (!policy) {
+    throw new Error(`GraphQL runtime policy is missing trusted operation ${name}.`);
+  }
+  return policy.authorizationScope;
+}
+
 export const GRAPHQL_DEMAND_POLICY: DemandPolicy = Object.freeze({
   maximumAliases: 8,
   maximumCost: 2_048,

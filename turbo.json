@@ -176,7 +176,9 @@
         "tools/verify-local-platform.mjs",
         "tools/verify-local-platform.test.mjs",
         "tools/verify-discovery-runtime.mjs",
-        "tools/verify-discovery-runtime.test.mjs"
+        "tools/verify-discovery-runtime.test.mjs",
+        "tools/graphql-query-count-proof.mjs",
+        "tools/graphql-query-count-proof.test.mjs"
       ]
     },
     "//#ai:check": {

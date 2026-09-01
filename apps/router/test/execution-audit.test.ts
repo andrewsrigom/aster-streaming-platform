@@ -19,10 +19,17 @@ const sources = Object.freeze({
   identity: source("identity"),
   playback: source("playback"),
 });
+const operations = (
+  JSON.parse(
+    readFileSync(new URL("infra/router/generated/persisted-query-manifest.json", root), "utf8"),
+  ) as {
+    operations: { body: string; id: string; name: string }[];
+  }
+).operations;
 
 test("every public list and entity path has an exact bounded execution audit", () => {
   assert.doesNotThrow(() => {
-    validateGraphqlExecutionPathAudit(api, sources);
+    validateGraphqlExecutionPathAudit(api, sources, operations);
   });
   assert.equal(Object.keys(GRAPHQL_EXECUTION_PATH_AUDIT.lists).length, 12);
   assert.equal(Object.keys(GRAPHQL_EXECUTION_PATH_AUDIT.entityReturns).length, 10);
@@ -38,28 +45,36 @@ test("schema, list metadata and entity contributors cannot drift from the audit"
     source("api").replace("type Viewer {", "type Extra { values: [String!]! }\n\ntype Viewer {"),
   );
   assert.throws(() => {
-    validateGraphqlExecutionPathAudit(extraList, sources);
+    validateGraphqlExecutionPathAudit(extraList, sources, operations);
   }, /list path audit must exactly cover/u);
   assert.throws(() => {
-    validateGraphqlExecutionPathAudit(api, {
-      ...sources,
-      catalog: sources.catalog.replace(
-        "genres: [String!]! @cost(weight: 1) @listSize(assumedSize: 8)",
-        "genres: [String!]! @cost(weight: 1) @listSize(assumedSize: 9)",
-      ),
-    });
+    validateGraphqlExecutionPathAudit(
+      api,
+      {
+        ...sources,
+        catalog: sources.catalog.replace(
+          "genres: [String!]! @cost(weight: 1) @listSize(assumedSize: 8)",
+          "genres: [String!]! @cost(weight: 1) @listSize(assumedSize: 9)",
+        ),
+      },
+      operations,
+    );
   }, /Title\.genres list execution audit is invalid/u);
   assert.throws(() => {
-    validateGraphqlExecutionPathAudit(api, {
-      ...sources,
-      discovery: sources.discovery.replace('@key(fields: "id")', ""),
-    });
+    validateGraphqlExecutionPathAudit(
+      api,
+      {
+        ...sources,
+        discovery: sources.discovery.replace('@key(fields: "id")', ""),
+      },
+      operations,
+    );
   }, /entity contributor audit must exactly cover/u);
 });
 
 test("authorization scope, request bounds and reference-only query budgets fail closed", () => {
   assert.throws(() => {
-    validateGraphqlExecutionPathAudit(api, sources, {
+    validateGraphqlExecutionPathAudit(api, sources, operations, {
       ...GRAPHQL_EXECUTION_PATH_AUDIT,
       entityReturns: {
         ...GRAPHQL_EXECUTION_PATH_AUDIT.entityReturns,
@@ -71,7 +86,7 @@ test("authorization scope, request bounds and reference-only query budgets fail 
     });
   }, /Progress\.title entity-return audit is invalid/u);
   assert.throws(() => {
-    validateGraphqlExecutionPathAudit(api, sources, {
+    validateGraphqlExecutionPathAudit(api, sources, operations, {
       ...GRAPHQL_EXECUTION_PATH_AUDIT,
       entityContributors: {
         ...GRAPHQL_EXECUTION_PATH_AUDIT.entityContributors,
@@ -82,6 +97,45 @@ test("authorization scope, request bounds and reference-only query budgets fail 
       },
     });
   }, /discovery\.Title entity-contributor audit is invalid/u);
+});
+
+test("owner, trusted-operation scope and loader resolution semantics fail closed", () => {
+  assert.throws(() => {
+    validateGraphqlExecutionPathAudit(api, sources, operations, {
+      ...GRAPHQL_EXECUTION_PATH_AUDIT,
+      lists: {
+        ...GRAPHQL_EXECUTION_PATH_AUDIT.lists,
+        "DiscoverySearchConnection.edges": {
+          ...GRAPHQL_EXECUTION_PATH_AUDIT.lists["DiscoverySearchConnection.edges"],
+          owner: "catalog",
+        },
+      },
+    });
+  }, /DiscoverySearchConnection\.edges list execution audit is invalid/u);
+  assert.throws(() => {
+    validateGraphqlExecutionPathAudit(api, sources, operations, {
+      ...GRAPHQL_EXECUTION_PATH_AUDIT,
+      entityReturns: {
+        ...GRAPHQL_EXECUTION_PATH_AUDIT.entityReturns,
+        "Progress.title": {
+          ...GRAPHQL_EXECUTION_PATH_AUDIT.entityReturns["Progress.title"],
+          authorizationScope: "public",
+        },
+      },
+    });
+  }, /Progress\.title entity-return audit is invalid/u);
+  assert.throws(() => {
+    validateGraphqlExecutionPathAudit(api, sources, operations, {
+      ...GRAPHQL_EXECUTION_PATH_AUDIT,
+      entityReturns: {
+        ...GRAPHQL_EXECUTION_PATH_AUDIT.entityReturns,
+        "Query.title": {
+          ...GRAPHQL_EXECUTION_PATH_AUDIT.entityReturns["Query.title"],
+          resolution: "materialized",
+        },
+      },
+    });
+  }, /Query\.title entity-return audit is invalid/u);
 });
 
 test("the owner authorization matrix points to executable exact negative tests", () => {

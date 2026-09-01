@@ -43,6 +43,8 @@ test("selects real integration for adapters, runtime, bootstrap and shared depen
     "services/engagement/migrations/0001-progress.up.sql",
     "tools/run-engagement-integration.mjs",
     "tools/run-engagement-runtime.mjs",
+    "tools/graphql-query-count-proof.mjs",
+    "tools/graphql-query-count-proof.test.mjs",
     "tools/verify-engagement-runtime.mjs",
     "tools/verify-engagement-runtime.test.mjs",
     "services/playback/migrations/0001_playback_sessions.up.sql",

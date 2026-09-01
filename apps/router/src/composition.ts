@@ -14,6 +14,7 @@ import {
   type OperationDefinitionNode,
 } from "graphql";
 import { createOperationDemandManifest, type DemandOperation } from "./demand.js";
+import { validateGraphqlExecutionPathAudit } from "./execution-audit.js";
 
 const SUBGRAPHS = Object.freeze({
   catalog: "http://catalog:3200/graphql",
@@ -326,8 +327,9 @@ export function composeLocalSupergraph(
       2,
     ) + "\n";
   artifacts["trusted-operations.rhai"] = trustedOperationsRhai(trusted);
-  artifacts["operation-demand-manifest.json"] =
-    JSON.stringify(createOperationDemandManifest(api, supergraph, trusted), null, 2) + "\n";
+  const demandManifest = createOperationDemandManifest(api, supergraph, trusted);
+  validateGraphqlExecutionPathAudit(api, sources, trusted);
+  artifacts["operation-demand-manifest.json"] = JSON.stringify(demandManifest, null, 2) + "\n";
   artifacts["manifest.json"] =
     JSON.stringify(
       {

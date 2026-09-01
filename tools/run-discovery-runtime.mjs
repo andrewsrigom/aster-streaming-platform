@@ -6,6 +6,13 @@ import { request } from "node:http";
 import { performance } from "node:perf_hooks";
 import { fileURLToPath, URL } from "node:url";
 import { promisify } from "node:util";
+import {
+  assertFederatedQueryBudget,
+  PREPARE_QUERY_COUNT_SQL,
+  READ_QUERY_COUNT_SQL,
+  RESET_QUERY_COUNT_SQL,
+  selectCurrentTrustedOperation,
+} from "./graphql-query-count-proof.mjs";
 
 assert.equal(process.argv.length, 2, "Discovery proof accepts no target or extra flags.");
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -27,6 +34,8 @@ const composeArgs = [
   "infra/compose/discovery.yml",
   "--file",
   "infra/compose/discovery-proof.yml",
+  "--file",
+  "infra/compose/query-count-proof.yml",
   "--profile",
   "runtime",
 ];
@@ -54,18 +63,35 @@ const docker = async (args, timeout = 15_000) => {
 };
 const compose = (args, timeout) => docker([...composeArgs, ...args], timeout);
 const emit = (event, facts) => process.stdout.write(JSON.stringify({ event, ...facts }) + "\n");
-const operation =
-  "query SearchTitles($query:String!,$locale:String!){searchTitles(query:$query,locale:$locale,first:5){code correlationId connection{generation edges{cursor sourceVersion indexedAt visibleUntil node{id localized(locale:$locale){locale title}}} pageInfo{endCursor hasNextPage}}}}";
 const browseOperation =
   "query Browse($first:Int!,$locale:String!){titles(first:$first){edges{node{id localized(locale:$locale){title}}}}}";
 const knownOperations = await readFile(root + "infra/router/known-operations.graphql", "utf8");
+const persistedOperations = await readFile(
+  root + "infra/router/generated/persisted-query-manifest.json",
+  "utf8",
+);
+const deliveryManifest = await readFile(root + "infra/router/generated/manifest.json", "utf8");
+const titleDetailOperation = selectCurrentTrustedOperation(
+  persistedOperations,
+  deliveryManifest,
+  "TitleDetail",
+);
+const searchOperation = selectCurrentTrustedOperation(
+  persistedOperations,
+  deliveryManifest,
+  "SearchTitles",
+);
+const measuredHomePublicOperation = selectCurrentTrustedOperation(
+  persistedOperations,
+  deliveryManifest,
+  "HomePublic",
+);
 const knownOperation = (name) => {
   const start = knownOperations.indexOf("query " + name + "(");
   assert.notEqual(start, -1, "Missing known operation " + name + ".");
   const next = knownOperations.indexOf("\n\nquery ", start + 1);
   return knownOperations.slice(start, next === -1 ? undefined : next).trim();
 };
-const homePublicOperation = knownOperation("HomePublic");
 const homePersonalizedOperation = knownOperation("HomePersonalized");
 
 async function executeGraphql(port, payload) {
@@ -118,10 +144,55 @@ async function executeGraphql(port, payload) {
 
 const graphql = (port, query) =>
   executeGraphql(port, {
-    query: operation,
+    query: searchOperation.body,
     operationName: "SearchTitles",
-    variables: { query, locale: "en" },
+    variables: { query, locale: "en", first: 5 },
   });
+
+const postgres = (sql) =>
+  compose([
+    "exec",
+    "-T",
+    "postgres",
+    "psql",
+    "--username=aster",
+    "--dbname=aster",
+    "--set=ON_ERROR_STOP=1",
+    "--tuples-only",
+    "--no-align",
+    "--command",
+    sql,
+  ]);
+
+async function measureOperation(port, operation, variables, maximumByOwner, workload) {
+  await postgres(RESET_QUERY_COUNT_SQL);
+  const startedAt = performance.now();
+  const response = await executeGraphql(port, {
+    query: operation.body,
+    operationName: operation.name,
+    variables,
+  });
+  const durationMs = Number((performance.now() - startedAt).toFixed(3));
+  const observed = JSON.parse(await postgres(READ_QUERY_COUNT_SQL));
+  const perOwner = Object.fromEntries(
+    Object.keys(maximumByOwner).map((owner) => [owner, observed[owner]]),
+  );
+  const queries = assertFederatedQueryBudget(operation.name, perOwner, maximumByOwner);
+  emit("phase13_federated_query_count", {
+    operation: operation.name,
+    operationId: operation.id,
+    mode: "exact_trusted_document_through_router",
+    workload,
+    queries,
+    perOwner,
+    nonParticipantOwnerActivityExcluded: Object.keys(observed)
+      .filter((owner) => !(owner in maximumByOwner))
+      .sort(),
+    durationMs,
+    limitation: "single disposable local observation; not a throughput or SLO claim",
+  });
+  return response;
+}
 
 let stage = "config";
 let failure;
@@ -185,11 +256,38 @@ try {
     ),
   });
 
+  await compose(["stop", "--timeout", "5", "playback"], 15_000);
+  const [stoppedPlayback] = JSON.parse(await docker(["inspect", project + "-playback-1"]));
+  assert.equal(stoppedPlayback.State.Running, false);
+  emit("phase13_query_count_isolation", {
+    stoppedNonParticipantServices: ["playback"],
+    excludedActivity: "declared readiness probes and non-participating owner roles",
+  });
+
   const endpoint = await compose(["port", "router", "4000"]);
   const match = /^127\.0\.0\.1:([1-9][0-9]{3,4})$/u.exec(endpoint);
   assert.ok(match);
   const port = Number(match[1]);
-  const found = await graphql(port, "Signal");
+  await postgres(PREPARE_QUERY_COUNT_SQL);
+  const titleDetail = await measureOperation(
+    port,
+    titleDetailOperation,
+    { id: "00000000-0000-4000-8000-000005000001", locale: "en" },
+    { catalog: 2 },
+    "one published title with materialized metadata",
+  );
+  assert.equal(titleDetail.status, 200);
+  assert.equal(titleDetail.body.errors, undefined);
+  assert.equal(titleDetail.body.data?.title?.id, "00000000-0000-4000-8000-000005000001");
+  assert.equal(titleDetail.body.data?.title?.localized?.title, "Signal / 01");
+
+  const found = await measureOperation(
+    port,
+    searchOperation,
+    { query: "Signal", locale: "en", first: 5 },
+    { catalog: 2, discovery: 3 },
+    "one matching result from three visible projection rows, first 5",
+  );
   assert.equal(found.status, 200);
   assert.equal(found.body.errors, undefined);
   const payload = found.body.data?.searchTitles;
@@ -198,7 +296,8 @@ try {
   assert.equal(payload?.connection?.edges?.length, 1);
   const edge = payload.connection.edges[0];
   assert.equal(edge.node.id, "00000000-0000-4000-8000-000005000001");
-  assert.deepEqual(edge.node.localized, { locale: "en", title: "Signal / 01" });
+  assert.equal(edge.node.localized.locale, "en");
+  assert.equal(edge.node.localized.title, "Signal / 01");
   assert.equal(edge.visibleUntil - edge.indexedAt, 300);
   assert.equal(payload.connection.pageInfo.hasNextPage, false);
   const empty = await graphql(port, "missing-result-fixture");
@@ -212,11 +311,13 @@ try {
     freshnessSeconds: edge.visibleUntil - edge.indexedAt,
   });
 
-  const publicHome = await executeGraphql(port, {
-    query: homePublicOperation,
-    operationName: "HomePublic",
-    variables: { first: 1, locale: "en" },
-  });
+  const publicHome = await measureOperation(
+    port,
+    measuredHomePublicOperation,
+    { first: 1, locale: "en" },
+    { catalog: 2, discovery: 5 },
+    "featured, recent, trending and genre rails with one visible title",
+  );
   assert.equal(publicHome.status, 200);
   assert.equal(publicHome.body.errors, undefined);
   const homePayload = publicHome.body.data?.homeRails;
