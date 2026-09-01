@@ -88,6 +88,12 @@ plan, derives a four-query worst-case budget, observes that sequence in an
 executable fence-change test and consumes the same contract during Router
 composition.
 Catalog249/249, Router26/26 and the affected73/73 gate pass.
+Published head `65e5dc2` entered protected run `33468676673`; documentation,
+security and dependency review passed, while clean-checkout source quality found
+that Router's top-level Catalog import was linted before Catalog declarations
+were built. The correction exposes only the query-plan subpath with a checked-in
+shape declaration included by Catalog's TypeScript project; runtime still loads
+the compiled owner module, and the declaration duplicates no plan values.
 
 ## Proposed behavior
 
@@ -151,6 +157,7 @@ matrix.
 | Router restart reassigns the proof's ephemeral host port or health precedes forwarding readiness | Resolve/validate the current loopback port after restart, then retry only the named local transport-startup codes inside the same 10-second end-to-end deadline | port-change fact, attempts, duration and final semantic response |
 | Setup and an earlier scenario leave multiple two-row progress profiles | Carry the exact setup profile through a private runner control record; never rediscover it by row count/order | exact-profile assertion, ID excluded from evidence, repeated full runtime |
 | Catalog fence changes between its cold fence and projection reads | Permit one exact `findFences`/`findManyAtFences` retry, derive the four-query maximum from the owner-exported plan and fail composition if the audit drifts | observed owner-call sequence and composition contract |
+| Clean checkout lints Router before Catalog build output exists | Resolve the owner contract through its explicit typed subpath; keep runtime import on the compiled Catalog module | clean-worktree lint plus Router/Catalog builds |
 | Predecessor PR changes | Rebase this dependent branch and repeat affected gates/evidence | exact base/head |
 
 ## Data and contracts
@@ -199,6 +206,8 @@ matrix.
 8. Bind Catalog's contributor audit to its source-owned cold fence/load and
    single fence-change retry plan; prove the observed worst-case sequence and
    derive rather than duplicate the maximum owner-query budget.
+9. Expose that contract through a narrow package subpath whose checked-in type
+   shape is available before build output; prove lint from a clean worktree.
 
 ## Tests
 
@@ -256,6 +265,11 @@ matrix.
   are unchanged, so the prior heavyweight Router observations remain applicable.
   Publication, protected CI, discussion resolution, final confirmation, merge
   and exact-main gates remain.
+  Protected run `33468676673` then failed only clean-checkout lint because the
+  top-level Catalog declaration did not yet exist when Router was analyzed. The
+  subpath correction retains the same runtime plan while making its non-value
+  type shape available before build. Clean-worktree lint and the repeated
+  affected gate remain required before republishing.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.

@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { CATALOG_PUBLIC_ENTITY_OWNER_QUERY_PLAN } from "@aster/catalog";
+import { CATALOG_PUBLIC_ENTITY_OWNER_QUERY_PLAN } from "@aster/catalog/query-plan";
 import {
   Kind,
   TypeInfo,
