@@ -25,7 +25,7 @@ The engineering problem is broader than rendering a catalog. A useful service mu
 
 ## Success criteria
 
-The initial release is successful when:
+The local reference release is successful when:
 
 - a viewer can browse, search, open, and play published films;
 - playback adapts between multiple HLS renditions;
@@ -36,8 +36,12 @@ The initial release is successful when:
 - GraphQL operations are composed, authorized, cost-bounded, and measured;
 - cache failure degrades latency or personalization but does not corrupt truth;
 - key user journeys have SLIs, SLOs, dashboards, alerts, and runbooks;
-- load and failure evidence meets Phase 14 release gates;
 - repository state can be restored from documentation alone.
+
+The separately activated hosted release additionally requires representative
+load/capacity evidence, provider-specific security, backup/restore, rollback and
+operational-readiness acceptance under Phase14 P14-R01–R12. Local reference
+evidence does not make those hosted claims.
 
 ## Constraints
 

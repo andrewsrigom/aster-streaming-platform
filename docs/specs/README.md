@@ -20,7 +20,7 @@ Aster is delivered through fifteen ordered phases. Only one phase is active at a
 | 11 | [`phase-11-resilience.md`](phase-11-resilience.md) | Failure isolation and controlled degradation |
 | 12 | [`phase-12-observability.md`](phase-12-observability.md) | SLIs, SLOs, dashboards, alerts, and traces |
 | 13 | [`phase-13-graphql-performance-security.md`](phase-13-graphql-performance-security.md) | Bounded and abuse-resistant GraphQL |
-| 14 | [`phase-14-capacity-release.md`](phase-14-capacity-release.md) | Capacity evidence and hosted release |
+| 14 | [`phase-14-capacity-release.md`](phase-14-capacity-release.md) | Reference quality first; hosted capacity/release when activated |
 
 ## Specification contract
 
@@ -81,7 +81,8 @@ These checkpoints communicate useful progress without weakening phase gates:
 | Playable product | 07 | One rights-approved film processed to HLS and played through the accessible player |
 | Core VOD product | 09 | Profiles, browse, playback, progress, watchlist, continue-watching, home rails, and search |
 | Hardened release candidate | 13 | Measured cache, resilience, observability, and GraphQL abuse controls |
-| Released product | 14 | Hosted, capacity-tested, recoverable, and operationally verified system |
+| Reference release | 14 reference track | Navigable, fresh-checkout reproducible and locally verified implementation |
+| Hosted product | 14 hosted track | Hosted, capacity-tested, recoverable, and operationally verified system |
 
 The authoritative mapping from engineering subjects to implementation, adverse tests, measurements, operations, and Docker-based demonstrations is in [`docs/00-start-here/ENGINEERING_DEMONSTRATION.md`](../00-start-here/ENGINEERING_DEMONSTRATION.md). A checkpoint is not accepted when it is visually demonstrable but lacks its phase-owned engineering evidence.
 

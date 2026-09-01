@@ -6,12 +6,19 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-[Phases 00–08 are released locally](.ai/CURRENT_STATE.md), including the accessible player, Docker-only
-playable demo and owner-authorized save/resume/library journey. Phase 09's
-[Discovery-owned search and home rails are released](evidence/phase-09/README.md); the current candidate adds
-their public SSR views and profile-safe continue-watching enhancement to Web.
-See [current state](.ai/CURRENT_STATE.md), [Web guide](apps/web/README.md),
-[playback guide](apps/web/PLAYBACK.md) and [Phase 09 evidence](evidence/phase-09/README.md).
+[Phases 00–13 are released locally](.ai/CURRENT_STATE.md). The repository proves
+the rights-aware Catalog, federated API, accessible playback, profile-owned
+engagement, Discovery, cache/concurrency controls, failure recovery,
+observability and bounded GraphQL execution through focused tests, real local
+dependencies and Docker-based journeys. [Phase13 release evidence](evidence/phase-13/release.md)
+records the final protected review, merge and exact-main acceptance.
+
+Phase14 now starts with a reference-quality track: make capabilities easier to
+locate, read, discuss and verify without changing their behavior. Hosted
+capacity and deployment remain planned but are not the immediate objective and
+are not implied by the local reference release. See [ADR-0048](docs/adr/0048-reference-first-phase-14-runway.md),
+the [roadmap](ROADMAP.md), [current state](.ai/CURRENT_STATE.md), [Web guide](apps/web/README.md)
+and [playback guide](apps/web/PLAYBACK.md).
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 

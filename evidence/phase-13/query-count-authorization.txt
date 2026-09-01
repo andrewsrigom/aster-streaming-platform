@@ -581,10 +581,22 @@ platform integration, every owner runtime and the Docker-only playable demo in
 protection also passed. The run started2026-09-01T08:04:57Z and completed
 2026-09-01T08:22:26Z.
 
-- Publish this result checkpoint once, require its exact protected CI, reply to
-  and resolve discussion3901909548, run one final corrected-candidate
-  confirmation, then merge and confirm exact-main CI before declaring
-  P13-R07/R08/R09 or Phase13 released.
+PHASE13 RELEASE
+
+Result checkpoint db17bca9154984642d9b11d00d06c5ebd6d31b80, tree
+41650b4d0ee4244084e0d0d34d8aa387cda52cc3, passed protected run33486901296.
+Discussion3901909548 was answered and resolved. Final review completed on that
+exact head at2026-09-01T08:50:50Z without a new finding; all six PR57 threads
+are resolved.
+
+PR57 squash main83cb5100408a691da15550194af6763c55170ba7 retained the exact
+candidate tree41650b4d0ee4244084e0d0d34d8aa387cda52cc3. Exact-main run
+33489232182 passed source quality, real platform integration, all owner
+runtimes, the Docker-only playable demo, Local platform diagnostics, exact
+cleanup, documentation/security and aggregate protection. It started
+2026-09-01T08:51:56Z and completed2026-09-01T09:09:16Z. P13-R07/R08/R09,
+item67 and Phase13 are released. These single-run local/protected measurements
+remain regression evidence rather than hosted capacity or latency objectives.
 
 ROLLBACK
 

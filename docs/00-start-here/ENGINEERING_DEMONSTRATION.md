@@ -55,7 +55,8 @@ The phases remain ordered. Each checkpoint extends the same repository and local
 | 11 | A failure laboratory exercises deadlines, retries, breakers, bulkheads, load shedding, fallbacks, and recovery. |
 | 12 | An operations laboratory follows browse and playback through logs, metrics, traces, dashboards, SLOs, alerts, and runbooks. |
 | 13 | A GraphQL abuse laboratory demonstrates N+1 control, trusted operations, demand limits, and owner-side authorization. |
-| 14 | The released system has capacity, soak, failure, backup, restore, rollback, and operational-readiness evidence. |
+| 14 reference track | A fresh reader can navigate a capability to code, tests, evidence and operations, then reproduce the documented local checkpoint and cleanup. |
+| 14 hosted track | The hosted system has capacity, soak, failure, backup, restore, rollback, and operational-readiness evidence. |
 
 ## Local execution lanes
 
@@ -92,4 +93,7 @@ Resource-heavy dependencies and experiments use named Compose profiles or one-sh
 
 ## Completion rule
 
-The roadmap is not complete because the final page renders or a video plays. Completion requires every row in the coverage matrix to have its phase-owned implementation and evidence, every required checkpoint to pass from the documented environment, and Phase 14 to satisfy its release gate.
+The roadmap is not complete because the final page renders or a video plays.
+Reference-track completion requires every current row in the coverage matrix to
+have its phase-owned implementation and evidence plus fresh local reproduction.
+A hosted product claim separately requires the Phase14 hosted release gate.

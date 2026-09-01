@@ -95,7 +95,7 @@ Identity implementation is selected through an ADR after comparing:
 
 The architecture depends on an identity port, not a specific provider in domain code.
 
-## Decisions deferred to Phase 14
+## Decisions deferred to the Phase 14 hosted track
 
 - hosted compute;
 - managed PostgreSQL;

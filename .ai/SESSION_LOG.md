@@ -4,6 +4,36 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-01 — Phase13 release and reference-first Phase14 runway
+
+### Completed
+
+- Phase13 result checkpoint `db17bca`, tree `41650b4`, passed protected run
+  `33486901296`. Final corrected-candidate review completed without a new
+  finding and all six PR57 threads are resolved.
+- PR57 squash main `83cb510` retained candidate tree `41650b4`; exact-main
+  run `33489232182` passed source quality, every owner runtime, the Docker-only
+  playable demo, all three local diagnostic scenarios, cleanup and aggregate
+  protection. Item67 and Phase13 are released.
+- ADR-0048 makes credential-free reference quality the immediate Phase14
+  runway. Active P14-R13–R18 cover status, capability navigation, readability,
+  scoped refactoring, reading guides and fresh local acceptance. Hosted
+  P14-R01–R12 retain their requirements but remain planned and inactive.
+- Item68 updates the roadmap, specification, public status, Phase13 release
+  evidence and repository memory without changing executable behavior.
+
+### Evidence
+
+- `evidence/phase-13/release.md` records final source, protected runs, review,
+  tree-identical merge, exact-main acceptance and limitations.
+- ADR-0048 and the Phase14 specification define the activation boundary and
+  observable reference-track acceptance.
+
+### Next action
+
+- Complete item68's documentation/changed-scope gates, review, merge and
+  exact-main acceptance; then start item69's capability index from clean main.
+
 ## 2026-09-01 — PR57 exact owner-set correction
 
 ### Completed

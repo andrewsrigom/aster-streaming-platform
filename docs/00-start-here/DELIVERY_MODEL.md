@@ -117,7 +117,8 @@ Resolve decisions at the last responsible moment, not after implementation has a
 - Phase 01 selects concrete service adapters.
 - Phase 02 selects the identity adapter.
 - Phase 06 selects hosted-compatible media profiles and storage layout.
-- Phase 14 selects hosted providers.
+- Phase 14 first completes the credential-free reference-quality track.
+- The separately activated Phase 14 hosted track selects providers.
 
 Every deferred decision must name:
 
@@ -140,7 +141,7 @@ Some controls begin as safe baselines and receive final acceptance only after re
 | Outbox persistence | Phases 02 and 03 | Broker relay and idempotent consumers in Phase 08 |
 | Playback telemetry | Phase 07 | SLI, SLO, privacy, and retention acceptance in Phase 12 |
 | Redis primitives and operation limits | Phase 10 | GraphQL-specific calibration in Phase 13 |
-| Security and accessibility checks | Every affected phase | Release acceptance in Phase 14 |
+| Security and accessibility checks | Every affected phase | Local reference acceptance in Phase 14; hosted acceptance when that track activates |
 
 A baseline may satisfy its phase requirement but must not be described as final product verification when a later primary acceptance phase remains.
 
