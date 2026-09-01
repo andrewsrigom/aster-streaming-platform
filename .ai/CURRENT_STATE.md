@@ -291,6 +291,17 @@ pass47/47, documentation validation covers1,646 links and the affected gate
 passes15/15. No product runtime or deployment behavior changed. Publication
 remains pending.
 
+Checkpoint `a5be54f66d1e0357433f52cfe4bb530e8975d912`, tree
+`65d50b5a07bdb6ee3d814c92bd3d9d2af11ccbab`, received exact-head review at
+`2026-09-01T23:34:14Z`. Finding `3909383238` showed that a reviewed destination
+inside another link's title could satisfy permissive extraction without being
+navigable. Correction source `7df3ff66baa77a4298fa1b08ac8f98cf70791bf3`,
+tree `83e8c036420d58c9cfa8c8347b05365e261fed89`, replaces permissive Markdown
+extraction with a strict canonical link-list parser. Focused contracts
+pass48/48, documentation tests pass32/32, documentation validation covers1,646
+links and the affected gate passes15/15. No product runtime or deployment
+behavior changed. Publication remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;

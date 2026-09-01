@@ -664,6 +664,22 @@ zero violations. The affected gate passes15/15, including101 platform-policy,
 39 CI-policy and13 repository-memory tests. No product runtime or deployment
 behavior changed. Publication remains pending.
 
+Checkpoint `a5be54f66d1e0357433f52cfe4bb530e8975d912`, tree
+`65d50b5a07bdb6ee3d814c92bd3d9d2af11ccbab`, received exact-head review at
+`2026-09-01T23:34:14Z`. Finding `3909383238` showed that a reviewed destination
+inside another link's title could satisfy permissive extraction even though
+CommonMark rendered only the outer link.
+
+Correction source `7df3ff66baa77a4298fa1b08ac8f98cf70791bf3`, tree
+`83e8c036420d58c9cfa8c8347b05365e261fed89`, replaces permissive Markdown
+extraction with a strict parser for the index's canonical comma-space separated
+link lists. Focused capability/CI-policy tests pass48/48. Documentation tests
+pass32/32 and validation covers250 documents, 2,880 headings, 1,646 links, four
+status claims and eleven rows with zero violations. The affected gate
+passes15/15, including101 platform-policy,39 CI-policy and13 repository-memory
+tests. No product runtime or deployment behavior changed. Publication remains
+pending.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and

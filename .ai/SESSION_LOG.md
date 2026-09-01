@@ -238,10 +238,17 @@ full snapshot through the archival checkpoint remains in
   pass47/47, documentation validation covers1,646 links and the affected gate
   passes15/15, including101 platform-policy,39 CI-policy and13 repository-memory
   tests. No product runtime or deployment behavior changed.
+- Exact-head review on checkpoint `a5be54f`, tree `65d50b5`, opened finding
+  `3909383238` for a destination hidden inside another link's title.
+- Correction source `7df3ff6`, tree `83e8c03`, replaces permissive extraction
+  with a strict canonical link-list parser. Focused contracts pass48/48,
+  documentation tests pass32/32 and the affected gate passes15/15, including101
+  platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
+  or deployment behavior changed.
 
 ### Next action
 
-- Publish the exact correction checkpoint, resolve its two threads and request
+- Publish the exact correction checkpoint, resolve its thread and request
   confirmation only after the PR exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.
 

@@ -279,7 +279,9 @@ file and anchor exists.
   source `c7a1dd7`, tree `79046ff`, freezes the batch. Exact-head review on
   checkpoint `a5be54f` opened finding `3909383238` for a destination hidden
   inside another link's title. The working correction replaces permissive link
-  extraction with a strict canonical link-list parser
+  extraction with a strict canonical link-list parser. Focused contracts
+  pass48/48, documentation tests pass32/32 and the affected gate passes15/15.
+  Correction source `7df3ff6`, tree `83e8c03`, freezes the batch
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff
