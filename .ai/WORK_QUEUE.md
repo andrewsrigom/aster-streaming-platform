@@ -88,7 +88,7 @@ The latest release is Phase13:
 | 65 | Enforce GraphQL demand controls | P13-R03 | DONE |
 | 66 | Enforce execution, rate and cache controls | P13-R06 | DONE |
 | 67 | Prove query counts and owner authorization; close Phase13 | P13-R07 | DONE |
-| 68 | Record Phase13 release and establish the reference-first Phase14 runway | P14-R13 | IN_PROGRESS |
+| 68 | Record Phase13 release and establish the reference-first Phase14 runway | P14-R13 | DONE |
 | 69 | Publish the capability-to-code/test/evidence/operations index | P14-R14 | READY |
 | 70 | Define readability guardrails and a bounded prioritized findings inventory | P14-R15 | READY |
 | 71 | Refactor representative Catalog and Playback reading slices | P14-R16 | READY |
@@ -97,7 +97,7 @@ The latest release is Phase13:
 | 74 | Align rationale comments, executable examples and core-journey reading paths | P14-R17 | READY |
 | 75 | Run fresh-checkout/Docker acceptance and verify the reference track | P14-R18 | READY |
 
-## Item68 — active
+## Item68 — verified
 
 ### Outcome
 

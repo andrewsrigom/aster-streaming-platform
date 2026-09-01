@@ -8,6 +8,8 @@ capacity, public endpoint or operational release.
 
 ## P14-R13 — Reference-first runway
 
+Status: **verified**
+
 Source commit `bd1191d0fb09f623c442ce6cee598cff2375b0d0`, tree
 `80337eb7bc06f5c10fd86d30044ab9a77cdbb6a5`, records:
 
@@ -38,11 +40,37 @@ owner-runtime or diagnostic environments because the source commit changes no
 executable path or CI classification. Their exact Phase13 release evidence
 remains applicable.
 
-### Pending acceptance
+### Verified acceptance
 
-- final result-checkpoint protected CI;
-- squash merge with candidate-tree identity;
-- exact-main CI.
+Final result checkpoint `7f1dd6c0aca3db60589beb7a330565e244488c4b`,
+tree `b7398a9b4eaf42d5dc7ca54ac3c4524dd2960e6d`, passed protected run
+`33494938005`.
+
+PR58 squash-merged at `2026-09-01T09:58:52Z` as
+`e9255041ba45bd298b26857f6ee3d5a9b97089ec`. Main tree
+`b7398a9b4eaf42d5dc7ca54ac3c4524dd2960e6d` exactly matches the final
+candidate tree. Exact-main run `33495029876` completed successfully at
+`2026-09-01T09:59:25Z`.
+
+The protected and exact-main classifiers ran the documentation/security and
+aggregate gates and skipped executable source and Local platform jobs. This is
+the expected scope because item68 changes no executable path or CI
+classification. P14-R13 is verified; P14-R14–R18 remain planned.
+
+### Repository-memory closeout
+
+Closeout source `1078a943ef02008e7918a293abcb9aa3b7687660`, tree
+`c9999214bf37c26b843925ea3c9ee7a0d7a9ef87`, records P14-R13 as verified,
+leaves no active work item and selects P14-R14 as the next requirement. Its
+local changed-scope gate passes7/7 tasks and protected run `33495326301`
+passes.
+
+Review discussion `3903007134` found that two resume instructions named
+`e925504`, the parent of the closeout, as item69's base. Source
+`a9711e94a20abf4fe07aaf60984564e6735bb3b2`, tree
+`6b4e430c7027e2af4b5c447d6bb4a62c8a359e1c`, instead requires the
+post-closeout `origin/main` and verifies it contains item68 as `DONE` plus
+the P14-R13 evidence. The repeated local changed-scope gate passes7/7 tasks.
 
 ### Protected result and review correction
 

@@ -7,16 +7,15 @@ Last updated: 2026-09-01
 **Phase 14 — Reference Quality, Capacity Validation, and Hosted Release**
 
 Status: **IN_PROGRESS**. Phases00–13 are released. The credential-free
-reference-quality track P14-R13–R18 is active under ADR-0048. Hosted capacity
-and release requirements P14-R01–R12 remain planned and inactive until the
-repository owner explicitly authorizes provider choices, credentials and
-resource creation.
+reference-quality track P14-R13–R18 is active under ADR-0048; P14-R13 is
+verified. Hosted capacity and release requirements P14-R01–R12 remain planned
+and inactive until the repository owner explicitly authorizes provider choices,
+credentials and resource creation.
 
-The sole active work item is item68 on branch
-`docs/reference-first-roadmap`, worktree `/tmp/aster-reference-roadmap`,
-from exact released main `83cb5100408a691da15550194af6763c55170ba7`.
-It records the Phase13 release and establishes the reference-first runway
-without changing executable behavior.
+No work item is active. Item69 (P14-R14), the capability index, is the first
+`READY` item and must start from `origin/main` after this closeout merges.
+That base must contain item68 as `DONE` and the verified P14-R13 evidence;
+`e925504` is the documented predecessor, not a valid post-closeout base.
 
 ## Verified
 
@@ -45,7 +44,7 @@ is claimed.
 
 ## Current work
 
-Item68 implements P14-R13 as a documentation and delivery-governance slice:
+Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;
 - the Phase14 specification adds P14-R13–R18 without renumbering or weakening
@@ -79,14 +78,21 @@ verification. Source `1a6233f`, tree `2f9a7b1`, separates P14-R13–R18 local
 completion from P14-R01–R12 hosted evidence and passes the repeated gate9/9.
 Evidence head `3087be1` passed protected run `33494434609`; discussion
 `3902887907` is resolved. Final confirmation completed on that exact head
-without a new finding, and all four PR58 threads are resolved. Result-checkpoint
-protected acceptance remains pending.
+without a new finding, and all four PR58 threads are resolved. Final result
+checkpoint `7f1dd6c`, tree `b7398a9`, passed protected run `33494938005`.
+PR58 squash main `e925504` retained that exact tree; exact-main run
+`33495029876` passed. P14-R13 and item68 are verified.
+Closeout source `1078a94` passed protected run `33495326301`; review
+discussion `3903007134` found its resume base pointed to the closeout's parent.
+Correction `a9711e9`, tree `6b4e430`, requires post-closeout `origin/main`
+and passes the repeated local gate7/7. Corrected protected acceptance remains
+pending.
 
 ## Ordered reference-quality runway
 
 Only one item may be active at a time:
 
-1. item68 — record the Phase13 release and reference-first runway (P14-R13);
+1. item68 — verified the Phase13 release and reference-first runway (P14-R13);
 2. item69 — publish a capability-to-code/test/evidence/operations index
    (P14-R14);
 3. item70 — define readability guardrails and inventory concrete findings
@@ -159,7 +165,6 @@ the repository-memory, link, formatting and changed-scope gates.
 
 ## Next outcome
 
-Complete item68 (P14-R13) candidate gates, review, merge and exact-main
-acceptance.
-Then start item69 from clean released main and build the capability index before
-renaming or reorganizing implementation code.
+Start item69 (P14-R14) from the post-closeout `origin/main` that contains
+item68 as `DONE`, then build the capability index before renaming or
+reorganizing implementation code.

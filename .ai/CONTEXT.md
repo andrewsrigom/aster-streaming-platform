@@ -65,7 +65,10 @@ ADR-0048 keeps hosted P14-R01–R12 planned until explicit owner authorization.
 Phase13 final candidate `db17bca`, tree `41650b4`, passed protected run
 `33486901296` and a clean final review. PR57 squash main `83cb510` retained that
 tree; exact-main run `33489232182` passed every required job and releases
-Phase13. Item68 records the reference-first runway from this exact main.
+Phase13. Item68 final result `7f1dd6c`, tree `b7398a9`, passed protected run
+`33494938005` and clean review. PR58 squash main `e925504` retained that
+tree; exact-main run `33495029876` passed and verifies P14-R13. Item69
+(P14-R14) is the next ready outcome.
 
 Phase12 final
 source `b646e496d0946262a688f34a118a896f6c40ebda`, tree

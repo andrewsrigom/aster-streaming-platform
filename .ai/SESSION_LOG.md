@@ -46,6 +46,14 @@ full snapshot through the archival checkpoint remains in
   `33494434609`; discussion `3902887907` is resolved. Final confirmation
   completed at `2026-09-01T09:56:10Z` without a new finding and all four PR58
   threads are resolved.
+- Final result checkpoint `7f1dd6c`, tree `b7398a9`, passed protected run
+  `33494938005`. PR58 squash main `e925504` retained that exact tree;
+  exact-main run `33495029876` passed. Item68 and P14-R13 are verified.
+- Closeout source `1078a94`, tree `c999921`, passed local gate7/7 and
+  protected run `33495326301`. Review discussion `3903007134` found item69's
+  resume instructions pointed to the closeout's parent. Source `a9711e9`, tree
+  `6b4e430`, requires post-closeout `origin/main` and passes the repeated
+  gate7/7.
 
 ### Evidence
 
@@ -58,8 +66,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Complete item68's documentation/changed-scope gates, review, merge and
-  exact-main acceptance; then start item69's capability index from clean main.
+- Start item69 (P14-R14), the capability index, from post-closeout
+  `origin/main`; predecessor `e925504` is not a valid item69 base.
 
 ## 2026-09-01 — PR57 exact owner-set correction
 
