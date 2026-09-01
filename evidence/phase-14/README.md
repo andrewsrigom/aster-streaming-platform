@@ -57,6 +57,21 @@ aggregate gates and skipped executable source and Local platform jobs. This is
 the expected scope because item68 changes no executable path or CI
 classification. P14-R13 is verified; P14-R14–R18 remain planned.
 
+### Repository-memory closeout
+
+Closeout source `1078a943ef02008e7918a293abcb9aa3b7687660`, tree
+`c9999214bf37c26b843925ea3c9ee7a0d7a9ef87`, records P14-R13 as verified,
+leaves no active work item and selects P14-R14 as the next requirement. Its
+local changed-scope gate passes7/7 tasks and protected run `33495326301`
+passes.
+
+Review discussion `3903007134` found that two resume instructions named
+`e925504`, the parent of the closeout, as item69's base. Source
+`a9711e94a20abf4fe07aaf60984564e6735bb3b2`, tree
+`6b4e430c7027e2af4b5c447d6bb4a62c8a359e1c`, instead requires the
+post-closeout `origin/main` and verifies it contains item68 as `DONE` plus
+the P14-R13 evidence. The repeated local changed-scope gate passes7/7 tasks.
+
 ### Protected result and review correction
 
 Evidence checkpoint `6bbb3da3ab18f2279be945a072b97f66a36cc056`,

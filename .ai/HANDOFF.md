@@ -39,19 +39,25 @@ Item69 publishes a maintained capability index linking behavior to:
 - Passed local changed-scope gates, four protected checkpoints, one clean final
   confirmation and exact-main acceptance.
 - Resolved all four PR58 review threads.
+- Closeout source `1078a94` passed protected run `33495326301`. Review
+  discussion `3903007134` found item69's resume base pointed to the closeout
+  parent. Correction `a9711e9`, tree `6b4e430`, requires post-closeout
+  `origin/main` and passes the repeated local gate7/7.
 
 The authoritative chronology is in `evidence/phase-14/README.md`. Executable
 product behavior is unchanged.
 
 ## Exact next actions
 
-1. Fast-forward a clean worktree to the post-closeout `origin/main` and verify
+1. Publish the current corrected closeout checkpoint to PR59 and require its
+   protected CI, resolved review and exact-main merge acceptance.
+2. Fast-forward a clean worktree to the post-closeout `origin/main` and verify
    it contains item68 as `DONE`.
-2. Move item69 to `IN_PROGRESS` and write its P14-R14 change plan.
-3. Inventory the authoritative capability, test, evidence and operations paths
+3. Move item69 to `IN_PROGRESS` and write its P14-R14 change plan.
+4. Inventory the authoritative capability, test, evidence and operations paths
    before designing the index or its drift check.
-4. Implement the smallest complete index plus path-existence verification.
-5. Run documentation, repository-memory and changed-scope gates.
+5. Implement the smallest complete index plus path-existence verification.
+6. Run documentation, repository-memory and changed-scope gates.
 
 ## Execution boundary
 

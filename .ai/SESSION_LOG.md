@@ -49,6 +49,11 @@ full snapshot through the archival checkpoint remains in
 - Final result checkpoint `7f1dd6c`, tree `b7398a9`, passed protected run
   `33494938005`. PR58 squash main `e925504` retained that exact tree;
   exact-main run `33495029876` passed. Item68 and P14-R13 are verified.
+- Closeout source `1078a94`, tree `c999921`, passed local gate7/7 and
+  protected run `33495326301`. Review discussion `3903007134` found item69's
+  resume instructions pointed to the closeout's parent. Source `a9711e9`, tree
+  `6b4e430`, requires post-closeout `origin/main` and passes the repeated
+  gate7/7.
 
 ### Evidence
 
