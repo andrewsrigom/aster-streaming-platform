@@ -60,7 +60,8 @@ file and anchor exists.
 - Every row names one authoritative owner even when other contexts cooperate.
 - Representative links are concrete and maintained, not exhaustive file lists.
 - The media adverse-test destination reaches the PostgreSQL processing path and
-  proves current rights are rechecked before claim, check and completion.
+  proves current rights are rechecked before claim, check and completion; its
+  P06-R10 route also reaches disposable scratch cleanup and publication rollback.
 - Playback P07-R10 reaches the web player and its browser adverse-state proof;
   resilience P11-R08 reaches the failure laboratory and its injection tests.
 - Identity P02-R10 reaches the PostgreSQL and GraphQL concurrency/session
@@ -70,6 +71,8 @@ file and anchor exists.
   rails reach P10-R04 and the Phase 10 SWR release evidence in addition to the
   Phase 09 independent-rail contract. P05-R10 reaches the public SSR/hydration,
   navigation and real profile-selection browser proofs.
+- Repository workflow proof reaches both the bounded local runner and the
+  protected CI workflow, including path-classification and policy adverse tests.
 - Status follows the repository's planned/implemented/verified/released
   vocabulary and does not promote hosted P14-R01–R12 work.
 - Missing, duplicate, extra or malformed capability rows fail closed with
@@ -126,7 +129,7 @@ file and anchor exists.
 | A requirement link keeps its target but mislabels the visible requirement ID | Reject the row before publication | Requirement-label diagnostic |
 | A reviewed destination is wrapped in an inline code span | Treat the interactive link as missing | Link-role diagnostic |
 | Reviewed link syntax is escaped or converted to an image | Treat the interactive link as missing | Link-prefix diagnostic |
-| A listed behavior lacks its owning requirement, evidence or complete adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
+| A listed behavior lacks its owning requirement, evidence, implementation or complete adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
 | A required command is conditional, non-blocking or belongs to a conditional job | Treat the command as absent | Executable-step diagnostic |
 | An unsafe workflow key is quoted | Treat it like the equivalent plain YAML key | YAML-key diagnostic |
 | A governance job is non-blocking through an expression | Treat every command in the job as absent | Job-level execution diagnostic |
@@ -224,8 +227,12 @@ file and anchor exists.
   `3908622075` and `3908622083` for a comment-only raw-HTML boundary and a
   conditional governance dependency. Correction source `7479a5c`, tree
   `1da233a`, closes both bypasses. Focused contracts pass45/45, documentation
-  tests pass29/29 and the affected gate passes15/15. Publication, protected
-  acceptance, merge and exact-main acceptance remain pending
+  tests pass29/29 and the affected gate passes15/15. Exact-head run
+  `33563190969` passed on checkpoint `c69cb0e`; its exact-head review opened
+  findings `3908769122` and `3908769126` for missing P06-R10 cleanup/rollback
+  proof and missing protected-CI implementation/adverse proof. The working
+  correction closes both routes. Publication, protected acceptance, merge and
+  exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff
