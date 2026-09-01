@@ -67,7 +67,10 @@ export const CAPABILITY_INDEX_ROWS = [
         "../specs/phase-03-catalog-rights.md#p03-r10",
       ],
       Implementation: ["../../services/catalog/src/application/commands.ts"],
-      "Adverse test": ["../../services/catalog/test/catalog-workflow.test.ts"],
+      "Adverse test": [
+        "../../services/catalog/test/catalog-workflow.test.ts",
+        "../../services/catalog/test/integration/generated-publication.ts",
+      ],
       Evidence: ["../../evidence/phase-03/release.txt"],
       Operations: ["../../services/catalog/README.md"],
     },
@@ -542,15 +545,24 @@ function markdownLinks(value: string): { label: string; target: string }[] {
   const visible = withoutInlineRawHtml(withoutCodeSpans(value));
   return [...visible.matchAll(MARKDOWN_LINK)].flatMap((match) => {
     const start = match.index;
+    const label = match.groups?.["label"];
+    const target = match.groups?.["target"];
+    if (!label || !target) {
+      return [];
+    }
+    const closingBracket = start + label.length + 1;
+    const openingParenthesis = closingBracket + 1;
+    const closingParenthesis = start + match[0].length - 1;
     if (
       isEscapedMarkdownCharacter(visible, start) ||
+      isEscapedMarkdownCharacter(visible, closingBracket) ||
+      isEscapedMarkdownCharacter(visible, openingParenthesis) ||
+      isEscapedMarkdownCharacter(visible, closingParenthesis) ||
       (visible[start - 1] === "!" && !isEscapedMarkdownCharacter(visible, start - 1))
     ) {
       return [];
     }
-    const label = match.groups?.["label"];
-    const target = match.groups?.["target"];
-    return label && target ? [{ label, target }] : [];
+    return [{ label, target }];
   });
 }
 

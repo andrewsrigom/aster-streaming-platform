@@ -59,6 +59,9 @@ file and anchor exists.
   source.
 - Every row names one authoritative owner even when other contexts cooperate.
 - Representative links are concrete and maintained, not exhaustive file lists.
+- The Catalog lifecycle route reaches generated publication, public visibility,
+  retirement removal and the resulting outbox record in addition to the
+  focused editorial workflow tests.
 - The media adverse-test destination reaches the PostgreSQL processing path and
   proves current rights are rechecked before claim, check and completion; its
   P06-R10 route also reaches disposable scratch cleanup and publication rollback.
@@ -87,9 +90,9 @@ file and anchor exists.
 - Each capability ID is bound to its reviewed public display name; links and
   owner metadata cannot mask a misleading label. Inline-code destinations do
   not satisfy a link role because they are not interactive Markdown links;
-  escaped link syntax, images and Markdown-looking syntax inside inline HTML
-  tags, attributes, processing instructions, declarations or CDATA do not
-  satisfy it either.
+  escaped link syntax, including any escaped structural delimiter, images and
+  Markdown-looking syntax inside inline HTML tags, attributes, processing
+  instructions, declarations or CDATA do not satisfy it either.
 - Only a visible Markdown table satisfies capability coverage; rows inside
   fenced code, HTML comments, named raw containers, arbitrary CommonMark type-7
   HTML blocks, complete CommonMark type-6 block tags or four-column indented
@@ -139,6 +142,7 @@ file and anchor exists.
 | A requirement link keeps its target but mislabels the visible requirement ID | Reject the row before publication | Requirement-label diagnostic |
 | A reviewed destination is wrapped in an inline code span | Treat the interactive link as missing | Link-role diagnostic |
 | Reviewed link syntax is escaped or converted to an image | Treat the interactive link as missing | Link-prefix diagnostic |
+| A closing bracket or parenthesis in reviewed link syntax is escaped | Treat the interactive link as missing | Link-delimiter diagnostic |
 | Reviewed link syntax appears inside an inline HTML tag or attribute | Treat the interactive link as missing | Inline-HTML diagnostic |
 | Reviewed link syntax appears inside a processing instruction, declaration or CDATA | Treat the interactive link as missing | Inline-raw-HTML diagnostic |
 | A listed behavior lacks its owning requirement, evidence, implementation or complete adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
@@ -264,7 +268,10 @@ file and anchor exists.
   shell-startup environment injection. The working correction closes both.
   Focused contracts pass47/47 and the affected gate passes15/15. Correction
   source `43fa31c`, tree `b2f1c28`, freezes the batch. Publication, protected
-  acceptance, merge and exact-main acceptance remain pending
+  acceptance, merge and exact-main acceptance remain pending. Exact-head review
+  on checkpoint `6f45c50` opened findings `3909327287` and `3909327298` for an
+  escaped closing link bracket and incomplete Catalog lifecycle proof. The
+  working correction closes both
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

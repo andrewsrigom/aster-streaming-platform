@@ -111,7 +111,13 @@ test("rejects reviewed links rendered as inline code", () => {
 
 test("rejects escaped links and images as interactive proof destinations", () => {
   const link = "[Operations 1](../../services/identity/README.md)";
-  for (const replacement of [`\\${link}`, `!${link}`]) {
+  for (const replacement of [
+    `\\${link}`,
+    link.replace("]", "\\]"),
+    link.replace("](", "]\\("),
+    link.replace(")", "\\)"),
+    `!${link}`,
+  ]) {
     const report = analyzeCapabilityIndex(validIndex().replace(link, replacement));
     assert.ok(
       report.violations.some(
