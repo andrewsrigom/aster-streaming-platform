@@ -73,7 +73,8 @@ file and anchor exists.
   owner metadata cannot mask a misleading label.
 - Only a visible Markdown table satisfies capability coverage; rows inside
   fenced code, HTML comments, named raw containers, arbitrary CommonMark type-7
-  HTML blocks or four-column indented code are ignored.
+  HTML blocks, complete CommonMark type-6 block tags or four-column indented
+  code are ignored.
 - Documentation-only changes cannot bypass the capability-index verifier or
   its adverse tests in protected CI; the policy parser bounds `governance` at
   the next top-level job rather than a later named job and recognizes only
@@ -99,6 +100,7 @@ file and anchor exists.
 | The complete table is indented as CommonMark code | Treat the public table as missing | Indentation-aware table diagnostic |
 | The complete table is wrapped in a raw HTML block | Treat the public table as missing | HTML-block-aware table diagnostic |
 | An arbitrary complete HTML tag begins a type-7 block around the table | Ignore rows through the CommonMark blank-line boundary | Generic HTML-block diagnostic |
+| A CommonMark type-6 block tag precedes the table | Ignore rows through the CommonMark blank-line boundary | Named HTML-block diagnostic |
 | A processing instruction, declaration or CDATA block wraps the table | Ignore rows through the matching CommonMark end marker | Marker-terminated HTML-block diagnostic |
 | A requirement link keeps its target but mislabels the visible requirement ID | Reject the row before publication | Requirement-label diagnostic |
 | A listed requirement lacks a representative implementation or adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
@@ -159,12 +161,13 @@ file and anchor exists.
 - Commands: focused Node.js test, `pnpm docs:check`, `pnpm docs:test`,
   `pnpm ai:check`, `pnpm check:changed`
 - Raw artifact path: `evidence/phase-14/README.md`
-- Acceptance result: protected run `33512605098` passes on attempt2 for evidence
-  head `4cfb46c`; its confirmation opened one remaining HTML-visibility and one
-  visible-requirement-label finding. Their working correction passes focused
-  contract tests40/40, documentation tests24/24 and the affected gate15/15;
-  source `df8510b`, tree `6b6f81b`, is frozen. Protected acceptance, merge and
-  exact-main acceptance remain pending
+- Acceptance result: protected run `33516560847` passes for evidence head
+  `d2e4f02`, including every owner runtime, the Docker-only journey and local
+  diagnostics. Its confirmation opened one remaining CommonMark type-6
+  visibility finding. The working correction separates end-tag blocks from the
+  complete blank-line-terminated tag set and passes focused contract
+  tests41/41, documentation tests25/25 and the affected gate15/15. Publication,
+  protected acceptance, merge and exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

@@ -416,8 +416,27 @@ affected gate passes15/15, including101 platform tests; TypeScript, lint,
 formatting and diff validation also pass. Correction source
 `df8510b0804c54dc36d829e017798f8de322bca5`, tree
 `6b6f81b7e249b0771dce1751ce1dd6b1e1245784`, freezes the two-finding batch
-without product runtime or deployment changes. Protected publication remains
-pending.
+without product runtime or deployment changes. Evidence head
+`d2e4f0262c9675736fc04c968f9cb50c547f948f` passed protected run
+`33516560847` at `2026-09-01T14:15:15Z`. Dependency review, governance, source
+quality, every owner runtime, the Docker-only playable demo, local platform,
+diagnostics, scoped cleanup, dependency audit and aggregate gate passed.
+Discussions `3904518312` and `3904518324` are resolved.
+
+The confirmation on that exact head completed at `2026-09-01T14:02:06Z` and
+opened discussion `3904890702`: named HTML handling did not include the complete
+CommonMark type-6 tag set, so an opener such as `<p>` or `<h1>` immediately
+before the matrix could hide it until the next blank line without a violation.
+
+The finding is accepted. Visibility state now separates the four CommonMark
+blocks that end at a matching closing tag from the complete62-tag set that ends
+at a blank line. A regression exercises every type-6 tag around the exact
+matrix. Focused capability tests pass15/15, combined capability/CI-policy tests
+pass41/41 and documentation tests pass25/25. Documentation validation covers250
+documents, 2,880 headings, 1,625 links, four status claims and eleven rows with
+zero violations. The affected gate passes15/15, including101 platform-policy,
+39 CI-policy and13 repository-memory tests; formatting and diff validation also
+pass. Protected publication remains pending.
 
 ## Planned evidence
 

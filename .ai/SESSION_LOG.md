@@ -128,13 +128,23 @@ full snapshot through the archival checkpoint remains in
 - Source `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
   `78742f48c2f939b9073f419aaded775be1e58876`, is recorded in the Phase14
   evidence index.
+- Evidence head `d2e4f0262c9675736fc04c968f9cb50c547f948f` passed protected
+  run `33516560847`, including every owner runtime, the Docker-only journey,
+  local diagnostics, dependency audit and aggregate gate. Discussions
+  `3904518312`/`3904518324` are resolved.
+- Confirmation completed at `2026-09-01T14:02:06Z` and discussion `3904890702`
+  found that incomplete CommonMark type-6 tag coverage could still hide the
+  matrix. The accepted working correction separates the four closing-tag block
+  forms from the complete62-tag blank-line-terminated set and tests every named
+  tag. Focused capability tests pass15/15, combined contract tests pass41/41,
+  documentation tests pass25/25 and the affected gate passes15/15, including101
+  platform tests.
 
 ### Next action
 
-- Publish the exact latest two-finding correction evidence, resolve both
-  discussions and require one blocker-boundary
-  confirmation. Then merge and complete exact-main verification before
-  activating P14-R15.
+- Freeze and publish the exact type-6 correction, resolve discussion
+  `3904890702` and require protected CI plus one blocker-boundary confirmation.
+  Then merge and complete exact-main verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

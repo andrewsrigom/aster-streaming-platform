@@ -53,12 +53,13 @@ destination sequence for every capability/role pair; existing documentation
 validation proves the concrete paths, anchors, root-escape policy and
 symbolic-target policy.
 
-Focused documentation tests pass22/22. Documentation validation passes for250
+Focused documentation tests pass25/25. Documentation validation passes for250
 documents, 2,880 headings, 1,625 links, four supported status claims and the
 eleven exact capability rows. The always-run protected governance job now
 executes the capability verifier and its adverse tests even for a
 documentation-only change; CI policy fails if either command moves outside that
-job. The corrected changed-scope gate passes15/15 tasks, including101
+job. Combined capability/CI-policy tests pass41/41. The corrected changed-scope
+gate passes15/15 tasks, including101
 platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
 behavior changed, so heavyweight PostgreSQL, browser, media and Docker journey
 evidence remains applicable. Prior protected acceptance passes; protected
@@ -148,8 +149,15 @@ marker-terminated block forms and requires the exact requirement label derived
 from each target anchor. Focused capability tests pass14/14, combined contract
 tests pass40/40, documentation tests pass24/24 and the affected gate passes15/15,
 including101 platform tests. Correction source `df8510b`, tree `6b6f81b`, is
-frozen without product runtime or deployment changes; protected publication
-remains pending.
+frozen without product runtime or deployment changes. Evidence head `d2e4f02`
+passed protected run `33516560847` in full. Its confirmation completed at
+`2026-09-01T14:02:06Z` and discussion `3904890702` found that the incomplete
+CommonMark type-6 tag set could still hide the table. The accepted working
+correction separates the four closing-tag blocks from all62
+blank-line-terminated tags and tests every named tag. Focused capability tests
+pass15/15, combined contract tests pass41/41, documentation tests pass25/25 and
+the affected gate passes15/15, including101 platform tests. Protected
+publication remains pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

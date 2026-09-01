@@ -275,53 +275,71 @@ interface MarkdownVisibilityState {
   htmlUntilBlank: boolean;
 }
 
-const RAW_HTML_BLOCK_TAGS = new Set([
+const RAW_HTML_END_TAGS = new Set(["pre", "script", "style", "textarea"]);
+
+const RAW_HTML_UNTIL_BLANK_TAGS = new Set([
   "address",
   "article",
   "aside",
+  "base",
+  "basefont",
   "blockquote",
   "body",
   "caption",
   "center",
-  "code",
+  "col",
+  "colgroup",
+  "dd",
   "details",
   "dialog",
   "dir",
   "div",
   "dl",
+  "dt",
   "fieldset",
   "figcaption",
   "figure",
   "footer",
   "form",
+  "frame",
   "frameset",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
   "head",
   "header",
+  "hr",
   "html",
   "iframe",
-  "kbd",
-  "listing",
+  "legend",
+  "li",
+  "link",
   "main",
   "menu",
+  "menuitem",
   "nav",
   "noframes",
   "ol",
-  "pre",
-  "samp",
-  "script",
+  "optgroup",
+  "option",
+  "p",
+  "param",
   "search",
   "section",
-  "style",
   "summary",
   "table",
   "tbody",
+  "td",
   "tfoot",
+  "th",
   "thead",
   "title",
   "tr",
-  "textarea",
+  "track",
   "ul",
-  "xmp",
 ]);
 
 const currentFile = fileURLToPath(import.meta.url);
@@ -465,10 +483,15 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
     }
 
     const htmlTag = /^ {0,3}<(?<tag>[A-Za-z][A-Za-z0-9-]*)\b/u.exec(uncommented)?.groups?.["tag"];
-    if (htmlTag && RAW_HTML_BLOCK_TAGS.has(htmlTag.toLowerCase())) {
+    if (htmlTag && RAW_HTML_END_TAGS.has(htmlTag.toLowerCase())) {
       if (!new RegExp(`</${htmlTag}\\s*>`, "iu").test(uncommented)) {
         state.htmlTag = htmlTag;
       }
+      return "";
+    }
+
+    if (htmlTag && RAW_HTML_UNTIL_BLANK_TAGS.has(htmlTag.toLowerCase())) {
+      state.htmlUntilBlank = true;
       return "";
     }
 

@@ -142,12 +142,20 @@ path/anchor validity to the existing documentation validator.
   tests pass24/24 and the affected gate passes15/15, including101 platform
   tests. Correction source `df8510b`, tree `6b6f81b`, is frozen without product
   runtime or deployment changes.
+- Evidence head `d2e4f02` passed protected run `33516560847` in full;
+  discussions `3904518312`/`3904518324` are resolved. Confirmation completed at
+  `2026-09-01T14:02:06Z` and discussion `3904890702` found that incomplete
+  CommonMark type-6 tag coverage could still hide the matrix.
+- The accepted working correction separates the four end-tag blocks from the
+  complete62-tag blank-line-terminated set and exercises every named tag.
+  Focused capability tests pass15/15, combined contract tests pass41/41,
+  documentation tests pass25/25 and the affected gate passes15/15, including101
+  platform tests.
 
 ## Exact next actions
 
-1. Publish the exact correction evidence for discussions
-   `3904518312`/`3904518324`, then resolve both discussions and require protected
-   CI plus one blocker-boundary confirmation.
+1. Freeze and publish the exact correction for discussion `3904890702`, resolve
+   it and require protected CI plus one blocker-boundary confirmation.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating
    item70/P14-R15.
