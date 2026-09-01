@@ -149,7 +149,9 @@ are isolated explicitly; ContinueWatching clears only disposable Catalog cache
 keys to prove the cold batched path. Counts are bounded assertions, while
 latency remains a single local observation rather than a production objective.
 Current owner-side negative tests form one executable identifier/role/profile
-matrix.
+matrix. Query-count acceptance validates the complete owner set returned by the
+explicitly background-filtered statement query; it must not project observations
+onto the expected budget before comparison.
 
 The released P12-R10 finite acceptance predicate, privacy checks, recovery
 semantics, 45-second per-search wait and twelve-minute execution budget remain
@@ -211,6 +213,7 @@ scenario, dependency, outcome or incomplete result.
 | Catalog encodes four SQL parameters per entity and exceeds the shared 32-parameter guard before the reviewed 20-title batch maximum | Encode the already validated, bounded fence tuples as one JSON parameter and preserve exact ID/version/rights/publication matching in PostgreSQL | real 20-entity Catalog integration plus exact ten-title Router measurements |
 | Protected runtime spends one second between Catalog observation and Discovery indexing | Validate the derived inclusive 298–300-second lease window rather than an impossible exact300 timing assumption; keep values outside the owner contract rejected | focused boundary test plus repeated complete runtime |
 | A non-deterministic TraceQL search does not prioritize the newly ingested exact trace before its 45-second deadline | Add Tempo's supported `most_recent=true` hint; retain the exact trace/scenario selector, 45-second wait and fail-closed acceptance predicate | exact-query/source-policy regressions plus one complete three-scenario diagnostic run and exact cleanup |
+| A federated operation starts querying an owner absent from its declared budget | Pass the complete observed owner map into the strict budget comparison; exclude only statement fingerprints explicitly named in the shared SQL | focused unexpected-owner regression plus complete Discovery and Engagement federated runtime repeats |
 | Predecessor PR changes | Rebase this dependent branch and repeat affected gates/evidence | exact base/head |
 
 ## Data and contracts
@@ -272,6 +275,9 @@ scenario, dependency, outcome or incomplete result.
 12. Make the P12-R10 exact recent-trace query deterministic with Tempo's
     `most_recent=true` hint, retain the existing temporal bounds, add exact-query
     and source-policy regressions and repeat the complete three-scenario proof.
+13. Reject any observed owner outside the declared operation budget in both
+    Discovery and Engagement runners; remove the output field that represented
+    such activity as excluded and repeat both federated measurements.
 
 ## Tests
 
@@ -377,6 +383,18 @@ scenario, dependency, outcome or incomplete result.
   diagnostic exercise, exact cleanup, every owner runtime, the Docker-only demo
   and aggregate protection. Publish this result, require its exact-head gate,
   then complete discussion resolution, confirmation, merge and exact-main gates.
+  Exact-head `c195a1d`, tree `a028aa1`, passed protected run `33481864676` and
+  all prior discussions are resolved. The permitted confirmation then opened
+  discussion `3901909548`: both federated runners projected `observed` onto
+  budget keys before validation, allowing a new owner to escape the total. This
+  is a P13-R08 proof-integrity blocker and activates one final correction round.
+  The local correction passes the complete observed owner map into the strict
+  comparison, removes the exclusion field and retains only the SQL's explicitly
+  named background fingerprints. Focused proof5/5 and strict Engagement build
+  pass. Discovery repeats TitleDetail2, Search5 and Home7 with ten distinct
+  titles, recovery and cleanup0 in101.498 seconds. Engagement repeats
+  ContinueWatching7 in88.033 ms plus its event/outage suite and cleanup0. The
+  affected gate passes73/73 with55 cached in65.919 seconds.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.
@@ -394,7 +412,10 @@ scenario, dependency, outcome or incomplete result.
   protected P12-R10 recent-store failures change the verification boundary;
   the same single exact-candidate confirmation must therefore include source
   `b2c77a8` after protected acceptance. Do not start another round for lower-risk
-  speculative hardening.
+  speculative hardening. That confirmation found discussion `3901909548`, which
+  violates the complete federated measurement boundary. One confirmation of the
+  corrected exact-owner-set candidate is required; after it, reopen only for a
+  new requirement, security/data, availability or public-contract blocker.
 
 ## Rollback or recovery
 

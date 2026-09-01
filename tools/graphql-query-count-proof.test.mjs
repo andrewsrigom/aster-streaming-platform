@@ -54,6 +54,15 @@ test("query-count proof requires every expected owner and rejects query amplific
     () =>
       assertFederatedQueryBudget(
         "SearchTitles",
+        { catalog: 1, discovery: 3, playback: 1 },
+        { catalog: 1, discovery: 3 },
+      ),
+    /unexpected owner set/u,
+  );
+  assert.throws(
+    () =>
+      assertFederatedQueryBudget(
+        "SearchTitles",
         { catalog: 1, discovery: 4 },
         { catalog: 1, discovery: 3 },
       ),
@@ -146,6 +155,13 @@ test("query-count overlay enables only bounded statement instrumentation", async
     assert.ok(source.includes("selectCurrentTrustedOperation"), runner);
     assert.ok(source.includes("phase13_federated_query_count") || runner.includes("engagement"));
   }
+  const discoveryRunner = await readFile(new URL("tools/run-discovery-runtime.mjs", root), "utf8");
+  assert.ok(
+    discoveryRunner.includes(
+      "assertFederatedQueryBudget(operation.name, observed, maximumByOwner)",
+    ),
+  );
+  assert.doesNotMatch(discoveryRunner, /nonParticipantOwnerActivityExcluded/u);
   const engagementWorker = await readFile(
     new URL("services/engagement/test/integration/federated-query-count.ts", root),
     "utf8",
@@ -155,6 +171,10 @@ test("query-count overlay enables only bounded statement instrumentation", async
   assert.ok(engagementWorker.includes('event: "phase13_federated_query_count"'));
   assert.ok(engagementWorker.includes('process.env["ASTER_QUERY_COUNT_PROFILE_ID"]'));
   assert.ok(engagementWorker.includes("AND profile_id=$1"));
+  assert.ok(
+    engagementWorker.includes("assert.deepEqual(\n      measuredOwners,\n      expectedOwners"),
+  );
+  assert.doesNotMatch(engagementWorker, /nonParticipantOwnerActivityExcluded/u);
   assert.doesNotMatch(engagementWorker, /ORDER BY profile_id LIMIT 1/u);
   const engagementRunner = await readFile(
     new URL("tools/run-engagement-runtime.mjs", root),

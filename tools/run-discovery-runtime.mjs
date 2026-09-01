@@ -365,20 +365,14 @@ async function measureOperation(port, operation, variables, maximumByOwner, work
   });
   const durationMs = Number((performance.now() - startedAt).toFixed(3));
   const observed = JSON.parse(await postgres(READ_QUERY_COUNT_SQL));
-  const perOwner = Object.fromEntries(
-    Object.keys(maximumByOwner).map((owner) => [owner, observed[owner]]),
-  );
-  const queries = assertFederatedQueryBudget(operation.name, perOwner, maximumByOwner);
+  const queries = assertFederatedQueryBudget(operation.name, observed, maximumByOwner);
   emit("phase13_federated_query_count", {
     operation: operation.name,
     operationId: operation.id,
     mode: "exact_trusted_document_through_router",
     workload,
     queries,
-    perOwner,
-    nonParticipantOwnerActivityExcluded: Object.keys(observed)
-      .filter((owner) => !(owner in maximumByOwner))
-      .sort(),
+    perOwner: observed,
     durationMs,
     limitation: "single disposable local observation; not a throughput or SLO claim",
   });

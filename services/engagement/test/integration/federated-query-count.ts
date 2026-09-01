@@ -193,9 +193,18 @@ try {
     const counted = await admin.query<{ counts: Record<string, number> }>(countSql);
     const observed = counted.rows[0]?.counts ?? {};
     const maximumByOwner = { catalog: 3, engagement: 1, identity: 3 } as const;
-    const perOwner = Object.fromEntries(
-      Object.keys(maximumByOwner).map((owner) => [owner, observed[owner]]),
+    const measuredOwners = Object.keys(observed).toSorted((left, right) =>
+      left.localeCompare(right, "en"),
     );
+    const expectedOwners = Object.keys(maximumByOwner).toSorted((left, right) =>
+      left.localeCompare(right, "en"),
+    );
+    assert.deepEqual(
+      measuredOwners,
+      expectedOwners,
+      `${operation.name} queried an unexpected owner set`,
+    );
+    const perOwner = Object.fromEntries(measuredOwners.map((owner) => [owner, observed[owner]]));
     let queries = 0;
     for (const [owner, maximum] of Object.entries(maximumByOwner)) {
       const count = perOwner[owner];
@@ -217,9 +226,6 @@ try {
         workload: "two owned in-progress titles, first 20, current Catalog visibility",
         queries,
         perOwner,
-        nonParticipantOwnerActivityExcluded: Object.keys(observed)
-          .filter((owner) => !(owner in maximumByOwner))
-          .sort(),
         durationMs,
         limitation: "single disposable local observation; not a throughput or SLO claim",
       }) + "\n",
