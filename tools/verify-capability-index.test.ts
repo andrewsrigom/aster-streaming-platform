@@ -133,9 +133,19 @@ test("rejects escaped links and images as interactive proof destinations", () =>
 
 test("rejects reviewed link syntax hidden inside inline HTML attributes", () => {
   const link = "[P02-R03](../specs/phase-02-identity-profiles.md#p02-r03)";
-  const hidden = validIndex().replace(link, `<span title="${link}"></span>`);
-  const report = analyzeCapabilityIndex(hidden);
-  assert.ok(report.violations.some(({ rule }) => rule === "invalid-link"));
+  for (const replacement of [
+    `<span title="${link}"></span>`,
+    `<?hidden ${link} ?>`,
+    `<!HIDDEN ${link}>`,
+    `<![CDATA[${link}]]>`,
+  ]) {
+    const hidden = validIndex().replace(link, replacement);
+    const report = analyzeCapabilityIndex(hidden);
+    assert.ok(
+      report.violations.some(({ rule }) => rule === "invalid-link"),
+      replacement,
+    );
+  }
 });
 
 test("rejects an existing but unrelated destination in each traceability role", () => {

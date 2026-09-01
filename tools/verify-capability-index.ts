@@ -475,9 +475,23 @@ function isEscapedMarkdownCharacter(value: string, index: number): boolean {
   return backslashes % 2 === 1;
 }
 
-function inlineHtmlTagEnd(value: string, start: number): number | undefined {
+function inlineRawHtmlEnd(value: string, start: number): number | undefined {
   if (value[start] !== "<") {
     return undefined;
+  }
+  for (const [opening, closing] of [
+    ["<!--", "-->"],
+    ["<![CDATA[", "]]>"],
+    ["<?", "?>"],
+  ] as const) {
+    if (value.startsWith(opening, start)) {
+      const closingStart = value.indexOf(closing, start + opening.length);
+      return closingStart < 0 ? undefined : closingStart + closing.length;
+    }
+  }
+  if (/^<![A-Z]/u.test(value.slice(start))) {
+    const end = value.indexOf(">", start + 3);
+    return end < 0 ? undefined : end + 1;
   }
   let cursor = start + 1;
   if (value[cursor] === "/") {
@@ -509,10 +523,10 @@ function inlineHtmlTagEnd(value: string, start: number): number | undefined {
   return undefined;
 }
 
-function withoutInlineHtmlTags(value: string): string {
+function withoutInlineRawHtml(value: string): string {
   let visible = "";
   for (let cursor = 0; cursor < value.length;) {
-    const end = inlineHtmlTagEnd(value, cursor);
+    const end = inlineRawHtmlEnd(value, cursor);
     if (end === undefined) {
       visible += value[cursor] ?? "";
       cursor += 1;
@@ -525,7 +539,7 @@ function withoutInlineHtmlTags(value: string): string {
 }
 
 function markdownLinks(value: string): { label: string; target: string }[] {
-  const visible = withoutInlineHtmlTags(withoutCodeSpans(value));
+  const visible = withoutInlineRawHtml(withoutCodeSpans(value));
   return [...visible.matchAll(MARKDOWN_LINK)].flatMap((match) => {
     const start = match.index;
     if (

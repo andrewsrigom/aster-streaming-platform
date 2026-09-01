@@ -351,6 +351,14 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       "permissions:\n",
       `"defaults":\n  run:\n    shell: node -e "process.exit(0)" {0}\n\npermissions:\n`,
     );
+    const workflowShellEnvironment = source.replace(
+      "permissions:\n",
+      "env:\n  BASH_ENV: ./tools/governance-noop.sh\n\npermissions:\n",
+    );
+    const quotedWorkflowShellEnvironment = source.replace(
+      "permissions:\n",
+      `"env":\n  BASH_ENV: ./tools/governance-noop.sh\n\npermissions:\n`,
+    );
     const retainedOnlyAsPrintedText = source.replace(requiredCommand, `echo '${requiredCommand}'`);
     const retainedOnlyInHereDocument = source
       .replace(requiredCommand, "true")
@@ -375,6 +383,8 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       governanceDependsOnConditionalQuality,
       workflowRunDefaults,
       quotedWorkflowRunDefaults,
+      workflowShellEnvironment,
+      quotedWorkflowShellEnvironment,
       retainedOnlyAsPrintedText,
       retainedOnlyInHereDocument,
     ]) {

@@ -88,7 +88,8 @@ file and anchor exists.
   owner metadata cannot mask a misleading label. Inline-code destinations do
   not satisfy a link role because they are not interactive Markdown links;
   escaped link syntax, images and Markdown-looking syntax inside inline HTML
-  tags or attributes do not satisfy it either.
+  tags, attributes, processing instructions, declarations or CDATA do not
+  satisfy it either.
 - Only a visible Markdown table satisfies capability coverage; rows inside
   fenced code, HTML comments, named raw containers, arbitrary CommonMark type-7
   HTML blocks, complete CommonMark type-6 block tags or four-column indented
@@ -105,9 +106,10 @@ file and anchor exists.
   Job-level conditions are recognized independently of YAML key order. Quoted
   YAML keys have the same suppressing semantics as plain keys. Job-level
   `continue-on-error` expressions are non-blocking even when their value is not
-  the literal `true`. Workflow-level `defaults.run.shell` is forbidden because
-  it can replace every governance command. Governance depends exactly on
-  `classify`, never on a conditional job that documentation-only changes skip.
+  the literal `true`. Workflow-level run defaults and environment are forbidden
+  because they can replace or intercept every governance command. Governance
+  depends exactly on `classify`, never on a conditional job that
+  documentation-only changes skip.
   The required check is a standalone simple Node.js command and the required
   test is one finite `node --test` invocation, not comments, here-documents,
   environment values, printed command text or suppressed steps.
@@ -138,6 +140,7 @@ file and anchor exists.
 | A reviewed destination is wrapped in an inline code span | Treat the interactive link as missing | Link-role diagnostic |
 | Reviewed link syntax is escaped or converted to an image | Treat the interactive link as missing | Link-prefix diagnostic |
 | Reviewed link syntax appears inside an inline HTML tag or attribute | Treat the interactive link as missing | Inline-HTML diagnostic |
+| Reviewed link syntax appears inside a processing instruction, declaration or CDATA | Treat the interactive link as missing | Inline-raw-HTML diagnostic |
 | A listed behavior lacks its owning requirement, evidence, implementation or complete adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
 | A required command is conditional, non-blocking or belongs to a conditional job | Treat the command as absent | Executable-step diagnostic |
 | An unsafe workflow key is quoted | Treat it like the equivalent plain YAML key | YAML-key diagnostic |
@@ -145,6 +148,7 @@ file and anchor exists.
 | A job-level condition appears after `steps` | Treat every command in the job as absent | Order-independent job diagnostic |
 | Governance depends on a conditional job instead of the classifier | Treat the capability commands as unavailable to documentation-only CI | Dependency diagnostic |
 | Workflow-level run defaults can replace governance commands | Reject the workflow before command validation | Workflow-default diagnostic |
+| Workflow-level environment can inject shell startup behavior | Reject the workflow before command validation | Workflow-environment diagnostic |
 | Required command text exists only inside a here-document or shell structure | Treat the command as absent | Standalone-command diagnostic |
 | Table size or input encoding is invalid | Stop within fixed byte/row limits | Bounded input diagnostic |
 
@@ -255,6 +259,9 @@ file and anchor exists.
   correction closes all four. Focused contracts pass47/47, documentation tests
   pass31/31, documentation validation covers1,645 links and the affected gate
   passes15/15. Correction source `6285db2`, tree `8e181c9`, freezes the batch.
+  Its exact-head review opened findings `3909251619` and `3909251628` for
+  inline processing-instruction/declaration/CDATA links and workflow-level
+  shell-startup environment injection. The working correction closes both.
   Publication, protected acceptance, merge and exact-main acceptance remain
   pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory

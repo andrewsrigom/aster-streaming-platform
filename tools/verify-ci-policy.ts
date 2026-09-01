@@ -368,6 +368,14 @@ export function validateWorkflowPolicy(
       rule: "commands",
     });
   }
+  if (hasTopLevelYamlKey(source, "env")) {
+    violations.push({
+      detail: "workflow-level environment can bypass capability-index governance commands",
+      file,
+      line: 1,
+      rule: "commands",
+    });
+  }
   if (!hasExactJobDependency(governanceSource, "classify")) {
     violations.push({
       detail: "capability-index governance job must depend only on classify",
