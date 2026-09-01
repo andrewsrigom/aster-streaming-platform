@@ -78,6 +78,8 @@ full snapshot through the archival checkpoint remains in
   conditional/non-blocking required-command steps/jobs and aligns Current
   State. Focused boundary tests pass36/36, documentation tests pass20/20 and the
   affected gate passes15/15.
+- Correction source `fe36d5b`, tree `e47c8a0`, is frozen without product
+  runtime or deployment changes.
 
 ### Evidence
 
@@ -92,9 +94,10 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Freeze and publish the current three-finding correction, resolve all three
-  discussions and require one blocker-boundary confirmation. Then merge and
-  complete exact-main verification before activating P14-R15.
+- Publish the existing correction evidence checkpoint without amending source
+  `fe36d5b`, resolve all three discussions and require one blocker-boundary
+  confirmation. Then merge and complete exact-main verification before
+  activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

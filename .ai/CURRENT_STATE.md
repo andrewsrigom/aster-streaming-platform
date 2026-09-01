@@ -65,11 +65,9 @@ evidence remains applicable. Prior protected acceptance passes; correction of
 the current public/governance/repository-memory findings, merge and exact-main
 acceptance remain pending.
 
-Correction source `f239cf57273880ce1e4988985b60263db1c73e8b`, tree
-`59094d0f970500b252220cb583376a31dca629a3`, is the latest frozen correction
-recorded in [Phase14 evidence](../evidence/phase-14/README.md). Its evidence head
-`a6e1388` received three further findings; the working correction is not yet
-frozen.
+Correction source `fe36d5b22ab59ed25812c6c59cd0e2ef9448c33f`, tree
+`e47c8a06a6f05c18f659be3938867364e032e988`, is the latest frozen correction
+recorded in [Phase14 evidence](../evidence/phase-14/README.md).
 
 Evidence head `136def8`, tree `58e640d`, passed protected run
 `33498081610`. Initial review discussions `3903242620`/`3903242629` found an
@@ -119,7 +117,8 @@ conditional execution and the stale leading candidate summary. The accepted
 working correction rejects CommonMark code indentation and any conditional or
 non-blocking command step/job, and aligns this summary. Focused boundary tests
 pass36/36, documentation tests pass20/20 and the affected gate passes15/15.
-Correction freeze remains pending.
+Correction source `fe36d5b`, tree `e47c8a0`, is frozen; protected publication
+remains pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

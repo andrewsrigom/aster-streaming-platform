@@ -105,13 +105,14 @@ path/anchor validity to the existing documentation validator.
   conditional/non-blocking required-command step or job and aligns Current
   State to the latest frozen checkpoint. Focused boundary tests pass36/36,
   documentation tests pass20/20 and the affected gate passes15/15.
+- Correction source `fe36d5b`, tree `e47c8a0`, is frozen without product
+  runtime or deployment changes.
 
 ## Exact next actions
 
-1. Freeze the current correction source for discussions
-   `3904209124`/`3904209135`/`3904209144` and record its exact hash without
-   amending it.
-2. Publish the existing evidence checkpoint, resolve the three discussions and
+1. Publish the existing correction evidence checkpoint without amending source
+   `fe36d5b` or creating a duplicate evidence commit.
+2. Resolve discussions `3904209124`/`3904209135`/`3904209144` and
    require protected CI plus one blocker-boundary confirmation because the
    findings alter the public/governance contract.
 3. Merge, verify exact-main CI and close item69 before activating

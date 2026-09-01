@@ -335,8 +335,13 @@ policy; exact command forms cannot be replaced with printed or shell-suppressed
 text. Current State identifies the latest frozen correction and current pending
 review findings. Focused boundary tests pass36/36, documentation tests pass20/20
 and the repeated changed-scope gate passes15/15 tasks, including101
-platform-policy,39 CI-policy and13 repository-memory tests. Correction freeze
-and protected publication remain pending.
+platform-policy,39 CI-policy and13 repository-memory tests. Protected
+publication remains pending.
+
+Correction source `fe36d5b22ab59ed25812c6c59cd0e2ef9448c33f`, tree
+`e47c8a06a6f05c18f659be3938867364e032e988`, freezes the indentation,
+conditional-execution and repository-memory correction without changing
+product runtime or deployment behavior.
 
 ## Planned evidence
 
