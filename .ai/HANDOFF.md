@@ -2,72 +2,53 @@
 
 ## Resume point
 
-Phases00–13 are released. Phase13 final result checkpoint `db17bca`, tree
-`41650b4`, passed protected run `33486901296` and clean final review. PR57
-squash main `83cb510` retained that tree; exact-main run `33489232182`
-passed every required job. The authoritative closeout is
-`evidence/phase-13/release.md`.
+Phases00–13 are released. P14-R13 and item68 are verified. Final result
+checkpoint `7f1dd6c`, tree `b7398a9`, passed protected run `33494938005`.
+PR58 squash main `e925504` retained that exact tree; exact-main run
+`33495029876` passed.
 
-Phase14's credential-free reference-quality track P14-R13–R18 is active under
-ADR-0048. Hosted P14-R01–R12 remain planned and deferred until explicit owner
-authorization.
+Phase14's credential-free reference-quality track P14-R13–R18 remains active
+under ADR-0048. Hosted P14-R01–R12 remain planned and inactive until explicit
+owner authorization.
 
-Item68 (P14-R13) is the sole `IN_PROGRESS` item on
-`docs/reference-first-roadmap`, worktree
-`/tmp/aster-reference-roadmap`, from released main `83cb510`.
+No work item is active. Item69 (P14-R14) is the first `READY` item.
 
 ## Active outcome
 
-Publish one documentation candidate that:
+There is no active outcome. The next agent may select item69 and create its
+change plan from exact main `e9255041ba45bd298b26857f6ee3d5a9b97089ec`.
 
-- records the exact Phase13 release;
-- makes local reproducibility, navigation and readability the immediate
-  Phase14 outcome;
-- preserves hosted requirements and their identifiers without claiming they
-  are implemented;
-- defines an ordered, behavior-preserving reference-quality runway.
+Item69 publishes a maintained capability index linking behavior to:
 
-## Work completed locally
+- its owning requirement and bounded context;
+- representative implementation;
+- focused adverse test;
+- evidence;
+- operational guidance when applicable.
 
-- Added ADR-0048.
-- Extended the Phase14 specification with active P14-R13–R18 and a separate
-  deferred hosted sequence.
-- Updated public roadmap, README, phase index, charter, delivery model,
-  engineering demonstration and file index.
-- Added the concise Phase13 release record and final machine-readable release
-  event.
-- Replaced stale current-state and handoff narratives with the released
-  baseline and active reference track.
-- Updated work queue, decision ledger and context.
-- Source `bd1191d`, tree `80337eb7`, passes the local iteration and
-  changed-scope candidate gates; `evidence/phase-14/README.md` records exact
-  results and the heavyweight-evidence carry-forward rationale.
-- Evidence head `6bbb3da` passed protected run `33492326127`. Initial review
-  discussion `3902757945` found the stale duplicate-commit instruction.
-  Correction `7976c17`, tree `0af69fe`, fixes it and passes the repeated
-  local gate.
-- Evidence head `9ced435` passed protected run `33492941279`; the initial
-  discussion is resolved. Confirmation discussions `3902818119`/`3902818121`
-  found incorrect reference-release terminology and four stale Phase13
-  candidate descriptions. Source `c0e4c85`, tree `f559fab`, corrects both
-  public-contract findings and passes the repeated gate9/9.
-- Evidence head `514467d` passed protected run `33493742758`; both status
-  discussions are resolved. Blocker-boundary discussion `3902887907` found
-  hosted-only matrix evidence still blocking the reference checkpoint. Source
-  `1a6233f`, tree `2f9a7b1`, separates the completion conditions and passes
-  the repeated gate9/9.
-- Evidence head `3087be1`, tree `34f70cb`, passed protected run
-  `33494434609`; discussion `3902887907` is resolved. Final confirmation
-  completed without a new finding and all four PR58 threads are resolved.
+## Work completed
 
-Executable product behavior is unchanged.
+- Recorded the exact Phase13 release.
+- Accepted ADR-0048 and separated local reference verification from hosted
+  capacity/release.
+- Added active P14-R13–R18 without renumbering hosted P14-R01–R12.
+- Aligned public status, architecture guidance, repository memory and
+  reference/hosted completion semantics.
+- Passed local changed-scope gates, four protected checkpoints, one clean final
+  confirmation and exact-main acceptance.
+- Resolved all four PR58 review threads.
+
+The authoritative chronology is in `evidence/phase-14/README.md`. Executable
+product behavior is unchanged.
 
 ## Exact next actions
 
-1. Publish the current result checkpoint to PR58 if needed; do not create an
-   additional empty or duplicate evidence commit.
-2. Require its exact protected CI, then squash merge and require exact-main CI.
-3. Start item69 from clean released main and build the capability index.
+1. Fast-forward a clean worktree to exact main `e925504`.
+2. Move item69 to `IN_PROGRESS` and write its P14-R14 change plan.
+3. Inventory the authoritative capability, test, evidence and operations paths
+   before designing the index or its drift check.
+4. Implement the smallest complete index plus path-existence verification.
+5. Run documentation, repository-memory and changed-scope gates.
 
 ## Execution boundary
 
@@ -79,15 +60,13 @@ is authorized.
 
 ## Heavyweight evidence
 
-Item68 changes documentation only. The released Phase13 owner runtimes,
-PostgreSQL integrations, browser suite, media demo and failure-diagnosis
-evidence remain applicable because no executable path or gate selection
-changes. Repeat them only if a later source change can invalidate the measured
-behavior.
+Item68 changed documentation only, so released runtime evidence remains valid.
+Item69 should also remain documentation/tooling-only. Repeat heavyweight
+PostgreSQL, browser, media, owner-runtime or diagnostic evidence only if its
+implementation changes an executable path or CI classification.
 
 ## Do not do yet
 
-Do not start item69 before item68 releases. Do not create a hosted provider,
-credential, paid resource, public endpoint or new media-rights claim. Do not
-rename or reorganize implementation code before the capability index and
-readability inventory identify a concrete owner-scoped problem.
+Do not rename or reorganize implementation code in item69. Do not start item70
+before item69 verifies its capability coverage and drift check. Do not activate
+hosted P14-R01–R12.
