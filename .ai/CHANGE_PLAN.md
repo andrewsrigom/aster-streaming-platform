@@ -86,7 +86,9 @@ file and anchor exists.
   destination for that capability.
 - A row may name multiple representative destinations when one source/test pair
   cannot substantiate every listed requirement; the exact ordered sequence
-  remains protected.
+  remains protected. Traceability cells accept only the canonical comma-space
+  separated link-list syntax used by the checked-in index; arbitrary Markdown
+  wrappers and link titles are rejected rather than interpreted.
 - Each capability ID is bound to its reviewed public display name; links and
   owner metadata cannot mask a misleading label. Inline-code destinations do
   not satisfy a link role because they are not interactive Markdown links;
@@ -143,6 +145,7 @@ file and anchor exists.
 | A reviewed destination is wrapped in an inline code span | Treat the interactive link as missing | Link-role diagnostic |
 | Reviewed link syntax is escaped or converted to an image | Treat the interactive link as missing | Link-prefix diagnostic |
 | A closing bracket or parenthesis in reviewed link syntax is escaped | Treat the interactive link as missing | Link-delimiter diagnostic |
+| A reviewed destination appears only inside another link's title | Reject the noncanonical traceability cell | Canonical-link-list diagnostic |
 | Reviewed link syntax appears inside an inline HTML tag or attribute | Treat the interactive link as missing | Inline-HTML diagnostic |
 | Reviewed link syntax appears inside a processing instruction, declaration or CDATA | Treat the interactive link as missing | Inline-raw-HTML diagnostic |
 | A listed behavior lacks its owning requirement, evidence, implementation or complete adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
@@ -273,7 +276,10 @@ file and anchor exists.
   escaped closing link bracket and incomplete Catalog lifecycle proof. The
   working correction closes both. Focused contracts pass47/47, documentation
   validation covers1,646 links and the affected gate passes15/15. Correction
-  source `c7a1dd7`, tree `79046ff`, freezes the batch
+  source `c7a1dd7`, tree `79046ff`, freezes the batch. Exact-head review on
+  checkpoint `a5be54f` opened finding `3909383238` for a destination hidden
+  inside another link's title. The working correction replaces permissive link
+  extraction with a strict canonical link-list parser
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

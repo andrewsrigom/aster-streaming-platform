@@ -10,7 +10,6 @@ const MAX_LINE_CHARACTERS = 10_000;
 const MAX_ROWS = 50;
 const MAX_CELL_CHARACTERS = 4_000;
 const MAX_DIAGNOSTICS = 100;
-const MARKDOWN_LINK = /\[(?<label>[^\]\n]+)\]\((?<target>[^\s)\n]+)\)/gu;
 const SEPARATOR_CELL = /^:?-{3,}:?$/u;
 
 export const CAPABILITY_INDEX_COLUMNS = [
@@ -426,144 +425,41 @@ function cellsMatch(left: readonly string[], right: readonly string[]): boolean 
   return left.length === right.length && left.every((cell, index) => cell === right[index]);
 }
 
-function withoutCodeSpans(value: string): string {
-  let cursor = 0;
-  let visible = "";
-  while (cursor < value.length) {
-    const opening = value.indexOf("`", cursor);
-    if (opening < 0) {
-      return `${visible}${value.slice(cursor)}`;
-    }
-    visible += value.slice(cursor, opening);
-
-    let openingEnd = opening + 1;
-    while (value[openingEnd] === "`") {
-      openingEnd += 1;
-    }
-    const delimiterLength = openingEnd - opening;
-    let search = openingEnd;
-    let closingEnd = -1;
-    while (search < value.length) {
-      const candidate = value.indexOf("`", search);
-      if (candidate < 0) {
-        break;
-      }
-      let candidateEnd = candidate + 1;
-      while (value[candidateEnd] === "`") {
-        candidateEnd += 1;
-      }
-      if (candidateEnd - candidate === delimiterLength) {
-        closingEnd = candidateEnd;
-        break;
-      }
-      search = candidateEnd;
-    }
-
-    if (closingEnd < 0) {
-      visible += value.slice(opening, openingEnd);
-      cursor = openingEnd;
-    } else {
-      visible += " ";
-      cursor = closingEnd;
-    }
-  }
-  return visible;
-}
-
-function isEscapedMarkdownCharacter(value: string, index: number): boolean {
-  let backslashes = 0;
-  for (let cursor = index - 1; cursor >= 0 && value[cursor] === "\\"; cursor -= 1) {
-    backslashes += 1;
-  }
-  return backslashes % 2 === 1;
-}
-
-function inlineRawHtmlEnd(value: string, start: number): number | undefined {
-  if (value[start] !== "<") {
-    return undefined;
-  }
-  for (const [opening, closing] of [
-    ["<!--", "-->"],
-    ["<![CDATA[", "]]>"],
-    ["<?", "?>"],
-  ] as const) {
-    if (value.startsWith(opening, start)) {
-      const closingStart = value.indexOf(closing, start + opening.length);
-      return closingStart < 0 ? undefined : closingStart + closing.length;
-    }
-  }
-  if (/^<![A-Z]/u.test(value.slice(start))) {
-    const end = value.indexOf(">", start + 3);
-    return end < 0 ? undefined : end + 1;
-  }
-  let cursor = start + 1;
-  if (value[cursor] === "/") {
-    cursor += 1;
-  }
-  if (!/[A-Za-z]/u.test(value[cursor] ?? "")) {
-    return undefined;
-  }
-  let quote: "'" | '"' | undefined;
-  for (; cursor < value.length; cursor += 1) {
-    const character = value[cursor];
-    if (quote) {
-      if (character === quote) {
-        quote = undefined;
-      }
-      continue;
-    }
-    if (character === "'" || character === '"') {
-      quote = character;
-      continue;
-    }
-    if (character === ">") {
-      return cursor + 1;
-    }
-    if (character === "<") {
-      return undefined;
-    }
-  }
-  return undefined;
-}
-
-function withoutInlineRawHtml(value: string): string {
-  let visible = "";
-  for (let cursor = 0; cursor < value.length;) {
-    const end = inlineRawHtmlEnd(value, cursor);
-    if (end === undefined) {
-      visible += value[cursor] ?? "";
-      cursor += 1;
-    } else {
-      visible += " ";
-      cursor = end;
-    }
-  }
-  return visible;
-}
-
 function markdownLinks(value: string): { label: string; target: string }[] {
-  const visible = withoutInlineRawHtml(withoutCodeSpans(value));
-  return [...visible.matchAll(MARKDOWN_LINK)].flatMap((match) => {
-    const start = match.index;
-    const label = match.groups?.["label"];
-    const target = match.groups?.["target"];
-    if (!label || !target) {
+  const links: { label: string; target: string }[] = [];
+  let cursor = 0;
+  while (cursor < value.length) {
+    if (value[cursor] !== "[") {
       return [];
     }
-    const closingBracket = start + label.length + 1;
-    const openingParenthesis = closingBracket + 1;
-    const closingParenthesis = start + match[0].length - 1;
-    if (
-      isEscapedMarkdownCharacter(visible, start) ||
-      isEscapedMarkdownCharacter(visible, closingBracket) ||
-      isEscapedMarkdownCharacter(visible, openingParenthesis) ||
-      isEscapedMarkdownCharacter(visible, closingParenthesis) ||
-      (visible[start - 1] === "!" && !isEscapedMarkdownCharacter(visible, start - 1))
-    ) {
+    const labelEnd = value.indexOf("]", cursor + 1);
+    if (labelEnd <= cursor + 1) {
       return [];
     }
-    return [{ label, target }];
-  });
+    const label = value.slice(cursor + 1, labelEnd);
+    if (/[[\\\n]/u.test(label) || value[labelEnd + 1] !== "(") {
+      return [];
+    }
+    const targetStart = labelEnd + 2;
+    const targetEnd = value.indexOf(")", targetStart);
+    if (targetEnd <= targetStart) {
+      return [];
+    }
+    const target = value.slice(targetStart, targetEnd);
+    if (/[\\\s()]/u.test(target)) {
+      return [];
+    }
+    links.push({ label, target });
+    cursor = targetEnd + 1;
+    if (cursor === value.length) {
+      return links;
+    }
+    if (value.slice(cursor, cursor + 2) !== ", ") {
+      return [];
+    }
+    cursor += 2;
+  }
+  return links;
 }
 
 function markdownLinkTargets(value: string): string[] {

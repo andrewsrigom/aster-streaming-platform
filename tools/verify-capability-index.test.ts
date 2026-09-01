@@ -154,6 +154,13 @@ test("rejects reviewed link syntax hidden inside inline HTML attributes", () => 
   }
 });
 
+test("rejects a reviewed destination hidden inside another link title", () => {
+  const link = "[Implementation 1](../../services/identity/src/application/profiles.ts)";
+  const hidden = validIndex().replace(link, `[outer](<../../README.md> "${link}")`);
+  const report = analyzeCapabilityIndex(hidden);
+  assert.ok(report.violations.some(({ rule }) => rule === "invalid-link"));
+});
+
 test("rejects an existing but unrelated destination in each traceability role", () => {
   for (const column of [
     "Requirement",
