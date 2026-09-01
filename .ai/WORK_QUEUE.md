@@ -279,9 +279,12 @@ TraceQL timeouts on Redis in attempt1 and Catalog in attempt2 after recovery;
 both projects cleaned. Source `b2c77a8`, tree `a0b091c`, retains the exact
 predicate and timing bounds while applying Tempo's supported
 `most_recent=true` hint. Focused14/14, a complete local three-scenario runtime
-and affected73/73 with60 cached in62.328 seconds pass. Publish this correction,
-require protected acceptance, resolve discussion `3900877477`, complete the
-permitted exact-candidate confirmation and release.
+and affected73/73 with60 cached in62.328 seconds pass. Evidence head `a7c0ae6`,
+tree `267ab80`, passed protected run `33480268553`, including the corrected
+diagnostic exercise, exact cleanup, every owner runtime, Docker-only playable
+demo and aggregate protection. Publish the result, require its exact-head gate,
+resolve discussion `3900877477`, complete the permitted exact-candidate
+confirmation and release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

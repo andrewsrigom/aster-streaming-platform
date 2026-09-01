@@ -59,11 +59,17 @@ Focused runner/profile tests pass14/14. A complete local three-scenario run
 passes and cleans its exact project. The affected gate passes73/73 with60 cached
 in62.328 seconds.
 
+Evidence head `a7c0ae6`, tree `267ab80`, passed protected run `33480268553`.
+Local platform passed the complete three-scenario diagnostic exercise and exact
+cleanup in7m22s. Source quality, every owner runtime and the Docker-only playable
+demo passed in17m37s; classification, dependency review, documentation/security
+and aggregate protection also passed.
+
 ## Active outcome
 
-- Publish the deterministic recent-trace correction and close Phase13 only after
-  its protected acceptance, discussion `3900877477` resolution, the permitted
-  exact-candidate confirmation, merge and exact-main evidence.
+- Publish protected run `33480268553` and close Phase13 only after the resulting
+  evidence head passes, discussion `3900877477` is resolved, the permitted
+  exact-candidate confirmation completes, and merge/exact-main evidence passes.
 
 ## Current local evidence
 
@@ -94,8 +100,7 @@ in62.328 seconds.
 
 ## Exact next actions
 
-1. Commit and publish the diagnostic correction evidence checkpoint once to
-   existing PR57.
+1. Commit and publish protected run `33480268553` once to existing PR57.
 2. Require its exact-head gate, resolve discussion `3900877477` and run the
    permitted exact-candidate confirmation; batch only requirement, security/data,
    availability or public-contract blockers.

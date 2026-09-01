@@ -372,8 +372,11 @@ scenario, dependency, outcome or incomplete result.
   `b2c77a8`, tree `a0b091c`, applies Tempo's supported `most_recent=true` hint
   without changing the exact predicate, 45-second wait or twelve-minute budget.
   Focused tests14/14, one complete local three-scenario run and affected73/73
-  with60 cached in62.328 seconds pass. Protected acceptance, discussion
-  resolution, confirmation, merge and exact-main gates remain.
+  with60 cached in62.328 seconds pass. Evidence head `a7c0ae6`, tree `267ab80`,
+  passed protected run `33480268553`, including the corrected complete
+  diagnostic exercise, exact cleanup, every owner runtime, the Docker-only demo
+  and aggregate protection. Publish this result, require its exact-head gate,
+  then complete discussion resolution, confirmation, merge and exact-main gates.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.

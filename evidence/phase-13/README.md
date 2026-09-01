@@ -186,9 +186,11 @@ attempt2, both after recovery and with exact cleanup. Source `b2c77a8`, tree
 `a0b091c`, adds Tempo's supported `most_recent=true` hint without changing the
 exact scenario predicate, 45-second wait, privacy/recovery checks or run budget.
 Focused tests14/14, one complete local three-scenario run and the affected73/73
-gate with60 cached in62.328 seconds pass. Protected acceptance, discussion
-resolution, permitted exact-candidate confirmation, merge and exact-main release
-remain.
+gate with60 cached in62.328 seconds pass. Evidence head `a7c0ae6`, tree
+`267ab80`, passed protected run `33480268553`, including the corrected complete
+diagnostic exercise, exact cleanup, every owner runtime, the Docker-only playable
+demo and aggregate protection. Discussion resolution, permitted exact-candidate
+confirmation, merge and exact-main release remain.
 
 ## Requirement traceability
 
@@ -199,7 +201,7 @@ remain.
 | P13-R12 | [ADR-0045](../../docs/adr/0045-source-owned-trusted-operations.md), GraphQL architecture and release sequence |
 | P13-R03/R04/R05/R10 | Released through [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json), [demand-control evidence](graphql-demand-controls.txt), PR55 tree-identical main `8cd6c0b` and exact-main run `33425758870` attempt2 |
 | P13-R06/R11 | Released through third corrected source `af47c62`, protected head `e6134ae`, PR56 squash main `98deb52` and exact-main run `33448911764`; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record exact-union verification, expired-marker pruning and all review corrections |
-| P13-R07–R09 | Projection-lease source `3d2f6ee`, tree `cef2ee2`, retains multi-entity source `3d90dff`'s exact Catalog query plan and ten-entity Search/Home hydration at unchanged counts; focused proof5/5, real Catalog maximum-batch20 integration, full Discovery runtime, affected73/73 and protected run `33475401067` pass. Later protected gate reliability correction `b2c77a8` passes focused14/14, a complete diagnostic run and affected73/73 locally; exact-head CI, discussion resolution, confirmation and release remain: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and composition-time semantic audit |
+| P13-R07–R09 | Projection-lease source `3d2f6ee`, tree `cef2ee2`, retains multi-entity source `3d90dff`'s exact Catalog query plan and ten-entity Search/Home hydration at unchanged counts; focused proof5/5, real Catalog maximum-batch20 integration, full Discovery runtime and affected73/73 pass. Later protected gate reliability correction `b2c77a8` passes focused14/14, a complete diagnostic run, affected73/73 and protected run `33480268553`; discussion resolution, confirmation and release remain: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and composition-time semantic audit |
 
 ## Current limitations
 

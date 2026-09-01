@@ -15,7 +15,9 @@ Tempo's supported `most_recent=true` hint while retaining the exact trace and
 scenario predicates, 45-second wait, privacy/recovery checks and twelve-minute
 budget. Focused tests pass14/14, a complete local three-scenario run passes with
 exact cleanup, and the affected gate passes73/73 with60 cached in62.328 seconds.
-Protected acceptance for this verification-harness correction remains pending.
+Evidence head `a7c0ae6`, tree `267ab80`, passed protected run `33480268553`,
+including all three diagnostics, exact cleanup, every owner runtime, the
+Docker-only playable demo and aggregate protection.
 
 Status: P12-R01/R02/R08/R09 are released from source `03abe8a`, evidence head
 `9a058ee`, protected run `33300561121`, clean exact-head confirmation, PR45

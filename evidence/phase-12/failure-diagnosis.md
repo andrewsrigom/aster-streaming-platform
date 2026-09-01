@@ -447,6 +447,11 @@ recovered Catalog trace `7bf2f8d50b4505fc5ddd40d7a58025b8`, PostgreSQL trace
 `f61a1c88e019373fe626f22f333acb06` with causal outcome `cancelled`, and Redis
 trace `b1889e043b4f3793ebb96b6303027928` with unavailable reads/writes and a
 latency-qualified successful fallback. The exact project cleaned. The affected
-gate passes73/73 with60 cached in62.328 seconds. Protected acceptance for this
-verification-harness correction remains pending; the historical P12 release
-claim remains scoped to its already recorded exact source and CI.
+gate passes73/73 with60 cached in62.328 seconds. Evidence head
+`a7c0ae61ba772f75216c572e8351c4f7eccfa3d8`, tree
+`267ab804740e9743220d8da586cf620bcbd32dce`, passed protected workflow
+`33480268553`. Local platform job `99768130579` passed the complete diagnostic
+exercise and exact cleanup; every source/owner runtime, Docker-only playable
+demo and aggregate gate also passed. The historical P12 release claim remains
+scoped to its already recorded exact release source and CI; this later result
+verifies the corrected reusable harness.

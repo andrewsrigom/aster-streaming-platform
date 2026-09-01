@@ -352,7 +352,10 @@ ordering timeouts in two different diagnostic scenarios on protected run
 adds Tempo's supported `most_recent=true` hint while retaining the exact
 predicate, 45-second wait and all privacy/recovery/cleanup checks. Focused
 tests14/14, a complete local three-scenario run and affected73/73 with60 cached
-in62.328 seconds pass. Protected acceptance, discussion resolution, permitted
+in62.328 seconds pass. Evidence head `a7c0ae6`, tree `267ab80`, passed protected
+run `33480268553`: the corrected complete diagnostic exercise, exact cleanup,
+every owner runtime, Docker-only playable demo and aggregate protection passed.
+Protected-result publication, exact-head gate, discussion resolution, permitted
 exact-candidate confirmation and release remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
@@ -915,15 +918,16 @@ query-plan/clean-package correction and a real ten-entity/maximum-batch paramete
 remediation plus the derived projection-lease assertion. Evidence head `35d46d9`
 passed protected run `33475401067`. Later protected run `33476967426` exposed a
 P12-R10 recent-store ordering defect; source `b2c77a8` passes focused14/14, one
-complete local diagnostic runtime and affected73/73. Exact-head protected CI,
-exact-candidate confirmation and release remain.
+complete local diagnostic runtime, affected73/73 and protected run
+`33480268553`. Protected-result exact-head gate, exact-candidate confirmation
+and release remain.
 Phase14 capacity validation and hosted deployment remain planned.
 
 ## Next outcome
 
-For P13-R07/P13-R08/P13-R09 item67, publish source `b2c77a8` plus its evidence,
-require exact-head protected CI, resolve discussion `3900877477`, request the
-single permitted exact-candidate confirmation, squash merge and verify
+For P13-R07/P13-R08/P13-R09 item67, publish protected run `33480268553`, require
+the evidence head's exact protected CI, resolve discussion `3900877477`, request
+the single permitted exact-candidate confirmation, squash merge and verify
 exact-main CI. Then close Phase13 and activate the newly documented
 reference/readability direction from clean main; hosted deployment is not its
 immediate objective.

@@ -516,7 +516,16 @@ Results:
   writes plus latency-qualified PostgreSQL fallback. The exact project cleaned.
   The affected gate passes73/73 with60 cached in62.328 seconds.
 
-- Publish one evidence checkpoint, require exact-head protected CI, resolve
+Published evidence head a7c0ae61ba772f75216c572e8351c4f7eccfa3d8,
+tree 267ab804740e9743220d8da586cf620bcbd32dce, passed protected run
+33480268553. Local platform job 99768130579 passed the complete three-scenario
+diagnostic exercise and exact cleanup in7m22s. Install/source job 99768130618
+passed source quality, real platform integration, Catalog, Playback, Engagement,
+Discovery and the Docker-only playable demo in17m37s. Classification, dependency
+review, documentation/security and aggregate protection also passed. The run
+started 2026-09-01T07:02:40Z and completed 2026-09-01T07:20:34Z.
+
+- Publish this protected result once, require its exact-head gate, resolve
   discussion 3900877477, run the permitted exact-candidate confirmation, then
   merge and confirm exact-main CI before declaring P13-R07/R08/R09 or Phase13
   released.
