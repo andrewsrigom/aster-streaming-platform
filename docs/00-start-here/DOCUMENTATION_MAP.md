@@ -46,6 +46,8 @@
 
 ### Learn through implementation
 
+- [`docs/00-start-here/CAPABILITY_INDEX.md`](CAPABILITY_INDEX.md) — move from a capability to its
+  requirement, representative code, adverse test, evidence, and operational guide
 - `docs/00-start-here/ENGINEERING_DEMONSTRATION.md`
 - `docs/handbook/01-node-in-production.md`
 - `docs/handbook/02-domain-and-clean-architecture.md`
@@ -107,6 +109,7 @@
 | Current implementation | source code and passing tests |
 | Measured performance | `evidence/` and experiment records |
 | Operational response | `docs/operations/` |
+| Capability-to-code navigation | `docs/00-start-here/CAPABILITY_INDEX.md` |
 | Engineering demonstration coverage | `docs/00-start-here/ENGINEERING_DEMONSTRATION.md` |
 | Remaining Phase 01 runtime design | `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` |
 | Branch, commit, CI, and GitHub controls | `docs/operations/REPOSITORY_GOVERNANCE.md` |

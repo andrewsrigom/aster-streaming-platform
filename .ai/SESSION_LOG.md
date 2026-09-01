@@ -4,6 +4,41 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-01 — P14-R14 capability index activation
+
+### Completed
+
+- PR59 corrected closeout head `ee97d3d`, tree `8f6603e`, passed protected
+  run `33495819403` and clean confirmation. Squash main `56acfb7` retained
+  that exact tree; exact-main run `33496347713` passed.
+- Activated item69/P14-R14 on `docs/capability-index` from exact post-closeout
+  main `56acfb7`.
+- Defined a bounded eleven-row capability index and dependency-free coverage
+  verifier. Existing documentation validation remains responsible for concrete
+  path and anchor integrity.
+- Added the public capability index with exact requirement, owner, source,
+  adverse-test, evidence and operations links for all eleven required IDs.
+- Added the dependency-free verifier and six adverse tests for coverage,
+  ordering, owner/status vocabulary, repository-relative links, malformed
+  UTF-8 and bounded input. Wired it into documentation scripts and navigation.
+- Focused documentation tests pass16/16. Documentation validation passes for250
+  documents and eleven capability rows. The final changed-scope gate passes
+  13/13 tasks after building all17 packages needed by type-aware lint in this
+  fresh worktree.
+
+### Evidence
+
+- P14-R13 chronology and closeout remain in `evidence/phase-14/README.md`.
+- The item69 change plan records scope, failure behavior, tests and rollback.
+- The final local candidate gate includes101 platform-policy and13
+  repository-memory tests. No product behavior changed, so heavyweight runtime
+  evidence was not repeated.
+
+### Next action
+
+- Commit the source candidate, record exact evidence, publish it for protected
+  CI and review, then merge and verify exact-main before activating P14-R15.
+
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 
 ### Completed

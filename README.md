@@ -22,6 +22,14 @@ and [playback guide](apps/web/PLAYBACK.md).
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
+## Navigate the implementation
+
+Start with the [capability index](docs/00-start-here/CAPABILITY_INDEX.md) when you want to find
+how a behavior is implemented. It connects each major capability to its owning requirement,
+representative source, focused adverse test, checked-in evidence and operational guide. The
+[documentation map](docs/00-start-here/DOCUMENTATION_MAP.md) provides broader reading paths for
+product, architecture, implementation, operations and quality.
+
 ## Run the playable Docker demo
 
 With Git and Docker Engine 26.0.0+/Compose 2.26.1+, run from the repository root:

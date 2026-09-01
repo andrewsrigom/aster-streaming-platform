@@ -95,6 +95,8 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`tools/verify-architecture.test.ts`](../../tools/verify-architecture.test.ts) — Architecture Boundary Scanner Tests
 - [`tools/verify-documentation.ts`](../../tools/verify-documentation.ts) — Static Documentation Validator
 - [`tools/verify-documentation.test.ts`](../../tools/verify-documentation.test.ts) — Documentation Validator Tests
+- [`tools/verify-capability-index.ts`](../../tools/verify-capability-index.ts) — Capability Traceability Validator
+- [`tools/verify-capability-index.test.ts`](../../tools/verify-capability-index.test.ts) — Capability Traceability Validator Tests
 - [`tools/verify-ci-policy.ts`](../../tools/verify-ci-policy.ts) — GitHub Actions and Dependabot Policy Validator
 - [`tools/verify-ci-policy.test.ts`](../../tools/verify-ci-policy.test.ts) — CI Policy Validator Tests
 - [`tools/verify-local-platform.mjs`](../../tools/verify-local-platform.mjs) — Local Platform Policy Validator
@@ -124,6 +126,7 @@ This index lists repository governance artifacts and every Markdown source in th
 ## docs/00-start-here
 
 - [`docs/00-start-here/BASELINE_VALIDATION.md`](BASELINE_VALIDATION.md) — Baseline Validation
+- [`docs/00-start-here/CAPABILITY_INDEX.md`](CAPABILITY_INDEX.md) — Capability-to-Proof Navigation Index
 - [`docs/00-start-here/DELIVERY_MODEL.md`](DELIVERY_MODEL.md) — Delivery Model
 - [`docs/00-start-here/DOCUMENTATION_MAP.md`](DOCUMENTATION_MAP.md) — Documentation Map
 - [`docs/00-start-here/ENGINEERING_DEMONSTRATION.md`](ENGINEERING_DEMONSTRATION.md) — Engineering Demonstration Contract

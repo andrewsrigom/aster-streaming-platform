@@ -12,10 +12,11 @@ verified. Hosted capacity and release requirements P14-R01–R12 remain planned
 and inactive until the repository owner explicitly authorizes provider choices,
 credentials and resource creation.
 
-No work item is active. Item69 (P14-R14), the capability index, is the first
-`READY` item and must start from `origin/main` after this closeout merges.
-That base must contain item68 as `DONE` and the verified P14-R13 evidence;
-`e925504` is the documented predecessor, not a valid post-closeout base.
+Item69 (P14-R14), the capability index, is the sole active item on
+`docs/capability-index`, worktree `/tmp/aster-capability-index`, from exact
+post-closeout main `56acfb74020a73beb0e17f7b92579b988d315982`. That base
+contains item68 as `DONE`, the verified P14-R13 evidence and passing exact-main
+run `33496347713`.
 
 ## Verified
 
@@ -43,6 +44,23 @@ for the final source, runs, review, merge and limitations. No hosted deployment
 is claimed.
 
 ## Current work
+
+Item69 implements P14-R14. The public capability index now maps eleven required
+capabilities to requirements, authoritative owners, representative source,
+focused adverse tests, checked-in evidence and operations. Its dependency-free
+verifier requires exact coverage, owner/status vocabulary and
+repository-relative traceability links; existing documentation validation
+proves the concrete paths, anchors, root-escape policy and symbolic-target
+policy.
+
+Focused documentation tests pass16/16. Documentation validation passes for250
+documents, 2,875 headings, 1,622 links, four supported status claims and the
+eleven exact capability rows. After building the17 workspace packages required
+by type-aware lint in this fresh worktree, the final changed-scope gate passes
+13/13 tasks, including101 platform-policy and13 repository-memory tests. No
+product runtime behavior changed, so heavyweight PostgreSQL, browser, media and
+Docker journey evidence remains applicable. Protected publication, review,
+merge and exact-main acceptance remain pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
@@ -128,7 +146,6 @@ of public availability, production capacity or licensed commercial catalog.
 
 ## Not implemented
 
-- P14-R14 capability index;
 - P14-R15 readability standard and repository inventory;
 - P14-R16 representative readability refactors;
 - P14-R17 reading guides and focused examples;
@@ -165,6 +182,5 @@ the repository-memory, link, formatting and changed-scope gates.
 
 ## Next outcome
 
-Start item69 (P14-R14) from the post-closeout `origin/main` that contains
-item68 as `DONE`, then build the capability index before renaming or
-reorganizing implementation code.
+Publish, review and verify item69 (P14-R14) before renaming or reorganizing
+implementation code.

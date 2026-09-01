@@ -8,6 +8,11 @@ Formatting, linting, strict TypeScript compilation, focused repository-tool test
 
 High-severity registry audit is executable locally, and the hosted `main` and earlier protected pull-request decisions passed. Pull-request dependency and license review is configured and remains fail-closed: P01-R07 run `33023269145` passed source quality, audit, documentation, and security but rejected transitive `bowser@2.14.1` because its `MIT AND MITNFA` classification exceeded the reviewed allowlist. ADR-0012 records the narrow policy remediation; exact-head run `33023896325` passes the corrected Dependency review, every applicable source/documentation/platform job, and the stable aggregate at `f8aa6f8`. P01-R01 adds a path-aware Docker Compose model and smoke lane; protected remediation run `32948639792` passed immutable pull, health-gated startup, protocol/version checks, and unique-project cleanup. P01-R02 expands the platform gate to 18 focused tests, makes reset changes select the isolated Docker job, and verifies refusal, exact teardown, postconditions, recovery, and unrelated-resource preservation locally and from a clean public checkout. P01-R04 adds 14 focused structured-logging tests plus a two-record diagnostic; complete local and clean-checkout graphs pass, and protected run `32966113415` passes hosted dependency review, documentation/security, source quality, audit, and the stable aggregate. Later-phase gates remain planned until their owning phase implements and verifies them.
 
+The documentation gate also validates the canonical capability-to-proof index. It requires the
+complete capability set, authoritative owners, local status vocabulary, complete columns, and
+linked requirements, implementation, adverse tests, evidence, and operations. The general
+documentation validator then proves those local paths and Markdown anchors exist.
+
 ## Always required
 
 These controls are required before a work item is completed when they apply to its changed behavior. They are not a requirement to run the complete repository graph after every edit or commit.
