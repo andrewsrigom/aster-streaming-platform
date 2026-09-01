@@ -210,7 +210,8 @@ P12-R01/R08/R09 evidence. The accepted working correction closes all three
 boundaries. Focused contracts pass44/44 and documentation validation covers
 1,633 links. The complete affected gate passes15/15, including101
 platform-policy,39 CI-policy and13 repository-memory tests. Publication remains
-pending.
+pending. Correction source `d45f3eafd56dabaff36b3f60f355110f99432d1d`,
+tree `b1a004f08a1caf8aa8a9df07293df7571e9a3c22`, freezes the batch.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

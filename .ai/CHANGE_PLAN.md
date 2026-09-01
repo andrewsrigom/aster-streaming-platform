@@ -204,8 +204,9 @@ file and anchor exists.
   Exact-head review opened findings `3908181277`/`3908181285`/`3908181293`.
   The working correction closes job-level non-blocking expressions, Identity
   concurrency proof and observability evidence routing. Focused contracts
-  pass44/44 and the affected gate passes15/15. Publication, protected
-  acceptance, merge and exact-main acceptance remain pending
+  pass44/44 and the affected gate passes15/15. Correction source `d45f3ea`,
+  tree `b1a004f`, freezes the batch. Publication, protected acceptance, merge
+  and exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

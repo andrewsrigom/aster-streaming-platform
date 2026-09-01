@@ -546,7 +546,9 @@ review and exporter-failure proof. Focused capability/CI-policy tests pass44/44.
 Documentation validation covers250 documents, 2,880 headings, 1,633 links, four
 status claims and eleven rows with zero violations. The affected gate passes
 15/15, including101 platform-policy,39 CI-policy and13 repository-memory tests.
-Publication remains pending.
+Correction source `d45f3eafd56dabaff36b3f60f355110f99432d1d`, tree
+`b1a004f08a1caf8aa8a9df07293df7571e9a3c22`, freezes the batch. Publication
+remains pending.
 
 ## Planned evidence
 

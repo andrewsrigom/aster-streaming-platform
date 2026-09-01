@@ -186,7 +186,8 @@ full snapshot through the archival checkpoint remains in
   both Identity concurrency/session integration workers and replaces P12-R10
   diagnosis evidence with the exact P12-R01/R08/R09 artifacts. Focused
   contracts pass44/44, documentation validation covers1,633 links and the
-  affected gate passes15/15, including101 platform tests.
+  affected gate passes15/15, including101 platform tests. Correction source
+  `d45f3ea`, tree `b1a004f`, freezes the batch.
 
 ### Next action
 
