@@ -5,6 +5,8 @@ export const FEDERATED_QUERY_COUNT_WORKLOAD = Object.freeze({
   homeFirst: 10,
   searchFirst: 20,
 });
+const MAXIMUM_DISCOVERY_LEASE_SECONDS = 300;
+const MAXIMUM_DISCOVERY_INDEXING_LAG_SECONDS = 2;
 
 export const PREPARE_QUERY_COUNT_SQL =
   "CREATE EXTENSION IF NOT EXISTS pg_stat_statements; SELECT pg_stat_statements_reset();";
@@ -85,6 +87,22 @@ export function assertHydratedTitleBatch(operation, edges, expectedCount, locale
     throw new Error(`${operation} must hydrate ${String(expectedCount)} distinct title entities.`);
   }
   return Object.freeze(ids);
+}
+
+export function assertDiscoveryProjectionFreshness(edge) {
+  const projection = object(edge, "Discovery projection edge");
+  const { indexedAt, visibleUntil } = projection;
+  const freshnessSeconds = visibleUntil - indexedAt;
+  if (
+    !Number.isSafeInteger(indexedAt) ||
+    !Number.isSafeInteger(visibleUntil) ||
+    !Number.isSafeInteger(freshnessSeconds) ||
+    freshnessSeconds < MAXIMUM_DISCOVERY_LEASE_SECONDS - MAXIMUM_DISCOVERY_INDEXING_LAG_SECONDS ||
+    freshnessSeconds > MAXIMUM_DISCOVERY_LEASE_SECONDS
+  ) {
+    throw new Error("Discovery projection freshness is outside its bounded lease window.");
+  }
+  return freshnessSeconds;
 }
 
 export function selectCurrentTrustedOperation(persistedSource, deliverySource, name) {

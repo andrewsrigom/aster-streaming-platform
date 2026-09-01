@@ -7,6 +7,7 @@ import { performance } from "node:perf_hooks";
 import { fileURLToPath, URL } from "node:url";
 import { promisify } from "node:util";
 import {
+  assertDiscoveryProjectionFreshness,
   assertHydratedTitleBatch,
   assertFederatedQueryBudget,
   FEDERATED_QUERY_COUNT_WORKLOAD,
@@ -520,7 +521,7 @@ try {
   assert.equal(edge.node.id, "00000000-0000-4000-8000-000005000001");
   assert.equal(edge.node.localized.locale, "en");
   assert.equal(edge.node.localized.title, "Signal / 01");
-  assert.equal(edge.visibleUntil - edge.indexedAt, 300);
+  const freshnessSeconds = assertDiscoveryProjectionFreshness(edge);
   assert.equal(payload.connection.pageInfo.hasNextPage, false);
   const empty = await graphql(port, "missing-result-fixture");
   assert.equal(empty.status, 200);
@@ -531,7 +532,7 @@ try {
     distinctHydratedTitles: new Set(searchTitleIds).size,
     zeroResult: "explicit-empty",
     sourceVersion: edge.sourceVersion,
-    freshnessSeconds: edge.visibleUntil - edge.indexedAt,
+    freshnessSeconds,
   });
 
   const publicHome = await measureOperation(

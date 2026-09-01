@@ -113,7 +113,18 @@ runtime then hydrated ten distinct titles for both exact persisted documents at
 unchanged totals: SearchTitles5 (Catalog2/Discovery3) in211.665 ms and
 HomePublic7 (Catalog2/Discovery5) in149.035 ms. TitleDetail2, projection,
 failure-isolation and restart-recovery checks also pass; cleanup reports zero
-remaining resources.
+remaining resources. Published evidence head `71f3ff5` entered protected run
+`33474006491`. Dependency, classification, documentation/security, clean source,
+general integration, Catalog, Playback and Engagement passed. The Discovery
+proof correctly retained query counts and responses, but rejected a legitimate
+299-second projection freshness value because the harness required exactly300.
+The owner contract permits a 300-second lease and at most two seconds between
+source observation and projection indexing. The proof now accepts only the
+derived inclusive 298–300-second interval and has focused acceptance/rejection
+coverage. The repeated complete local runtime passes with freshness300, ten
+distinct Search/Home titles, unchanged counts and cleanup0. The parallel Local
+platform job failed only its known finite TraceQL indexing wait during the
+PostgreSQL diagnostic scenario; it cleaned its exact project.
 
 ## Proposed behavior
 
@@ -180,6 +191,7 @@ matrix.
 | Clean checkout lints Router before Catalog build output exists | Resolve the owner contract through its explicit typed subpath; keep runtime import on the compiled Catalog module | clean-worktree lint plus Router/Catalog builds |
 | Query-count fixture hydrates only one distinct title | Seed ten disposable Catalog titles before the actual Discovery rebuild, execute the current Search and Home documents at their representative client sizes, require ten distinct hydrated entities and keep Catalog's observed count batch-bounded | exact multi-entity response assertions plus per-owner `pg_stat_statements` counts |
 | Catalog encodes four SQL parameters per entity and exceeds the shared 32-parameter guard before the reviewed 20-title batch maximum | Encode the already validated, bounded fence tuples as one JSON parameter and preserve exact ID/version/rights/publication matching in PostgreSQL | real 20-entity Catalog integration plus exact ten-title Router measurements |
+| Protected runtime spends one second between Catalog observation and Discovery indexing | Validate the derived inclusive 298–300-second lease window rather than an impossible exact300 timing assumption; keep values outside the owner contract rejected | focused boundary test plus repeated complete runtime |
 | Predecessor PR changes | Rebase this dependent branch and repeat affected gates/evidence | exact base/head |
 
 ## Data and contracts
@@ -317,7 +329,16 @@ matrix.
   Source `3d90dff`, tree `331be6b`, is frozen. Its affected candidate gate
   passes73/73 with56 cached in69.532 seconds. Evidence checkpoint publication,
   protected CI, discussion resolution, permitted exact-candidate confirmation,
-  merge and exact-main gates remain.
+  merge and exact-main gates remain. Published evidence head `71f3ff5` then
+  passed every source/owner job through Engagement, while Discovery exposed the
+  exact300 freshness assertion after returning legitimate freshness299. The
+  harness correction derives 298–300 from the existing 300-second lease and
+  two-second indexing-lag bounds; focused proof5/5 and the complete repeated
+  Discovery runtime pass with unchanged query counts, ten distinct entities,
+  recovery and cleanup0. Protected run `33474006491` also had an independent
+  known TraceQL indexing timeout in the PostgreSQL diagnostic scenario. Freeze
+  the corrected source, rerun the affected gate, publish one checkpoint and
+  repeat the two failed protected jobs through the normal exact-head workflow.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.

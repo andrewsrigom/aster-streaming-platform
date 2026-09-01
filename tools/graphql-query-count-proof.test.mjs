@@ -5,6 +5,7 @@ import test from "node:test";
 import { URL } from "node:url";
 
 import {
+  assertDiscoveryProjectionFreshness,
   assertHydratedTitleBatch,
   assertFederatedQueryBudget,
   FEDERATED_QUERY_COUNT_WORKLOAD,
@@ -98,6 +99,19 @@ test("query-count proof requires a representative multi-entity workload", () => 
       ),
     /10 distinct/u,
   );
+});
+
+test("query-count proof accepts only the bounded Discovery projection lease window", () => {
+  assert.equal(assertDiscoveryProjectionFreshness({ indexedAt: 100, visibleUntil: 400 }), 300);
+  assert.equal(assertDiscoveryProjectionFreshness({ indexedAt: 101, visibleUntil: 400 }), 299);
+  assert.equal(assertDiscoveryProjectionFreshness({ indexedAt: 102, visibleUntil: 400 }), 298);
+  for (const value of [
+    { indexedAt: 103, visibleUntil: 400 },
+    { indexedAt: 99, visibleUntil: 400 },
+    { indexedAt: 100.5, visibleUntil: 400 },
+  ]) {
+    assert.throws(() => assertDiscoveryProjectionFreshness(value), /bounded lease window/u);
+  }
 });
 
 test("query-count overlay enables only bounded statement instrumentation", async () => {
