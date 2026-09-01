@@ -67,8 +67,13 @@ passes9/9 tasks, including101 platform-policy and13 repository-memory tests.
 candidate result. Evidence head `6bbb3da` passed protected run
 `33492326127`. Initial review discussion `3902757945` found that the handoff
 could request a duplicate evidence commit. Correction `7976c17`, tree
-`0af69fe`, starts from the committed checkpoint and passes the repeated local
-gate. Corrected protected acceptance remains pending.
+`0af69fe`, starts from the committed checkpoint. Evidence head `9ced435`
+passed protected run `33492941279`; that discussion is resolved. Confirmation
+discussions `3902818119`/`3902818121` found incorrect reference-release
+terminology and four stale Phase13 candidate descriptions. Source `c0e4c85`,
+tree `f559fab`, reserves `released` for deployment, aligns the current guides
+and passes the repeated gate9/9. Final corrected protected acceptance remains
+pending.
 
 ## Ordered reference-quality runway
 

@@ -103,7 +103,11 @@ memory; do not change product behavior in this item.
   iteration and changed-scope candidate gates. Evidence head `6bbb3da` passed
   protected run `33492326127`; review discussion `3902757945` identified a
   stale handoff action. Correction `7976c17`, tree `0af69fe`, passes the
-  repeated local gate; corrected protected acceptance is pending
+  repeated local gate; evidence head `9ced435` passed protected run
+  `33492941279`. Confirmation discussions `3902818119`/`3902818121` found
+  reference-release terminology and four stale Phase13 candidate descriptions.
+  Source `c0e4c85`, tree `f559fab`, corrects both and passes the repeated
+  gate9/9; final corrected protected acceptance is pending
 - Iteration gate: repository-memory, documentation and formatting checks
 - Candidate gate: affected-scope gate selected from the exact documentation diff
 - Heavyweight repeat triggers: repeat runtime, PostgreSQL, browser, media or platform evidence only if executable behavior or its gate selection changes

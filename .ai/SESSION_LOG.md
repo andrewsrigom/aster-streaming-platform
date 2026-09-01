@@ -30,6 +30,13 @@ full snapshot through the archival checkpoint remains in
   could ask a resuming agent to duplicate the already committed evidence.
   Correction `7976c17`, tree `0af69fe`, advances from the current checkpoint
   and passes the repeated local gate9/9.
+- Corrected evidence head `9ced435` passed protected run `33492941279`;
+  discussion `3902757945` is resolved. Confirmation discussions
+  `3902818119`/`3902818121` found misuse of the `released` label for an
+  undeployed reference track and four stale current Phase13 candidate
+  descriptions. Source `c0e4c85`, tree `f559fab`, uses `verified` for the
+  local checkpoint, aligns the guides and passes the repeated gate9/9 with0
+  cached.
 
 ### Evidence
 
@@ -38,7 +45,7 @@ full snapshot through the archival checkpoint remains in
 - ADR-0048 and the Phase14 specification define the activation boundary and
   observable reference-track acceptance.
 - `evidence/phase-14/README.md` records the source/tree and exact local
-  candidate checks, protected result and initial review correction.
+  candidate checks, both protected results and the batched review corrections.
 
 ### Next action
 

@@ -40,8 +40,8 @@ remains applicable.
 
 ### Pending acceptance
 
-- corrected evidence-checkpoint protected CI;
-- confirmation review after the initial continuity correction;
+- final corrected evidence-checkpoint protected CI;
+- blocker-boundary confirmation after the status corrections;
 - squash merge with candidate-tree identity;
 - exact-main CI.
 
@@ -61,6 +61,22 @@ though that commit already contained the evidence. Source
 `0af69fee9a8985fca9f04bc06546ffd433010c2c`, now directs the agent to publish
 the existing checkpoint if needed and explicitly forbids an empty or duplicate
 evidence commit. The repeated local changed-scope gate passes9/9 tasks.
+
+Corrected evidence head `9ced4351f851038ef7b91767f8b2b5b0c8f1cb70`
+passed protected run `33492941279`; discussion `3902757945` is resolved.
+Confirmation completed at `2026-09-01T09:39:57Z` and opened two
+public-contract findings:
+
+- discussion `3902818119` found that the specification permitted an undeployed
+  local track to use the contract's `released` label;
+- discussion `3902818121` found four current architecture/handbook guides
+  still describing Phase13 as a candidate or unreleased.
+
+Source `c0e4c8585f752bf1f7bcada2c38cb047a23e89b1`, tree
+`f559fab795c06353b4a6c2db33ea71a547cac08d`, reserves `released` for the
+deployed track, uses `verified` for the local reference checkpoint and aligns
+all four current Phase13 guides with its exact release record. The repeated
+local changed-scope gate passes9/9 tasks with0 cached.
 
 ## Planned evidence
 
