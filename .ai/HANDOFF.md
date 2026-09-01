@@ -76,18 +76,24 @@ path/anchor validity to the existing documentation validator.
   Docker/browser journey, all three diagnostic scenarios and exact cleanup.
 - Discussions `3903615478`/`3903615489` are resolved. Final blocker-boundary
   confirmation completed on exact head `2200bcd` at
-  `2026-09-01T11:55:49Z` without a new finding. All five PR60 discussions are
-  resolved.
+  `2026-09-01T11:55:49Z` and opened discussions
+  `3903836632`/`3903836639`/`3903836650` for comment-only command matching,
+  unbound capability display names and a stale evidence action.
+- Result checkpoint `cfe24f2`, tree `14d2d28`, passed protected run
+  `33505162146` in full. All five earlier PR60 discussions are resolved; the
+  three new findings are accepted for batched correction.
 
 ## Exact next actions
 
-1. Commit and publish the final immutable protected-result/review record without
-   amending source `6d17f13` or duplicating the already recorded checkpoint.
-2. Wait for the always-required documentation-only checks on that result
-   checkpoint; no further review round is permitted without a new blocking
-   public, security, data or availability boundary.
-3. Merge the accepted candidate, verify exact-main CI and close item69 before
-   activating item70/P14-R15.
+1. Complete the batched correction for discussions
+   `3903836632`/`3903836639`/`3903836650`: ignore YAML comment text in the
+   governance command proof, bind exact display names and resume from the
+   existing result checkpoint.
+2. Run focused policy/index tests and the affected changed-scope gate, then
+   publish the existing correction checkpoint and resolve those discussions.
+3. Require protected CI and one confirmation only because these findings alter
+   the public/governance boundary. Then merge, verify exact-main CI and close
+   item69 before activating item70/P14-R15.
 
 ## Execution boundary
 

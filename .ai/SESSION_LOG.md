@@ -50,9 +50,13 @@ full snapshot through the archival checkpoint remains in
 - Evidence head `2200bcd`, tree `dae7665`, passed protected run `33503123616`,
   including every owner runtime, the Docker/browser journey, all three
   diagnostic scenarios and exact cleanup. Both discussions are resolved.
-- Final blocker-boundary confirmation completed on exact head `2200bcd` at
-  `2026-09-01T11:55:49Z` without a new finding. All five PR60 discussions are
-  resolved.
+- Blocker-boundary confirmation completed at `2026-09-01T11:55:49Z` and opened
+  discussions `3903836632`/`3903836639`/`3903836650`: YAML comments could
+  satisfy governance command matching, display names were not bound to
+  capability IDs and the handoff retained a completed evidence action.
+- Result checkpoint `cfe24f2`, tree `14d2d28`, passed protected run
+  `33505162146` in full. All five earlier discussions remain resolved; the
+  three new findings are accepted for one batched correction.
 
 ### Evidence
 
@@ -67,9 +71,10 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish one final result checkpoint containing only the immutable protected
-  run and review record. After its documentation-only checks pass, merge and
-  complete exact-main verification before activating P14-R15.
+- Complete and locally verify the three accepted review corrections, publish
+  that existing checkpoint, resolve the discussions and require one
+  blocker-boundary confirmation. Then merge and complete exact-main
+  verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

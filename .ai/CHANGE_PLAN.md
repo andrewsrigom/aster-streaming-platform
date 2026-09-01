@@ -66,9 +66,12 @@ file and anchor exists.
 - Existing but unrelated repository links fail when they do not match the
   reviewed requirement, implementation, adverse-test, evidence or operations
   destination for that capability.
+- Each capability ID is bound to its reviewed public display name; links and
+  owner metadata cannot mask a misleading label.
 - Documentation-only changes cannot bypass the capability-index verifier or
   its adverse tests in protected CI; the policy parser bounds `governance` at
-  the next top-level job rather than a later named job.
+  the next top-level job rather than a later named job and ignores YAML comment
+  text when proving executable commands.
 - No product behavior, schema, persistence, event, cache, media or deployment
   configuration changes.
 
@@ -81,7 +84,8 @@ file and anchor exists.
 | A traceability column lacks a Markdown link | Reject the row before the general link scan | Column-specific diagnostic |
 | A valid repository link is moved into the wrong capability or role | Reject the row against its reviewed destination set | Capability-and-column diagnostic |
 | A linked path or anchor disappears | Existing documentation validation fails | Broken-link or missing-anchor diagnostic |
-| A later workflow edit removes, relocates or isolates the index check/tests in another job | CI policy tests fail before protected acceptance | Job-scoped command diagnostic |
+| A later workflow edit removes, comments out, relocates or isolates the index check/tests in another job | CI policy tests fail before protected acceptance | Job-scoped command diagnostic |
+| A capability display name drifts from the reviewed public vocabulary | Reject the row before publication | Capability-and-name diagnostic |
 | Table size or input encoding is invalid | Stop within fixed byte/row limits | Bounded input diagnostic |
 
 ## Data and contracts
@@ -123,8 +127,9 @@ file and anchor exists.
 - Application: not applicable
 - Integration: capability-index verifier against the checked-in document
 - Contract: accept exact coverage; reject missing/duplicate/extra rows,
-  owner/status drift, missing columns/links, role-swapped destinations,
-  governance-job isolation, malformed UTF-8 and bounds
+  capability/owner/status drift, missing columns/links, role-swapped
+  destinations, commented or isolated governance commands, malformed UTF-8
+  and bounds
 - Browser: not applicable
 - Performance/failure: dependency-free bounded parser completes within the
   existing documentation gate
@@ -134,9 +139,9 @@ file and anchor exists.
 - Commands: focused Node.js test, `pnpm docs:check`, `pnpm docs:test`,
   `pnpm ai:check`, `pnpm check:changed`
 - Raw artifact path: `evidence/phase-14/README.md`
-- Acceptance result: implementation, local candidate gate, protected full gate
-  and final review pass; result checkpoint, merge and exact-main acceptance
-  remain pending
+- Acceptance result: prior implementation and protected full gates pass; the
+  latest review opened three public/governance findings whose correction,
+  protected acceptance, merge and exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

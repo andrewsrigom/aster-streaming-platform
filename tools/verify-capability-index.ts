@@ -38,6 +38,7 @@ type TraceabilityColumn = (typeof TRACEABILITY_COLUMNS)[number];
 export const CAPABILITY_INDEX_ROWS = [
   {
     id: "identity-profiles",
+    capability: "Profile ownership and lifecycle",
     owner: "Identity and Profiles",
     status: "released",
     targets: {
@@ -53,6 +54,7 @@ export const CAPABILITY_INDEX_ROWS = [
   },
   {
     id: "catalog",
+    capability: "Rights-aware title lifecycle",
     owner: "Catalog",
     status: "released",
     targets: {
@@ -68,6 +70,7 @@ export const CAPABILITY_INDEX_ROWS = [
   },
   {
     id: "playback",
+    capability: "Owner-authoritative playback sessions",
     owner: "Playback",
     status: "released",
     targets: {
@@ -83,6 +86,7 @@ export const CAPABILITY_INDEX_ROWS = [
   },
   {
     id: "engagement",
+    capability: "Profile-owned progress and replay",
     owner: "Engagement",
     status: "released",
     targets: {
@@ -98,6 +102,7 @@ export const CAPABILITY_INDEX_ROWS = [
   },
   {
     id: "discovery",
+    capability: "Independent cached home rails",
     owner: "Discovery",
     status: "released",
     targets: {
@@ -113,6 +118,7 @@ export const CAPABILITY_INDEX_ROWS = [
   },
   {
     id: "router-graphql",
+    capability: "Bounded federated GraphQL execution",
     owner: "Router",
     status: "released",
     targets: {
@@ -129,6 +135,7 @@ export const CAPABILITY_INDEX_ROWS = [
   },
   {
     id: "web-accessibility",
+    capability: "Accessible Web interaction states",
     owner: "Web",
     status: "released",
     targets: {
@@ -141,6 +148,7 @@ export const CAPABILITY_INDEX_ROWS = [
   },
   {
     id: "media",
+    capability: "Rights-gated media processing",
     owner: "Catalog",
     status: "released",
     targets: {
@@ -156,6 +164,7 @@ export const CAPABILITY_INDEX_ROWS = [
   },
   {
     id: "resilience",
+    capability: "Deadline-budgeted safe reads",
     owner: "Runtime",
     status: "released",
     targets: {
@@ -172,6 +181,7 @@ export const CAPABILITY_INDEX_ROWS = [
   },
   {
     id: "observability",
+    capability: "Bounded metrics, traces, and exporter health",
     owner: "Telemetry",
     status: "released",
     targets: {
@@ -188,6 +198,7 @@ export const CAPABILITY_INDEX_ROWS = [
   },
   {
     id: "repository-workflows",
+    capability: "Bounded local and protected quality gates",
     owner: "Repository governance",
     status: "released",
     targets: {
@@ -204,6 +215,7 @@ export const CAPABILITY_INDEX_ROWS = [
     },
   },
 ] as const satisfies readonly {
+  capability: string;
   id: string;
   owner: string;
   status: string;
@@ -215,6 +227,7 @@ type CapabilityIndexColumn = (typeof CAPABILITY_INDEX_COLUMNS)[number];
 export type CapabilityIndexRule =
   | "duplicate-id"
   | "duplicate-table"
+  | "invalid-capability"
   | "invalid-header"
   | "invalid-link"
   | "invalid-owner"
@@ -366,6 +379,13 @@ function validateRow(
       detail: `${id} owner must be ${expected.owner}`,
       line: row.line,
       rule: "invalid-owner",
+    });
+  }
+  if (row.cells.Capability !== expected.capability) {
+    addViolation(violations, {
+      detail: `${id} capability must be ${expected.capability}`,
+      line: row.line,
+      rule: "invalid-capability",
     });
   }
   if (row.cells.Status !== expected.status) {

@@ -256,10 +256,24 @@ the generated-media path, Docker/browser journey, dependency audit, all three
 injected diagnostic scenarios, exact scoped cleanup and the aggregate gate
 passed. Discussions `3903615478` and `3903615489` are resolved.
 
-The permitted final blocker-boundary confirmation completed on that exact head
-at `2026-09-01T11:55:49Z` without a new finding. All five PR60 review
-discussions are resolved. The final result checkpoint, merge and exact-main
-acceptance remain pending.
+The permitted blocker-boundary confirmation completed at
+`2026-09-01T11:55:49Z` and opened three additional findings on the subsequently
+published result checkpoint `cfe24f2917efb32e7fea44071a2454e3a3ae2e5b`,
+tree `14d2d28726850679f29d3228e833be84599fade0`:
+
+- discussion `3903836632` found that YAML comment text inside `governance`
+  could satisfy the command matcher after the executable command was replaced;
+- discussion `3903836639` found that the public capability display name was
+  not bound to its reviewed ID;
+- discussion `3903836650` found that the handoff could still direct a resuming
+  agent to record an already committed evidence checkpoint.
+
+Result-checkpoint run `33505162146` passed the complete protected gate,
+including every owner runtime, the generated-media path, Docker/browser
+journey, all three diagnostic scenarios, exact cleanup and aggregate
+protection. The three findings are accepted for batched correction; publication
+and confirmation of that correction, merge and exact-main acceptance remain
+pending.
 
 ## Planned evidence
 

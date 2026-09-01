@@ -12,10 +12,10 @@ import {
 } from "./verify-capability-index.ts";
 
 function validIndex(): string {
-  const rows = CAPABILITY_INDEX_ROWS.map(({ id, owner, status, targets }) => {
+  const rows = CAPABILITY_INDEX_ROWS.map(({ capability, id, owner, status, targets }) => {
     const links = (column: keyof typeof targets): string =>
       targets[column].map((target, index) => `[${column} ${index + 1}](${target})`).join(", ");
-    return `| ${id} | Capability | ${owner} | ${links("Requirement")} | ${status} | ${links("Implementation")} | ${links("Adverse test")} | ${links("Evidence")} | ${links("Operations")} |`;
+    return `| ${id} | ${capability} | ${owner} | ${links("Requirement")} | ${status} | ${links("Implementation")} | ${links("Adverse test")} | ${links("Evidence")} | ${links("Operations")} |`;
   });
   return [
     "# Capability Index",
@@ -37,7 +37,10 @@ test("accepts the exact bounded capability set with linked proof columns", () =>
 
 test("rejects missing links and non-authoritative owner or status vocabulary", () => {
   const source = validIndex()
-    .replace("| catalog | Capability | Catalog |", "| catalog | Capability | Search team |")
+    .replace(
+      "| catalog | Rights-aware title lifecycle | Catalog |",
+      "| catalog | Rights-aware title lifecycle | Search team |",
+    )
     .replace(
       "| released | [Implementation 1](../../services/identity/src/application/profiles.ts)",
       "| deployed | [Implementation 1](https://example.com/source.ts)",
@@ -48,6 +51,19 @@ test("rejects missing links and non-authoritative owner or status vocabulary", (
   assert.ok(rules.includes("missing-link"));
   assert.ok(rules.includes("invalid-link"));
   assert.ok(rules.includes("invalid-owner"));
+});
+
+test("rejects a misleading displayed capability name", () => {
+  const source = validIndex().replace(
+    "| identity-profiles | Profile ownership and lifecycle |",
+    "| identity-profiles | Unrelated account behavior |",
+  );
+  const report = analyzeCapabilityIndex(source);
+  assert.ok(
+    report.violations.some(
+      ({ detail, rule }) => rule === "invalid-capability" && detail.includes("identity-profiles"),
+    ),
+  );
 });
 
 test("rejects an existing but unrelated destination in each traceability role", () => {
@@ -77,8 +93,14 @@ test("rejects an existing but unrelated destination in each traceability role", 
 
 test("rejects duplicate, missing, unexpected, and reordered capability IDs", () => {
   const source = validIndex()
-    .replace("| catalog | Capability", "| identity-profiles | Capability")
-    .replace("| playback | Capability", "| unknown-capability | Capability");
+    .replace(
+      "| catalog | Rights-aware title lifecycle",
+      "| identity-profiles | Rights-aware title lifecycle",
+    )
+    .replace(
+      "| playback | Owner-authoritative playback sessions",
+      "| unknown-capability | Owner-authoritative playback sessions",
+    );
   const report = analyzeCapabilityIndex(source);
   const rules = report.violations.map(({ rule }) => rule);
   assert.ok(rules.includes("duplicate-id"));

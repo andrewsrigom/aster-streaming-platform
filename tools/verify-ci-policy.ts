@@ -75,6 +75,13 @@ function workflowJobSource(source: string, jobName: string): string {
   return lines.slice(start + 1, end).join("\n");
 }
 
+function withoutWorkflowComments(source: string): string {
+  return source
+    .split("\n")
+    .map((line) => line.replace(/\s+#.*$/u, "").replace(/^\s*#.*$/u, ""))
+    .join("\n");
+}
+
 export function validateWorkflowPolicy(
   source: string,
   file = ".github/workflows/ci.yml",
@@ -235,7 +242,7 @@ export function validateWorkflowPolicy(
     /package-manager-cache:\s*false/u,
     "implicit setup-node caching must be disabled",
   );
-  const governanceJob = workflowJobSource(source, "governance");
+  const governanceJob = withoutWorkflowComments(workflowJobSource(source, "governance"));
   for (const [pattern, detail] of [
     [
       /node \.\/tools\/verify-capability-index\.ts/u,

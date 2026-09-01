@@ -282,7 +282,15 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
         "  quality:\n",
         `  skipped-doc-check:\n    if: false\n    runs-on: ubuntu-24.04\n    steps:\n      - run: ${requiredCommand}\n\n  quality:\n`,
       );
-    for (const weakened of [movedOutsideGovernance, movedIntoSkippedIntermediateJob]) {
+    const retainedOnlyAsGovernanceComment = source.replace(
+      requiredCommand,
+      `true # ${requiredCommand}`,
+    );
+    for (const weakened of [
+      movedOutsideGovernance,
+      movedIntoSkippedIntermediateJob,
+      retainedOnlyAsGovernanceComment,
+    ]) {
       assert.ok(
         validateWorkflowPolicy(weakened).some(
           ({ detail, rule }) => rule === "commands" && detail.includes("capability-index"),
