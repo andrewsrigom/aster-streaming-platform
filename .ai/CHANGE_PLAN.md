@@ -66,6 +66,10 @@ file and anchor exists.
 - Identity P02-R10 reaches the PostgreSQL and GraphQL concurrency/session
   workers. Observability P12-R01/R08/R09 reaches its exact trace, cardinality and
   exporter-failure evidence rather than the separate P12-R10 diagnosis proof.
+- Engagement replay reaches its owning P08-R03 requirement. Discovery cached
+  rails reach P10-R04 and the Phase 10 SWR release evidence in addition to the
+  Phase 09 independent-rail contract. P05-R10 reaches the public SSR/hydration,
+  navigation and real profile-selection browser proofs.
 - Status follows the repository's planned/implemented/verified/released
   vocabulary and does not promote hosted P14-R01–R12 work.
 - Missing, duplicate, extra or malformed capability rows fail closed with
@@ -119,7 +123,7 @@ file and anchor exists.
 | A requirement link keeps its target but mislabels the visible requirement ID | Reject the row before publication | Requirement-label diagnostic |
 | A reviewed destination is wrapped in an inline code span | Treat the interactive link as missing | Link-role diagnostic |
 | Reviewed link syntax is escaped or converted to an image | Treat the interactive link as missing | Link-prefix diagnostic |
-| A listed requirement lacks a representative implementation or adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
+| A listed behavior lacks its owning requirement, evidence or complete adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
 | A required command is conditional, non-blocking or belongs to a conditional job | Treat the command as absent | Executable-step diagnostic |
 | An unsafe workflow key is quoted | Treat it like the equivalent plain YAML key | YAML-key diagnostic |
 | A governance job is non-blocking through an expression | Treat every command in the job as absent | Job-level execution diagnostic |
@@ -205,8 +209,12 @@ file and anchor exists.
   The working correction closes job-level non-blocking expressions, Identity
   concurrency proof and observability evidence routing. Focused contracts
   pass44/44 and the affected gate passes15/15. Correction source `d45f3ea`,
-  tree `b1a004f`, freezes the batch. Publication, protected acceptance, merge
-  and exact-main acceptance remain pending
+  tree `b1a004f`, freezes the batch. Exact-head run `33558557773` passed on
+  checkpoint `366c92a`; its exact-head review opened findings `3908433143`,
+  `3908433153` and `3908433161` for Discovery Phase 10 ownership, Engagement
+  replay ownership and complete P05-R10 browser proof. The working correction
+  closes those navigation gaps. Publication, protected acceptance, merge and
+  exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

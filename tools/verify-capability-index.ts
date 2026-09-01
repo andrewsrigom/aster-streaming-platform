@@ -102,6 +102,7 @@ export const CAPABILITY_INDEX_ROWS = [
     targets: {
       Requirement: [
         "../specs/phase-08-engagement.md#p08-r01",
+        "../specs/phase-08-engagement.md#p08-r03",
         "../specs/phase-08-engagement.md#p08-r04",
       ],
       Implementation: ["../../services/engagement/src/application/record-progress.ts"],
@@ -119,10 +120,14 @@ export const CAPABILITY_INDEX_ROWS = [
       Requirement: [
         "../specs/phase-09-discovery.md#p09-r03",
         "../specs/phase-09-discovery.md#p09-r08",
+        "../specs/phase-10-redis.md#p10-r04",
       ],
       Implementation: ["../../services/discovery/src/application/home-cache.ts"],
       "Adverse test": ["../../services/discovery/test/home-cache.test.ts"],
-      Evidence: ["../../evidence/phase-09/web-discovery-release.md"],
+      Evidence: [
+        "../../evidence/phase-09/web-discovery-release.md",
+        "../../evidence/phase-10/discovery-swr-release.txt",
+      ],
       Operations: ["../../services/discovery/README.md"],
     },
   },
@@ -157,7 +162,11 @@ export const CAPABILITY_INDEX_ROWS = [
     targets: {
       Requirement: ["../specs/phase-05-web-ssr.md#p05-r05", "../specs/phase-05-web-ssr.md#p05-r10"],
       Implementation: ["../../apps/web/features/identity/dialog.tsx"],
-      "Adverse test": ["../../apps/web/test/browser/accessibility.spec.ts"],
+      "Adverse test": [
+        "../../apps/web/test/browser/accessibility.spec.ts",
+        "../../apps/web/test/browser/public.spec.ts",
+        "../../apps/web/test/browser/profiles.spec.ts",
+      ],
       Evidence: ["../../evidence/phase-09/web-discovery-release.md"],
       Operations: ["../../apps/web/README.md"],
     },
