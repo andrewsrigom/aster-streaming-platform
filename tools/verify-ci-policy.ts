@@ -95,6 +95,29 @@ function hasTopLevelYamlKey(source: string, key: string): boolean {
     .some((line) => /^\S/u.test(line) && yamlKey(line) === key);
 }
 
+function hasProtectedCapabilityPrelude(jobSource: string): boolean {
+  const stepsStart = jobSource.indexOf("    steps:\n");
+  if (stepsStart < 0) {
+    return false;
+  }
+  const expected = `    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up exact Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.19.0
+          package-manager-cache: false
+      - name: Validate capability index
+        run: node ./tools/verify-capability-index.ts
+      - name: Test capability index
+        run: node --test ./tools/verify-capability-index.test.ts
+`;
+  return jobSource.slice(stepsStart).startsWith(expected);
+}
+
 function executableWorkflowSteps(jobSource: string): string[] {
   const lines = jobSource.replace(/\r\n?/gu, "\n").split("\n");
   const stepsStart = lines.findIndex((line) => line === "    steps:");
@@ -360,6 +383,14 @@ export function validateWorkflowPolicy(
   );
   const governanceSource = workflowJobSource(source, "governance");
   const governanceSteps = executableWorkflowSteps(governanceSource);
+  if (!hasProtectedCapabilityPrelude(governanceSource)) {
+    violations.push({
+      detail: "capability-index commands must precede mutable governance steps",
+      file,
+      line: 1,
+      rule: "commands",
+    });
+  }
   if (hasTopLevelYamlKey(source, "defaults")) {
     violations.push({
       detail: "workflow-level defaults can bypass capability-index governance commands",

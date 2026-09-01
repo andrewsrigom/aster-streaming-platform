@@ -359,6 +359,10 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       "permissions:\n",
       `"env":\n  BASH_ENV: ./tools/governance-noop.sh\n\npermissions:\n`,
     );
+    const governancePoisonedByPriorRun = source.replace(
+      "      - name: Validate capability index\n",
+      `      - name: Poison later command lookup\n        run: |\n          mkdir -p .fake-bin\n          echo .fake-bin >> "$GITHUB_PATH"\n      - name: Validate capability index\n`,
+    );
     const retainedOnlyAsPrintedText = source.replace(requiredCommand, `echo '${requiredCommand}'`);
     const retainedOnlyInHereDocument = source
       .replace(requiredCommand, "true")
@@ -385,6 +389,7 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       quotedWorkflowRunDefaults,
       workflowShellEnvironment,
       quotedWorkflowShellEnvironment,
+      governancePoisonedByPriorRun,
       retainedOnlyAsPrintedText,
       retainedOnlyInHereDocument,
     ]) {

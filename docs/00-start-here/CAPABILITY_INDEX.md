@@ -10,7 +10,7 @@ deeper investigation is needed.
 
 ## Status vocabulary
 
-`Released` is the canonical maturity label for rows whose owning phase completed its documented
+`released` is the canonical maturity label for rows whose owning phase completed its documented
 local release process and has checked-in evidence. It does not mean that Aster has a hosted or
 public deployment. Phase 14
 reference-quality work uses `verified` when its acceptance checks pass because it improves the

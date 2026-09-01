@@ -115,6 +115,9 @@ file and anchor exists.
   because they can replace or intercept every governance command. Governance
   depends exactly on `classify`, never on a conditional job that
   documentation-only changes skip.
+  The capability check and its focused test are the first mutable governance
+  steps after exact pinned checkout and Node setup, so an earlier step cannot
+  poison later command lookup.
   The required check is a standalone simple Node.js command and the required
   test is one finite `node --test` invocation, not comments, here-documents,
   environment values, printed command text or suppressed steps.
@@ -156,6 +159,7 @@ file and anchor exists.
 | Governance depends on a conditional job instead of the classifier | Treat the capability commands as unavailable to documentation-only CI | Dependency diagnostic |
 | Workflow-level run defaults can replace governance commands | Reject the workflow before command validation | Workflow-default diagnostic |
 | Workflow-level environment can inject shell startup behavior | Reject the workflow before command validation | Workflow-environment diagnostic |
+| A preceding governance step mutates later command lookup | Reject the workflow before command validation | Governance-prelude diagnostic |
 | Required command text exists only inside a here-document or shell structure | Treat the command as absent | Standalone-command diagnostic |
 | Table size or input encoding is invalid | Stop within fixed byte/row limits | Bounded input diagnostic |
 
@@ -281,7 +285,10 @@ file and anchor exists.
   inside another link's title. The working correction replaces permissive link
   extraction with a strict canonical link-list parser. Focused contracts
   pass48/48, documentation tests pass32/32 and the affected gate passes15/15.
-  Correction source `7df3ff6`, tree `83e8c03`, freezes the batch
+  Correction source `7df3ff6`, tree `83e8c03`, freezes the batch. Exact-head
+  review on checkpoint `47b80af` opened findings `3909484066` and `3909484071`
+  for preceding-step command poisoning and an uppercase public status label.
+  The working correction closes both
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff
