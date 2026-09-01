@@ -61,7 +61,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Start item69 (P14-R14), the capability index, from exact main `e925504`.
+- Start item69 (P14-R14), the capability index, from post-closeout
+  `origin/main`; predecessor `e925504` is not a valid item69 base.
 
 ## 2026-09-01 — PR57 exact owner-set correction
 

@@ -16,7 +16,9 @@ No work item is active. Item69 (P14-R14) is the first `READY` item.
 ## Active outcome
 
 There is no active outcome. The next agent may select item69 and create its
-change plan from exact main `e9255041ba45bd298b26857f6ee3d5a9b97089ec`.
+change plan from `origin/main` after this closeout merges. The selected base
+must contain item68 as `DONE` and the verified P14-R13 evidence; do not use
+predecessor `e925504` as the item69 base.
 
 Item69 publishes a maintained capability index linking behavior to:
 
@@ -43,7 +45,8 @@ product behavior is unchanged.
 
 ## Exact next actions
 
-1. Fast-forward a clean worktree to exact main `e925504`.
+1. Fast-forward a clean worktree to the post-closeout `origin/main` and verify
+   it contains item68 as `DONE`.
 2. Move item69 to `IN_PROGRESS` and write its P14-R14 change plan.
 3. Inventory the authoritative capability, test, evidence and operations paths
    before designing the index or its drift check.

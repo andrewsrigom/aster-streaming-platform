@@ -13,8 +13,9 @@ and inactive until the repository owner explicitly authorizes provider choices,
 credentials and resource creation.
 
 No work item is active. Item69 (P14-R14), the capability index, is the first
-`READY` item and must start from exact main
-`e9255041ba45bd298b26857f6ee3d5a9b97089ec`.
+`READY` item and must start from `origin/main` after this closeout merges.
+That base must contain item68 as `DONE` and the verified P14-R13 evidence;
+`e925504` is the documented predecessor, not a valid post-closeout base.
 
 ## Verified
 
@@ -159,5 +160,6 @@ the repository-memory, link, formatting and changed-scope gates.
 
 ## Next outcome
 
-Start item69 (P14-R14) from exact main `e925504` and build the capability index
-before renaming or reorganizing implementation code.
+Start item69 (P14-R14) from the post-closeout `origin/main` that contains
+item68 as `DONE`, then build the capability index before renaming or
+reorganizing implementation code.
