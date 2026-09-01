@@ -224,10 +224,17 @@ full snapshot through the archival checkpoint remains in
   covers1,645 links and the affected gate passes15/15, including101
   platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
   or deployment behavior changed.
+- Exact-head review on checkpoint `50a5184`, tree `7b17875`, opened findings
+  `3909251619`/`3909251628` for inline processing-instruction/declaration/CDATA
+  links and workflow-level shell-startup environment injection.
+- Correction source `43fa31c`, tree `b2f1c28`, closes both. Focused contracts
+  pass47/47 and the affected gate passes15/15, including101 platform-policy,39
+  CI-policy and13 repository-memory tests. No product runtime or deployment
+  behavior changed.
 
 ### Next action
 
-- Publish the exact correction checkpoint, resolve its four threads and request
+- Publish the exact correction checkpoint, resolve its two threads and request
   confirmation only after the PR exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.
 

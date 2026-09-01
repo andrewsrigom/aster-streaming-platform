@@ -268,6 +268,17 @@ pass47/47, documentation tests pass31/31, documentation validation covers1,645
 links and the affected gate passes15/15. No product runtime or deployment
 behavior changed. Publication remains pending.
 
+Checkpoint `50a51843f66974c84cf7b9935081904ddf68553a`, tree
+`7b1787582cbb346c0b57caa7f44c8d3f27887948`, received exact-head review at
+`2026-09-01T23:14:04Z`. Findings `3909251619`/`3909251628` showed that inline
+processing instructions, declarations and CDATA could hide proof links, and
+workflow-level environment could inject shell startup behavior into governance.
+Correction source `43fa31ca27d30c3b1243da7000f43e0c3c9df011`, tree
+`b2f1c28a54c2872986b5d5803119413df3636d01`, closes both. Focused contracts
+pass47/47 and the affected gate passes15/15, including101 platform-policy,39
+CI-policy and13 repository-memory tests. No product runtime or deployment
+behavior changed. Publication remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;

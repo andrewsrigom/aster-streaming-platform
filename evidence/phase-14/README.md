@@ -629,6 +629,22 @@ and eleven rows with zero violations. The affected gate passes15/15,
 including101 platform-policy,39 CI-policy and13 repository-memory tests. No
 product runtime or deployment behavior changed. Publication remains pending.
 
+Checkpoint `50a51843f66974c84cf7b9935081904ddf68553a`, tree
+`7b1787582cbb346c0b57caa7f44c8d3f27887948`, received exact-head review at
+`2026-09-01T23:14:04Z`. It opened two findings:
+
+- `3909251619` found that processing instructions, declarations and CDATA could
+  hide Markdown-looking proof links from rendered output;
+- `3909251628` found that workflow-level environment could inject shell startup
+  behavior into every governance command.
+
+Correction source `43fa31ca27d30c3b1243da7000f43e0c3c9df011`, tree
+`b2f1c28a54c2872986b5d5803119413df3636d01`, strips every reviewed inline raw
+HTML form before link matching and rejects workflow-level environment. Focused
+capability/CI-policy tests pass47/47. The affected gate passes15/15,
+including101 platform-policy,39 CI-policy and13 repository-memory tests. No
+product runtime or deployment behavior changed. Publication remains pending.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and

@@ -262,8 +262,9 @@ file and anchor exists.
   Its exact-head review opened findings `3909251619` and `3909251628` for
   inline processing-instruction/declaration/CDATA links and workflow-level
   shell-startup environment injection. The working correction closes both.
-  Publication, protected acceptance, merge and exact-main acceptance remain
-  pending
+  Focused contracts pass47/47 and the affected gate passes15/15. Correction
+  source `43fa31c`, tree `b2f1c28`, freezes the batch. Publication, protected
+  acceptance, merge and exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff
