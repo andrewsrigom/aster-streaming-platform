@@ -343,6 +343,14 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       "  governance:\n    name: Documentation and security\n    needs: classify\n",
       "  governance:\n    name: Documentation and security\n    needs: quality\n",
     );
+    const workflowRunDefaults = source.replace(
+      "permissions:\n",
+      `defaults:\n  run:\n    shell: node -e "process.exit(0)" {0}\n\npermissions:\n`,
+    );
+    const quotedWorkflowRunDefaults = source.replace(
+      "permissions:\n",
+      `"defaults":\n  run:\n    shell: node -e "process.exit(0)" {0}\n\npermissions:\n`,
+    );
     const retainedOnlyAsPrintedText = source.replace(requiredCommand, `echo '${requiredCommand}'`);
     const retainedOnlyInHereDocument = source
       .replace(requiredCommand, "true")
@@ -365,6 +373,8 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       retainedOnlyInTrailingConditionalGovernanceJob,
       retainedOnlyInQuotedTrailingConditionalGovernanceJob,
       governanceDependsOnConditionalQuality,
+      workflowRunDefaults,
+      quotedWorkflowRunDefaults,
       retainedOnlyAsPrintedText,
       retainedOnlyInHereDocument,
     ]) {

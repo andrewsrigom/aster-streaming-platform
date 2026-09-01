@@ -167,7 +167,11 @@ export const CAPABILITY_INDEX_ROWS = [
         "../../apps/web/test/browser/public.spec.ts",
         "../../apps/web/test/browser/profiles.spec.ts",
       ],
-      Evidence: ["../../evidence/phase-09/web-discovery-release.md"],
+      Evidence: [
+        "../../evidence/phase-05/web-boundaries.md",
+        "../../evidence/phase-05/reader-review.md",
+        "../../evidence/phase-05/ui-foundation.md",
+      ],
       Operations: ["../../apps/web/README.md"],
     },
   },
@@ -471,8 +475,57 @@ function isEscapedMarkdownCharacter(value: string, index: number): boolean {
   return backslashes % 2 === 1;
 }
 
+function inlineHtmlTagEnd(value: string, start: number): number | undefined {
+  if (value[start] !== "<") {
+    return undefined;
+  }
+  let cursor = start + 1;
+  if (value[cursor] === "/") {
+    cursor += 1;
+  }
+  if (!/[A-Za-z]/u.test(value[cursor] ?? "")) {
+    return undefined;
+  }
+  let quote: "'" | '"' | undefined;
+  for (; cursor < value.length; cursor += 1) {
+    const character = value[cursor];
+    if (quote) {
+      if (character === quote) {
+        quote = undefined;
+      }
+      continue;
+    }
+    if (character === "'" || character === '"') {
+      quote = character;
+      continue;
+    }
+    if (character === ">") {
+      return cursor + 1;
+    }
+    if (character === "<") {
+      return undefined;
+    }
+  }
+  return undefined;
+}
+
+function withoutInlineHtmlTags(value: string): string {
+  let visible = "";
+  for (let cursor = 0; cursor < value.length;) {
+    const end = inlineHtmlTagEnd(value, cursor);
+    if (end === undefined) {
+      visible += value[cursor] ?? "";
+      cursor += 1;
+    } else {
+      visible += " ";
+      cursor = end;
+    }
+  }
+  return visible;
+}
+
 function markdownLinks(value: string): { label: string; target: string }[] {
-  const visible = withoutCodeSpans(value);
+  const visible = withoutInlineHtmlTags(withoutCodeSpans(value));
   return [...visible.matchAll(MARKDOWN_LINK)].flatMap((match) => {
     const start = match.index;
     if (
@@ -596,7 +649,9 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
       return "";
     }
 
-    if (htmlTag && RAW_HTML_UNTIL_BLANK_TAGS.has(htmlTag.toLowerCase())) {
+    const typeSixHtmlTag = /^ {0,3}<\/?(?<tag>[A-Za-z][A-Za-z0-9-]*)\b/u.exec(uncommented)
+      ?.groups?.["tag"];
+    if (typeSixHtmlTag && RAW_HTML_UNTIL_BLANK_TAGS.has(typeSixHtmlTag.toLowerCase())) {
       state.htmlUntilBlank = true;
       return "";
     }

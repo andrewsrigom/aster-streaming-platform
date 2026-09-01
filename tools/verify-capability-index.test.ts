@@ -131,6 +131,13 @@ test("rejects escaped links and images as interactive proof destinations", () =>
   }
 });
 
+test("rejects reviewed link syntax hidden inside inline HTML attributes", () => {
+  const link = "[P02-R03](../specs/phase-02-identity-profiles.md#p02-r03)";
+  const hidden = validIndex().replace(link, `<span title="${link}"></span>`);
+  const report = analyzeCapabilityIndex(hidden);
+  assert.ok(report.violations.some(({ rule }) => rule === "invalid-link"));
+});
+
 test("rejects an existing but unrelated destination in each traceability role", () => {
   for (const column of [
     "Requirement",
@@ -286,13 +293,15 @@ test("rejects a capability table after every CommonMark type-6 block tag", () =>
   const source = validIndex();
   const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
   for (const tag of tags) {
-    const hidden = source.replace(header, `<${tag}>\n${header}`);
-    const report = analyzeCapabilityIndex(hidden);
-    assert.equal(report.rows, 0, tag);
-    assert.ok(
-      report.violations.some(({ rule }) => rule === "missing-table"),
-      tag,
-    );
+    for (const opener of [`<${tag}>`, `</${tag}> hidden`]) {
+      const hidden = source.replace(header, `${opener}\n${header}`);
+      const report = analyzeCapabilityIndex(hidden);
+      assert.equal(report.rows, 0, opener);
+      assert.ok(
+        report.violations.some(({ rule }) => rule === "missing-table"),
+        opener,
+      );
+    }
   }
 });
 

@@ -70,7 +70,8 @@ file and anchor exists.
 - Engagement replay reaches its owning P08-R03 requirement. Discovery cached
   rails reach P10-R04 and the Phase 10 SWR release evidence in addition to the
   Phase 09 independent-rail contract. P05-R10 reaches the public SSR/hydration,
-  navigation and real profile-selection browser proofs.
+  navigation and real profile-selection browser proofs. P05-R05 reaches its
+  Phase 05 web-boundary, screen-reader and UI-foundation evidence.
 - Repository workflow proof reaches both the bounded local runner and the
   protected CI workflow, including path-classification and policy adverse tests.
 - Status follows the repository's planned/implemented/verified/released
@@ -86,15 +87,17 @@ file and anchor exists.
 - Each capability ID is bound to its reviewed public display name; links and
   owner metadata cannot mask a misleading label. Inline-code destinations do
   not satisfy a link role because they are not interactive Markdown links;
-  escaped link syntax and images do not satisfy it either.
+  escaped link syntax, images and Markdown-looking syntax inside inline HTML
+  tags or attributes do not satisfy it either.
 - Only a visible Markdown table satisfies capability coverage; rows inside
   fenced code, HTML comments, named raw containers, arbitrary CommonMark type-7
   HTML blocks, complete CommonMark type-6 block tags or four-column indented
   code are ignored. Complete type-7 tags recognize quoted attribute values that
   contain `>`. A comment-only source line remains nonblank while a type-6 raw
-  block is active; comment stripping cannot end that block early. A source line
-  that starts a CommonMark HTML-comment block is discarded completely even when
-  the comment closes before a table-like suffix on the same line.
+  block is active; closing type-6 tags with trailing content start the same raw
+  block. Comment stripping cannot end that block early. A source line that
+  starts a CommonMark HTML-comment block is discarded completely even when the
+  comment closes before a table-like suffix on the same line.
 - Documentation-only changes cannot bypass the capability-index verifier or
   its adverse tests in protected CI; the policy parser bounds `governance` at
   the next top-level job rather than a later named job and recognizes only
@@ -102,8 +105,9 @@ file and anchor exists.
   Job-level conditions are recognized independently of YAML key order. Quoted
   YAML keys have the same suppressing semantics as plain keys. Job-level
   `continue-on-error` expressions are non-blocking even when their value is not
-  the literal `true`. Governance depends exactly on `classify`, never on a
-  conditional job that documentation-only changes skip.
+  the literal `true`. Workflow-level `defaults.run.shell` is forbidden because
+  it can replace every governance command. Governance depends exactly on
+  `classify`, never on a conditional job that documentation-only changes skip.
   The required check is a standalone simple Node.js command and the required
   test is one finite `node --test` invocation, not comments, here-documents,
   environment values, printed command text or suppressed steps.
@@ -127,17 +131,20 @@ file and anchor exists.
 | The complete table is wrapped in a raw HTML block | Treat the public table as missing | HTML-block-aware table diagnostic |
 | An arbitrary complete HTML tag begins a type-7 block around the table | Ignore rows through the CommonMark blank-line boundary | Generic HTML-block diagnostic |
 | A CommonMark type-6 block tag precedes the table | Ignore rows through the CommonMark blank-line boundary | Named HTML-block diagnostic |
+| A closing CommonMark type-6 tag with trailing content precedes the table | Ignore rows through the CommonMark blank-line boundary | Closing HTML-block diagnostic |
 | A comment-only line follows a type-6 block opener | Keep the raw block active because the original source line is nonblank | Source-line visibility diagnostic |
 | A processing instruction, declaration or CDATA block wraps the table | Ignore rows through the matching CommonMark end marker | Marker-terminated HTML-block diagnostic |
 | A requirement link keeps its target but mislabels the visible requirement ID | Reject the row before publication | Requirement-label diagnostic |
 | A reviewed destination is wrapped in an inline code span | Treat the interactive link as missing | Link-role diagnostic |
 | Reviewed link syntax is escaped or converted to an image | Treat the interactive link as missing | Link-prefix diagnostic |
+| Reviewed link syntax appears inside an inline HTML tag or attribute | Treat the interactive link as missing | Inline-HTML diagnostic |
 | A listed behavior lacks its owning requirement, evidence, implementation or complete adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
 | A required command is conditional, non-blocking or belongs to a conditional job | Treat the command as absent | Executable-step diagnostic |
 | An unsafe workflow key is quoted | Treat it like the equivalent plain YAML key | YAML-key diagnostic |
 | A governance job is non-blocking through an expression | Treat every command in the job as absent | Job-level execution diagnostic |
 | A job-level condition appears after `steps` | Treat every command in the job as absent | Order-independent job diagnostic |
 | Governance depends on a conditional job instead of the classifier | Treat the capability commands as unavailable to documentation-only CI | Dependency diagnostic |
+| Workflow-level run defaults can replace governance commands | Reject the workflow before command validation | Workflow-default diagnostic |
 | Required command text exists only inside a here-document or shell structure | Treat the command as absent | Standalone-command diagnostic |
 | Table size or input encoding is invalid | Stop within fixed byte/row limits | Bounded input diagnostic |
 
@@ -241,8 +248,12 @@ file and anchor exists.
   same-line HTML-comment suffix that could expose a hidden table header.
   Correction source `c7534eb`, tree `994e72a`, closes that parser gap. Focused
   contracts pass46/46, documentation tests pass30/30 and the affected gate
-  passes15/15. Publication, protected acceptance, merge and exact-main
-  acceptance remain pending
+  passes15/15. Exact-head run `33567227882` passed on checkpoint `76f320d`; its
+  exact-head review opened findings `3909062923`, `3909062935`, `3909062942`
+  and `3909062945` for closing type-6 tags, inline-HTML link syntax,
+  workflow-level run defaults and the P05-R05 evidence route. The working
+  correction closes all four. Publication, protected acceptance, merge and
+  exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

@@ -88,6 +88,13 @@ function yamlKey(value: string): string | undefined {
   return match?.groups?.["double"] ?? match?.groups?.["single"] ?? match?.groups?.["plain"];
 }
 
+function hasTopLevelYamlKey(source: string, key: string): boolean {
+  return source
+    .replace(/\r\n?/gu, "\n")
+    .split("\n")
+    .some((line) => /^\S/u.test(line) && yamlKey(line) === key);
+}
+
 function executableWorkflowSteps(jobSource: string): string[] {
   const lines = jobSource.replace(/\r\n?/gu, "\n").split("\n");
   const stepsStart = lines.findIndex((line) => line === "    steps:");
@@ -353,6 +360,14 @@ export function validateWorkflowPolicy(
   );
   const governanceSource = workflowJobSource(source, "governance");
   const governanceSteps = executableWorkflowSteps(governanceSource);
+  if (hasTopLevelYamlKey(source, "defaults")) {
+    violations.push({
+      detail: "workflow-level defaults can bypass capability-index governance commands",
+      file,
+      line: 1,
+      rule: "commands",
+    });
+  }
   if (!hasExactJobDependency(governanceSource, "classify")) {
     violations.push({
       detail: "capability-index governance job must depend only on classify",
