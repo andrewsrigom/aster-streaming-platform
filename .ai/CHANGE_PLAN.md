@@ -139,9 +139,9 @@ file and anchor exists.
 - Commands: focused Node.js test, `pnpm docs:check`, `pnpm docs:test`,
   `pnpm ai:check`, `pnpm check:changed`
 - Raw artifact path: `evidence/phase-14/README.md`
-- Acceptance result: prior implementation and protected full gates pass; the
-  latest review opened three public/governance findings whose correction,
-  protected acceptance, merge and exact-main acceptance remain pending
+- Acceptance result: prior protected full gates pass and the three latest
+  public/governance findings pass local correction checks; protected
+  acceptance, merge and exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

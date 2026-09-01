@@ -82,16 +82,17 @@ path/anchor validity to the existing documentation validator.
 - Result checkpoint `cfe24f2`, tree `14d2d28`, passed protected run
   `33505162146` in full. All five earlier PR60 discussions are resolved; the
   three new findings are accepted for batched correction.
+- Correction source `73efa54`, tree `8538ffc`, strips YAML comment text before
+  the job-scoped command proof, binds exact public capability names and
+  advances from the existing result checkpoint. Focused tests pass34/34,
+  documentation tests pass18/18 and the changed-scope gate passes15/15.
 
 ## Exact next actions
 
-1. Complete the batched correction for discussions
-   `3903836632`/`3903836639`/`3903836650`: ignore YAML comment text in the
-   governance command proof, bind exact display names and resume from the
-   existing result checkpoint.
-2. Run focused policy/index tests and the affected changed-scope gate, then
-   publish the existing correction checkpoint and resolve those discussions.
-3. Require protected CI and one confirmation only because these findings alter
+1. Publish the existing correction evidence checkpoint without amending source
+   `73efa54` or creating a duplicate evidence commit, then resolve discussions
+   `3903836632`/`3903836639`/`3903836650`.
+2. Require protected CI and one confirmation only because these findings alter
    the public/governance boundary. Then merge, verify exact-main CI and close
    item69 before activating item70/P14-R15.
 

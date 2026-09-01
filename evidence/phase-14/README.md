@@ -275,6 +275,22 @@ protection. The three findings are accepted for batched correction; publication
 and confirmation of that correction, merge and exact-main acceptance remain
 pending.
 
+Correction source `73efa54827d1535cb818399eea46e7910639d5b1`, tree
+`8538ffccf36f39eec937bad861fa98e056d506bb`, removes YAML comment text before
+checking commands inside the exact `governance` job, binds each ID to its
+reviewed public capability name and advances the handoff from the already
+recorded result checkpoint. Regression tests retain each required command only
+as an inline YAML comment and substitute a misleading capability name.
+
+Focused CI-policy and capability-index tests pass34/34. Documentation tests
+pass18/18; documentation validation still covers250 documents, 2,880 headings,
+1,623 links, four status claims and eleven rows with zero violations.
+TypeScript, focused ESLint, repository-memory validation and `git diff --check`
+pass. The repeated changed-scope gate passes15/15 tasks, including101
+platform-policy,39 CI-policy and13 repository-memory tests. Protected
+publication and confirmation of this correction, merge and exact-main
+acceptance remain pending.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory

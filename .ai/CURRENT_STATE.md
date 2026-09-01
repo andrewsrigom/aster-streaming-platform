@@ -98,7 +98,11 @@ could satisfy policy, display names were not bound to capability IDs and the
 handoff could request duplicate evidence. Result checkpoint `cfe24f2`, tree
 `14d2d28`, passed protected run `33505162146` in full. The three new findings
 are accepted for batched correction; all five earlier PR60 discussions remain
-resolved.
+resolved. Correction source `73efa54`, tree `8538ffc`, strips comment text from
+the job-scoped command proof, binds reviewed capability display names and
+advances from the existing checkpoint. Focused tests pass34/34, documentation
+tests pass18/18 and the repeated changed-scope gate passes15/15. Protected
+publication and confirmation of this correction remain pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

@@ -57,6 +57,10 @@ full snapshot through the archival checkpoint remains in
 - Result checkpoint `cfe24f2`, tree `14d2d28`, passed protected run
   `33505162146` in full. All five earlier discussions remain resolved; the
   three new findings are accepted for one batched correction.
+- Correction source `73efa54`, tree `8538ffc`, strips YAML comment text before
+  checking governance commands, binds exact public capability names and
+  advances from the existing checkpoint. Focused tests pass34/34,
+  documentation tests pass18/18 and the changed-scope gate passes15/15.
 
 ### Evidence
 
@@ -71,10 +75,9 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Complete and locally verify the three accepted review corrections, publish
-  that existing checkpoint, resolve the discussions and require one
-  blocker-boundary confirmation. Then merge and complete exact-main
-  verification before activating P14-R15.
+- Publish the existing correction evidence checkpoint, resolve the three
+  discussions and require one blocker-boundary confirmation. Then merge and
+  complete exact-main verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 
