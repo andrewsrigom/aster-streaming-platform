@@ -280,6 +280,19 @@ function addViolation(
 }
 
 function tableCells(line: string): string[] | undefined {
+  let indentation = 0;
+  for (const character of line) {
+    if (character === " ") {
+      indentation += 1;
+    } else if (character === "\t") {
+      indentation += 4 - (indentation % 4);
+    } else {
+      break;
+    }
+  }
+  if (indentation >= 4) {
+    return undefined;
+  }
   const trimmed = line.trim();
   if (!trimmed.startsWith("|") || !trimmed.endsWith("|")) {
     return undefined;

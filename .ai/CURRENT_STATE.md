@@ -53,7 +53,7 @@ destination sequence for every capability/role pair; existing documentation
 validation proves the concrete paths, anchors, root-escape policy and
 symbolic-target policy.
 
-Focused documentation tests pass17/17. Documentation validation passes for250
+Focused documentation tests pass20/20. Documentation validation passes for250
 documents, 2,880 headings, 1,623 links, four supported status claims and the
 eleven exact capability rows. The always-run protected governance job now
 executes the capability verifier and its adverse tests even for a
@@ -62,12 +62,14 @@ job. The corrected changed-scope gate passes15/15 tasks, including101
 platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
 behavior changed, so heavyweight PostgreSQL, browser, media and Docker journey
 evidence remains applicable. Prior protected acceptance passes; correction of
-three latest public/governance review findings, merge and exact-main acceptance
-remain pending.
+the current public/governance/repository-memory findings, merge and exact-main
+acceptance remain pending.
 
-Correction source `6d17f13eaffd3c2c3243cbd7f983bd066afd90a2`, tree
-`37ded461d71b2e23ea5197650f879c94888b3b04`, is the current local candidate
-recorded in [Phase14 evidence](../evidence/phase-14/README.md).
+Correction source `f239cf57273880ce1e4988985b60263db1c73e8b`, tree
+`59094d0f970500b252220cb583376a31dca629a3`, is the latest frozen correction
+recorded in [Phase14 evidence](../evidence/phase-14/README.md). Its evidence head
+`a6e1388` received three further findings; the working correction is not yet
+frozen.
 
 Evidence head `136def8`, tree `58e640d`, passed protected run
 `33498081610`. Initial review discussions `3903242620`/`3903242629` found an
@@ -110,7 +112,14 @@ correction ignores fenced/commented tables and extracts only unsuppressed
 step-level `run` commands. Focused boundary tests pass35/35, documentation tests
 pass19/19 and the repeated changed-scope gate passes15/15. Protected
 publication remains pending. Correction source `f239cf5`, tree `59094d0`, is
-frozen without product runtime or deployment changes.
+frozen without product runtime or deployment changes. Confirmation on evidence
+head `a6e1388` completed at `2026-09-01T12:44:29Z` and opened discussions
+`3904209124`/`3904209135`/`3904209144` for indented-code visibility,
+conditional execution and the stale leading candidate summary. The accepted
+working correction rejects CommonMark code indentation and any conditional or
+non-blocking command step/job, and aligns this summary. Focused boundary tests
+pass36/36, documentation tests pass20/20 and the affected gate passes15/15.
+Correction freeze remains pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

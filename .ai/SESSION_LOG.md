@@ -70,6 +70,14 @@ full snapshot through the archival checkpoint remains in
   documentation tests pass19/19 and the affected gate passes15/15.
 - Correction source `f239cf5`, tree `59094d0`, is frozen without product
   runtime or deployment changes.
+- Confirmation on evidence head `a6e1388` completed at
+  `2026-09-01T12:44:29Z` and opened discussions
+  `3904209124`/`3904209135`/`3904209144` for CommonMark code indentation,
+  conditional execution and a stale leading candidate summary.
+- The accepted working correction counts indentation columns, rejects
+  conditional/non-blocking required-command steps/jobs and aligns Current
+  State. Focused boundary tests pass36/36, documentation tests pass20/20 and the
+  affected gate passes15/15.
 
 ### Evidence
 
@@ -84,10 +92,9 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish the existing correction evidence checkpoint without amending source
-  `f239cf5`, resolve both discussions and require one
-  blocker-boundary confirmation. Then merge and complete exact-main
-  verification before activating P14-R15.
+- Freeze and publish the current three-finding correction, resolve all three
+  discussions and require one blocker-boundary confirmation. Then merge and
+  complete exact-main verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

@@ -130,6 +130,13 @@ test("rejects a capability table hidden in a fence or HTML comment", () => {
   }
 });
 
+test("rejects a capability table rendered as indented code", () => {
+  const hidden = validIndex().replace(/^\|/gmu, "    |");
+  const report = analyzeCapabilityIndex(hidden);
+  assert.equal(report.rows, 0);
+  assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
 test("reads the canonical path from an explicit repository root", async (context) => {
   const root = await mkdtemp(join(tmpdir(), "aster-capability-index-"));
   context.after(async () => rm(root, { force: true, recursive: true }));

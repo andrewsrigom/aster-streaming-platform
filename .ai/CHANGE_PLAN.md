@@ -69,12 +69,12 @@ file and anchor exists.
 - Each capability ID is bound to its reviewed public display name; links and
   owner metadata cannot mask a misleading label.
 - Only a visible Markdown table satisfies capability coverage; rows inside
-  fenced code or HTML comments are ignored.
+  fenced code, HTML comments or four-column indented code are ignored.
 - Documentation-only changes cannot bypass the capability-index verifier or
   its adverse tests in protected CI; the policy parser bounds `governance` at
   the next top-level job rather than a later named job and recognizes only
-  unsuppressed step-level `run` invocations, not comments, environment values
-  or printed command text.
+  unconditional, blocking step-level `run` invocations in an unconditional job,
+  not comments, environment values, printed command text or suppressed steps.
 - No product behavior, schema, persistence, event, cache, media or deployment
   configuration changes.
 
@@ -90,6 +90,8 @@ file and anchor exists.
 | A later workflow edit removes, comments out, relocates or isolates the index check/tests in another job | CI policy tests fail before protected acceptance | Job-scoped command diagnostic |
 | A capability display name drifts from the reviewed public vocabulary | Reject the row before publication | Capability-and-name diagnostic |
 | The complete table is moved into a fence or HTML comment | Treat the public table as missing | Visibility-aware table diagnostic |
+| The complete table is indented as CommonMark code | Treat the public table as missing | Indentation-aware table diagnostic |
+| A required command is conditional, non-blocking or belongs to a conditional job | Treat the command as absent | Executable-step diagnostic |
 | Table size or input encoding is invalid | Stop within fixed byte/row limits | Bounded input diagnostic |
 
 ## Data and contracts
@@ -132,8 +134,9 @@ file and anchor exists.
 - Integration: capability-index verifier against the checked-in document
 - Contract: accept exact coverage; reject missing/duplicate/extra rows,
   capability/owner/status drift, missing columns/links, role-swapped
-  destinations, hidden tables, commented/printed/environment-only/suppressed
-  or isolated governance commands, malformed UTF-8 and bounds
+  destinations, fenced/commented/indented tables, conditional/non-blocking/
+  commented/printed/environment-only or isolated governance commands,
+  malformed UTF-8 and bounds
 - Browser: not applicable
 - Performance/failure: dependency-free bounded parser completes within the
   existing documentation gate
@@ -143,8 +146,8 @@ file and anchor exists.
 - Commands: focused Node.js test, `pnpm docs:check`, `pnpm docs:test`,
   `pnpm ai:check`, `pnpm check:changed`
 - Raw artifact path: `evidence/phase-14/README.md`
-- Acceptance result: prior protected full gates pass and the two latest
-  public/governance findings pass local correction checks; protected
+- Acceptance result: prior protected full gates pass and the three latest
+  public/governance/memory findings pass local correction checks; protected
   acceptance, merge and exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation

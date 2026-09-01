@@ -273,6 +273,9 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
     "./tools/verify-capability-index.test.ts",
   ] as const) {
     assert.ok(source.includes(requiredCommand), requiredCommand);
+    const requiredInvocation = requiredCommand.startsWith("node ")
+      ? requiredCommand
+      : `node --test ${requiredCommand}`;
     const movedOutsideGovernance = source
       .replace(requiredCommand, "true")
       .replace("  quality:\n", `  quality:\n    # ${requiredCommand}\n`);
@@ -296,8 +299,24 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       .replace(requiredCommand, "true")
       .replace(
         "      - name: Validate repository memory\n",
-        `      - name: Suppressed capability command\n        if: false\n        run: ${requiredCommand}\n      - name: Validate repository memory\n`,
+        `      - name: Suppressed capability command\n        if: false\n        run: ${requiredInvocation}\n      - name: Validate repository memory\n`,
       );
+    const retainedOnlyInConditionalGovernanceStep = source
+      .replace(requiredCommand, "true")
+      .replace(
+        "      - name: Validate repository memory\n",
+        `      - name: Conditional capability command\n        if: github.event_name == 'push'\n        run: ${requiredInvocation}\n      - name: Validate repository memory\n`,
+      );
+    const retainedOnlyInNonBlockingGovernanceStep = source
+      .replace(requiredCommand, "true")
+      .replace(
+        "      - name: Validate repository memory\n",
+        `      - name: Non-blocking capability command\n        continue-on-error: true\n        run: ${requiredInvocation}\n      - name: Validate repository memory\n`,
+      );
+    const retainedOnlyInConditionalGovernanceJob = source.replace(
+      "  governance:\n",
+      "  governance:\n    if: github.event_name == 'push'\n",
+    );
     const retainedOnlyAsPrintedText = source.replace(requiredCommand, `echo '${requiredCommand}'`);
     for (const weakened of [
       movedOutsideGovernance,
@@ -305,6 +324,9 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       retainedOnlyAsGovernanceComment,
       retainedOnlyAsGovernanceEnvironment,
       retainedOnlyInSuppressedGovernanceStep,
+      retainedOnlyInConditionalGovernanceStep,
+      retainedOnlyInNonBlockingGovernanceStep,
+      retainedOnlyInConditionalGovernanceJob,
       retainedOnlyAsPrintedText,
     ]) {
       assert.ok(

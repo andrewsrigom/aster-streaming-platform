@@ -317,6 +317,27 @@ that visibility and executable-step proof. The implementation remains bounded
 to dependency-free Markdown/workflow parsing and changes no product runtime or
 deployment behavior.
 
+Confirmation on evidence head `a6e13889499aecea6782b2db6dfc2858eeb237c9`
+completed at `2026-09-01T12:44:29Z` and opened three findings:
+
+- discussion `3904209124` found that four-space indentation rendered the table
+  as CommonMark code while still satisfying the table parser;
+- discussion `3904209135` found that an event-conditional capability step
+  remained accepted even though pull-request governance could skip it;
+- discussion `3904209144` found that the leading Current State summary still
+  called source `6d17f13` the current candidate after later frozen corrections.
+
+The findings are accepted for one batch. Table parsing now computes space/tab
+indentation columns and rejects candidate lines at the CommonMark code
+threshold. Governance extraction rejects job-level defaults/conditions and any
+required-command step with a condition, custom shell or non-blocking failure
+policy; exact command forms cannot be replaced with printed or shell-suppressed
+text. Current State identifies the latest frozen correction and current pending
+review findings. Focused boundary tests pass36/36, documentation tests pass20/20
+and the repeated changed-scope gate passes15/15 tasks, including101
+platform-policy,39 CI-policy and13 repository-memory tests. Correction freeze
+and protected publication remain pending.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory

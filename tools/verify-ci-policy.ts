@@ -85,6 +85,11 @@ function executableWorkflowSteps(jobSource: string): string {
   if (stepsStart < 0) {
     return "";
   }
+  if (
+    lines.slice(0, stepsStart).some((line) => /^(?:if|defaults):/u.test(uncommentedYamlValue(line)))
+  ) {
+    return "";
+  }
 
   const stepStarts = lines
     .map((line, index) => ({ index, isStep: index > stepsStart && /^ {6}-\s+/u.test(line) }))
@@ -96,7 +101,7 @@ function executableWorkflowSteps(jobSource: string): string {
     const step = lines.slice(start, end);
     if (
       step.some((line) =>
-        /^if:\s*(?:false|\$\{\{\s*false\s*\}\})\s*$/u.test(uncommentedYamlValue(line)),
+        /^(?:if|continue-on-error|shell):/u.test(uncommentedYamlValue(line).replace(/^-\s+/u, "")),
       )
     ) {
       continue;
@@ -117,6 +122,7 @@ function executableWorkflowSteps(jobSource: string): string {
     }
 
     const runIndent = runLine.search(/\S/u);
+    const blockLines: string[] = [];
     for (const line of step.slice(runIndex + 1)) {
       const contentIndent = line.search(/\S/u);
       if (contentIndent >= 0 && contentIndent <= runIndent) {
@@ -124,8 +130,13 @@ function executableWorkflowSteps(jobSource: string): string {
       }
       const command = uncommentedYamlValue(line);
       if (command) {
-        commands.push(command);
+        blockLines.push(command);
       }
+    }
+    if (value.startsWith(">")) {
+      commands.push(blockLines.join(" "));
+    } else {
+      commands.push(...blockLines);
     }
   }
   return commands.join("\n");
@@ -294,11 +305,11 @@ export function validateWorkflowPolicy(
   const governanceJob = executableWorkflowSteps(workflowJobSource(source, "governance"));
   for (const [pattern, detail] of [
     [
-      /(?:^|\n)node \.\/tools\/verify-capability-index\.ts(?:\s|$)/u,
+      /(?:^|\n)node \.\/tools\/verify-capability-index\.ts(?:\n|$)/u,
       "capability-index check is required in the always-run governance job",
     ],
     [
-      /(?:^|\n)node --test(?:\s+\.\/tools\/[^\s]+)*\s+\.\/tools\/verify-capability-index\.test\.ts(?:\s|$)/u,
+      /(?:^|\n)node --test(?: \.\/tools\/[^\s]+)* \.\/tools\/verify-capability-index\.test\.ts(?: \.\/tools\/[^\s]+)*(?:\n|$)/u,
       "capability-index policy tests are required in the always-run governance job",
     ],
   ] as const) {
