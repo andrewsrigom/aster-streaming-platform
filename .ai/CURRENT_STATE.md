@@ -256,6 +256,18 @@ matrix header while exposing its suffix to the verifier. Correction source
 source line. Focused contracts pass46/46, documentation tests pass30/30 and the
 affected gate passes15/15. Publication remains pending.
 
+Checkpoint `76f320dffda06f71d1e10471f06e03c30be25343`, tree
+`42af66d84cd6bc2ab4c4a8a3c0326819be204a0b`, passed exact-head run
+`33567227882`. Its exact-head review completed at `2026-09-01T22:43:19Z` and
+opened findings `3909062923`/`3909062935`/`3909062942`/`3909062945`: closing
+type-6 HTML tags, inline-HTML attributes and workflow-level run defaults could
+bypass validation, while the Web row did not link the exact Phase 05 evidence.
+Correction source `6285db283d4ae7622821fef2442313e76cdc7ce4`, tree
+`8e181c97e0169b37ede39c01ec62ac980f7fb964`, closes all four. Focused contracts
+pass47/47, documentation tests pass31/31, documentation validation covers1,645
+links and the affected gate passes15/15. No product runtime or deployment
+behavior changed. Publication remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;

@@ -215,10 +215,19 @@ full snapshot through the archival checkpoint remains in
 - Correction source `c7534eb`, tree `994e72a`, closes the parser gap. Focused
   contracts pass46/46, documentation tests pass30/30 and the affected gate
   passes15/15. No product runtime or deployment behavior changed.
+- Checkpoint `76f320d`, tree `42af66d`, passed exact-head run `33567227882`.
+  Its exact-head review opened findings `3909062923`/`3909062935`/
+  `3909062942`/`3909062945` for closing type-6 tags, inline-HTML link syntax,
+  workflow-level run defaults and the Web row's Phase 05 evidence route.
+- Correction source `6285db2`, tree `8e181c9`, closes all four. Focused
+  contracts pass47/47, documentation tests pass31/31, documentation validation
+  covers1,645 links and the affected gate passes15/15, including101
+  platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
+  or deployment behavior changed.
 
 ### Next action
 
-- Publish the exact correction checkpoint, resolve its thread and request
+- Publish the exact correction checkpoint, resolve its four threads and request
   confirmation only after the PR exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.
 

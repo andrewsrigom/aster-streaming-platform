@@ -226,10 +226,18 @@ path/anchor validity to the existing documentation validator.
   block-comment source line. Focused contracts pass46/46, documentation tests
   pass30/30 and the affected gate passes15/15. No product runtime or deployment
   behavior changed.
+- Checkpoint `76f320d`, tree `42af66d`, passed exact-head run `33567227882`.
+  Its exact-head review opened findings `3909062923`/`3909062935`/
+  `3909062942`/`3909062945` for closing type-6 tags, inline-HTML link syntax,
+  workflow-level run defaults and the Web row's Phase 05 evidence route.
+- Correction source `6285db2`, tree `8e181c9`, closes all four. Focused
+  contracts pass47/47, documentation tests pass31/31, documentation validation
+  covers1,645 links and the affected gate passes15/15. No product runtime or
+  deployment behavior changed.
 
 ## Exact next actions
 
-1. Publish the exact correction checkpoint, resolve the review thread
+1. Publish the exact correction checkpoint, resolve the four review threads
    and request confirmation only after GitHub exposes the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating

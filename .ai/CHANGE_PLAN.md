@@ -252,8 +252,11 @@ file and anchor exists.
   exact-head review opened findings `3909062923`, `3909062935`, `3909062942`
   and `3909062945` for closing type-6 tags, inline-HTML link syntax,
   workflow-level run defaults and the P05-R05 evidence route. The working
-  correction closes all four. Publication, protected acceptance, merge and
-  exact-main acceptance remain pending
+  correction closes all four. Focused contracts pass47/47, documentation tests
+  pass31/31, documentation validation covers1,645 links and the affected gate
+  passes15/15. Correction source `6285db2`, tree `8e181c9`, freezes the batch.
+  Publication, protected acceptance, merge and exact-main acceptance remain
+  pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

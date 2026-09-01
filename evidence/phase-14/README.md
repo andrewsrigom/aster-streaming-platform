@@ -606,6 +606,29 @@ violations. The affected gate passes15/15, including101 platform-policy,39
 CI-policy and13 repository-memory tests. No product runtime or deployment
 behavior changed. Publication remains pending.
 
+Checkpoint `76f320dffda06f71d1e10471f06e03c30be25343`, tree
+`42af66d84cd6bc2ab4c4a8a3c0326819be204a0b`, passed exact-head workflow
+`33567227882`, including source quality, Local platform, governance and the
+aggregate gate. Exact-head review completed at `2026-09-01T22:43:19Z` and
+opened four findings:
+
+- `3909062923` found that a closing CommonMark type-6 tag with trailing content
+  did not start a raw block;
+- `3909062935` found that Markdown-looking syntax inside an inline HTML
+  attribute could satisfy a reviewed link;
+- `3909062942` found that workflow-level `defaults.run.shell` could replace all
+  governance commands without a policy violation;
+- `3909062945` found that the Web row used Phase 09 release evidence instead of
+  the exact Phase 05 accessibility and UI-foundation proof.
+
+Correction source `6285db283d4ae7622821fef2442313e76cdc7ce4`, tree
+`8e181c97e0169b37ede39c01ec62ac980f7fb964`, closes all four. Focused
+capability/CI-policy tests pass47/47. Documentation tests pass31/31 and
+validation covers250 documents, 2,880 headings, 1,645 links, four status claims
+and eleven rows with zero violations. The affected gate passes15/15,
+including101 platform-policy,39 CI-policy and13 repository-memory tests. No
+product runtime or deployment behavior changed. Publication remains pending.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and
