@@ -163,7 +163,7 @@ export const CAPABILITY_INDEX_ROWS = [
         "../specs/phase-06-media-pipeline.md#p06-r10",
       ],
       Implementation: ["../../services/catalog/src/application/process-media.ts"],
-      "Adverse test": ["../../services/catalog/test/media-processing.test.ts"],
+      "Adverse test": ["../../services/catalog/test/integration/processing-postgres.ts"],
       Evidence: ["../../evidence/phase-06/release.md"],
       Operations: ["../../services/catalog/MEDIA_PUBLICATION.md"],
     },
@@ -421,14 +421,31 @@ function withoutCodeSpans(value: string): string {
       visible += value.slice(opening, openingEnd);
       cursor = openingEnd;
     } else {
+      visible += " ";
       cursor = closingEnd;
     }
   }
   return visible;
 }
 
+function isEscapedMarkdownCharacter(value: string, index: number): boolean {
+  let backslashes = 0;
+  for (let cursor = index - 1; cursor >= 0 && value[cursor] === "\\"; cursor -= 1) {
+    backslashes += 1;
+  }
+  return backslashes % 2 === 1;
+}
+
 function markdownLinks(value: string): { label: string; target: string }[] {
-  return [...withoutCodeSpans(value).matchAll(MARKDOWN_LINK)].flatMap((match) => {
+  const visible = withoutCodeSpans(value);
+  return [...visible.matchAll(MARKDOWN_LINK)].flatMap((match) => {
+    const start = match.index;
+    if (
+      isEscapedMarkdownCharacter(visible, start) ||
+      (visible[start - 1] === "!" && !isEscapedMarkdownCharacter(visible, start - 1))
+    ) {
+      return [];
+    }
     const label = match.groups?.["label"];
     const target = match.groups?.["target"];
     return label && target ? [{ label, target }] : [];

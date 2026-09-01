@@ -59,6 +59,8 @@ file and anchor exists.
   source.
 - Every row names one authoritative owner even when other contexts cooperate.
 - Representative links are concrete and maintained, not exhaustive file lists.
+- The media adverse-test destination reaches the PostgreSQL processing path and
+  proves current rights are rechecked before claim, check and completion.
 - Status follows the repository's planned/implemented/verified/released
   vocabulary and does not promote hosted P14-R01–R12 work.
 - Missing, duplicate, extra or malformed capability rows fail closed with
@@ -71,7 +73,8 @@ file and anchor exists.
   remains protected.
 - Each capability ID is bound to its reviewed public display name; links and
   owner metadata cannot mask a misleading label. Inline-code destinations do
-  not satisfy a link role because they are not interactive Markdown links.
+  not satisfy a link role because they are not interactive Markdown links;
+  escaped link syntax and images do not satisfy it either.
 - Only a visible Markdown table satisfies capability coverage; rows inside
   fenced code, HTML comments, named raw containers, arbitrary CommonMark type-7
   HTML blocks, complete CommonMark type-6 block tags or four-column indented
@@ -106,6 +109,7 @@ file and anchor exists.
 | A processing instruction, declaration or CDATA block wraps the table | Ignore rows through the matching CommonMark end marker | Marker-terminated HTML-block diagnostic |
 | A requirement link keeps its target but mislabels the visible requirement ID | Reject the row before publication | Requirement-label diagnostic |
 | A reviewed destination is wrapped in an inline code span | Treat the interactive link as missing | Link-role diagnostic |
+| Reviewed link syntax is escaped or converted to an image | Treat the interactive link as missing | Link-prefix diagnostic |
 | A listed requirement lacks a representative implementation or adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
 | A required command is conditional, non-blocking or belongs to a conditional job | Treat the command as absent | Executable-step diagnostic |
 | A job-level condition appears after `steps` | Treat every command in the job as absent | Order-independent job diagnostic |
@@ -153,7 +157,7 @@ file and anchor exists.
 - Contract: accept exact coverage; reject missing/duplicate/extra rows,
   capability/owner/status drift, missing columns/links, role-swapped
   destinations, misleading requirement labels, inline-code destinations,
-  incomplete multi-requirement
+  escaped/image destinations, incomplete multi-requirement
   proof, fenced/commented/raw-HTML/indented tables, conditional/
   non-blocking/commented/printed/environment/here-document-only or isolated
   governance commands, malformed UTF-8 and bounds
@@ -172,9 +176,11 @@ file and anchor exists.
   finding. A review triggered before the PR synchronized to that correction
   then found inline-code links and an order-dependent job-condition scan; the
   findings also apply to the current source. Source `39bce7d`, tree `c4504d7`,
-  passes focused contract tests42/42, documentation tests26/26 and the affected
-  gate15/15. Run `33519414100` was cancelled after the source became
-  superseded. Publication, protected acceptance, merge and exact-main
+  corrects them. Exact-head review on `66ef8d0` then found a media adverse-proof
+  mismatch plus escaped/image link prefixes. Their working correction passes
+  focused contract tests43/43, documentation tests27/27 and the affected
+  gate15/15. Runs `33519414100`/`33520880432` were cancelled when their sources
+  became superseded. Publication, protected acceptance, merge and exact-main
   acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation

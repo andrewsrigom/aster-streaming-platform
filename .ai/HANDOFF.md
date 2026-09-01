@@ -163,11 +163,20 @@ path/anchor validity to the existing documentation validator.
   the affected gate passes15/15, including101 platform tests. Correction source
   `39bce7d`, tree `c4504d7`, is frozen without product runtime or deployment
   changes.
+- Exact-head confirmation on `66ef8d0` completed at
+  `2026-09-01T14:46:15Z` and opened discussions
+  `3905297905`/`3905297914` for the media adverse-proof destination and escaped/
+  image link prefixes. Run `33520880432` was cancelled after supersession; Local
+  platform passed, but the run is not acceptance evidence.
+- The accepted working correction links the PostgreSQL rights-gate proof and
+  rejects escaped links/images. Focused contracts pass43/43, documentation
+  tests pass27/27 and the affected gate passes15/15, including101 platform
+  tests.
 
 ## Exact next actions
 
 1. Freeze and publish the exact correction for discussions
-   `3905151111`/`3905151124`, resolve them and request confirmation only after
+   `3905297905`/`3905297914`, resolve them and request confirmation only after
    GitHub exposes the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating

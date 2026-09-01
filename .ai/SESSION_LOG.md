@@ -153,11 +153,21 @@ full snapshot through the archival checkpoint remains in
   documentation tests pass26/26 and the affected gate passes15/15, including101
   platform tests. Correction source `39bce7d`, tree `c4504d7`, is frozen without
   product runtime or deployment changes.
+- Exact-head confirmation on `66ef8d0` completed at
+  `2026-09-01T14:46:15Z` and opened discussions
+  `3905297905`/`3905297914`: the media row did not link its PostgreSQL rights
+  rejection, and escaped link syntax/images could satisfy the interactive-link
+  matcher.
+- Run `33520880432` was cancelled after supersession. Local platform and
+  governance passed, but the run is not acceptance evidence. The accepted
+  working correction links the rights-gate integration proof and rejects
+  escaped/image link prefixes. Focused contracts pass43/43, documentation tests
+  pass27/27 and the affected gate passes15/15, including101 platform tests.
 
 ### Next action
 
 - Freeze and publish the exact two-finding correction, resolve discussions
-  `3905151111`/`3905151124` and request confirmation only after the PR exposes
+  `3905297905`/`3905297914` and request confirmation only after the PR exposes
   the new exact head. Then merge and complete exact-main verification before
   activating P14-R15.
 

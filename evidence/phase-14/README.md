@@ -467,6 +467,30 @@ CI-policy and13 repository-memory tests. Correction source
 `c4504d7fd44c0f2c9e13b0a7f647bc42de2d3923`, freezes the batch without product
 runtime or deployment changes. Protected publication remains pending.
 
+Exact-head confirmation on evidence head `66ef8d0` completed at
+`2026-09-01T14:46:15Z` and opened two findings:
+
+- discussion `3905297905` found that the rights-gated media capability linked a
+  domain normalization/bounds test rather than the PostgreSQL integration proof
+  that rechecks current rights before processing;
+- discussion `3905297914` found that escaped link syntax and image syntax could
+  satisfy the link regex without producing interactive navigation.
+
+Run `33520880432` was cancelled after these findings superseded its source. Its
+Local platform, governance, dependency and classification jobs passed; the
+cancelled source-quality job and failed aggregate prevent acceptance.
+
+The findings are accepted for one batch. The media row now links
+`services/catalog/test/integration/processing-postgres.ts`, whose claim, check
+and completion assertions reject non-approved rights. Link extraction rejects
+odd-backslash escapes and unescaped image prefixes while preserving bounded
+multi-backtick handling. Focused capability/CI-policy tests pass43/43,
+documentation tests pass27/27 and documentation validation still covers250
+documents, 2,880 headings, 1,625 links, four status claims and eleven rows with
+zero violations. The affected gate passes15/15, including101 platform-policy,
+39 CI-policy and13 repository-memory tests. Protected publication remains
+pending.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory

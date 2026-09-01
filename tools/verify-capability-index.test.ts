@@ -109,6 +109,28 @@ test("rejects reviewed links rendered as inline code", () => {
   }
 });
 
+test("rejects escaped links and images as interactive proof destinations", () => {
+  const link = "[Operations 1](../../services/identity/README.md)";
+  for (const replacement of [`\\${link}`, `!${link}`]) {
+    const report = analyzeCapabilityIndex(validIndex().replace(link, replacement));
+    assert.ok(
+      report.violations.some(
+        ({ detail, rule }) =>
+          rule === "invalid-link" &&
+          detail.includes("identity-profiles") &&
+          detail.includes("Operations"),
+      ),
+      replacement,
+    );
+    assert.ok(
+      report.violations.some(
+        ({ detail, rule }) => rule === "missing-link" && detail.includes("Operations"),
+      ),
+      replacement,
+    );
+  }
+});
+
 test("rejects an existing but unrelated destination in each traceability role", () => {
   for (const column of [
     "Requirement",

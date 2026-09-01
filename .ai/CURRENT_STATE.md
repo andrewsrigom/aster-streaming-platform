@@ -53,12 +53,12 @@ destination sequence for every capability/role pair; existing documentation
 validation proves the concrete paths, anchors, root-escape policy and
 symbolic-target policy.
 
-Focused documentation tests pass26/26. Documentation validation passes for250
+Focused documentation tests pass27/27. Documentation validation passes for250
 documents, 2,880 headings, 1,625 links, four supported status claims and the
 eleven exact capability rows. The always-run protected governance job now
 executes the capability verifier and its adverse tests even for a
 documentation-only change; CI policy fails if either command moves outside that
-job. Combined capability/CI-policy tests pass42/42. The corrected changed-scope
+job. Combined capability/CI-policy tests pass43/43. The corrected changed-scope
 gate passes15/15 tasks, including101
 platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
 behavior changed, so heavyweight PostgreSQL, browser, media and Docker journey
@@ -171,6 +171,18 @@ complete code spans before link extraction and recognizes job-level `if`, `env`
 and `defaults` keys independently of order. Focused contracts pass42/42,
 documentation tests pass26/26 and the affected gate passes15/15, including101
 platform tests. Protected publication remains pending.
+
+Exact-head confirmation on `66ef8d0` completed at `2026-09-01T14:46:15Z` and
+opened discussions `3905297905`/`3905297914`: the media row linked normalization
+tests rather than the PostgreSQL rights rejection, and escaped link syntax or
+images could satisfy the interactive-link matcher. Run `33520880432` was
+cancelled after the source became superseded; its Local platform and governance
+jobs passed, but its cancelled source-quality job and failed aggregate make it
+non-acceptance evidence. The accepted working correction links the actual
+rights-gate integration proof and rejects escaped/image prefixes. Focused
+contracts pass43/43, documentation tests pass27/27 and the affected gate
+passes15/15, including101 platform tests. Protected publication remains
+pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
