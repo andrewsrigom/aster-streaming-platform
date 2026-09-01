@@ -1,8 +1,11 @@
-# Phase 14 — Capacity Validation and Hosted Release
+# Phase 14 — Reference Quality, Capacity Validation, and Hosted Release
 
 ## Objective
 
-Validate the complete system under representative load and failure, deploy it safely, and prove recovery and operability.
+First make the implemented system easy to navigate, study and verify locally.
+Keep representative capacity validation and hosted release as a separate,
+explicitly activated track that proves recovery and operability before any
+production claim.
 
 ## Product traceability
 
@@ -12,10 +15,29 @@ Validate the complete system under representative load and failure, deploy it sa
 ## Prerequisites
 
 - Phases 00–13 are verified.
-- Hosted provider decisions are recorded.
 - At least one title is fully rights-approved and published.
 
-## Deliverables
+The reference implementation track requires no hosted provider. The hosted
+track additionally requires recorded provider decisions and explicit owner
+authorization for credentials and resource creation.
+
+## Activation state
+
+- **Active:** P14-R13–R18, the local reference implementation track.
+- **Planned and deferred:** P14-R01–R12, the hosted capacity and release track.
+
+Completing the reference track does not satisfy or waive a hosted requirement.
+
+## Reference implementation deliverables
+
+- truthful public status and reading entry point
+- capability-to-code/test/evidence/operations index
+- readability rules and a bounded findings inventory
+- behavior-preserving owner-scoped refactoring
+- rationale-focused comments and executable examples
+- fresh-checkout and Docker reference acceptance
+
+## Hosted capacity and release deliverables
 
 - hosted single-region environment
 - CI/CD and controlled schema delivery
@@ -27,6 +49,53 @@ Validate the complete system under representative load and failure, deploy it sa
 - operational readiness review
 
 ## Requirements
+
+### Reference implementation track — active
+
+### P14-R13
+
+Record the reference-first delivery decision, Phase13 exact release evidence,
+the distinction between reference and hosted release, and an ordered work queue
+that can progress without credentials or paid resources.
+
+### P14-R14
+
+Publish a capability index covering the five bounded contexts and cross-cutting
+Web, Router, media, resilience, observability and repository workflows. Every
+entry links the owning requirement, representative implementation path, focused
+adverse test, evidence and operational guidance when applicable.
+
+### P14-R15
+
+Define executable or reviewable readability guardrails and record a bounded,
+prioritized inventory of concrete naming, flow, organization, comment and
+example problems. The inventory identifies affected ownership and behavior;
+it does not use arbitrary style scores or require bulk rewriting.
+
+### P14-R16
+
+Refactor at least one representative vertical slice in each bounded context and
+the cross-cutting Router/Web/tooling surface. Each slice improves domain naming
+or control-flow readability, preserves contracts and failure behavior, and
+passes characterization plus affected-scope gates.
+
+### P14-R17
+
+Provide reading paths and executable examples for core journeys: public browse,
+rights-safe publication, playback, profile progress, Discovery degradation,
+GraphQL admission, dependency recovery and telemetry-led diagnosis. Comments
+explain rationale, invariants, unusual failure behavior or external constraints
+rather than restating code.
+
+### P14-R18
+
+From a fresh checkout, prove that a reader can install the pinned toolchain,
+locate a capability, run its focused test, start the documented Docker reference
+checkpoint and follow its evidence and cleanup path. Publish reference
+verification notes with verified capabilities, limitations and deferred hosted
+work.
+
+### Hosted capacity and release track — planned and deferred
 
 ### P14-R01
 
@@ -79,6 +148,18 @@ Publish release notes that state verified capabilities, known limits, capacity a
 
 ## Implementation sequence
 
+### Active reference sequence
+
+1. Record the reference-first decision and Phase13 release.
+2. Build the capability index and reading paths.
+3. Establish readability guardrails and the findings inventory.
+4. Refactor small owner-scoped slices with characterization tests.
+5. Align rationale comments, examples and handbook guidance.
+6. Run fresh-checkout and Docker reference acceptance.
+7. Publish reference-verification evidence and limitations.
+
+### Deferred hosted sequence
+
 1. Resolve hosted ADRs.
 2. Provision staging and production safely.
 3. Establish baseline and dataset.
@@ -91,6 +172,17 @@ Publish release notes that state verified capabilities, known limits, capacity a
 10. Update current and scale-out architecture from evidence.
 
 ## Required tests
+
+Reference-track acceptance includes:
+
+- documentation link and status-claim validation;
+- capability-index completeness checks;
+- characterization and affected-scope gates for every refactoring slice;
+- executable example checks;
+- fresh-checkout source gates;
+- Docker reference startup, journey and project-scoped cleanup.
+
+Hosted-track acceptance additionally includes:
 
 - Load, spike, and soak operation mixes.
 - CDN path and origin protection.
@@ -106,6 +198,16 @@ Publish release notes that state verified capabilities, known limits, capacity a
 ## Required evidence
 
 Store the phase evidence index under `evidence/phase-14/` when implementation begins.
+
+Reference evidence includes:
+
+- roadmap and decision acceptance;
+- capability-index coverage;
+- readability inventory and slice reports;
+- characterization and affected-gate results;
+- fresh-checkout and Docker reference acceptance.
+
+Hosted evidence additionally includes:
 
 - provider ADRs
 - deployment records
@@ -128,9 +230,14 @@ Every measured result must identify commit, environment, exact command, workload
 - Live broadcasting
 - Native applications
 
-## Exit gate
+## Exit gates
 
-The phase is `VERIFIED` only when:
+The reference track is `VERIFIED` only when P14-R13–R18 and their linked local
+evidence pass. This may be reported as **reference track verified** while the
+hosted track remains planned.
+
+The hosted track, and therefore the complete hosted product release, is
+`VERIFIED` only when:
 
 - every requirement has a linked implementation or documented non-applicability;
 - all required tests pass from a clean environment;
@@ -142,6 +249,9 @@ The phase is `VERIFIED` only when:
 
 ## Learning outcomes
 
+- Codebase navigation and explanation
+- Behavior-preserving refactoring
+- Documentation as a maintained engineering contract
 - Capacity planning
 - Load and soak testing
 - Node runtime diagnostics

@@ -6,14 +6,15 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–12 are released locally through protected and exact post-merge CI.
+Phases 00–13 are released locally through protected and exact post-merge CI.
 Guarded sessions/profiles, rights-aware Catalog, Apollo Router, public Next.js
 SSR, accessible HLS playback, durable progress/resume, owned library and owner
 event recovery, Discovery search/home, SSR/private enhancement and advanced
 Redis/concurrency, bounded resilience and failure game days pass their recorded
 acceptance. Traces, golden signals, executable SLIs/SLOs, alerts, Grafana and
 three telemetry-led failure diagnoses also pass. Phase13 GraphQL performance
-and security is active. Exact progress lives in
+and security is released. Phase14's local reference-quality track is active;
+the hosted capacity/release track remains planned and deferred. Exact progress lives in
 `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
@@ -58,7 +59,15 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 13 — GraphQL Performance and Security**. Phase12 final
+Active phase: **Phase 14 — Reference Quality, Capacity Validation, and Hosted
+Release**, with only the credential-free P14-R13–R18 reference track active.
+ADR-0048 keeps hosted P14-R01–R12 planned until explicit owner authorization.
+Phase13 final candidate `db17bca`, tree `41650b4`, passed protected run
+`33486901296` and a clean final review. PR57 squash main `83cb510` retained that
+tree; exact-main run `33489232182` passed every required job and releases
+Phase13. Item68 records the reference-first runway from this exact main.
+
+Phase12 final
 source `b646e496d0946262a688f34a118a896f6c40ebda`, tree
 `789007d5f48d4a16c0a1b47b8e2554e1ee0e294a`, passed protected run
 `33346575787` attempt 2 and clean confirmation. PR51 squash main
@@ -88,10 +97,10 @@ pass. Third corrected evidence head `e6134ae` passed protected run
 `33447062908`; both blocker discussions are resolved and final confirmation
 `5485910820` found no major issue. PR56 squash main `98deb52` retained candidate
 tree `897c44c`, and exact-main run `33448911764` passed every required job. No
-hosted deployment is claimed; Phase14 still owns provider and deployment
-decisions.
+hosted deployment is claimed; Phase14 P14-R01–R12 still own provider and
+deployment decisions.
 
-Item67 is active on `feat/p13-n-plus-one-authorization` from released item66 main
+Item67 ran on `feat/p13-n-plus-one-authorization` from released item66 main
 `98deb52`. PR57 initial review found owner-local counts and self-asserted audit
 semantics. Corrected source `e0f5e27`, tree `da9b02b`, derives semantics during
 composition and measures exact persisted documents through Router and all
@@ -130,8 +139,10 @@ fence-change retry missing from its audited budget. Source `20b5f27`, tree
 in run `33468676673`, but clean source quality exposed a build-order type gap.
 Final source `1ec01c3`, tree `f27a9f8`, exposes a narrow typed query-plan
 subpath. Fresh clean source passes63/63 with0 cached in159.682 seconds and the
-affected gate passes73/73 with63 cached in54.731 seconds. Corrected protected
-CI, discussion resolution, blocker-boundary confirmation and release remain.
+affected gate passes73/73 with63 cached in54.731 seconds. Final exact-owner-set
+source `a99b3af`, result checkpoint `db17bca`, final review, PR57 squash main
+`83cb510` and exact-main run `33489232182` complete the protected, discussion,
+confirmation and release gates. Item67 and Phase13 are released.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

@@ -1,7 +1,10 @@
 # Phase 13 Evidence Index
 
-Status: **in progress**. Item64 implements P13-R01/R02/R12 in the current
-candidate: deterministic trusted-operation artifacts, explicit audit/enforce
+Status: **released** through PR57 squash main `83cb510`, tree `41650b4`, and
+exact-main run `33489232182`. The concise [release record](release.md) is the
+authoritative closeout; the chronological implementation record follows.
+
+Item64 implemented P13-R01/R02/R12: deterministic trusted-operation artifacts, explicit audit/enforce
 startup policy, exact name/link-ready-wire-hash admission, finite telemetry and
 safe two-version schema/client rollout. Focused tests and the corrected 49/49
 affected candidate gate pass. Protected run `33352310376` verifies the packaged
@@ -97,8 +100,8 @@ records all three corrections. Exact head `e6134ae` passed protected run
 `5485910820` found no major issue. PR56 squash main `98deb52` retained candidate
 tree `897c44c`; exact-main run `33448911764` passed. Item66 is released.
 
-Item67 is the active P13-R07/R08/R09 candidate on released item66 main
-`98deb52`. PR57 initial discussions `3899340521` and `3899340535` found that
+Item67 released P13-R07/R08/R09 through PR57. Initial discussions `3899340521`
+and `3899340535` found that
 the 1/3/5/1 measurements were owner-local and the audit accepted self-asserted
 semantic labels. Corrected source `e0f5e27`, tree `da9b02b`, derives owner,
 authorization scope and resolution semantics from the owner schemas, exact
@@ -205,7 +208,7 @@ cached in65.919 seconds. Evidence head `71823fe`, tree `5d075d0`, passed
 protected run `33485233911`: Local platform passed all three diagnostics and
 cleanup in7m14s, while source quality, every owner runtime and the Docker-only
 demo passed in17m12s. Discussion resolution, one final confirmation, merge and
-exact-main release remain.
+exact-main release then passed as recorded in the [release record](release.md).
 
 ## Requirement traceability
 
@@ -216,7 +219,7 @@ exact-main release remain.
 | P13-R12 | [ADR-0045](../../docs/adr/0045-source-owned-trusted-operations.md), GraphQL architecture and release sequence |
 | P13-R03/R04/R05/R10 | Released through [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json), [demand-control evidence](graphql-demand-controls.txt), PR55 tree-identical main `8cd6c0b` and exact-main run `33425758870` attempt2 |
 | P13-R06/R11 | Released through third corrected source `af47c62`, protected head `e6134ae`, PR56 squash main `98deb52` and exact-main run `33448911764`; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record exact-union verification, expired-marker pruning and all review corrections |
-| P13-R07–R09 | Exact-owner-set source `a99b3af`, tree `dc84bbc`, retains multi-entity source `3d90dff`'s exact Catalog query plan and ten-entity Search/Home hydration at unchanged counts while rejecting any owner outside the exact operation budget. Focused proof5/5, both full federated runtimes and affected73/73 pass. Evidence head `71823fe`, tree `5d075d0`, passed protected run `33485233911`; discussion resolution, final confirmation and release remain: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and composition-time semantic audit |
+| P13-R07–R09 | Exact-owner-set source `a99b3af`, tree `dc84bbc`, retains multi-entity source `3d90dff`'s exact Catalog query plan and ten-entity Search/Home hydration at unchanged counts while rejecting any owner outside the exact operation budget. Focused proof5/5, both full federated runtimes and affected73/73 pass. Evidence head `71823fe` passed protected run `33485233911`; exact checkpoint `db17bca` passed run `33486901296`, final review completed without a new finding, PR57 squash main `83cb510` retained tree `41650b4`, and exact-main run `33489232182` passed: [release record](release.md), [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and composition-time semantic audit |
 
 ## Current limitations
 
@@ -229,7 +232,7 @@ exact-main release remain.
 - Shape/list/cost and Identity-aware rate/cache controls are released. The
   N+1/query-count/authorization closeout has corrected the exact-profile,
   Catalog worst-case query-plan, representative multi-entity and projection-
-  lease proof findings. The exact-owner-set correction has passing focused, full
-  runtime, affected and protected gates, but its discussion, confirmation and
-  release gates remain.
-- Hosted providers, credentials, deployment and capacity remain Phase 14.
+  lease proof findings. The exact-owner-set correction passed focused, full
+  runtime, affected, protected, final-review, merge and exact-main gates.
+- Hosted providers, credentials, deployment and capacity remain planned Phase14
+  P14-R01–R12 work; ADR-0048 activates the reference-quality track first.

@@ -4,6 +4,63 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-01 — Phase13 release and reference-first Phase14 runway
+
+### Completed
+
+- Phase13 result checkpoint `db17bca`, tree `41650b4`, passed protected run
+  `33486901296`. Final corrected-candidate review completed without a new
+  finding and all six PR57 threads are resolved.
+- PR57 squash main `83cb510` retained candidate tree `41650b4`; exact-main
+  run `33489232182` passed source quality, every owner runtime, the Docker-only
+  playable demo, all three local diagnostic scenarios, cleanup and aggregate
+  protection. Item67 and Phase13 are released.
+- ADR-0048 makes credential-free reference quality the immediate Phase14
+  runway. Active P14-R13–R18 cover status, capability navigation, readability,
+  scoped refactoring, reading guides and fresh local acceptance. Hosted
+  P14-R01–R12 retain their requirements but remain planned and inactive.
+- Item68 updates the roadmap, specification, public status, Phase13 release
+  evidence and repository memory without changing executable behavior.
+- Source `bd1191d`, tree `80337eb7`, passes repository-memory,
+  documentation, formatting, JSONL and changed-scope gates. The selected gate
+  passes9/9 tasks with101 platform-policy and13 repository-memory tests; no
+  executable change triggers a heavyweight environment repeat.
+- Evidence head `6bbb3da`, tree `f05fc60`, passed protected run
+  `33492326127`. Initial review discussion `3902757945` found the handoff
+  could ask a resuming agent to duplicate the already committed evidence.
+  Correction `7976c17`, tree `0af69fe`, advances from the current checkpoint
+  and passes the repeated local gate9/9.
+- Corrected evidence head `9ced435` passed protected run `33492941279`;
+  discussion `3902757945` is resolved. Confirmation discussions
+  `3902818119`/`3902818121` found misuse of the `released` label for an
+  undeployed reference track and four stale current Phase13 candidate
+  descriptions. Source `c0e4c85`, tree `f559fab`, uses `verified` for the
+  local checkpoint, aligns the guides and passes the repeated gate9/9 with0
+  cached.
+- Evidence head `514467d` passed protected run `33493742758`; both status
+  discussions are resolved. Blocker-boundary discussion `3902887907` found
+  that hosted-only coverage-matrix cells still blocked reference verification.
+  Source `1a6233f`, tree `2f9a7b1`, scopes local completion to P14-R13–R18
+  plus fresh released-checkpoint reproduction and passes the repeated gate9/9.
+- Evidence head `3087be1`, tree `34f70cb`, passed protected run
+  `33494434609`; discussion `3902887907` is resolved. Final confirmation
+  completed at `2026-09-01T09:56:10Z` without a new finding and all four PR58
+  threads are resolved.
+
+### Evidence
+
+- `evidence/phase-13/release.md` records final source, protected runs, review,
+  tree-identical merge, exact-main acceptance and limitations.
+- ADR-0048 and the Phase14 specification define the activation boundary and
+  observable reference-track acceptance.
+- `evidence/phase-14/README.md` records the source/tree and exact local
+  candidate checks, both protected results and the batched review corrections.
+
+### Next action
+
+- Complete item68's documentation/changed-scope gates, review, merge and
+  exact-main acceptance; then start item69's capability index from clean main.
+
 ## 2026-09-01 — PR57 exact owner-set correction
 
 ### Completed

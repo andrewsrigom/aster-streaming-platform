@@ -175,6 +175,10 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`docs/adr/0042-bounded-local-operational-overview.md`](../adr/0042-bounded-local-operational-overview.md) — ADR-0042: Provision a bounded local operational overview
 - [`docs/adr/0043-multi-window-slo-burn-alerts.md`](../adr/0043-multi-window-slo-burn-alerts.md) — ADR-0043: Evaluate finite multi-window SLO burn-rate alerts
 - [`docs/adr/0044-bounded-local-trace-diagnostics.md`](../adr/0044-bounded-local-trace-diagnostics.md) — ADR-0044: Add a bounded local trace-diagnostic profile
+- [`docs/adr/0045-source-owned-trusted-operations.md`](../adr/0045-source-owned-trusted-operations.md) — ADR-0045: Enforce source-owned trusted GraphQL operations
+- [`docs/adr/0046-source-owned-graphql-demand-budget.md`](../adr/0046-source-owned-graphql-demand-budget.md) — ADR-0046: Enforce a source-owned GraphQL demand budget
+- [`docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md`](../adr/0047-bounded-graphql-execution-rate-and-cache-scope.md) — ADR-0047: Bound GraphQL execution, account admission and cache scope
+- [`docs/adr/0048-reference-first-phase-14-runway.md`](../adr/0048-reference-first-phase-14-runway.md) — ADR-0048: Make reference quality the immediate Phase 14 runway
 
 ## docs/specs
 
@@ -193,7 +197,7 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`docs/specs/phase-11-resilience.md`](../specs/phase-11-resilience.md) — Phase 11 — Resilience and Failure Laboratory
 - [`docs/specs/phase-12-observability.md`](../specs/phase-12-observability.md) — Phase 12 — Observability, SLIs, and SLOs
 - [`docs/specs/phase-13-graphql-performance-security.md`](../specs/phase-13-graphql-performance-security.md) — Phase 13 — GraphQL Performance and Security
-- [`docs/specs/phase-14-capacity-release.md`](../specs/phase-14-capacity-release.md) — Phase 14 — Capacity Validation and Hosted Release
+- [`docs/specs/phase-14-capacity-release.md`](../specs/phase-14-capacity-release.md) — Phase 14 — Reference Quality, Capacity Validation, and Hosted Release
 
 ## docs/handbook
 

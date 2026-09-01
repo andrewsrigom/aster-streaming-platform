@@ -22,16 +22,16 @@ A phase may establish a baseline before later phases provide representative work
 
 | Engineering subject | Explanation | Implementation phases | Final evidence |
 |---|---|---|---|
-| Node.js production behavior | [`01-node-in-production.md`](../handbook/01-node-in-production.md) | 01 runtime lifecycle; 06 streams and FFmpeg process control; 11 bounded failure; 14 event-loop and memory diagnosis | startup/shutdown traces, event-loop and memory metrics, stream/backpressure tests, load profiles, heap or CPU artifacts when indicated |
+| Node.js production behavior | [`01-node-in-production.md`](../handbook/01-node-in-production.md) | 01 runtime lifecycle; 06 streams and FFmpeg process control; 11 bounded failure; 14 hosted event-loop and memory diagnosis | startup/shutdown traces, event-loop and memory metrics, stream/backpressure tests, load profiles, heap or CPU artifacts when indicated |
 | Domain-driven design, Clean Architecture, and layers | [`02-domain-and-clean-architecture.md`](../handbook/02-domain-and-clean-architecture.md) | 00 import boundaries; 02 Identity policies; 03 Catalog lifecycle; 07 Playback; 08 Engagement ordering | architecture-rule failure fixture, domain and application tests, ownership review, migration and contract evidence |
-| Resilience | [`03-resilience.md`](../handbook/03-resilience.md) | 01 deadline and shutdown baseline; 11 policies, failure laboratory and bounded game days; 14 hosted release game days | timeout, cancellation, retry-safety, breaker, bulkhead, load-shedding, recovery, and runbook evidence |
+| Resilience | [`03-resilience.md`](../handbook/03-resilience.md) | 01 deadline and shutdown baseline; 11 policies, failure laboratory and bounded game days; 14 hosted-track game days | timeout, cancellation, retry-safety, breaker, bulkhead, load-shedding, recovery, and runbook evidence |
 | Redis caching and concurrency | [`04-redis.md`](../handbook/04-redis.md) | 01 bounded adapter baseline; 10 measured cache and coordination patterns; 11 outage behavior; 13 GraphQL calibration | cache baseline, stampede, TTL jitter, atomic limiter, outage, degraded-mode, and source-load evidence |
-| Observability, service-level indicators, and service-level objectives | [`05-observability-and-slos.md`](../handbook/05-observability-and-slos.md) | 01 telemetry baseline; 07 playback experience signals; 12 end-to-end acceptance; 14 operational readiness | correlated logs, traces, metric queries, SLI definitions, SLOs, burn alerts, and linked runbooks |
+| Observability, service-level indicators, and service-level objectives | [`05-observability-and-slos.md`](../handbook/05-observability-and-slos.md) | 01 telemetry baseline; 07 playback experience signals; 12 end-to-end acceptance; 14 hosted operational readiness | correlated logs, traces, metric queries, SLI definitions, SLOs, burn alerts, and linked runbooks |
 | GraphQL and Apollo Federation v2 | [`06-federation-v2.md`](../handbook/06-federation-v2.md) | 02 and 03 subgraphs; 04 Router and composition; 08 and 09 entity extensions; 13 hosted operation controls | composed schema, compatibility checks, query plans, identity-context protection, entity batching, and partial-failure traces |
 | GraphQL performance and security | [`07-graphql-performance-and-security.md`](../handbook/07-graphql-performance-and-security.md) | 04 safe baselines; 08 request-scoped DataLoader; 13 cost and abuse acceptance | SQL query counts, N+1 comparison, trusted-operation manifest, body/parser/depth/alias/list/cost/deadline/concurrency tests, and authorization matrix |
 | Server-side rendering and hydration | [`08-ssr-and-hydration.md`](../handbook/08-ssr-and-hydration.md) | 05 web shell and browser verification | raw server HTML, safe Apollo snapshot, zero hydration warnings, no duplicate initial operation, locale and slow-JavaScript checks |
 | Apollo Client and Redux Toolkit | [`09-apollo-client-and-redux.md`](../handbook/09-apollo-client-and-redux.md) | 05 ownership baseline; 07 player interaction; 08 durable engagement integration | cache policies, request-scoped stores, state-ownership review, focused selector measurements, mutation rollback, and browser tests |
-| Media streaming and system design | [`10-media-streaming-and-system-design.md`](../handbook/10-media-streaming-and-system-design.md) | 03 publication fixture; 06 ingest and HLS; 07 playback; 14 capacity | rights record, immutable object manifest, FFmpeg recipe, atomic publication, CDN-compatible delivery path, first-frame and rebuffer evidence |
+| Media streaming and system design | [`10-media-streaming-and-system-design.md`](../handbook/10-media-streaming-and-system-design.md) | 03 publication fixture; 06 ingest and HLS; 07 playback; 14 hosted capacity | rights record, immutable object manifest, FFmpeg recipe, atomic publication, CDN-compatible delivery path, first-frame and rebuffer evidence |
 
 The detailed experiment ownership remains in the [`Experiment Catalog`](../quality/EXPERIMENT_CATALOG.md).
 
@@ -55,7 +55,8 @@ The phases remain ordered. Each checkpoint extends the same repository and local
 | 11 | A failure laboratory exercises deadlines, retries, breakers, bulkheads, load shedding, fallbacks, and recovery. |
 | 12 | An operations laboratory follows browse and playback through logs, metrics, traces, dashboards, SLOs, alerts, and runbooks. |
 | 13 | A GraphQL abuse laboratory demonstrates N+1 control, trusted operations, demand limits, and owner-side authorization. |
-| 14 | The released system has capacity, soak, failure, backup, restore, rollback, and operational-readiness evidence. |
+| 14 reference track | A fresh reader can navigate a capability to code, tests, evidence and operations, then reproduce the documented local checkpoint and cleanup. |
+| 14 hosted track | The hosted system has capacity, soak, failure, backup, restore, rollback, and operational-readiness evidence. |
 
 ## Local execution lanes
 
@@ -92,4 +93,10 @@ Resource-heavy dependencies and experiments use named Compose profiles or one-sh
 
 ## Completion rule
 
-The roadmap is not complete because the final page renders or a video plays. Completion requires every row in the coverage matrix to have its phase-owned implementation and evidence, every required checkpoint to pass from the documented environment, and Phase 14 to satisfy its release gate.
+The roadmap is not complete because the final page renders or a video plays.
+Reference-track verification requires P14-R13–R18 and fresh reproduction of the
+already released local checkpoints. Phase14 hosted event-loop/load/heap
+diagnosis, hosted game days, operational readiness and media capacity in the
+coverage matrix remain P14-R01–R12 obligations and do not block the
+credential-free reference checkpoint. A hosted product claim requires those
+remaining matrix cells and the separate Phase14 hosted release gate.
