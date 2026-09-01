@@ -555,7 +555,11 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
       return "";
     }
 
+    const htmlCommentBlockLine = state.htmlComment || /^ {0,3}<!--/u.test(line);
     const uncommented = withoutHtmlComments(line, state);
+    if (htmlCommentBlockLine) {
+      return "";
+    }
     if (state.htmlUntilBlank) {
       if (!line.trim()) {
         state.htmlUntilBlank = false;

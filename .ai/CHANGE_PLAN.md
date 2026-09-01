@@ -92,7 +92,9 @@ file and anchor exists.
   HTML blocks, complete CommonMark type-6 block tags or four-column indented
   code are ignored. Complete type-7 tags recognize quoted attribute values that
   contain `>`. A comment-only source line remains nonblank while a type-6 raw
-  block is active; comment stripping cannot end that block early.
+  block is active; comment stripping cannot end that block early. A source line
+  that starts a CommonMark HTML-comment block is discarded completely even when
+  the comment closes before a table-like suffix on the same line.
 - Documentation-only changes cannot bypass the capability-index verifier or
   its adverse tests in protected CI; the policy parser bounds `governance` at
   the next top-level job rather than a later named job and recognizes only
@@ -120,6 +122,7 @@ file and anchor exists.
 | A later workflow edit removes, comments out, relocates or isolates the index check/tests in another job | CI policy tests fail before protected acceptance | Job-scoped command diagnostic |
 | A capability display name drifts from the reviewed public vocabulary | Reject the row before publication | Capability-and-name diagnostic |
 | The complete table is moved into a fence or HTML comment | Treat the public table as missing | Visibility-aware table diagnostic |
+| A same-line HTML comment prefixes the table header | Discard the complete source line rather than parse its suffix | Comment-block diagnostic |
 | The complete table is indented as CommonMark code | Treat the public table as missing | Indentation-aware table diagnostic |
 | The complete table is wrapped in a raw HTML block | Treat the public table as missing | HTML-block-aware table diagnostic |
 | An arbitrary complete HTML tag begins a type-7 block around the table | Ignore rows through the CommonMark blank-line boundary | Generic HTML-block diagnostic |
@@ -233,8 +236,11 @@ file and anchor exists.
   proof and missing protected-CI implementation/adverse proof. Correction source
   `6d9551a`, tree `8bed61f`, closes both routes. Focused contracts pass45/45,
   documentation tests pass29/29, documentation validation covers1,643 links and
-  the affected gate passes15/15. Publication, protected acceptance, merge and
-  exact-main acceptance remain pending
+  the affected gate passes15/15. Exact-head run `33565305721` passed on
+  checkpoint `68718da`; its exact-head review opened finding `3908922118` for a
+  same-line HTML-comment suffix that could expose a hidden table header. The
+  working correction closes that parser gap. Publication, protected acceptance,
+  merge and exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

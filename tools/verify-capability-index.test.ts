@@ -195,6 +195,15 @@ test("rejects a capability table hidden in a fence or HTML comment", () => {
   }
 });
 
+test("discards the complete source line for a CommonMark HTML-comment block", () => {
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  const hidden = source.replace(header, `<!-- hidden -->${header}`);
+  const report = analyzeCapabilityIndex(hidden);
+  assert.equal(report.rows, 0);
+  assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
 test("rejects a capability table rendered as indented code", () => {
   const hidden = validIndex().replace(/^\|/gmu, "    |");
   const report = analyzeCapabilityIndex(hidden);
