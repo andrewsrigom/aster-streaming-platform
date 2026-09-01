@@ -38,6 +38,21 @@ test("every public list and entity path has an exact bounded execution audit", (
     GRAPHQL_EXECUTION_PATH_AUDIT.entityContributors["identity.Profile"].maximumOwnerQueriesPerBatch,
     1,
   );
+  assert.equal(
+    GRAPHQL_EXECUTION_PATH_AUDIT.entityContributors["catalog.Title"].maximumOwnerQueriesPerBatch,
+    4,
+  );
+  assert.deepEqual(
+    GRAPHQL_EXECUTION_PATH_AUDIT.entityContributors["catalog.Title"].ownerQueryPlan,
+    {
+      initial: ["findFences", "findManyAtFences"],
+      retry: {
+        reason: "fence_changed",
+        maximumAttempts: 1,
+        sequence: ["findFences", "findManyAtFences"],
+      },
+    },
+  );
 });
 
 test("schema, list metadata and entity contributors cannot drift from the audit", () => {
@@ -97,6 +112,34 @@ test("authorization scope, request bounds and reference-only query budgets fail 
       },
     });
   }, /discovery\.Title entity-contributor audit is invalid/u);
+  assert.throws(() => {
+    validateGraphqlExecutionPathAudit(api, sources, operations, {
+      ...GRAPHQL_EXECUTION_PATH_AUDIT,
+      entityContributors: {
+        ...GRAPHQL_EXECUTION_PATH_AUDIT.entityContributors,
+        "catalog.Title": {
+          ...GRAPHQL_EXECUTION_PATH_AUDIT.entityContributors["catalog.Title"],
+          maximumOwnerQueriesPerBatch: 2,
+        },
+      },
+    });
+  }, /catalog\.Title entity-contributor audit is invalid/u);
+  assert.throws(() => {
+    validateGraphqlExecutionPathAudit(api, sources, operations, {
+      ...GRAPHQL_EXECUTION_PATH_AUDIT,
+      entityContributors: {
+        ...GRAPHQL_EXECUTION_PATH_AUDIT.entityContributors,
+        "catalog.Title": {
+          ...GRAPHQL_EXECUTION_PATH_AUDIT.entityContributors["catalog.Title"],
+          maximumOwnerQueriesPerBatch: 2,
+          ownerQueryPlan: {
+            ...GRAPHQL_EXECUTION_PATH_AUDIT.entityContributors["catalog.Title"].ownerQueryPlan,
+            retry: null,
+          },
+        },
+      },
+    });
+  }, /catalog\.Title entity-contributor audit is invalid/u);
 });
 
 test("owner, trusted-operation scope and loader resolution semantics fail closed", () => {

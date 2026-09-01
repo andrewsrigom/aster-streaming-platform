@@ -25,3 +25,8 @@ export type {
   TitleState,
   ValidatedPublicationReference,
 } from "./domain/title.js";
+export {
+  CATALOG_PUBLIC_ENTITY_MAXIMUM_OWNER_QUERIES_PER_BATCH,
+  CATALOG_PUBLIC_ENTITY_OWNER_QUERY_PLAN,
+} from "./application/public-cache.js";
+export type { CatalogPublicEntityOwnerQuery } from "./application/public-cache.js";

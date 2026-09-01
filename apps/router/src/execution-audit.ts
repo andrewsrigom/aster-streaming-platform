@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { CATALOG_PUBLIC_ENTITY_OWNER_QUERY_PLAN } from "@aster/catalog";
 import {
   Kind,
   TypeInfo,
@@ -19,6 +20,15 @@ type Owner = "catalog" | "discovery" | "engagement" | "identity" | "playback";
 type AuthorizationScope = "public" | "account" | "profile";
 type Resolution = "materialized" | "owner_page" | "reference_only" | "request_loader";
 
+type OwnerQueryPlan = Readonly<{
+  initial: readonly string[];
+  retry: Readonly<{
+    maximumAttempts: number;
+    reason: string;
+    sequence: readonly string[];
+  }> | null;
+}>;
+
 type ListPathAudit = Readonly<{
   authorizationScope: AuthorizationScope;
   maximumItems: number;
@@ -37,6 +47,7 @@ type EntityContributorAudit = Readonly<{
   authorizationScope: AuthorizationScope;
   maximumBatchSize: number;
   maximumOwnerQueriesPerBatch: number;
+  ownerQueryPlan: OwnerQueryPlan;
   resolution: Extract<Resolution, "reference_only" | "request_loader">;
 }>;
 
@@ -58,15 +69,26 @@ const entityReturn = (
 const contributor = (
   authorizationScope: AuthorizationScope,
   maximumBatchSize: number,
-  maximumOwnerQueriesPerBatch: number,
+  ownerQueryPlan: OwnerQueryPlan,
   resolution: EntityContributorAudit["resolution"],
 ): EntityContributorAudit =>
   Object.freeze({
     authorizationScope,
     maximumBatchSize,
-    maximumOwnerQueriesPerBatch,
+    maximumOwnerQueriesPerBatch: maximumOwnerQueriesPerBatch(ownerQueryPlan),
+    ownerQueryPlan,
     resolution,
   });
+
+const REFERENCE_ONLY_OWNER_QUERY_PLAN = Object.freeze({
+  initial: Object.freeze([]),
+  retry: null,
+});
+
+const SINGLE_OWNER_LOAD_QUERY_PLAN = Object.freeze({
+  initial: Object.freeze(["findMany"]),
+  retry: null,
+});
 
 export const GRAPHQL_EXECUTION_PATH_AUDIT = Object.freeze({
   lists: Object.freeze({
@@ -96,11 +118,21 @@ export const GRAPHQL_EXECUTION_PATH_AUDIT = Object.freeze({
     "WatchlistEntry.title": entityReturn("catalog", "profile", 20, "request_loader"),
   }),
   entityContributors: Object.freeze({
-    "catalog.Title": contributor("public", 20, 1, "request_loader"),
-    "discovery.Title": contributor("public", 20, 0, "reference_only"),
-    "engagement.Profile": contributor("profile", 20, 1, "request_loader"),
-    "engagement.Title": contributor("profile", 20, 1, "request_loader"),
-    "identity.Profile": contributor("account", 16, 1, "request_loader"),
+    "catalog.Title": contributor(
+      "public",
+      20,
+      CATALOG_PUBLIC_ENTITY_OWNER_QUERY_PLAN,
+      "request_loader",
+    ),
+    "discovery.Title": contributor("public", 20, REFERENCE_ONLY_OWNER_QUERY_PLAN, "reference_only"),
+    "engagement.Profile": contributor(
+      "profile",
+      20,
+      SINGLE_OWNER_LOAD_QUERY_PLAN,
+      "request_loader",
+    ),
+    "engagement.Title": contributor("profile", 20, SINGLE_OWNER_LOAD_QUERY_PLAN, "request_loader"),
+    "identity.Profile": contributor("account", 16, SINGLE_OWNER_LOAD_QUERY_PLAN, "request_loader"),
   }),
 });
 
@@ -155,31 +187,61 @@ const GRAPHQL_EXECUTION_IMPLEMENTATION_CONTRACT = Object.freeze({
   entityContributors: Object.freeze({
     "catalog.Title": Object.freeze({
       maximumBatchSize: 20,
-      maximumOwnerQueriesPerBatch: 1,
+      ownerQueryPlan: CATALOG_PUBLIC_ENTITY_OWNER_QUERY_PLAN,
       resolution: "request_loader",
     }),
     "discovery.Title": Object.freeze({
       maximumBatchSize: 20,
-      maximumOwnerQueriesPerBatch: 0,
+      ownerQueryPlan: REFERENCE_ONLY_OWNER_QUERY_PLAN,
       resolution: "reference_only",
     }),
     "engagement.Profile": Object.freeze({
       maximumBatchSize: 20,
-      maximumOwnerQueriesPerBatch: 1,
+      ownerQueryPlan: SINGLE_OWNER_LOAD_QUERY_PLAN,
       resolution: "request_loader",
     }),
     "engagement.Title": Object.freeze({
       maximumBatchSize: 20,
-      maximumOwnerQueriesPerBatch: 1,
+      ownerQueryPlan: SINGLE_OWNER_LOAD_QUERY_PLAN,
       resolution: "request_loader",
     }),
     "identity.Profile": Object.freeze({
       maximumBatchSize: 16,
-      maximumOwnerQueriesPerBatch: 1,
+      ownerQueryPlan: SINGLE_OWNER_LOAD_QUERY_PLAN,
       resolution: "request_loader",
     }),
   }),
 } as const);
+
+function ownerQueryPlanIdentity(plan: OwnerQueryPlan): string {
+  const validSequence = (sequence: readonly string[]): boolean =>
+    sequence.length <= 8 && sequence.every((entry) => /^[a-z][A-Za-z0-9]{0,63}$/u.test(entry));
+  if (!validSequence(plan.initial)) {
+    throw new Error("GraphQL owner-query initial sequence is invalid.");
+  }
+  if (plan.retry === null) {
+    return `initial:${plan.initial.join(",")}|retry:none`;
+  }
+  if (
+    !Number.isSafeInteger(plan.retry.maximumAttempts) ||
+    plan.retry.maximumAttempts < 1 ||
+    plan.retry.maximumAttempts > 2 ||
+    !/^[a-z][a-z_]{0,63}$/u.test(plan.retry.reason) ||
+    !validSequence(plan.retry.sequence) ||
+    plan.retry.sequence.length === 0
+  ) {
+    throw new Error("GraphQL owner-query retry sequence is invalid.");
+  }
+  return `initial:${plan.initial.join(",")}|retry:${plan.retry.reason}:${String(plan.retry.maximumAttempts)}:${plan.retry.sequence.join(",")}`;
+}
+
+function maximumOwnerQueriesPerBatch(plan: OwnerQueryPlan): number {
+  ownerQueryPlanIdentity(plan);
+  return (
+    plan.initial.length +
+    (plan.retry === null ? 0 : plan.retry.maximumAttempts * plan.retry.sequence.length)
+  );
+}
 
 function unwrapList(type: GraphQLOutputType): boolean {
   let current: GraphQLOutputType = type;
@@ -472,7 +534,9 @@ export function validateGraphqlExecutionPathAudit(
     if (
       leastScope(scopes, coordinate) !== entry.authorizationScope ||
       implementation.maximumBatchSize !== entry.maximumBatchSize ||
-      implementation.maximumOwnerQueriesPerBatch !== entry.maximumOwnerQueriesPerBatch ||
+      ownerQueryPlanIdentity(implementation.ownerQueryPlan) !==
+        ownerQueryPlanIdentity(entry.ownerQueryPlan) ||
+      maximumOwnerQueriesPerBatch(entry.ownerQueryPlan) !== entry.maximumOwnerQueriesPerBatch ||
       implementation.resolution !== entry.resolution
     ) {
       throw new Error(`${coordinate} entity-contributor audit is invalid.`);

@@ -32,6 +32,28 @@ export const CATALOG_PUBLIC_CACHE_POLICY = Object.freeze({
   maximumCoalescingEntries: 128,
 } as const);
 
+export type CatalogPublicEntityOwnerQuery = "findFences" | "findManyAtFences";
+
+export const CATALOG_PUBLIC_ENTITY_OWNER_QUERY_PLAN = Object.freeze({
+  initial: Object.freeze([
+    "findFences",
+    "findManyAtFences",
+  ] as const satisfies readonly CatalogPublicEntityOwnerQuery[]),
+  retry: Object.freeze({
+    reason: "fence_changed",
+    maximumAttempts: 1,
+    sequence: Object.freeze([
+      "findFences",
+      "findManyAtFences",
+    ] as const satisfies readonly CatalogPublicEntityOwnerQuery[]),
+  }),
+});
+
+export const CATALOG_PUBLIC_ENTITY_MAXIMUM_OWNER_QUERIES_PER_BATCH =
+  CATALOG_PUBLIC_ENTITY_OWNER_QUERY_PLAN.initial.length +
+  CATALOG_PUBLIC_ENTITY_OWNER_QUERY_PLAN.retry.maximumAttempts *
+    CATALOG_PUBLIC_ENTITY_OWNER_QUERY_PLAN.retry.sequence.length;
+
 const ENVIRONMENTS = new Set(["local", "test", "development", "staging", "production"]);
 
 type CacheOptions = Readonly<{

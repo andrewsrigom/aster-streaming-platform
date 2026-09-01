@@ -77,7 +77,16 @@ deleted-profile scenario. Source `f5fbe29`, tree `4f44b71`, carries the exact
 setup profile into measurement, consumes its control record without publishing
 the synthetic ID, and removes arbitrary profile ordering. Focused proof3/3,
 strict build, the complete Engagement runtime and the 73/73 affected gate pass;
-the runtime records ContinueWatching7 in104.127 ms and cleanup0.
+the runtime records ContinueWatching7 in104.127 ms and cleanup0. Evidence head
+`10bef1f` passed protected run `33465978576` attempt2 after attempt1's isolated
+PostgreSQL transaction-timeout assertion passed on retry. Discussion
+`3900443731` is resolved. Blocker-boundary confirmation discussion
+`3900633355` then found that Catalog's audited one-query budget was lower than
+its measured cold fence/load path and omitted the single fence-change retry.
+The local correction exports Catalog's exact source-owned query plan, derives a
+four-query worst-case budget, observes that sequence in an executable
+fence-change test and consumes the same contract during Router composition.
+Catalog249/249, Router26/26 and the affected73/73 gate pass.
 
 ## Proposed behavior
 
@@ -140,6 +149,7 @@ matrix.
 | Discovery process restart keeps identity but Compose reassigns its direct endpoint | Start with `--no-recreate`, assert Discovery identity, restart only the Router process to renew local DNS resolution, assert Router identity, then apply the finite semantic probe | identity preservation, endpoint-change fact, Router restart, attempt count, generation and cleanup |
 | Router restart reassigns the proof's ephemeral host port or health precedes forwarding readiness | Resolve/validate the current loopback port after restart, then retry only the named local transport-startup codes inside the same 10-second end-to-end deadline | port-change fact, attempts, duration and final semantic response |
 | Setup and an earlier scenario leave multiple two-row progress profiles | Carry the exact setup profile through a private runner control record; never rediscover it by row count/order | exact-profile assertion, ID excluded from evidence, repeated full runtime |
+| Catalog fence changes between its cold fence and projection reads | Permit one exact `findFences`/`findManyAtFences` retry, derive the four-query maximum from the owner-exported plan and fail composition if the audit drifts | observed owner-call sequence and composition contract |
 | Predecessor PR changes | Rebase this dependent branch and repeat affected gates/evidence | exact base/head |
 
 ## Data and contracts
@@ -185,6 +195,9 @@ matrix.
    restart only the Router process and record the local DNS-renewal boundary.
    Then repeat only the affected heavyweight Discovery runtime and candidate
    gate. Keep hosted stable-address replacement recovery in P14-R10.
+8. Bind Catalog's contributor audit to its source-owned cold fence/load and
+   single fence-change retry plan; prove the observed worst-case sequence and
+   derive rather than duplicate the maximum owner-query budget.
 
 ## Tests
 
@@ -232,21 +245,32 @@ matrix.
   exact setup profile into measurement. Focused proof3/3, strict Engagement
   build, the complete runtime and corrected gate73/73 pass. The runtime records
   ContinueWatching7 in104.127 ms, cleanup0 and retainedRuntimeTouched false.
-  Final protected CI, discussion resolution, blocker-boundary confirmation,
-  merge and exact-main gates remain.
+  Evidence head `10bef1f` passed protected run `33465978576` attempt2 and
+  discussion `3900443731` is resolved. Confirmation discussion `3900633355`
+  found the Catalog budget omitted its cold two-query path and one bounded
+  fence-change retry. The local correction exports the exact owner query plan,
+  derives the worst-case maximum as four and verifies the observed call
+  sequence. Catalog249/249, Router26/26 and the affected73/73 gate with56 cached
+  pass in86.394 seconds. The query path, adapter, schema and measurement are
+  unchanged, so the prior heavyweight Router observations remain applicable.
+  Publication, protected CI, discussion resolution, final confirmation, merge
+  and exact-main gates remain.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.
 - Heavyweight repeat triggers: repeat an owner PostgreSQL fixture only if its
   query path, adapter, migration, authorization policy or measurement changes;
   repeat packaged Router/browser only if schema/runtime/Web wiring changes.
-- Review stopping rule: initial PR57 review is complete; this one batched
-  remediation addresses both blockers. Run one confirmation and reopen only for
-  a changed requirement, security/data, availability or public-contract blocker.
+- Review stopping rule: initial PR57 review and the exact-profile confirmation
+  are complete. Discussion `3900633355` changes the audited performance boundary,
+  so one final blocker-boundary confirmation is required after this batched
+  remediation; reopen only for a requirement, security/data, availability or
+  public-contract blocker.
 
 ## Rollback or recovery
 
-Revert exact-profile source `f5fbe29`, final coordinated-recovery source
+Revert the Catalog owner-query-plan correction, exact-profile source `f5fbe29`,
+final coordinated-recovery source
 `02d6739`, process-restart source
 `c5b0eca`, initial recovery source `c5ae760`, federated source `e0f5e27`, the
 audit, fixture instrumentation and documentation as one item. No schema,
