@@ -1,5 +1,11 @@
 import { createHash } from "node:crypto";
 
+export const FEDERATED_QUERY_COUNT_WORKLOAD = Object.freeze({
+  distinctTitles: 10,
+  homeFirst: 10,
+  searchFirst: 20,
+});
+
 export const PREPARE_QUERY_COUNT_SQL =
   "CREATE EXTENSION IF NOT EXISTS pg_stat_statements; SELECT pg_stat_statements_reset();";
 export const RESET_QUERY_COUNT_SQL = "SELECT pg_stat_statements_reset();";
@@ -47,6 +53,38 @@ function object(value, label) {
     throw new Error(label + " must be an object.");
   }
   return value;
+}
+
+export function assertHydratedTitleBatch(operation, edges, expectedCount, locale = "en") {
+  if (
+    !Array.isArray(edges) ||
+    !Number.isSafeInteger(expectedCount) ||
+    expectedCount < 2 ||
+    expectedCount > 20 ||
+    edges.length !== expectedCount
+  ) {
+    throw new Error(`${operation} must hydrate exactly ${String(expectedCount)} title entities.`);
+  }
+  const ids = edges.map((edge, index) => {
+    const item = object(edge, `${operation} edge ${String(index)}`);
+    const node = object(item.node, `${operation} title ${String(index)}`);
+    const localized = object(node.localized, `${operation} localization ${String(index)}`);
+    if (
+      typeof node.id !== "string" ||
+      !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-8[a-f0-9]{3}-[a-f0-9]{12}$/u.test(node.id) ||
+      localized.locale !== locale ||
+      typeof localized.title !== "string" ||
+      localized.title.length < 1 ||
+      localized.title.length > 320
+    ) {
+      throw new Error(`${operation} returned an invalid hydrated title entity.`);
+    }
+    return node.id;
+  });
+  if (new Set(ids).size !== expectedCount) {
+    throw new Error(`${operation} must hydrate ${String(expectedCount)} distinct title entities.`);
+  }
+  return Object.freeze(ids);
 }
 
 export function selectCurrentTrustedOperation(persistedSource, deliverySource, name) {

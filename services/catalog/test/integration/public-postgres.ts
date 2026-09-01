@@ -279,6 +279,21 @@ export async function verifyPublicCatalog(
     );
     assert.equal(exact.status, "completed");
     assert.equal(exact.value.length, 2);
+    const representativeIds = Array.from({ length: 20 }, (_, index) => id(108 + index));
+    const representativeFences = await entitySource.findFences(
+      representativeIds,
+      { now: clock, policy: { commercial: true } },
+      signal(),
+    );
+    assert.equal(representativeFences.status, "completed");
+    assert.equal(representativeFences.value.length, representativeIds.length);
+    const representativeCandidates = await entitySource.findManyAtFences(
+      representativeFences.value,
+      { now: clock, policy: { commercial: true } },
+      signal(),
+    );
+    assert.equal(representativeCandidates.status, "completed");
+    assert.equal(representativeCandidates.value.length, representativeIds.length);
     assert.equal(
       (
         await commands.execute(
@@ -304,6 +319,7 @@ export async function verifyPublicCatalog(
     output("catalog_public_cache_fence", {
       compactFenceFields: 4,
       exactCandidateRows: exact.value.length,
+      representativeBatchRows: representativeCandidates.value.length,
       staleFenceRowsAfterDispute: retiredFence.value.length,
     });
     const allIds: string[] = [];

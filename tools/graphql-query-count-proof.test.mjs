@@ -5,7 +5,9 @@ import test from "node:test";
 import { URL } from "node:url";
 
 import {
+  assertHydratedTitleBatch,
   assertFederatedQueryBudget,
+  FEDERATED_QUERY_COUNT_WORKLOAD,
   READ_QUERY_COUNT_SQL,
   selectCurrentTrustedOperation,
 } from "./graphql-query-count-proof.mjs";
@@ -55,6 +57,46 @@ test("query-count proof requires every expected owner and rejects query amplific
         { catalog: 1, discovery: 3 },
       ),
     /exceeds its bound/u,
+  );
+});
+
+test("query-count proof requires a representative multi-entity workload", () => {
+  assert.deepEqual(FEDERATED_QUERY_COUNT_WORKLOAD, {
+    distinctTitles: 10,
+    homeFirst: 10,
+    searchFirst: 20,
+  });
+  const edges = Array.from(
+    { length: FEDERATED_QUERY_COUNT_WORKLOAD.distinctTitles },
+    (_, index) => ({
+      node: {
+        id: `00000000-0000-4000-8000-0000051${String(index + 1).padStart(5, "0")}`,
+        localized: { locale: "en", title: `Signal / ${String(index + 1).padStart(2, "0")}` },
+      },
+    }),
+  );
+  assert.equal(
+    assertHydratedTitleBatch("SearchTitles", edges, FEDERATED_QUERY_COUNT_WORKLOAD.distinctTitles)
+      .length,
+    10,
+  );
+  assert.throws(
+    () =>
+      assertHydratedTitleBatch(
+        "SearchTitles",
+        edges.slice(0, 1),
+        FEDERATED_QUERY_COUNT_WORKLOAD.distinctTitles,
+      ),
+    /hydrate exactly 10/u,
+  );
+  assert.throws(
+    () =>
+      assertHydratedTitleBatch(
+        "HomePublic",
+        edges.map((edge, index) => (index === 9 ? edges[0] : edge)),
+        FEDERATED_QUERY_COUNT_WORKLOAD.distinctTitles,
+      ),
+    /10 distinct/u,
   );
 });
 

@@ -98,7 +98,22 @@ source `1ec01c3`, tree `f27a9f8`, passes the complete clean-checkout source gate
 63/63 with zero cached tasks in 159.682 seconds. The repeated affected gate
 passes73/73 with63 cached in54.731 seconds. Protected run `33468676673` also
 passed Local platform, so no unchanged heavyweight runtime is repeated before
-the corrected publication.
+the corrected publication. Final confirmation then found that the original
+single-title Search and Home workload could not distinguish batching from one
+query per entity. The first ten-title execution made that proof meaningful and
+exposed a real contract violation: Catalog encoded four PostgreSQL parameters
+per fence, so ten fences required 43 parameters and exceeded the shared
+32-parameter transaction guard. Hydration failed closed with one attempted
+Catalog statement and cleanup0; no acceptance was claimed from that run.
+Catalog now sends the already validated, bounded fence tuples in one JSON
+parameter and performs the same exact four-field match inside PostgreSQL. The
+real Catalog integration resolves all 20 entities allowed by the request-scoped
+DataLoader in one `findManyAtFences` statement. The complete repeated Discovery
+runtime then hydrated ten distinct titles for both exact persisted documents at
+unchanged totals: SearchTitles5 (Catalog2/Discovery3) in211.665 ms and
+HomePublic7 (Catalog2/Discovery5) in149.035 ms. TitleDetail2, projection,
+failure-isolation and restart-recovery checks also pass; cleanup reports zero
+remaining resources.
 
 ## Proposed behavior
 
@@ -163,6 +178,8 @@ matrix.
 | Setup and an earlier scenario leave multiple two-row progress profiles | Carry the exact setup profile through a private runner control record; never rediscover it by row count/order | exact-profile assertion, ID excluded from evidence, repeated full runtime |
 | Catalog fence changes between its cold fence and projection reads | Permit one exact `findFences`/`findManyAtFences` retry, derive the four-query maximum from the owner-exported plan and fail composition if the audit drifts | observed owner-call sequence and composition contract |
 | Clean checkout lints Router before Catalog build output exists | Resolve the owner contract through its explicit typed subpath; keep runtime import on the compiled Catalog module | clean-worktree lint plus Router/Catalog builds |
+| Query-count fixture hydrates only one distinct title | Seed ten disposable Catalog titles before the actual Discovery rebuild, execute the current Search and Home documents at their representative client sizes, require ten distinct hydrated entities and keep Catalog's observed count batch-bounded | exact multi-entity response assertions plus per-owner `pg_stat_statements` counts |
+| Catalog encodes four SQL parameters per entity and exceeds the shared 32-parameter guard before the reviewed 20-title batch maximum | Encode the already validated, bounded fence tuples as one JSON parameter and preserve exact ID/version/rights/publication matching in PostgreSQL | real 20-entity Catalog integration plus exact ten-title Router measurements |
 | Predecessor PR changes | Rebase this dependent branch and repeat affected gates/evidence | exact base/head |
 
 ## Data and contracts
@@ -213,6 +230,14 @@ matrix.
    derive rather than duplicate the maximum owner-query budget.
 9. Expose that contract through a narrow package subpath whose checked-in type
    shape is available before build output; prove lint from a clean worktree.
+10. Seed ten rights-valid synthetic Catalog candidates in the disposable proof,
+    let the existing Discovery rebuild project them, and measure the exact
+    `SearchTitles(first: 20)` and `HomePublic(first: 10)` documents while
+    asserting ten distinct hydrated titles at the unchanged batched owner count.
+11. Repair the Catalog adapter boundary exposed by the representative workload:
+    retain exact fence matching while keeping the reviewed 20-title batch below
+    the shared PostgreSQL parameter guard, then prove the maximum batch against
+    real PostgreSQL before repeating the federated runtime.
 
 ## Tests
 
@@ -226,8 +251,10 @@ matrix.
   maxima, current trusted-operation/schema compatibility.
 - Browser: reuse the protected canonical sign-in/profile/browse/play journey;
   repeat locally only if Web/schema behavior changes.
-- Performance/failure: four labelled single-fixture observations plus existing
-  twenty-pair synthetic baseline versus one batched query; no throughput claim.
+- Performance/failure: four labelled single-fixture observations, with Search
+  and Home hydrating ten distinct Catalog entities at representative client
+  sizes, plus the existing twenty-pair synthetic baseline versus one batched
+  query; no throughput claim.
 
 ## Evidence
 
@@ -278,7 +305,16 @@ matrix.
   `f27a9f85fce67f5372685fe9a10e37672b7dae99`, passes a fresh detached
   clean-checkout `pnpm check:source` 63/63 with0 cached in159.682 seconds. The
   repeated affected candidate passes73/73 with63 cached in54.731 seconds.
-  Runtime/query paths are unchanged; publish this source and evidence once.
+  Final confirmation required a representative multi-entity workload. Its first
+  run exposed the Catalog adapter's 43-parameter expansion for ten fences against
+  the shared 32-parameter guard and correctly failed hydration with cleanup0.
+  The bounded JSON-tuple correction preserves the exact four-field predicate.
+  Catalog build, 249/249 unit tests and the real integration pass, including all
+  20 entities allowed by the DataLoader and cleanup0. The complete Discovery
+  runtime passes with ten distinct Search and Home hydrations at unchanged
+  SearchTitles5 and HomePublic7 counts, plus the existing projection,
+  failure-isolation, restart-recovery, log-safety and cleanup0 assertions.
+  Source and affected candidate gates remain before publishing this remediation.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.
@@ -288,8 +324,11 @@ matrix.
 - Review stopping rule: initial PR57 review and the exact-profile confirmation
   are complete. Discussion `3900633355` changes the audited performance boundary,
   so one final blocker-boundary confirmation is required after this batched
-  remediation; reopen only for a requirement, security/data, availability or
-  public-contract blocker.
+  remediation. The resulting confirmation found that the one-title workload
+  could not detect per-entity query amplification; this remediation changes that
+  blocking P13-R07/P13-R08 proof boundary, so one confirmation of the exact
+  multi-entity candidate is permitted. Reopen only for a requirement,
+  security/data, availability or public-contract blocker.
 
 ## Rollback or recovery
 

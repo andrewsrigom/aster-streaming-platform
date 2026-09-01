@@ -172,15 +172,25 @@ function entityRepositories(tx: AsterPostgresTransaction): CatalogPublicEntityRe
           throw new InvalidCatalogInput();
         }
       }
-      const values: (string | number | boolean)[] = [...scopeValues(scope)];
-      const predicates = fences.map((value) => {
-        const offset = values.length + 1;
-        values.push(value.id, value.titleVersion, value.rightsRevision, value.publicationId);
-        return `(id = $${String(offset)}::uuid AND version = $${String(offset + 1)}::integer AND rights_revision = $${String(offset + 2)}::integer AND publication_id = $${String(offset + 3)}::uuid)`;
-      });
+      // One bounded tuple parameter keeps the twenty-title DataLoader contract below the
+      // shared PostgreSQL adapter's 32-parameter guard without weakening exact fence matching.
+      const encodedFences = JSON.stringify(
+        fences.map((value) => [
+          value.id,
+          value.titleVersion,
+          value.rightsRevision,
+          value.publicationId,
+        ]),
+      );
       const result = await tx.query({
-        text: `SELECT ${columns} FROM catalog.public_candidates WHERE ${eligible} AND (${predicates.join(" OR ")}) ORDER BY id`,
-        values,
+        text: `SELECT ${columns} FROM catalog.public_candidates WHERE ${eligible} AND EXISTS (
+          SELECT 1 FROM jsonb_array_elements($4::jsonb) AS expected(value)
+          WHERE id = (expected.value->>0)::uuid
+            AND version = (expected.value->>1)::integer
+            AND rights_revision = (expected.value->>2)::integer
+            AND publication_id = (expected.value->>3)::uuid
+        ) ORDER BY id`,
+        values: [...scopeValues(scope), encodedFences],
       });
       if (result.rowCount !== result.rows.length || result.rows.length > fences.length) {
         return invalidRow();
