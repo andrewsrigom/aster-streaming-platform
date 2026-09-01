@@ -126,9 +126,51 @@ Corrected evidence checkpoint
 confirmation completed on that exact head at `2026-09-01T09:56:10Z` without
 a new finding. All four PR58 review threads are resolved.
 
+## P14-R14 — Capability-to-proof index
+
+Status: **implemented — protected acceptance pending**
+
+Source commit `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
+`78742f48c2f939b9073f419aaded775be1e58876`, records:
+
+- one public index for the eleven required capability IDs;
+- direct links from each capability to requirements, authoritative owner,
+  representative source, focused adverse test, evidence and operations;
+- a dependency-free bounded verifier for exact coverage/order, owner/status
+  vocabulary, complete cells and repository-relative links;
+- six focused verifier tests, including malformed UTF-8 and input bounds;
+- integration with `docs:check`, `docs:test` and public navigation.
+
+### Local candidate evidence
+
+The following final checks pass on the source tree at
+`2026-09-01T10:32:30Z`:
+
+| Check | Result |
+|---|---|
+| `pnpm docs:test` | PASS — 16/16 documentation and capability-verifier tests |
+| `pnpm docs:check` | PASS — 250 documents, 2,875 headings, 1,622 links, four supported status claims, eleven capability rows, zero violations |
+| `pnpm typecheck` | PASS |
+| Focused ESLint | PASS — verifier and its tests |
+| `pnpm ai:check` | PASS — 10 files, 75 queue items, 62 session entries, active/target P14-R14 |
+| `pnpm turbo run build` | PASS — 17/17 workspace packages |
+| `pnpm check:changed` | PASS — 13/13 tasks; includes 101 platform-policy and 13 repository-memory tests |
+| `git diff --check` | PASS |
+
+The first changed-scope attempt in the fresh worktree started type-aware lint
+before local package build artifacts existed and reported derived unresolved
+workspace types. It did not identify a verifier finding. Building the 17
+workspace packages established the normal lint prerequisite; the final gate on
+the source tree then passed 13/13 tasks.
+
+This item changes documentation and repository verification tooling, not a
+product runtime, schema, persistence, event, cache, media or deployment path.
+Existing PostgreSQL, browser, media and Docker journey evidence remains
+applicable. Protected CI, review, merge and exact-main acceptance remain
+pending.
+
 ## Planned evidence
 
-- P14-R14 capability-index coverage
 - P14-R15 readability guardrails and findings inventory
 - P14-R16 owner-scoped refactoring characterization
 - P14-R17 examples and reading-path verification

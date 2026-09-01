@@ -62,6 +62,10 @@ product runtime behavior changed, so heavyweight PostgreSQL, browser, media and
 Docker journey evidence remains applicable. Protected publication, review,
 merge and exact-main acceptance remain pending.
 
+Source `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
+`78742f48c2f939b9073f419aaded775be1e58876`, is the local candidate recorded
+in [Phase14 evidence](../evidence/phase-14/README.md).
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;

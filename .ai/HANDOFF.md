@@ -47,12 +47,14 @@ path/anchor validity to the existing documentation validator.
   documents and eleven capability rows. The final changed-scope gate passes
   13/13 tasks after building the17 workspace packages required by type-aware
   lint in the fresh worktree.
+- Source `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
+  `78742f48c2f939b9073f419aaded775be1e58876`, is the coherent local candidate.
 
 ## Exact next actions
 
-1. Commit the coherent source candidate and record its exact source/tree in
-   Phase14 evidence.
-2. Publish the evidence checkpoint and wait for protected CI.
+1. Publish the commit that contains this evidence checkpoint; do not create an
+   empty or duplicate evidence-only commit.
+2. Wait for protected CI on that exact head.
 3. Complete the initial review, batch any material remediation and run one
    confirmation review when required.
 4. Merge the accepted candidate, verify exact-main CI and close item69 before

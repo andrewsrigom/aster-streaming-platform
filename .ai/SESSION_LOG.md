@@ -33,6 +33,9 @@ full snapshot through the archival checkpoint remains in
 - The final local candidate gate includes101 platform-policy and13
   repository-memory tests. No product behavior changed, so heavyweight runtime
   evidence was not repeated.
+- Source `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
+  `78742f48c2f939b9073f419aaded775be1e58876`, is recorded in the Phase14
+  evidence index.
 
 ### Next action
 
