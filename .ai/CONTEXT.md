@@ -91,14 +91,14 @@ tree `897c44c`, and exact-main run `33448911764` passed every required job. No
 hosted deployment is claimed; Phase14 still owns provider and deployment
 decisions.
 
-Item67 is the active item on `feat/p13-n-plus-one-authorization` from released
-item66 main `98deb52`. Rebased source `573e8c7`, tree `3e5c0a3`, implements the exact
-12-list/10-entity-return/5-contributor audit, four real PostgreSQL query-count
-observations and the 12-case owner matrix. Router25/25, five-owner19/19 tasks and
-the post-squash-main affected gate57/57 with49 cached in16.401 seconds pass. Exact
-source comparison proves the measured/audited paths unchanged, so all clean
-PostgreSQL evidence carries forward. Evidence is under `evidence/phase-13/`.
-Item67 is ready for one publication and its protected closeout gates.
+Item67 is active on `feat/p13-n-plus-one-authorization` from released item66 main
+`98deb52`. PR57 initial review found owner-local counts and self-asserted audit
+semantics. Corrected source `e0f5e27`, tree `da9b02b`, derives semantics during
+composition and measures exact persisted documents through Router and all
+participating owners. Router26/26, query proof15/15, strict Engagement build and
+the full Discovery/Engagement runtimes pass with cleanup0. Evidence is under
+`evidence/phase-13/`. The corrected affected gate passes73/73 with36 cached in
+162.116 seconds. Publication, protected CI, confirmation and release remain.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

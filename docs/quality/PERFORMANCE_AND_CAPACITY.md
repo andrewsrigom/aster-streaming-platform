@@ -103,9 +103,11 @@ Run stable load, observe growth and post-load stabilization, capture heap eviden
 - request concurrency saturation;
 - partial subgraph failure.
 
-The Phase13 closing candidate establishes constant-count local baselines before
-Phase14 load calibration: TitleDetail 1 PostgreSQL query, SearchTitles 3,
-HomePublic 5 and ContinueWatching 1 at their recorded finite fixtures. The
+The corrected Phase13 closing candidate establishes constant-count exact Router
+baselines before Phase14 load calibration: TitleDetail2 PostgreSQL queries
+(Catalog2), SearchTitles5 (Catalog2/Discovery3), HomePublic7
+(Catalog2/Discovery5) and ContinueWatching7
+(Catalog3/Engagement1/Identity3). The
 [raw events](../../evidence/phase-13/query-count-measurements.jsonl) and
 [interpretation](../../evidence/phase-13/query-count-authorization.txt) retain
 single-host limitations; they are regression evidence, not production SLOs.

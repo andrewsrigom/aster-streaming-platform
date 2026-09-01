@@ -10,34 +10,39 @@ required jobs.
 
 Item67 (P13-R07/R08/R09) is the sole `IN_PROGRESS` item on
 `feat/p13-n-plus-one-authorization`, worktree `/tmp/aster-p13-final`, rebased
-onto released main `98deb52`. Source `573e8c7`, tree `3e5c0a3`, implements and
-locally proves the exact path audit, four PostgreSQL measurements and owner
-matrix. The post-squash-main affected gate passes57/57 with49 cached in16.401
-seconds. Item67 is ready for one publication.
+onto released main `98deb52`. PR57 initial discussions `3899340521` and
+`3899340535` found owner-local counts and self-asserted audit labels. Corrected
+source `e0f5e27`, tree `da9b02b`, derives semantics during every composition and
+measures exact documents through Router and every participating owner.
+Router26/26, query proof15/15, strict Engagement build and both full disposable
+runtimes pass with cleanup0. The corrected affected gate passes73/73 with36
+cached in162.116 seconds; only its evidence checkpoint remains before
+publication.
 
 ## Active outcome
 
-- Publish item67 once and close Phase13 only after protected CI, the bounded
-  review round, merge and exact-main evidence.
+- Commit the affected-gate evidence, publish the correction once and close
+  Phase13 only after protected CI, both initial discussions are resolved, one
+  confirmation, merge and exact-main evidence.
 
 ## Current local evidence
 
-- Source after the released-main rebase: `573e8c7`, tree `3e5c0a3`.
-- Router focused tests pass25/25; the five-owner Turbo gate passes19/19.
-- The complete post-squash-main affected gate passes57/57 with49 cached in
-  16.401 seconds.
-- Real PostgreSQL home, title, continue-watching and search measurements remain
-  valid because the exact predecessor diff did not touch their measurement
-  or audited paths.
+- Corrected source: `e0f5e27`, tree `da9b02b`.
+- Router focused tests pass26/26; query proof/classification pass15/15.
+- Discovery exact Router counts: TitleDetail Catalog2; Search Catalog2/
+  Discovery3; Home Catalog2/Discovery5. Runtime cleanup0.
+- Engagement exact ContinueWatching count: Catalog3/Engagement1/Identity3.
+  Full event/outage suite passes and runtime cleanup0.
+- Earlier 1/3/5/1 counts are retained only as owner-local supporting evidence.
 
 ## Exact next actions
 
-1. Commit this exact released-predecessor evidence checkpoint.
-2. Publish item67 once and open its Phase13 closeout PR.
-3. Require protected CI, one initial review and one confirmation review; batch
-   only requirement, security/data, availability or public-contract blockers.
-4. Squash merge after all required gates, then require exact-main CI.
-5. Mark Phase13 released and activate the first Phase14 work item from clean
+1. Commit and publish the evidence checkpoint once to existing PR57.
+2. Require protected CI, resolve discussions `3899340521`/`3899340535` and run
+   one confirmation review; batch only requirement, security/data, availability
+   or public-contract blockers.
+3. Squash merge after all required gates, then require exact-main CI.
+4. Mark Phase13 released and activate the first Phase14 work item from clean
    main.
 
 ## Execution boundary

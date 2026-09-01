@@ -258,18 +258,19 @@ cached in66.529 seconds pass. Evidence head `e6134ae` passed protected run
 tree `897c44c`; exact-main run `33448911764` passed every required job. Item66
 is released.
 
-P13-R07/R08/R09 item67 is active from released item66 main `98deb52`. It owns an
-exact list/entity batching audit, real PostgreSQL query-count/latency evidence
-for home, title, continue-watching and search, the owner authorization abuse
-matrix and Phase13 closeout. Source `573e8c7`, tree `3e5c0a3`, audits 12 lists,
-10 entity returns and 5 contributors on predecessor `98deb52`. Router25/25, the
-five-owner19/19 task gate and the latest affected gate57/57 with49 cached in16.401 seconds
-pass. Real PostgreSQL observed TitleDetail 1 query/52.727 ms,
-SearchTitles 3/23.948 ms, HomePublic 5/18.454 ms and ContinueWatching 1/3.744 ms;
-all exact fixtures cleaned. The 12-case matrix covers all five owners and three
-required abuse categories. The rebase changed no audited or measured owner path,
-so that exact PostgreSQL evidence remains applicable. This candidate is ready
-for one publication and protected closeout review.
+P13-R07/R08/R09 item67 is active from released item66 main `98deb52`. PR57
+initial discussions `3899340521` and `3899340535` found that the original
+1/3/5/1 measurements were owner-local and the audit accepted self-asserted
+semantic labels. Corrected source `e0f5e27`, tree `da9b02b`, runs the exact audit
+during composition and derives owner, authorization scope and resolution from
+the five owner schemas, exact trusted-operation policy and implementation
+contracts. Exact documents through Router observed TitleDetail2 (Catalog2),
+SearchTitles5 (Catalog2/Discovery3), HomePublic7 (Catalog2/Discovery5) and
+ContinueWatching7 (Catalog3/Engagement1/Identity3). Router26/26, query
+proof15/15, strict Engagement build and both full disposable runtimes pass with
+cleanup0. The 12-case matrix remains valid. The corrected affected gate passes
+73/73 with36 cached in162.116 seconds. Publication, protected CI, discussion
+resolution, confirmation and release remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -824,17 +825,17 @@ shape/list/cost controls are released through tree-identical PR55 merge
 `8cd6c0b` and exact-main run `33425758870` attempt2. Execution/rate/cache
 controls are released through PR56 squash main `98deb52` and exact-main run
 `33448911764`.
-N+1/query-count proof and owner-authorization abuse tests are implemented and
-accepted by the post-squash-main local candidate in item67, but its
-publication/protected/release gates remain. Phase14 capacity validation and
+N+1/query-count proof and owner-authorization abuse tests have corrected local
+evidence and a passing 73/73 affected gate after PR57 initial review, but the
+protected/confirmation/release gates remain. Phase14 capacity validation and
 hosted deployment remain planned.
 
 ## Next outcome
 
-For P13-R07/P13-R08/P13-R09 item67, commit the released-predecessor evidence,
-publish the rebased candidate once and complete protected CI, one initial
-review, one confirmation, squash merge and exact-main CI. Then close Phase13
-and activate Phase14 from clean main.
+For P13-R07/P13-R08/P13-R09 item67, commit the passing affected-gate evidence,
+publish the correction once and complete protected CI, resolve both initial
+discussions, request one confirmation, squash merge and verify exact-main CI.
+Then close Phase13 and activate Phase14 from clean main.
 Inspect the exact historical interrupted Phase12 project only when that same
 Docker engine becomes reachable.
 

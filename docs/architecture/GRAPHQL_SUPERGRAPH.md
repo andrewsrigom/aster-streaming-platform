@@ -228,10 +228,12 @@ prunes expired entries before applying its finite capacity, including after
 healthy Redis decisions. Engagement progress/watchlist and Discovery search retain
 their released operation-specific controls. Owner authorization,
 N+1/query-count and latency are never inferred from a passing cost score. The
-dependent closing candidate records real bounded PostgreSQL counts for home,
-title, continue-watching and search and maps12 owner-side abuse cases across all
-five contexts; it remains unreleased until its execution-control predecessor
-passes the ordered release gates.
+closing candidate derives audit semantics from owner schemas, exact operation
+policy and implementation contracts during every composition. Exact documents
+through Router record bounded per-owner PostgreSQL counts for home, title,
+continue-watching and search, and map12 owner-side abuse cases across all five
+contexts. It remains unreleased until PR57's protected, confirmation, merge and
+exact-main gates pass.
 
 ## Schema evolution
 

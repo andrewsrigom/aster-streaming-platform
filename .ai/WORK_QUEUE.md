@@ -215,14 +215,15 @@ Item66 is released.
 
 Item67 is the sole `IN_PROGRESS` item on
 `feat/p13-n-plus-one-authorization`, rebased exactly on released main `98deb52`.
-Source `573e8c7`, tree `3e5c0a3`, implements the exact 12-list/10-entity-return/
-5-contributor audit, real query-count observations 1/3/5/1 for title/search/home/
-continue-watching and a 12-case five-owner authorization matrix. Router 25/25,
-five-owner 19/19 tasks and the latest post-squash-main affected gate57/57 with49
-cached in16.401 seconds pass. All disposable PostgreSQL fixtures passed with
-cleanup0; an exact diff proves their measured and audited paths did not change
-in the released-main rebase. Evidence is current; publish the candidate once
-and complete its protected closeout gates.
+PR57 initial discussions `3899340521` and `3899340535` found owner-local counts
+and self-asserted audit semantics. Corrected source `e0f5e27`, tree `da9b02b`,
+derives owner/scope/resolution during composition and measures the exact current
+documents through Router. Observed totals are title2, search5, home7 and
+continue-watching7 with every participating owner named. Router26/26, query
+proof15/15, strict Engagement build and both full disposable runtimes pass with
+cleanup0. The corrected affected gate passes73/73 with36 cached in162.116
+seconds. Record the checkpoint, publish once and complete protected CI,
+discussion resolution, confirmation and release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

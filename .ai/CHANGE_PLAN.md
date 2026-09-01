@@ -22,15 +22,15 @@ Item66 is released. Exact head `e6134ae` passed protected run `33447062908`,
 both blocker discussions are resolved and final confirmation `5485910820`
 found no major issue. PR56 squash main `98deb52` retained candidate tree
 `897c44c`; exact-main run `33448911764` passed every required job.
-Rebased item67 source `573e8c7`, tree `3e5c0a3`, exactly audits 12 public lists,
-10 entity returns and 5 contributors. Router 25/25, the five-owner 19/19 task
-gate and the post-squash-main affected gate57/57 with49 cached in16.401 seconds
-pass. Disposable PostgreSQL fixtures
-record TitleDetail 1 query, SearchTitles 3, HomePublic 5 and ContinueWatching 1
-with exact cleanup. The 12-case matrix covers all five owners and all three
-required abuse categories. Exact pre/post-rebase tree comparison proves the
-audit, matrix and measured owner paths did not change, so their heavyweight
-PostgreSQL evidence remains applicable.
+PR57 initial review discussions `3899340521` and `3899340535` found that the
+1/3/5/1 counts were owner-local and the audit accepted self-asserted owner,
+scope and resolution labels. Corrected source `e0f5e27`, tree `da9b02b`, makes
+the audit a composition invariant derived from the five owner schemas, exact
+trusted operations/runtime policy and explicit implementation contracts.
+Exact persisted documents through Router now measure TitleDetail2,
+SearchTitles5, HomePublic7 and ContinueWatching7 across every participating
+owner. Router26/26, query proof15/15, strict Engagement build and both full
+disposable runtimes pass with cleanup0. The 12-case matrix remains unchanged.
 
 ## Proposed behavior
 
@@ -39,12 +39,15 @@ public list field and federated entity contribution. The audit records the owner
 request scope, batch maximum, source-query budget and authorization class, and
 fails when the schema adds or removes an audited path.
 
-Existing disposable PostgreSQL fixtures measure the actual home,
-title, continue-watching and search application paths without a new service or
-benchmark harness. Record query count and elapsed time after fixture warmup;
-assert bounded counts, but treat latency as a single local observation rather
-than a production objective. Current owner-side negative tests form one
-executable identifier/role/profile matrix.
+Existing disposable Compose fixtures execute the exact current home, title,
+continue-watching and search persisted documents through Router. An opt-in
+pg_stat_statements overlay records restricted-role queries for every
+participating owner. Fixed readiness statements and non-participating services
+are isolated explicitly; ContinueWatching clears only disposable Catalog cache
+keys to prove the cold batched path. Counts are bounded assertions, while
+latency remains a single local observation rather than a production objective.
+Current owner-side negative tests form one executable identifier/role/profile
+matrix.
 
 ## Boundaries
 
@@ -86,6 +89,7 @@ executable identifier/role/profile matrix.
 | Cross-profile access | Engagement/Identity owner rejects without disclosing existence | matrix case/outcome |
 | Role or private-credential escalation | Public/foreign caller cannot invoke operator/private path | matrix case/outcome |
 | PostgreSQL fixture or measurement fails | No acceptance claim; exact fixture cleans up | command failure/remaining resources |
+| Background readiness or non-participant traffic enters the count | Exclude only declared probe fingerprints, stop the named non-participant and retain the isolation event | per-owner count/isolation event |
 | Predecessor PR changes | Rebase this dependent branch and repeat affected gates/evidence | exact base/head |
 
 ## Data and contracts
@@ -115,8 +119,9 @@ executable identifier/role/profile matrix.
 
 1. Inventory every current public list and entity path and encode an exact audit.
 2. Add staleness, request-scope, batch-bound and authorization-class tests.
-3. Measure real PostgreSQL counts/latency for home, title, continue-watching and
-   search through existing fixtures.
+3. Measure real PostgreSQL counts/latency for exact home, title,
+   continue-watching and search documents through Router and every participating
+   owner.
 4. Complete the owner authorization matrix with focused negative tests.
 5. Run focused, disposable integration and affected candidate gates; capture raw
    evidence and close Phase13 documentation.
@@ -128,8 +133,9 @@ executable identifier/role/profile matrix.
 - Domain: existing owner identifier/profile policies; no new domain rule.
 - Application: substituted account/profile/title, deleted/revoked owner and
   cross-profile behavior.
-- Integration: real PostgreSQL query counts/latency and no-write authorization
-  checks in exact disposable fixtures.
+- Integration: exact persisted documents through Router, per-owner real
+  PostgreSQL query counts/latency and no-write authorization checks in exact
+  disposable fixtures.
 - Contract: exact list/entity audit coverage, request-scoped loaders, batch
   maxima, current trusted-operation/schema compatibility.
 - Browser: reuse the protected canonical sign-in/profile/browse/play journey;
@@ -143,20 +149,20 @@ executable identifier/role/profile matrix.
   PostgreSQL fixtures; affected candidate gate; protected CI.
 - Raw artifact path: `evidence/phase-13/query-count-authorization.txt` plus
   `evidence/phase-13/query-count-measurements.jsonl`.
-- Acceptance result: source `573e8c7`, tree `3e5c0a3`, passes Router25/25,
-  five-owner19/19 and affected57/57 after released-main rebase. The exact source
-  diff keeps every measured path unchanged, so the four real PostgreSQL
-  observations carry forward; publication, protected review, merge and
-  exact-main gates remain.
+- Acceptance result: corrected source `e0f5e27`, tree `da9b02b`, passes
+  Router26/26, query proof15/15, strict Engagement build and both repeated exact
+  federated runtime proofs with cleanup0. The corrected affected gate passes
+  73/73 with36 cached in162.116 seconds. Publication, protected CI,
+  confirmation, merge and exact-main gates remain.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.
 - Heavyweight repeat triggers: repeat an owner PostgreSQL fixture only if its
   query path, adapter, migration, authorization policy or measurement changes;
   repeat packaged Router/browser only if schema/runtime/Web wiring changes.
-- Review stopping rule: one complete initial review, one batched remediation and
-  one confirmation; reopen only for a changed requirement, security/data,
-  availability or public-contract blocker.
+- Review stopping rule: initial PR57 review is complete; this one batched
+  remediation addresses both blockers. Run one confirmation and reopen only for
+  a changed requirement, security/data, availability or public-contract blocker.
 
 ## Rollback or recovery
 

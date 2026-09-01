@@ -3,19 +3,21 @@ Date: 2026-08-31
 Requirements: P13-R07, P13-R08, P13-R09
 Branch: feat/p13-n-plus-one-authorization
 Released predecessor main: 98deb52cabd43c8a65741436ffbea7c5863f52bb (item66 PR56)
-Candidate source commit: 573e8c768877d8aa19d8a91fb5200d37121d9db3
-Candidate source tree: 3e5c0a3fb533155cae86b01b82535f64c52e8c7d
-Measurement source commit: 8007444b24406c0b81d87156ab98197a727bb858
-Measurement source tree: eb87e5f717031f82e257817e1c47541758ed41d6
+Corrected source commit: e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0
+Corrected source tree: da9b02bcdc09d0438762baa299f40d4b93be4c76
+Federated measurement source commit: e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0
+Federated measurement source tree: da9b02bcdc09d0438762baa299f40d4b93be4c76
 
-IMPLEMENTED LOCAL CANDIDATE (NOT PUBLISHED OR RELEASED)
+CORRECTED LOCAL CANDIDATE (PR57 OPEN; CORRECTION NOT YET PUBLISHED OR RELEASED)
 
 EXECUTION-PATH AUDIT
 
-The source-owned Router audit exactly covers the generated public API and all
-five generated owner schemas. It records owner, public/account/profile scope,
-list or parent bound, resolution strategy, maximum batch and owner-query budget.
-Schema drift fails instead of silently creating an unaudited path.
+The source-owned Router audit runs during every composition and exactly covers
+the generated public API, all five generated owner schemas and every exact
+trusted operation. Schema ownership derives each owner; the trusted-operation
+runtime policy derives public/account/profile scope; and an explicit
+implementation contract derives list/entity resolution and batch/query bounds.
+The validator rejects arbitrary labels as well as schema drift.
 
 Observed exact inventory on the source commit:
   public list paths: 12
@@ -30,8 +32,9 @@ Request-scoped loaders remain owned by the subgraph request context:
   Discovery Title: reference-only and performs no owner query.
 
 The exact audit test rejects an added public list, changed @listSize metadata,
-removed entity contributor, parent bound above 20 and a query budget assigned
-to a reference-only contributor. Existing owner tests prove duplicate/order/null
+removed entity contributor, parent bound above 20, a query budget assigned to a
+reference-only contributor, a swapped owner, weakened authorization scope and
+invented resolution strategy. Existing owner tests prove duplicate/order/null
 semantics, per-request cache disposal, cross-credential isolation, freshness,
 cancellation and batch overflow.
 
@@ -46,7 +49,7 @@ heavyweight experiment was not repeated. Its raw artifact and limitations are
 in evidence/phase-08/engagement-fields-postgres.jsonl and
 evidence/phase-08/engagement-fields.md.
 
-PHASE13 REAL POSTGRESQL MEASUREMENTS
+PHASE13 EXACT FEDERATED POSTGRESQL MEASUREMENTS
 
 Raw bounded events:
   evidence/phase-13/query-count-measurements.jsonl
@@ -54,50 +57,44 @@ Raw bounded events:
 Environment:
   WSL2 Ubuntu 20.04; Node.js 24.19.0; Docker server 26.0.0; PostgreSQL image
   docker.io/library/postgres:18.6-alpine3.23@sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f.
-  Every run used one owned random-name container, loopback-only random port,
-  one CPU, 384 MiB, 128 PIDs and tmpfs storage. Every run removed its exact
-  labelled container and reported remaining 0.
+  Every run used one exact random-name disposable Compose project. The exact
+  current persisted document traversed the loopback Router and all participating
+  subgraphs. PostgreSQL pg_stat_statements counted restricted runtime roles.
+  Fixed readiness statements are excluded; non-participating Playback is stopped
+  during the measurement window. Every run removed its labelled project and
+  reported remaining 0.
 
 Command:
-  node ./tools/run-catalog-integration.mjs
+  pnpm discovery:runtime
 Result:
-  PASS. TitleDetail traversed actual GraphQL HTTP and Catalog's restricted
-  PostgreSQL adapter: 1 query in 52.727 ms for one published title. The captured
-  EXPLAIN used catalog_published_titles,
-  publications_title_id_id_rights_revision_key and rights_revisions_pkey; its
-  observed execution interval was 0.128 ms. The broader fixture ended with
-  catalog_resources_closed reservedSlots 0 and cleanup remaining 0 in 24,997 ms.
+  PASS. TitleDetail used 2 Catalog queries in 42.396 ms. SearchTitles used 5
+  queries in 58.104 ms: Catalog2 and Discovery3. HomePublic used 7 queries in
+  51.232 ms: Catalog2 and Discovery5. Search/home projection, cache outage,
+  quarantine/replay, failure isolation and restart recovery also passed. Exact
+  project cleanup reported remaining0 in 113,285 ms.
 
 Command:
-  node ./tools/run-discovery-integration.mjs
+  pnpm engagement:runtime
 Result:
-  PASS. SearchTitles used 3 queries in 23.948 ms for three projection rows and
-  first 20. HomePublic used 5 fixed owner queries in 18.454 ms for projection
-  state plus featured, recent, trending and genre rails. The search plan used
-  discovery_search_vector; keyset, independent rails, generation fencing and
-  cleanup remaining 0 also passed in 2,381 ms.
+  PASS. ContinueWatching used 7 queries in 56.631 ms for two owned in-progress
+  titles: Catalog3, Engagement1 and Identity3. Catalog performs one batched
+  owner-visibility read plus a two-query cold entity fence/load; Identity's
+  constant session/profile/authority checks account for three. The same run
+  passed progress/watchlist authorization, batching plans, Kafka redelivery,
+  quarantine/replay, broker outage/recovery and owner shutdown. Cleanup reported
+  remaining0 and retainedRuntimeTouched false.
 
-Command:
-  node ./tools/run-engagement-integration.mjs
-Initial result:
-  FAIL after the new measurement had passed: a later 65-row visibility test
-  crossed its two-second wall-clock authority window and returned unavailable.
-  The exact owned fixture still cleaned with remaining 0. The fixture now freezes
-  that isolated read's owner/visibility clock, as required for deterministic
-  ordering tests; no production policy changed.
-Corrected result:
-  PASS. ContinueWatching used 1 Engagement PostgreSQL query in 3.744 ms for 25
-  owned aggregates, first20 and current Catalog visibility. EXPLAIN used
-  engagement_continue_order and profile_guards_profile_id_account_id_key; its
-  observed execution interval was 0.131 ms. The 65-row bounded scan still split
-  four visibility batches and returned its one visible aggregate. Cleanup
-  reported remaining 0 in 4,923 ms.
+Prior owner-local measurements 1/3/5/1 remain in the raw JSONL as supporting
+adapter observations only. They are explicitly superseded for federated closure
+because they omitted Router and cross-subgraph work. Review discussions
+3899340521 and 3899340535 prompted this correction.
 
 Interpretation:
-  Counts are constant within the declared list/page bounds. They are not a
-  throughput claim, hosted SLO or comparison of machine speed. Durations are
-  single local observations retained to expose large regressions only. Phase14
-  owns calibrated mixed load, saturation and hosted budgets.
+  Counts include every participating owner and remain constant within the
+  declared list/page bounds. They are not a throughput claim, hosted SLO or
+  comparison of machine speed. Durations are single local observations retained
+  to expose large regressions only. Phase14 owns calibrated mixed load,
+  saturation and hosted budgets.
 
 OWNER AUTHORIZATION MATRIX
 
@@ -109,7 +106,7 @@ Engagement, Identity and Playback. It covers identifier substitution,
 cross-profile access and role/private-transport escalation. Each row references
 an exact test name. The Router test fails if a file/test/category/owner or case
 identity drifts. The combined five-owner test gate passed19/19 Turbo tasks;
-Router passed25/25 and verified all matrix references. Owner tests assert
+  Router passed26/26 and verified all matrix references. Owner tests assert
 rejection before disclosure or durable mutation, not merely a UI response.
 
 FOCUSED GATES
@@ -121,9 +118,14 @@ Commands:
   turbo run test --filter=@aster/catalog --filter=@aster/discovery \
     --filter=@aster/engagement --filter=@aster/identity \
     --filter=@aster/playback --concurrency=3
-Results:
-  PASS — affected builds 15/15 with 13 cached; Router 25/25 plus deterministic
-  composition; five-owner gate 19/19 tasks with 14 cached.
+Results before PR review:
+  PASS — affected builds 15/15 with 13 cached; Router25/25 plus deterministic
+  composition; five-owner gate19/19 tasks with14 cached.
+
+Corrected focused results:
+  PASS — Router build/test26/26 plus schema check; Engagement strict build;
+  query-count/classification tests15/15; staged secrets0, formatting and lint.
+  The exact Discovery and Engagement runtime commands above pass with cleanup0.
 
 Third-predecessor candidate:
   CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
@@ -132,22 +134,28 @@ Result:
   PASS — 57/57 tasks, 41 cached, in 69.406 seconds on the third corrected
   predecessor.
 
-The exact diff from measurement source 8007444 to source 573e8c768877d8aa19d8a91fb5200d37121d9db3 is
-empty for the Router audit/test, authorization matrix and Catalog, Discovery
-and Engagement measurement fixtures. Item66 changed the Identity execution
-control and packaged Router verifier, not any measured/audited path, adapter,
-migration, authorization policy or measurement. The PostgreSQL fixtures
-therefore remain supporting evidence and were not repeated. Router25/25 and the
-five-owner19/19 gate passed again on this exact source.
+The earlier exact-diff carry-forward remains valid only for the owner-local
+adapter observations. It does not certify a federated operation. Corrected
+source e0f5e27 adds exact operation selection, bounded pg_stat_statements
+instrumentation, participating-owner assertions and composition-time semantic
+derivation. Both heavyweight runtime proofs were therefore repeated.
 
 Post-squash-main candidate:
   CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
     pnpm check:changed
 Result:
-  PASS — 57/57 tasks, 49 cached, in 16.401 seconds after rebasing onto released
-  main 98deb52. The pre-rebase and post-rebase full source trees are identical
-  at 3e5c0a3, so the audit, authorization matrix and measured query paths did
-  not change. The four disposable PostgreSQL observations remain applicable.
+  PASS — 57/57 tasks, 49 cached, in 16.401 seconds after the original candidate
+  rebased onto released main98deb52. This is historical pre-review evidence; the
+  corrected source is certified by the new affected candidate gate below.
+
+Corrected federated candidate:
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    pnpm check:changed
+Result:
+  PASS — 73/73 tasks, 36 cached, in 162.116 seconds. This exact-diff gate covers
+  the semantic audit, query-count proof, owner packages, platform policy,
+  documentation, repository memory, formatting, lint, types, builds, tests,
+  secret scanning and dependency policy.
 
 Commands:
   pnpm --filter @aster/engagement typecheck
@@ -158,16 +166,22 @@ Results:
   PASS — strict Engagement types, repository memory, zero staged secrets,
   formatting and staged lint.
 
-PENDING RELEASE EVIDENCE
+PR57 INITIAL REVIEW AND PENDING RELEASE EVIDENCE
 
 - Item66 is released through PR56 squash main `98deb52` and exact-main run
-  `33448911764`. The source rebase is complete and its affected gate passes.
-- Publish item67 once, require protected CI and one
-  bounded initial/confirmation review, merge and confirm exact-main CI before
+  `33448911764`.
+- PR57 initial review discussions `3899340521` and `3899340535` identified the
+  owner-local measurement and self-asserted semantic labels. Corrected source
+  `e0f5e27`, tree `da9b02b`, addresses both. Its corrected 73/73 affected gate
+  passes; publication, protected CI, discussion resolution and confirmation
+  remain.
+- Publish the correction once, require protected CI and one confirmation review,
+  merge and confirm exact-main CI before
   declaring P13-R07/R08/R09 or Phase13 verified/released.
 
 ROLLBACK
 
-Revert source commit 573e8c768877d8aa19d8a91fb5200d37121d9db3 and its evidence
-checkpoint. No schema, migration, event, cache, retained media or durable data
-change exists. Fixtures own only exact random-name disposable containers.
+Revert corrected source commit e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0 and
+its evidence checkpoint. No schema, migration, event, retained media or durable
+data change exists. The instrumentation overlay is opt-in; fixtures own only
+exact random-name disposable projects and clear only their scoped Catalog cache.

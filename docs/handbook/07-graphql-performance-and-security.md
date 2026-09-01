@@ -52,11 +52,12 @@ DataLoader or set-based repositories reduce this:
 - no hidden cross-request cache;
 - collect batch-size and backend-query evidence.
 
-Aster's dependent Phase13 closing candidate applies those rules to the complete
-generated graph: 12 lists, 10 entity returns and 5 contributors have exact owner,
-scope and bound records. Its representative disposable PostgreSQL observations
-are TitleDetail 1 query, SearchTitles 3, HomePublic 5 and ContinueWatching 1. These
-are constant-count checks at fixed workloads, not hosted latency objectives.
+Aster's Phase13 closing candidate applies those rules to the complete generated
+graph: 12 lists, 10 entity returns and 5 contributors derive exact owner, scope,
+resolution and bound records during composition. Exact current documents through
+Router observed TitleDetail2, SearchTitles5, HomePublic7 and ContinueWatching7
+PostgreSQL queries across all participating owners. These are constant-count
+checks at fixed workloads, not hosted latency objectives.
 The concrete before/after remains the Phase08 twenty-pair comparison:20
 sequential SELECTs versus 1 request-scoped batched SELECT. See the [Phase13
 report](../../evidence/phase-13/query-count-authorization.txt) for commands,

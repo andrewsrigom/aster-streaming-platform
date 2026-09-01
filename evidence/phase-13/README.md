@@ -98,22 +98,22 @@ records all three corrections. Exact head `e6134ae` passed protected run
 tree `897c44c`; exact-main run `33448911764` passed. Item66 is released.
 
 Item67 is the active P13-R07/R08/R09 candidate on released item66 main
-`98deb52`. Rebased source `573e8c7`, tree `3e5c0a3`, encodes an exact audit
-of 12 public list paths, 10 entity-return paths and 5 federated contributors, with owner,
-authorization scope, list/parent/batch bounds and owner-query budget. Four real
-PostgreSQL observations record TitleDetail 1 query/52.727 ms, SearchTitles 3/
-23.948 ms, HomePublic 5/18.454 ms and ContinueWatching 1/3.744 ms. The
+`98deb52`. PR57 initial discussions `3899340521` and `3899340535` found that
+the 1/3/5/1 measurements were owner-local and the audit accepted self-asserted
+semantic labels. Corrected source `e0f5e27`, tree `da9b02b`, derives owner,
+authorization scope and resolution semantics from the owner schemas, exact
+trusted-operation policy and explicit implementation contracts during every
+composition. Four repeated exact-document Router observations record
+TitleDetail2 (Catalog2), SearchTitles5 (Catalog2/Discovery3), HomePublic7
+(Catalog2/Discovery5) and ContinueWatching7 (Catalog3/Engagement1/Identity3).
+The
 [raw bounded events](query-count-measurements.jsonl), [acceptance report](query-count-authorization.txt)
 and [12-case owner matrix](authorization-matrix.json) retain environment,
-commands, query-plan interpretation and limitations. Catalog and Discovery
-fixtures passed on their first changed-path execution. Engagement's first run
-exposed a later wall-clock-sensitive test; the deterministic-clock correction
-then passed the whole fixture, and both attempts cleaned their exact container.
-Router25/25, the five-owner19/19 task gate and post-squash-main affected gate57/57
-with49 cached in16.401 seconds pass. An exact source diff proves the audit,
-matrix and measured owner paths are unchanged from their fixture execution, so
-the heavyweight PostgreSQL results carry forward. Publication and the protected/
-review/release gates remain.
+commands, per-owner counts and limitations. Router26/26, query proof15/15 and
+strict Engagement build pass. The full Discovery and Engagement disposable
+runtimes pass with exact cleanup0; the latter also repeats the event/outage
+suite. The corrected affected gate passes73/73 with36 cached in162.116 seconds.
+Publication, protected CI, confirmation and release gates remain.
 
 ## Requirement traceability
 
@@ -124,7 +124,7 @@ review/release gates remain.
 | P13-R12 | [ADR-0045](../../docs/adr/0045-source-owned-trusted-operations.md), GraphQL architecture and release sequence |
 | P13-R03/R04/R05/R10 | Released through [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json), [demand-control evidence](graphql-demand-controls.txt), PR55 tree-identical main `8cd6c0b` and exact-main run `33425758870` attempt2 |
 | P13-R06/R11 | Released through third corrected source `af47c62`, protected head `e6134ae`, PR56 squash main `98deb52` and exact-main run `33448911764`; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record exact-union verification, expired-marker pruning and all review corrections |
-| P13-R07–R09 | Rebased source `573e8c7`, tree `3e5c0a3`, passes Router25/25, owner19/19 and affected57/57 but is not published or released: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and exact source audit |
+| P13-R07–R09 | Corrected source `e0f5e27`, tree `da9b02b`, passes Router26/26, query proof15/15, both exact federated runtime proofs and the 73/73 affected gate but is not released: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and composition-time semantic audit |
 
 ## Current limitations
 
@@ -135,6 +135,6 @@ review/release gates remain.
   a public-deployment security control.
 - A trusted document is not user authority. Owner authorization remains required.
 - Shape/list/cost and Identity-aware rate/cache controls are released. The
-  N+1/query-count/authorization closeout is an accepted local candidate but is
-  not released.
+  N+1/query-count/authorization closeout has corrected local proof after PR57's
+  initial review, but its affected/protected/confirmation/release gates remain.
 - Hosted providers, credentials, deployment and capacity remain Phase 14.

@@ -4,6 +4,39 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — PR57 federated-count and semantic-audit remediation
+
+### Completed
+
+- Initial PR57 discussions `3899340521` and `3899340535` found that the
+  published 1/3/5/1 observations were owner-local and that the audit accepted
+  arbitrary owner/scope/resolution labels.
+- Corrected source `e0f5e27`, tree `da9b02b`, makes semantic validation part of
+  every composition and derives it from owner schemas, exact trusted-operation
+  policy and implementation contracts. Swapped owner, weakened scope and false
+  resolution regressions fail.
+- Exact current documents through Router measured TitleDetail2,
+  SearchTitles5, HomePublic7 and ContinueWatching7 with every participating
+  owner recorded. Discovery and Engagement full disposable runtimes passed;
+  both cleaned remaining0 and Engagement retainedRuntimeTouched false.
+- Router26/26, query-count/classification15/15, strict Engagement build, staged
+  secret scan, formatting and lint pass.
+- The corrected exact-diff gate passes73/73 tasks with36 cached in162.116
+  seconds.
+
+### Evidence
+
+- `evidence/phase-13/query-count-measurements.jsonl` preserves the original
+  owner-local observations as supporting-only and records the exact federated
+  source, operation IDs, per-owner counts, timings and limitations.
+- `evidence/phase-13/query-count-authorization.txt` records both review findings,
+  corrected semantic derivation and repeated heavyweight proofs.
+
+### Next action
+
+- Commit/publish the evidence checkpoint once, require protected CI, resolve
+  both discussions and request one confirmation.
+
 ## 2026-08-31 — Execution controls released; closeout rebased on main
 
 ### Completed
