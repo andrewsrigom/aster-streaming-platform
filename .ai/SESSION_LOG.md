@@ -4,6 +4,33 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — PR57 process-restart boundary correction
+
+### Completed
+
+- Evidence head `996798b` entered protected run `33460420680`. Classify,
+  dependency review, documentation/security and Local platform passed. The
+  source job passed through Engagement, then Discovery proved that retrying
+  cannot heal a Compose replacement endpoint retained by Router. Cleanup was0.
+- Source `c5b0eca`, tree `5dadb0a`, starts the stopped Discovery container with
+  `--no-recreate` and asserts its identity and network endpoint before the same
+  finite semantic probe. Replacement remains a separate deployment boundary.
+- The full Discovery runtime passes in181.547 seconds with unchanged federated
+  counts, exact preserved generation/identity/endpoint, one recovery attempt in
+  64.738 ms and cleanup0. The final affected gate passes73/73 with61 cached in
+  65.141 seconds.
+
+### Evidence
+
+- `evidence/phase-13/query-count-authorization.txt` and the raw JSONL record the
+  exact protected failure classification, revised process-restart semantics,
+  repeated heavyweight runtime and final candidate gate.
+
+### Next action
+
+- Commit and publish the final evidence checkpoint once, require new exact-head
+  protected CI, resolve both initial discussions and request one confirmation.
+
 ## 2026-08-31 — PR57 bounded Discovery restart recovery
 
 ### Completed

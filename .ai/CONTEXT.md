@@ -102,8 +102,14 @@ the full Discovery/Engagement runtimes pass with cleanup0. Evidence is under
 failure. Recovery source `c5ae760`, tree `11b11c2`, uses one bounded 10-second
 probe that retries only explicit `SUBREQUEST_HTTP_ERROR`. The repeated Discovery
 runtime passed with one recovery attempt in129.793 ms and cleanup0; the final
-affected gate passes73/73 with64 cached in52.555 seconds. The evidence checkpoint,
-new protected CI, confirmation and release remain.
+affected gate passes73/73 with64 cached in52.555 seconds. Published head
+`996798b` entered run `33460420680`; all earlier jobs and Local platform passed,
+but the Discovery proof showed Compose endpoint replacement cannot be healed by
+Router retries. Process-restart source `c5b0eca`, tree `5dadb0a`, preserves and
+asserts the container identity/network endpoint. Its full runtime passes with
+unchanged counts, exact generation, one recovery attempt in64.738 ms and
+cleanup0; the final affected gate passes73/73 with61 cached in65.141 seconds.
+The evidence checkpoint, new protected CI, confirmation and release remain.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

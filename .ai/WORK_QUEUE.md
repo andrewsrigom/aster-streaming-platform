@@ -228,8 +228,14 @@ with the preserved generation. Recovery source `c5ae760`, tree `11b11c2`, adds
 one finite 10-second probe and retries only that transient classification. The
 repeated runtime passed with one attempt in129.793 ms and cleanup0; the final
 affected gate passes73/73 with64 cached in52.555 seconds. Record the new
-checkpoint, publish once and complete protected CI, discussion resolution,
-confirmation and release.
+checkpoint head `996798b` entered protected run `33460420680`; Local platform
+and every prior job passed, but the runtime proved Router retries cannot heal a
+Compose replacement endpoint. Process-restart source `c5b0eca`, tree `5dadb0a`,
+uses `--no-recreate` and asserts identity/endpoint preservation. The full runtime
+passes with unchanged counts, exact generation, one recovery attempt in64.738
+ms and cleanup0; the final affected gate passes73/73 with61 cached in65.141
+seconds. Record this checkpoint, publish once and complete protected CI,
+discussion resolution, confirmation and release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

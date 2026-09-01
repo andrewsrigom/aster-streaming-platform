@@ -178,10 +178,15 @@ matrix.
   federated runtime proofs with cleanup0. Protected run `33456003304` attempts3
   and4 then repeated the post-restart Router endpoint failure. Recovery source
   `c5ae760`, tree `11b11c2`, passes the full Discovery runtime with the exact
-  generation, one bounded recovery attempt in129.793 ms and cleanup0. The final
-  affected gate passes73/73 with64 cached in52.555 seconds. Evidence checkpoint
-  publication, new protected CI, confirmation, merge and exact-main gates
-  remain.
+  generation, one bounded recovery attempt in129.793 ms and cleanup0; its
+  affected gate passes73/73. Exact-head run `33460420680` proved retries cannot
+  heal a Compose replacement endpoint held by Router. Process-restart source
+  `c5b0eca`, tree `5dadb0a`, preserves and asserts container identity/network
+  endpoint. The full runtime passes with unchanged exact counts, generation,
+  identity and endpoint preserved, one recovery attempt in64.738 ms and
+  cleanup0. Its final affected gate passes73/73 with61 cached in65.141 seconds.
+  Evidence checkpoint publication, new protected CI, confirmation, merge and
+  exact-main gates remain.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.
@@ -194,11 +199,11 @@ matrix.
 
 ## Rollback or recovery
 
-Revert recovery source `c5ae760`, federated source `e0f5e27`, the audit, fixture
-instrumentation and documentation as one item. No schema, database, event,
-cache or media migration exists. If main changes before publication, rebase,
-rerun affected contracts and only the heavyweight measurements whose path
-changed.
+Revert process-restart source `c5b0eca`, initial recovery source `c5ae760`,
+federated source `e0f5e27`, the audit, fixture instrumentation and documentation
+as one item. No schema, database, event, cache or media migration exists. If
+main changes before publication, rebase, rerun affected contracts and only the
+heavyweight measurements whose path changed.
 
 ## Documentation updates
 

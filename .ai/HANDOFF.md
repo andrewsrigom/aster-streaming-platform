@@ -22,29 +22,37 @@ failure after Discovery was healthy. Recovery source `c5ae760`, tree `11b11c2`,
 adds a finite 10-second exact-generation probe that retries only
 `SUBREQUEST_HTTP_ERROR`. The repeated runtime passed with one attempt in129.793
 ms and cleanup0; the final affected gate passes73/73 with64 cached in52.555
-seconds. Only the new evidence checkpoint remains before publication.
+seconds. Published head `996798b` entered protected run `33460420680`; every
+prior job and Local platform passed, but the runtime proved retries cannot heal
+a replaced direct Compose endpoint held by Router. Process-restart source
+`c5b0eca`, tree `5dadb0a`, now preserves and asserts the container identity and
+network endpoint. The full runtime passes with unchanged exact counts, preserved
+generation/identity/endpoint, one recovery attempt in64.738 ms and cleanup0; the
+final affected gate passes73/73 with61 cached in65.141 seconds. Only the final
+evidence checkpoint remains before publication.
 
 ## Active outcome
 
-- Commit the restart-recovery evidence, publish source `c5ae760` and its
+- Commit the process-restart evidence, publish source `c5b0eca` and its
   checkpoint once and close Phase13 only after protected CI, both initial
   discussions are resolved, one confirmation, merge and exact-main evidence.
 
 ## Current local evidence
 
 - Federated source: `e0f5e27`, tree `da9b02b`.
-- Restart recovery source: `c5ae760`, tree `11b11c2`.
+- Initial recovery source: `c5ae760`, tree `11b11c2`.
+- Process-restart source: `c5b0eca`, tree `5dadb0a`.
 - Router focused tests pass26/26; query proof/classification pass15/15.
 - Discovery exact Router counts: TitleDetail Catalog2; Search Catalog2/
   Discovery3; Home Catalog2/Discovery5. Runtime cleanup0.
 - Engagement exact ContinueWatching count: Catalog3/Engagement1/Identity3.
   Full event/outage suite passes and runtime cleanup0.
-- Final affected gate passes73/73 with64 cached in52.555 seconds.
+- Final affected gate passes73/73 with61 cached in65.141 seconds.
 - Earlier 1/3/5/1 counts are retained only as owner-local supporting evidence.
 
 ## Exact next actions
 
-1. Commit and publish the restart-recovery evidence checkpoint once to existing
+1. Commit and publish the process-restart evidence checkpoint once to existing
    PR57.
 2. Require protected CI, resolve discussions `3899340521`/`3899340535` and run
    one confirmation review; batch only requirement, security/data, availability

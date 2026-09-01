@@ -5,8 +5,10 @@ Branch: feat/p13-n-plus-one-authorization
 Released predecessor main: 98deb52cabd43c8a65741436ffbea7c5863f52bb (item66 PR56)
 Corrected source commit: e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0
 Corrected source tree: da9b02bcdc09d0438762baa299f40d4b93be4c76
-Restart recovery source commit: c5ae76077cb981ccaf5a98c6e41dc47cbd2d67d7
-Restart recovery source tree: 11b11c2e90376ac5d3a77e002afc3764b122b51e
+Initial recovery source commit: c5ae76077cb981ccaf5a98c6e41dc47cbd2d67d7
+Initial recovery source tree: 11b11c2e90376ac5d3a77e002afc3764b122b51e
+Process-restart source commit: c5b0ecaf247406bcd66bcbc06f9f24c641a2dab0
+Process-restart source tree: 5dadb0a69fee7b3146a50c4041893109be917a2a
 Federated measurement source commit: e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0
 Federated measurement source tree: da9b02bcdc09d0438762baa299f40d4b93be4c76
 
@@ -181,7 +183,7 @@ Result:
   preserved generation. Project cleanup reported remaining0; the complete
   runtime finished in 182,041 ms.
 
-Final corrected candidate:
+Initial recovery candidate:
   TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm exec turbo run build test \
     toolchain:check toolchain:test typecheck lint:workspace format:check \
     unused:check architecture:check architecture:test platform:check \
@@ -193,6 +195,42 @@ Result:
   encountered host ENOMEM in knip; standalone knip passed. The first bounded-
   concurrency gate then exposed one lint-only global reference, corrected to
   globalThis.setTimeout. The final exact gate above is authoritative.
+
+Protected exact-head retry result:
+  Evidence head 996798b56110c9be751a46a1f37dd9b9fdf2409c entered run
+  33460420680. Classify, dependency review, documentation/security and Local
+  platform passed. Install/source quality passed through Engagement, then the
+  Discovery runtime failed only at restart. Discovery was ready with the exact
+  preserved generation, but Compose had replaced its direct endpoint and Router
+  retained the stopped 172.18.0.5 address for the complete 10-second probe.
+  Cleanup reported remaining0 in 130,830 ms. This is a deterministic proof-
+  scenario mismatch, not a reason to widen the retry deadline.
+
+Process-restart correction:
+  Source c5b0ecaf247406bcd66bcbc06f9f24c641a2dab0, tree
+  5dadb0a69fee7b3146a50c4041893109be917a2a, starts the stopped service with
+  --no-recreate and asserts the exact container identity and network endpoint
+  before applying the same finite semantic recovery probe. Container replacement
+  remains a deployment/orchestrator boundary and is not mislabeled as a local
+  process restart.
+
+Command:
+  pnpm discovery:runtime
+Result:
+  PASS — TitleDetail2, SearchTitles5 and HomePublic7 remain unchanged. Container
+  identity, network endpoint and durable generation were preserved; search
+  recovered in one attempt in 64.738 ms. Logs remained finite and safe. Project
+  cleanup reported remaining0; the complete runtime finished in 181,547 ms.
+
+Final process-restart candidate:
+  TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm exec turbo run build test \
+    toolchain:check toolchain:test typecheck lint:workspace format:check \
+    unused:check architecture:check architecture:test platform:check \
+    platform:test docs:check docs:test ai:check ai:test community:check \
+    community:test security:check security:test ci:check ci:test staged:test \
+    commit:test --affected --concurrency=2 --output-logs=errors-only
+Result:
+  PASS — 73/73 tasks, 61 cached, in 65.141 seconds.
 
 Commands:
   pnpm --filter @aster/engagement typecheck
@@ -212,7 +250,10 @@ PR57 REVIEW AND PENDING RELEASE EVIDENCE
   `e0f5e27`, tree `da9b02b`, addresses both. Published evidence head `aca2558`
   entered protected run `33456003304`; attempts3 and4 exposed the repeatable
   post-restart endpoint boundary. Recovery source `c5ae760`, tree `11b11c2`,
-  passes the repeated runtime and final 73/73 affected gate. Its evidence
+  passes the repeated runtime and 73/73 affected gate. Its published checkpoint
+  `996798b` entered run `33460420680`, which proved the retry cannot repair
+  endpoint replacement. Process-restart source `c5b0eca`, tree `5dadb0a`, passes
+  the full repeated runtime and final 73/73 affected gate. Its evidence
   checkpoint, new protected CI, discussion resolution and confirmation remain.
 - Publish the new checkpoint once, require protected CI and one confirmation
   review, merge and confirm exact-main CI before
@@ -220,8 +261,9 @@ PR57 REVIEW AND PENDING RELEASE EVIDENCE
 
 ROLLBACK
 
-Revert restart recovery source c5ae76077cb981ccaf5a98c6e41dc47cbd2d67d7,
-federated source e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0 and their evidence
-checkpoint. No schema, migration, event, retained media or durable data change
-exists. The instrumentation overlay is opt-in; fixtures own only exact
+Revert process-restart source c5b0ecaf247406bcd66bcbc06f9f24c641a2dab0,
+initial recovery source c5ae76077cb981ccaf5a98c6e41dc47cbd2d67d7,
+federated source e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0 and their
+evidence checkpoint. No schema, migration, event, retained media or durable data
+change exists. The instrumentation overlay is opt-in; fixtures own only exact
 random-name disposable projects and clear only their scoped Catalog cache.

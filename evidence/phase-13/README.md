@@ -119,8 +119,15 @@ was healthy with the preserved generation. Recovery source `c5ae760`, tree
 `11b11c2`, adds one finite 10-second probe that retries only that explicit
 transport classification. The repeated local runtime passed with one recovery
 attempt in129.793 ms and cleanup0; the final affected gate passes73/73 with64
-cached in52.555 seconds. The new evidence checkpoint, protected CI,
-confirmation and release gates remain.
+cached in52.555 seconds. Published head `996798b` entered protected run
+`33460420680`; every earlier job and Local platform passed, but Discovery showed
+that retries cannot heal a replaced direct Compose endpoint retained by Router.
+Process-restart source `c5b0eca`, tree `5dadb0a`, uses `--no-recreate` and
+asserts container identity/network endpoint. Its full runtime passed with
+unchanged counts, exact generation, one recovery attempt in64.738 ms and
+cleanup0; the final affected gate passes73/73 with61 cached in65.141 seconds.
+The final evidence checkpoint, protected CI, confirmation and release gates
+remain.
 
 ## Requirement traceability
 

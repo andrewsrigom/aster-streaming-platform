@@ -276,8 +276,16 @@ generation. Recovery source `c5ae760`, tree `11b11c2`, adds one finite 10-second
 probe that retries only that explicit transient transport classification. The
 repeated local runtime passed in182.041 seconds with one recovery attempt in
 129.793 ms and cleanup0. The final affected gate passes73/73 with64 cached in
-52.555 seconds. Evidence checkpoint publication, new protected CI, discussion
-resolution, confirmation and release remain.
+52.555 seconds. Published evidence head `996798b` entered protected run
+`33460420680`; Local platform and every earlier job passed, but Discovery proved
+that Compose had replaced the stopped endpoint while Router retained its prior
+address for the full probe. Process-restart source `c5b0eca`, tree `5dadb0a`,
+uses `--no-recreate` and asserts container identity/network endpoint before the
+same finite semantic probe. The full local runtime passed with unchanged exact
+counts, preserved generation/identity/endpoint, one recovery attempt in64.738
+ms and cleanup0 in181.547 seconds. The final affected gate passes73/73 with61
+cached in65.141 seconds. Evidence checkpoint publication, new protected CI,
+discussion resolution, confirmation and release remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -834,13 +842,13 @@ controls are released through PR56 squash main `98deb52` and exact-main run
 `33448911764`.
 N+1/query-count proof and owner-authorization abuse tests have corrected local
 evidence and a passing final 73/73 affected gate after PR57 initial review and a
-bounded restart-recovery correction, but the new protected/confirmation/release
+bounded process-restart correction, but the new protected/confirmation/release
 gates remain. Phase14 capacity validation and hosted deployment remain planned.
 
 ## Next outcome
 
 For P13-R07/P13-R08/P13-R09 item67, commit the restart-recovery evidence,
-publish source `c5ae760` and its checkpoint once, complete exact-head protected
+publish source `c5b0eca` and its checkpoint once, complete exact-head protected
 CI, resolve both initial discussions, request one confirmation, squash merge and
 verify exact-main CI. Then close Phase13 and activate Phase14 from clean main.
 Inspect the exact historical interrupted Phase12 project only when that same
