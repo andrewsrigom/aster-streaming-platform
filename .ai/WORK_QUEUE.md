@@ -270,8 +270,11 @@ freshness299 because the harness assumed exact300, and Local platform separately
 timed out on known TraceQL indexing after PostgreSQL recovered. Both fixtures
 cleaned. Source `3d2f6ee`, tree `cef2ee2`, derives the valid 298–300 interval;
 focused proof5/5, full runtime and affected73/73 with60 cached in61.806 seconds
-pass. Record this checkpoint, publish once and complete corrected protected CI,
-discussion resolution, permitted exact-candidate confirmation and release.
+pass. Published evidence head `35d46d9`, tree `1371744`, passed protected run
+`33475401067`, including clean source, every real owner runtime, the Docker-only
+playable demo, Local platform diagnostics and aggregate protection. Record the
+protected result, resolve discussion `3900877477`, complete the permitted
+exact-candidate confirmation and release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

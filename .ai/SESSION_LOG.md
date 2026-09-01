@@ -4,6 +4,28 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-01 — PR57 corrected protected acceptance
+
+### Completed
+
+- Published evidence head `35d46d9`, tree `1371744`, passed protected run
+  `33475401067`. Clean source, every real owner runtime, the Docker-only playable
+  demo, dependency review, documentation/security, Local platform with all three
+  diagnostic scenarios and aggregate protection completed successfully.
+- The run validates source `3d2f6ee`, tree `cef2ee2`, including the ten-title
+  representative workload and derived 298–300-second projection lease interval.
+
+### Evidence
+
+- `evidence/phase-13/query-count-authorization.txt`, raw JSONL and the Phase13
+  index record the exact protected head, tree, run, timestamps and passed jobs.
+
+### Next action
+
+- Publish this protected-result checkpoint once, require its exact-head gate,
+  resolve discussion `3900877477`, request the permitted exact-candidate
+  confirmation and complete merge/exact-main acceptance.
+
 ## 2026-09-01 — PR57 protected projection-lease assertion correction
 
 ### Completed

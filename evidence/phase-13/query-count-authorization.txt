@@ -472,10 +472,19 @@ project cleaned successfully. This known isolated indexing timeout does not
 change the Discovery correction; the protected workflow must still pass before
 release.
 
-- Publish one evidence checkpoint for source 3d2f6ee, complete corrected
-  protected CI, resolve discussion 3900877477, run the permitted exact-candidate
-  confirmation, then merge and confirm exact-main CI before declaring
-  P13-R07/R08/R09 or Phase13 released.
+PROTECTED EXACT-HEAD ACCEPTANCE
+
+Published evidence head 35d46d91b10721cb7336b70dda2b0c71df9f4164, tree
+1371744566235fbb86f27e7b4d6d4b9350091a7c, passed corrected protected run
+33475401067. Clean source quality, real platform integration, Catalog, Playback,
+Engagement and Discovery runtimes, the Docker-only playable demo, dependency
+review, documentation/security, the complete Local platform with all three
+diagnostic scenarios, and aggregate protection all completed successfully.
+The run started 2026-09-01T05:54:26Z and completed 2026-09-01T06:13:43Z.
+
+- Record this protected result once, resolve discussion 3900877477, run the
+  permitted exact-candidate confirmation, then merge and confirm exact-main CI
+  before declaring P13-R07/R08/R09 or Phase13 released.
 
 ROLLBACK
 

@@ -338,8 +338,11 @@ matrix.
   recovery and cleanup0. Protected run `33474006491` also had an independent
   known TraceQL indexing timeout in the PostgreSQL diagnostic scenario. Freeze
   corrected source `3d2f6ee`, tree `cef2ee2`; its affected gate passes73/73 with
-  60 cached in61.806 seconds. Publish one checkpoint and repeat the two failed
-  protected jobs through the normal exact-head workflow.
+  60 cached in61.806 seconds. Published evidence head `35d46d9`, tree `1371744`,
+  then passed protected run `33475401067`: every source, owner, Docker-only demo,
+  local platform, diagnostic and aggregate job completed successfully. Record
+  that protected result, resolve discussion `3900877477`, and complete the
+  permitted exact-candidate confirmation, merge and exact-main gates.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.

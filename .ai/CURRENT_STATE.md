@@ -904,18 +904,18 @@ N+1/query-count proof and owner-authorization abuse tests have corrected local
 evidence plus passing clean63/63 and final73/73 gates after PR57 initial review,
 bounded process-restart correction, exact-profile correction, Catalog
 query-plan/clean-package correction and a real ten-entity/maximum-batch parameter
-remediation plus the derived projection-lease assertion, but corrected protected
-confirmation/release remain.
+remediation plus the derived projection-lease assertion. Evidence head `35d46d9`
+passed protected run `33475401067`; exact-candidate confirmation and release
+remain.
 Phase14 capacity validation and hosted deployment remain planned.
 
 ## Next outcome
 
-For P13-R07/P13-R08/P13-R09 item67, commit and publish one evidence checkpoint
-for source `3d2f6ee`, complete exact-head protected CI, resolve discussion
-`3900877477`, request the permitted exact-candidate confirmation, squash merge
-and verify exact-main CI. Then close Phase13 and activate the newly documented
-reference/readability direction from clean main; hosted deployment is not its
-immediate objective.
+For P13-R07/P13-R08/P13-R09 item67, record protected run `33475401067`, resolve
+discussion `3900877477`, request the permitted exact-candidate confirmation,
+squash merge and verify exact-main CI. Then close Phase13 and activate the newly
+documented reference/readability direction from clean main; hosted deployment
+is not its immediate objective.
 Inspect the exact historical interrupted Phase12 project only when that same
 Docker engine becomes reachable.
 

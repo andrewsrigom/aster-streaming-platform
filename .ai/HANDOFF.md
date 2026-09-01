@@ -42,11 +42,17 @@ lease and two-second indexing-lag contract. Focused proof5/5, the complete
 ten-title runtime and affected73/73 with60 cached in61.806 seconds pass with
 cleanup0.
 
+Published evidence head `35d46d9`, tree `1371744`, passed protected run
+`33475401067`. Every required job completed successfully, including clean source,
+all real owner runtimes, the Docker-only playable demo, Local platform and its
+three diagnostic scenarios, dependency review, documentation/security and the
+aggregate gate.
+
 ## Active outcome
 
-- Publish one evidence checkpoint for source `3d2f6ee` and close Phase13 only
-  after corrected protected CI, discussion `3900877477` resolution, the permitted
-  exact-candidate confirmation, merge and exact-main evidence.
+- Record protected run `33475401067` and close Phase13 only after discussion
+  `3900877477` resolution, the permitted exact-candidate confirmation, merge and
+  exact-main evidence.
 
 ## Current local evidence
 
@@ -74,10 +80,10 @@ cleanup0.
 
 ## Exact next actions
 
-1. Commit and publish the evidence checkpoint for source `3d2f6ee` once to
-   existing PR57.
-2. Require protected CI, resolve discussion `3900877477` and run the permitted
-   exact-candidate confirmation; batch only requirement, security/data,
+1. Commit and publish the protected-result evidence checkpoint once to existing
+   PR57.
+2. Require its exact-head gate, resolve discussion `3900877477` and run the
+   permitted exact-candidate confirmation; batch only requirement, security/data,
    availability or public-contract blockers.
 3. Squash merge after all required gates, then require exact-main CI.
 4. Mark Phase13 released and, from clean main, formalize the owner-directed
