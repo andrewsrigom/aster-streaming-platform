@@ -272,9 +272,16 @@ cleaned. Source `3d2f6ee`, tree `cef2ee2`, derives the valid 298–300 interval;
 focused proof5/5, full runtime and affected73/73 with60 cached in61.806 seconds
 pass. Published evidence head `35d46d9`, tree `1371744`, passed protected run
 `33475401067`, including clean source, every real owner runtime, the Docker-only
-playable demo, Local platform diagnostics and aggregate protection. Record the
-protected result, resolve discussion `3900877477`, complete the permitted
-exact-candidate confirmation and release.
+playable demo, Local platform diagnostics and aggregate protection.
+Documentation checkpoint `1ba7d1c`, tree `a41922f`, then passed every unchanged
+source/owner job but protected run `33476967426` reproduced exact recent-store
+TraceQL timeouts on Redis in attempt1 and Catalog in attempt2 after recovery;
+both projects cleaned. Source `b2c77a8`, tree `a0b091c`, retains the exact
+predicate and timing bounds while applying Tempo's supported
+`most_recent=true` hint. Focused14/14, a complete local three-scenario runtime
+and affected73/73 with60 cached in62.328 seconds pass. Publish this correction,
+require protected acceptance, resolve discussion `3900877477`, complete the
+permitted exact-candidate confirmation and release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

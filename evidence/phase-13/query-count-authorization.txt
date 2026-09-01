@@ -17,8 +17,10 @@ Catalog query-plan source commit: 20b5f27eafe49779bc4ac832a6436c32076d8846
 Catalog query-plan source tree: 700bdc480e9e62a65ee9e111c2e2eeaefc609d73
 Final typed-contract source commit: 1ec01c320193e558661520db0303d4f37ecf76f4
 Final typed-contract source tree: f27a9f85fce67f5372685fe9a10e37672b7dae99
+Diagnostic ordering source commit: b2c77a8de402552881a101665723a19bff3f8760
+Diagnostic ordering source tree: a0b091c0ac8bde4d7f7f25d4db6f2e24b5df10b1
 
-FINAL LOCAL CANDIDATE (PR57 OPEN; CORRECTION NOT YET PUBLISHED OR RELEASED)
+FINAL LOCAL CANDIDATE (PR57 OPEN; DIAGNOSTIC CORRECTION NOT YET PUBLISHED OR RELEASED)
 
 EXECUTION-PATH AUDIT
 
@@ -482,9 +484,42 @@ review, documentation/security, the complete Local platform with all three
 diagnostic scenarios, and aggregate protection all completed successfully.
 The run started 2026-09-01T05:54:26Z and completed 2026-09-01T06:13:43Z.
 
-- Record this protected result once, resolve discussion 3900877477, run the
-  permitted exact-candidate confirmation, then merge and confirm exact-main CI
-  before declaring P13-R07/R08/R09 or Phase13 released.
+PROTECTED DIAGNOSTIC GATE CORRECTION
+
+Documentation checkpoint 1ba7d1cca514f4f7083186b9722964c06a4cfadc,
+tree a41922fb0d22783458b263d25f6012ae05753396, entered protected run
+33476967426. Every unchanged source and owner runtime passed. Local platform
+attempt1 recovered all services, then its exact Redis TraceQL search expired;
+the exact project cleaned. The single permitted failed-job retry recovered
+Catalog, then that scenario's exact TraceQL search expired; its project also
+cleaned. Consecutive timeouts in different scenarios prove a recent-store search
+ordering defect rather than one isolated retry.
+
+Source b2c77a8de402552881a101665723a19bff3f8760, tree
+a0b091c0ac8bde4d7f7f25d4db6f2e24b5df10b1, adds Tempo's supported
+with (most_recent=true) query hint. Exact trace/scenario/dependency predicates,
+the finite selected fields, failure outcomes, 45-second search wait, complete
+stored-trace privacy, recovery, cleanup and twelve-minute run budget remain
+unchanged. The source policy rejects removing or disabling the hint.
+
+Commands:
+  node --test tools/run-diagnostic-exercises.test.mjs \
+    tools/verify-diagnostics-profile.test.mjs
+  pnpm diagnostics:run
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm check:changed
+Results:
+  PASS — focused runner/profile tests14/14. The complete local run diagnosed
+  and recovered Catalog trace 7bf2f8d50b4505fc5ddd40d7a58025b8,
+  PostgreSQL trace f61a1c88e019373fe626f22f333acb06 with outcome cancelled,
+  and Redis trace b1889e043b4f3793ebb96b6303027928 with unavailable reads and
+  writes plus latency-qualified PostgreSQL fallback. The exact project cleaned.
+  The affected gate passes73/73 with60 cached in62.328 seconds.
+
+- Publish one evidence checkpoint, require exact-head protected CI, resolve
+  discussion 3900877477, run the permitted exact-candidate confirmation, then
+  merge and confirm exact-main CI before declaring P13-R07/R08/R09 or Phase13
+  released.
 
 ROLLBACK
 

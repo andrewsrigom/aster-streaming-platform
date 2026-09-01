@@ -48,11 +48,22 @@ all real owner runtimes, the Docker-only playable demo, Local platform and its
 three diagnostic scenarios, dependency review, documentation/security and the
 aggregate gate.
 
+Documentation checkpoint `1ba7d1c`, tree `a41922f`, then entered protected run
+`33476967426`. Every unchanged source and owner job passed. Local platform
+attempt1 recovered all services but timed out on the exact Redis recent-store
+TraceQL search; attempt2 recovered Catalog but timed out on that exact search.
+Both UUID-scoped projects cleaned. Source `b2c77a8`, tree `a0b091c`, adds
+Tempo's supported `most_recent=true` hint without changing the exact predicate,
+45-second search deadline, privacy/recovery checks or twelve-minute run budget.
+Focused runner/profile tests pass14/14. A complete local three-scenario run
+passes and cleans its exact project. The affected gate passes73/73 with60 cached
+in62.328 seconds.
+
 ## Active outcome
 
-- Record protected run `33475401067` and close Phase13 only after discussion
-  `3900877477` resolution, the permitted exact-candidate confirmation, merge and
-  exact-main evidence.
+- Publish the deterministic recent-trace correction and close Phase13 only after
+  its protected acceptance, discussion `3900877477` resolution, the permitted
+  exact-candidate confirmation, merge and exact-main evidence.
 
 ## Current local evidence
 
@@ -65,6 +76,9 @@ aggregate gate.
 - Final typed contract source: `1ec01c3`, tree `f27a9f8`.
 - Representative multi-entity source: `3d90dff`, tree `331be6b`.
 - Projection-lease source: `3d2f6ee`, tree `cef2ee2`.
+- Diagnostic ordering source: `b2c77a8`, tree `a0b091c`.
+- Focused diagnostic/profile tests pass14/14; complete local Catalog/PostgreSQL/
+  Redis diagnosis and recovery pass with exact cleanup.
 - Router focused tests pass26/26; focused query proof passes5/5.
 - Catalog passes249/249; real PostgreSQL resolves all20 reviewed batch entities
   and cleanup is0.
@@ -75,13 +89,13 @@ aggregate gate.
   104.127 ms after carrying the exact setup profile. Full event/outage suite
   passes and runtime cleanup0.
 - Fresh detached clean source gate passes63/63 with0 cached in159.682 seconds.
-- Latest affected gate passes73/73 with60 cached in61.806 seconds.
+- Latest affected gate passes73/73 with60 cached in62.328 seconds.
 - Earlier 1/3/5/1 counts are retained only as owner-local supporting evidence.
 
 ## Exact next actions
 
-1. Commit and publish the protected-result evidence checkpoint once to existing
-   PR57.
+1. Commit and publish the diagnostic correction evidence checkpoint once to
+   existing PR57.
 2. Require its exact-head gate, resolve discussion `3900877477` and run the
    permitted exact-candidate confirmation; batch only requirement, security/data,
    availability or public-contract blockers.

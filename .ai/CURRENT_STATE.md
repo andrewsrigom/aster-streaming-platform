@@ -344,8 +344,16 @@ waiting for TraceQL to index the PostgreSQL diagnostic after recovery and cleane
 its project. Source `3d2f6ee`, tree `cef2ee2`, validates the derived inclusive
 298–300 interval from the existing lease/indexing contract. Focused proof5/5,
 complete ten-title runtime and affected73/73 with60 cached in61.806 seconds pass
-with cleanup0. Evidence publication, corrected protected CI, discussion
-resolution, permitted exact-candidate confirmation and release remain.
+with cleanup0. Published evidence head `35d46d9`, tree `1371744`, passed
+protected run `33475401067`. Documentation checkpoint `1ba7d1c`, tree `a41922f`,
+then preserved every source/owner job but reproduced recent-store TraceQL
+ordering timeouts in two different diagnostic scenarios on protected run
+`33476967426`; both recovered and cleaned. Source `b2c77a8`, tree `a0b091c`,
+adds Tempo's supported `most_recent=true` hint while retaining the exact
+predicate, 45-second wait and all privacy/recovery/cleanup checks. Focused
+tests14/14, a complete local three-scenario run and affected73/73 with60 cached
+in62.328 seconds pass. Protected acceptance, discussion resolution, permitted
+exact-candidate confirmation and release remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -905,17 +913,20 @@ evidence plus passing clean63/63 and final73/73 gates after PR57 initial review,
 bounded process-restart correction, exact-profile correction, Catalog
 query-plan/clean-package correction and a real ten-entity/maximum-batch parameter
 remediation plus the derived projection-lease assertion. Evidence head `35d46d9`
-passed protected run `33475401067`; exact-candidate confirmation and release
-remain.
+passed protected run `33475401067`. Later protected run `33476967426` exposed a
+P12-R10 recent-store ordering defect; source `b2c77a8` passes focused14/14, one
+complete local diagnostic runtime and affected73/73. Exact-head protected CI,
+exact-candidate confirmation and release remain.
 Phase14 capacity validation and hosted deployment remain planned.
 
 ## Next outcome
 
-For P13-R07/P13-R08/P13-R09 item67, record protected run `33475401067`, resolve
-discussion `3900877477`, request the permitted exact-candidate confirmation,
-squash merge and verify exact-main CI. Then close Phase13 and activate the newly
-documented reference/readability direction from clean main; hosted deployment
-is not its immediate objective.
+For P13-R07/P13-R08/P13-R09 item67, publish source `b2c77a8` plus its evidence,
+require exact-head protected CI, resolve discussion `3900877477`, request the
+single permitted exact-candidate confirmation, squash merge and verify
+exact-main CI. Then close Phase13 and activate the newly documented
+reference/readability direction from clean main; hosted deployment is not its
+immediate objective.
 Inspect the exact historical interrupted Phase12 project only when that same
 Docker engine becomes reachable.
 

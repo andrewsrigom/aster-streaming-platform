@@ -4,6 +4,33 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-01 — PR57 protected diagnostic ordering correction
+
+### Completed
+
+- Documentation checkpoint `1ba7d1c`, tree `a41922f`, preserved every source
+  and owner job in protected run `33476967426`. Local platform attempt1 timed
+  out on the exact Redis recent-store search after recovery; the single failed-
+  job retry timed out on Catalog after recovery. Both exact projects cleaned.
+- Source `b2c77a8`, tree `a0b091c`, applies Tempo's supported
+  `most_recent=true` hint without changing the exact trace/scenario predicate,
+  45-second wait, privacy/recovery checks or twelve-minute budget.
+- Focused runner/profile tests pass14/14. One complete local run passes all
+  three diagnoses/recoveries with exact cleanup. The affected gate passes73/73
+  with60 cached in62.328 seconds.
+
+### Evidence
+
+- Phase12 failure-diagnosis evidence, Phase13 execution/query evidence, raw
+  JSONL, runbooks and repository memory record both protected failures and the
+  exact local correction.
+
+### Next action
+
+- Publish one evidence checkpoint, require protected acceptance, resolve
+  discussion `3900877477`, request the single exact-candidate confirmation and
+  complete merge/exact-main acceptance.
+
 ## 2026-09-01 — PR57 corrected protected acceptance
 
 ### Completed

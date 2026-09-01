@@ -364,9 +364,16 @@ scenario, dependency, outcome or incomplete result.
   corrected source `3d2f6ee`, tree `cef2ee2`; its affected gate passes73/73 with
   60 cached in61.806 seconds. Published evidence head `35d46d9`, tree `1371744`,
   then passed protected run `33475401067`: every source, owner, Docker-only demo,
-  local platform, diagnostic and aggregate job completed successfully. Record
-  that protected result, resolve discussion `3900877477`, and complete the
-  permitted exact-candidate confirmation, merge and exact-main gates.
+  local platform, diagnostic and aggregate job completed successfully.
+  Documentation checkpoint `1ba7d1c`, tree `a41922f`, preserved every source
+  and owner job in protected run `33476967426`, but Local platform attempt1
+  timed out on the exact Redis recent-store search after recovery and attempt2
+  timed out on Catalog after recovery; both exact projects cleaned. Source
+  `b2c77a8`, tree `a0b091c`, applies Tempo's supported `most_recent=true` hint
+  without changing the exact predicate, 45-second wait or twelve-minute budget.
+  Focused tests14/14, one complete local three-scenario run and affected73/73
+  with60 cached in62.328 seconds pass. Protected acceptance, discussion
+  resolution, confirmation, merge and exact-main gates remain.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.
@@ -380,11 +387,16 @@ scenario, dependency, outcome or incomplete result.
   could not detect per-entity query amplification; this remediation changes that
   blocking P13-R07/P13-R08 proof boundary, so one confirmation of the exact
   multi-entity candidate is permitted. Reopen only for a requirement,
-  security/data, availability or public-contract blocker.
+  security/data, availability or public-contract blocker. The consecutive
+  protected P12-R10 recent-store failures change the verification boundary;
+  the same single exact-candidate confirmation must therefore include source
+  `b2c77a8` after protected acceptance. Do not start another round for lower-risk
+  speculative hardening.
 
 ## Rollback or recovery
 
-Revert projection-lease assertion source `3d2f6ee`, multi-entity source
+Revert diagnostic query-ordering source `b2c77a8`, projection-lease assertion
+source `3d2f6ee`, multi-entity source
 `3d90dff`, the typed query-plan contract source `1ec01c3`, Catalog owner-query-plan
 source `20b5f27`, exact-profile source `f5fbe29`,
 final coordinated-recovery source
