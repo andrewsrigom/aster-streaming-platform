@@ -195,10 +195,17 @@ full snapshot through the archival checkpoint remains in
   Focused contracts pass44/44, documentation tests pass28/28, documentation
   validation covers1,638 links and the affected gate passes15/15. No product
   runtime or deployment behavior changed.
+- Checkpoint `5a86f60` passed exact-head run `33561120111`. Its exact-head review
+  opened findings `3908622075`/`3908622083` for a comment-only raw-HTML boundary
+  and a governance dependency on a conditional job.
+- Correction source `7479a5c`, tree `1da233a`, closes both bypasses. Focused
+  contracts pass45/45, documentation tests pass29/29 and the affected gate
+  passes15/15, including101 platform-policy,39 CI-policy and13
+  repository-memory tests. No product runtime or deployment behavior changed.
 
 ### Next action
 
-- Publish the exact correction checkpoint, resolve its three threads and request
+- Publish the exact correction checkpoint, resolve its two threads and request
   confirmation only after the PR exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.
 

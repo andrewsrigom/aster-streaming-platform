@@ -225,6 +225,17 @@ Focused contracts pass44/44, documentation tests pass28/28, documentation
 validation covers1,638 links and the affected gate passes15/15. Publication
 remains pending.
 
+Checkpoint `5a86f6060c33a88c894ed0cd9ad32ceee1c73dc7` passed exact-head run
+`33561120111`. Its exact-head review completed at `2026-09-01T21:31:48Z` and
+opened findings `3908622075`/`3908622083`: comment stripping could end a type-6
+raw HTML block at a nonblank comment-only source line, and governance could
+depend on a conditional job skipped for documentation-only changes. Correction
+source `7479a5c8ba28391b260b8415f8ac38f518d6a2f7`, tree
+`1da233a4b6a451e59d3ffc89cc7eabd928ae2fb3`, closes both bypasses. Focused
+contracts pass45/45, documentation tests pass29/29 and the affected gate passes
+15/15, including101 platform-policy,39 CI-policy and13 repository-memory tests.
+Publication remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;

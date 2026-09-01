@@ -572,6 +572,25 @@ The affected gate passes15/15, including101 platform-policy,39 CI-policy and13
 repository-memory tests. No product runtime or deployment behavior changed.
 Publication remains pending.
 
+Checkpoint `5a86f6060c33a88c894ed0cd9ad32ceee1c73dc7` passed exact-head workflow
+`33561120111`, including source quality, Local platform, governance and the
+aggregate gate. Exact-head review completed at `2026-09-01T21:31:48Z` and
+opened two findings:
+
+- `3908622075` found that comment stripping could make a nonblank comment-only
+  line end an active CommonMark type-6 raw HTML block;
+- `3908622083` found that governance could depend on the conditional `quality`
+  job and therefore skip every capability check for documentation-only changes.
+
+Correction source `7479a5c8ba28391b260b8415f8ac38f518d6a2f7`, tree
+`1da233a4b6a451e59d3ffc89cc7eabd928ae2fb3`, derives raw-block blank boundaries
+from original source lines and requires the governance job to depend exactly on
+`classify`. Focused capability/CI-policy tests pass45/45. Documentation tests
+pass29/29 and validation covers250 documents, 2,880 headings, 1,638 links, four
+status claims and eleven rows with zero violations. The affected gate passes
+15/15, including101 platform-policy,39 CI-policy and13 repository-memory tests.
+No product runtime or deployment behavior changed. Publication remains pending.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory

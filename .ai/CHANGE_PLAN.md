@@ -222,9 +222,10 @@ file and anchor exists.
   1,638 links and the affected gate passes15/15. Exact-head run `33561120111`
   passed on checkpoint `5a86f60`; its exact-head review opened findings
   `3908622075` and `3908622083` for a comment-only raw-HTML boundary and a
-  conditional governance dependency. The working correction closes both
-  bypasses. Publication, protected acceptance, merge and exact-main acceptance
-  remain pending
+  conditional governance dependency. Correction source `7479a5c`, tree
+  `1da233a`, closes both bypasses. Focused contracts pass45/45, documentation
+  tests pass29/29 and the affected gate passes15/15. Publication, protected
+  acceptance, merge and exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff
