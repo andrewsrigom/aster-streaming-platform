@@ -171,8 +171,8 @@ file and anchor exists.
   diagnostics. Source `2f94fdf`, tree `9f05826`, corrects its type-6 visibility
   finding. A review triggered before the PR synchronized to that correction
   then found inline-code links and an order-dependent job-condition scan; the
-  findings also apply to the current source. Their working correction passes
-  focused contract tests42/42, documentation tests26/26 and the affected
+  findings also apply to the current source. Source `39bce7d`, tree `c4504d7`,
+  passes focused contract tests42/42, documentation tests26/26 and the affected
   gate15/15. Run `33519414100` was cancelled after the source became
   superseded. Publication, protected acceptance, merge and exact-main
   acceptance remain pending

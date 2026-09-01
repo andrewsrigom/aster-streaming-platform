@@ -66,8 +66,8 @@ evidence remains applicable. Prior protected acceptance passes; protected
 acceptance of the current public-rendering/traceability correction, merge and
 exact-main acceptance remain pending.
 
-Correction source `2f94fdf2d5d8acf0adb4438a0036f54dc9c1749f`, tree
-`9f058267a8fbdac5102d80f0928478595d99c638`, is the latest frozen correction
+Correction source `39bce7daa6c55231c4eaba913861d50f0c25e609`, tree
+`c4504d7fd44c0f2c9e13b0a7f647bc42de2d3923`, is the latest frozen correction
 recorded in [Phase14 evidence](../evidence/phase-14/README.md).
 
 Evidence head `136def8`, tree `58e640d`, passed protected run
@@ -166,9 +166,9 @@ issued before GitHub synchronized the PR head completed against prior head
 and a governance-job condition after `steps` could evade the pre-steps scan.
 Both findings apply to the current implementation. The run was cancelled after
 the source became superseded; its governance/dependency jobs passed, but it is
-not acceptance evidence. The accepted working correction removes complete code
-spans before link extraction and recognizes job-level `if`, `env` and
-`defaults` keys independently of order. Focused contracts pass42/42,
+not acceptance evidence. Correction source `39bce7d`, tree `c4504d7`, removes
+complete code spans before link extraction and recognizes job-level `if`, `env`
+and `defaults` keys independently of order. Focused contracts pass42/42,
 documentation tests pass26/26 and the affected gate passes15/15, including101
 platform tests. Protected publication remains pending.
 

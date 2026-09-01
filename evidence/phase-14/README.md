@@ -462,7 +462,10 @@ their order relative to `steps`. Focused capability/CI-policy tests pass42/42,
 documentation tests pass26/26 and documentation validation covers250 documents,
 2,880 headings, 1,625 links, four status claims and eleven rows with zero
 violations. The affected gate passes15/15, including101 platform-policy,39
-CI-policy and13 repository-memory tests. Protected publication remains pending.
+CI-policy and13 repository-memory tests. Correction source
+`39bce7daa6c55231c4eaba913861d50f0c25e609`, tree
+`c4504d7fd44c0f2c9e13b0a7f647bc42de2d3923`, freezes the batch without product
+runtime or deployment changes. Protected publication remains pending.
 
 ## Planned evidence
 

@@ -160,7 +160,9 @@ path/anchor validity to the existing documentation validator.
 - The accepted working correction removes complete code spans before link
   extraction and detects job-level `if`, `env` and `defaults` keys independently
   of YAML order. Focused contracts pass42/42, documentation tests pass26/26 and
-  the affected gate passes15/15, including101 platform tests.
+  the affected gate passes15/15, including101 platform tests. Correction source
+  `39bce7d`, tree `c4504d7`, is frozen without product runtime or deployment
+  changes.
 
 ## Exact next actions
 
