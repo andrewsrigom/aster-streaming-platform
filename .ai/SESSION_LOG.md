@@ -68,6 +68,8 @@ full snapshot through the archival checkpoint remains in
 - The accepted correction ignores fenced/HTML-commented Markdown and extracts
   only unsuppressed step-level `run` commands. Focused boundary tests pass35/35;
   documentation tests pass19/19 and the affected gate passes15/15.
+- Correction source `f239cf5`, tree `59094d0`, is frozen without product
+  runtime or deployment changes.
 
 ### Evidence
 
@@ -82,8 +84,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Freeze the current two-finding correction, record its exact source hash
-  without amending it, publish, resolve both discussions and require one
+- Publish the existing correction evidence checkpoint without amending source
+  `f239cf5`, resolve both discussions and require one
   blocker-boundary confirmation. Then merge and complete exact-main
   verification before activating P14-R15.
 

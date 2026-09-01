@@ -109,7 +109,8 @@ environment-only command text still satisfied governance policy. The accepted
 correction ignores fenced/commented tables and extracts only unsuppressed
 step-level `run` commands. Focused boundary tests pass35/35, documentation tests
 pass19/19 and the repeated changed-scope gate passes15/15. Protected
-publication remains pending.
+publication remains pending. Correction source `f239cf5`, tree `59094d0`, is
+frozen without product runtime or deployment changes.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

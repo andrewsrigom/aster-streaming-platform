@@ -95,11 +95,13 @@ path/anchor validity to the existing documentation validator.
   environment, printed, suppressed and cross-job substitutes. Focused boundary
   tests pass35/35, documentation tests pass19/19 and the changed-scope gate
   passes15/15.
+- Correction source `f239cf5`, tree `59094d0`, is frozen without product
+  runtime or deployment changes.
 
 ## Exact next actions
 
-1. Freeze the current two-finding correction source, record its exact hash in
-   the evidence without amending it and publish that existing checkpoint.
+1. Publish the existing correction evidence checkpoint without amending source
+   `f239cf5` or creating a duplicate evidence commit.
 2. Resolve discussions `3904105488`/`3904105494` and
    require protected CI plus one blocker-boundary confirmation because these
    findings alter the public/governance contract.

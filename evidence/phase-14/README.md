@@ -311,6 +311,12 @@ the repeated changed-scope gate passes15/15 tasks, including101
 platform-policy,39 CI-policy and13 repository-memory tests. Publication,
 protected acceptance and one blocker-boundary confirmation remain pending.
 
+Correction source `f239cf57273880ce1e4988985b60263db1c73e8b`, tree
+`59094d0f970500b252220cb583376a31dca629a3`, is the frozen implementation of
+that visibility and executable-step proof. The implementation remains bounded
+to dependency-free Markdown/workflow parsing and changes no product runtime or
+deployment behavior.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory
