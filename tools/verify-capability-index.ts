@@ -384,8 +384,51 @@ function cellsMatch(left: readonly string[], right: readonly string[]): boolean 
   return left.length === right.length && left.every((cell, index) => cell === right[index]);
 }
 
+function withoutCodeSpans(value: string): string {
+  let cursor = 0;
+  let visible = "";
+  while (cursor < value.length) {
+    const opening = value.indexOf("`", cursor);
+    if (opening < 0) {
+      return `${visible}${value.slice(cursor)}`;
+    }
+    visible += value.slice(cursor, opening);
+
+    let openingEnd = opening + 1;
+    while (value[openingEnd] === "`") {
+      openingEnd += 1;
+    }
+    const delimiterLength = openingEnd - opening;
+    let search = openingEnd;
+    let closingEnd = -1;
+    while (search < value.length) {
+      const candidate = value.indexOf("`", search);
+      if (candidate < 0) {
+        break;
+      }
+      let candidateEnd = candidate + 1;
+      while (value[candidateEnd] === "`") {
+        candidateEnd += 1;
+      }
+      if (candidateEnd - candidate === delimiterLength) {
+        closingEnd = candidateEnd;
+        break;
+      }
+      search = candidateEnd;
+    }
+
+    if (closingEnd < 0) {
+      visible += value.slice(opening, openingEnd);
+      cursor = openingEnd;
+    } else {
+      cursor = closingEnd;
+    }
+  }
+  return visible;
+}
+
 function markdownLinks(value: string): { label: string; target: string }[] {
-  return [...value.matchAll(MARKDOWN_LINK)].flatMap((match) => {
+  return [...withoutCodeSpans(value).matchAll(MARKDOWN_LINK)].flatMap((match) => {
     const label = match.groups?.["label"];
     const target = match.groups?.["target"];
     return label && target ? [{ label, target }] : [];

@@ -70,7 +70,8 @@ file and anchor exists.
   cannot substantiate every listed requirement; the exact ordered sequence
   remains protected.
 - Each capability ID is bound to its reviewed public display name; links and
-  owner metadata cannot mask a misleading label.
+  owner metadata cannot mask a misleading label. Inline-code destinations do
+  not satisfy a link role because they are not interactive Markdown links.
 - Only a visible Markdown table satisfies capability coverage; rows inside
   fenced code, HTML comments, named raw containers, arbitrary CommonMark type-7
   HTML blocks, complete CommonMark type-6 block tags or four-column indented
@@ -79,6 +80,7 @@ file and anchor exists.
   its adverse tests in protected CI; the policy parser bounds `governance` at
   the next top-level job rather than a later named job and recognizes only
   unconditional, blocking step-level `run` invocations in an unconditional job.
+  Job-level conditions are recognized independently of YAML key order.
   The required check is a standalone simple Node.js command and the required
   test is one finite `node --test` invocation, not comments, here-documents,
   environment values, printed command text or suppressed steps.
@@ -103,8 +105,10 @@ file and anchor exists.
 | A CommonMark type-6 block tag precedes the table | Ignore rows through the CommonMark blank-line boundary | Named HTML-block diagnostic |
 | A processing instruction, declaration or CDATA block wraps the table | Ignore rows through the matching CommonMark end marker | Marker-terminated HTML-block diagnostic |
 | A requirement link keeps its target but mislabels the visible requirement ID | Reject the row before publication | Requirement-label diagnostic |
+| A reviewed destination is wrapped in an inline code span | Treat the interactive link as missing | Link-role diagnostic |
 | A listed requirement lacks a representative implementation or adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
 | A required command is conditional, non-blocking or belongs to a conditional job | Treat the command as absent | Executable-step diagnostic |
+| A job-level condition appears after `steps` | Treat every command in the job as absent | Order-independent job diagnostic |
 | Required command text exists only inside a here-document or shell structure | Treat the command as absent | Standalone-command diagnostic |
 | Table size or input encoding is invalid | Stop within fixed byte/row limits | Bounded input diagnostic |
 
@@ -148,7 +152,8 @@ file and anchor exists.
 - Integration: capability-index verifier against the checked-in document
 - Contract: accept exact coverage; reject missing/duplicate/extra rows,
   capability/owner/status drift, missing columns/links, role-swapped
-  destinations, misleading requirement labels, incomplete multi-requirement
+  destinations, misleading requirement labels, inline-code destinations,
+  incomplete multi-requirement
   proof, fenced/commented/raw-HTML/indented tables, conditional/
   non-blocking/commented/printed/environment/here-document-only or isolated
   governance commands, malformed UTF-8 and bounds
@@ -163,11 +168,14 @@ file and anchor exists.
 - Raw artifact path: `evidence/phase-14/README.md`
 - Acceptance result: protected run `33516560847` passes for evidence head
   `d2e4f02`, including every owner runtime, the Docker-only journey and local
-  diagnostics. Its confirmation opened one remaining CommonMark type-6
-  visibility finding. Source `2f94fdf`, tree `9f05826`, separates end-tag blocks
-  from the complete blank-line-terminated tag set and passes focused contract
-  tests41/41, documentation tests25/25 and the affected gate15/15. Publication,
-  protected acceptance, merge and exact-main acceptance remain pending
+  diagnostics. Source `2f94fdf`, tree `9f05826`, corrects its type-6 visibility
+  finding. A review triggered before the PR synchronized to that correction
+  then found inline-code links and an order-dependent job-condition scan; the
+  findings also apply to the current source. Their working correction passes
+  focused contract tests42/42, documentation tests26/26 and the affected
+  gate15/15. Run `33519414100` was cancelled after the source became
+  superseded. Publication, protected acceptance, merge and exact-main
+  acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

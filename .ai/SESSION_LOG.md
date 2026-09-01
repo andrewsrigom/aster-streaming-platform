@@ -140,12 +140,25 @@ full snapshot through the archival checkpoint remains in
   documentation tests pass25/25 and the affected gate passes15/15, including101
   platform tests. Correction source `2f94fdf`, tree `9f05826`, is frozen without
   product runtime or deployment changes.
+- Evidence head `be4e5aa` began protected run `33519414100`. A review triggered
+  before the PR synchronized completed against prior head `d2e4f02` at
+  `2026-09-01T14:30:23Z` and opened discussions
+  `3905151111`/`3905151124`: inline-code destinations could satisfy link coverage
+  and a governance job condition after `steps` could evade the pre-steps scan.
+  Both findings apply to the current implementation.
+- The superseded run was cancelled; its dependency/governance jobs passed, but
+  it is not acceptance evidence. The accepted working correction removes code
+  spans before link extraction and recognizes job-level `if`, `env` and
+  `defaults` independently of YAML order. Focused contracts pass42/42,
+  documentation tests pass26/26 and the affected gate passes15/15, including101
+  platform tests.
 
 ### Next action
 
-- Freeze and publish the exact type-6 correction, resolve discussion
-  `3904890702` and require protected CI plus one blocker-boundary confirmation.
-  Then merge and complete exact-main verification before activating P14-R15.
+- Freeze and publish the exact two-finding correction, resolve discussions
+  `3905151111`/`3905151124` and request confirmation only after the PR exposes
+  the new exact head. Then merge and complete exact-main verification before
+  activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

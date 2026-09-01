@@ -85,11 +85,7 @@ function executableWorkflowSteps(jobSource: string): string[] {
   if (stepsStart < 0) {
     return [];
   }
-  if (
-    lines
-      .slice(0, stepsStart)
-      .some((line) => /^(?:if|defaults|env):/u.test(uncommentedYamlValue(line)))
-  ) {
+  if (lines.some((line) => /^ {4}(?:if|defaults|env):/u.test(line.replace(/\s+#.*$/u, "")))) {
     return [];
   }
 

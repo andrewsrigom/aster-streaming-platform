@@ -317,6 +317,10 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       "  governance:\n",
       "  governance:\n    if: github.event_name == 'push'\n",
     );
+    const retainedOnlyInTrailingConditionalGovernanceJob = source.replace(
+      "  quality:\n",
+      "    if: false\n\n  quality:\n",
+    );
     const retainedOnlyAsPrintedText = source.replace(requiredCommand, `echo '${requiredCommand}'`);
     const retainedOnlyInHereDocument = source
       .replace(requiredCommand, "true")
@@ -333,6 +337,7 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       retainedOnlyInConditionalGovernanceStep,
       retainedOnlyInNonBlockingGovernanceStep,
       retainedOnlyInConditionalGovernanceJob,
+      retainedOnlyInTrailingConditionalGovernanceJob,
       retainedOnlyAsPrintedText,
       retainedOnlyInHereDocument,
     ]) {

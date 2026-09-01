@@ -440,6 +440,30 @@ pass. Correction source `2f94fdf2d5d8acf0adb4438a0036f54dc9c1749f`,
 tree `9f058267a8fbdac5102d80f0928478595d99c638`, freezes the correction without
 product runtime or deployment changes. Protected publication remains pending.
 
+Evidence head `be4e5aa7ff0feb60a4caed9d1efd08ac0231c3a1` began protected run
+`33519414100`. A confirmation request issued before GitHub synchronized the PR
+head completed against prior head `d2e4f02` at `2026-09-01T14:30:23Z` and
+opened two fresh findings that also apply to `be4e5aa`:
+
+- discussion `3905151111` found that a reviewed Markdown destination wrapped in
+  backticks still satisfied link extraction even though it rendered as literal
+  code rather than an interactive link;
+- discussion `3905151124` found that a governance job's `if: false` key after
+  `steps` evaded the job-condition scan while leaving earlier commands counted.
+
+Run `33519414100` was cancelled after the source became superseded. Its
+classification, dependency-review and governance jobs passed, but the
+cancelled runtime jobs and failed aggregate are not acceptance evidence.
+
+The findings are accepted for one batch. Link extraction removes complete code
+spans before parsing destinations, including multi-backtick delimiters. The CI
+policy recognizes job-level `if`, `env` and `defaults` keys independently of
+their order relative to `steps`. Focused capability/CI-policy tests pass42/42,
+documentation tests pass26/26 and documentation validation covers250 documents,
+2,880 headings, 1,625 links, four status claims and eleven rows with zero
+violations. The affected gate passes15/15, including101 platform-policy,39
+CI-policy and13 repository-memory tests. Protected publication remains pending.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory

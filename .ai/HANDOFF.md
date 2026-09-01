@@ -152,11 +152,21 @@ path/anchor validity to the existing documentation validator.
   documentation tests pass25/25 and the affected gate passes15/15, including101
   platform tests. Correction source `2f94fdf`, tree `9f05826`, is frozen without
   product runtime or deployment changes.
+- Evidence head `be4e5aa` began run `33519414100`. A review triggered before the
+  PR synchronized completed against prior head `d2e4f02` and opened discussions
+  `3905151111`/`3905151124` for inline-code link coverage and job conditions
+  appearing after `steps`. Both apply to the current implementation. The now
+  superseded run was cancelled and is not acceptance evidence.
+- The accepted working correction removes complete code spans before link
+  extraction and detects job-level `if`, `env` and `defaults` keys independently
+  of YAML order. Focused contracts pass42/42, documentation tests pass26/26 and
+  the affected gate passes15/15, including101 platform tests.
 
 ## Exact next actions
 
-1. Freeze and publish the exact correction for discussion `3904890702`, resolve
-   it and require protected CI plus one blocker-boundary confirmation.
+1. Freeze and publish the exact correction for discussions
+   `3905151111`/`3905151124`, resolve them and request confirmation only after
+   GitHub exposes the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating
    item70/P14-R15.

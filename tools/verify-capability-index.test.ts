@@ -85,6 +85,30 @@ test("rejects a misleading displayed requirement label", () => {
   );
 });
 
+test("rejects reviewed links rendered as inline code", () => {
+  const link = "[Operations 1](../../services/identity/README.md)";
+  for (const delimiter of ["`", "``"] as const) {
+    const report = analyzeCapabilityIndex(
+      validIndex().replace(link, `${delimiter}${link}${delimiter}`),
+    );
+    assert.ok(
+      report.violations.some(
+        ({ detail, rule }) =>
+          rule === "invalid-link" &&
+          detail.includes("identity-profiles") &&
+          detail.includes("Operations"),
+      ),
+      delimiter,
+    );
+    assert.ok(
+      report.violations.some(
+        ({ detail, rule }) => rule === "missing-link" && detail.includes("Operations"),
+      ),
+      delimiter,
+    );
+  }
+});
+
 test("rejects an existing but unrelated destination in each traceability role", () => {
   for (const column of [
     "Requirement",
