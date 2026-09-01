@@ -260,6 +260,11 @@ interface ParsedRow {
   line: number;
 }
 
+interface MarkdownVisibilityState {
+  fence: { character: "`" | "~"; length: number } | undefined;
+  htmlComment: boolean;
+}
+
 const currentFile = fileURLToPath(import.meta.url);
 const defaultRepositoryRoot = resolve(dirname(currentFile), "..");
 const utf8Decoder = new TextDecoder("utf-8", { fatal: true });
@@ -293,6 +298,58 @@ function markdownLinkTargets(value: string): string[] {
   return [...value.matchAll(MARKDOWN_LINK)].flatMap((match) => {
     const target = match.groups?.["target"];
     return target ? [target] : [];
+  });
+}
+
+function withoutHtmlComments(line: string, state: MarkdownVisibilityState): string {
+  let cursor = 0;
+  let visible = "";
+  while (cursor < line.length) {
+    if (state.htmlComment) {
+      const closing = line.indexOf("-->", cursor);
+      if (closing < 0) {
+        return visible;
+      }
+      state.htmlComment = false;
+      cursor = closing + 3;
+      continue;
+    }
+
+    const opening = line.indexOf("<!--", cursor);
+    if (opening < 0) {
+      return `${visible}${line.slice(cursor)}`;
+    }
+    visible += line.slice(cursor, opening);
+    state.htmlComment = true;
+    cursor = opening + 4;
+  }
+  return visible;
+}
+
+function visibleMarkdownLines(lines: readonly string[]): string[] {
+  const state: MarkdownVisibilityState = { fence: undefined, htmlComment: false };
+  return lines.map((line) => {
+    if (state.fence) {
+      const closing = new RegExp(
+        `^ {0,3}${state.fence.character}{${state.fence.length},}\\s*$`,
+        "u",
+      );
+      if (closing.test(line)) {
+        state.fence = undefined;
+      }
+      return "";
+    }
+
+    const uncommented = withoutHtmlComments(line, state);
+    const opening = /^ {0,3}(?<delimiter>`{3,}|~{3,})/u.exec(uncommented)?.groups?.["delimiter"];
+    if (opening) {
+      state.fence = {
+        character: opening[0] as "`" | "~",
+        length: opening.length,
+      };
+      return "";
+    }
+    return uncommented;
   });
 }
 
@@ -444,7 +501,9 @@ export function analyzeCapabilityIndex(sourceText: string): CapabilityIndexRepor
     }
   }
 
-  const candidateHeaders = lines
+  const visibleLines = visibleMarkdownLines(lines);
+
+  const candidateHeaders = visibleLines
     .map((line, index) => ({ cells: tableCells(line), index }))
     .filter(({ cells }) => cells?.[0] === "ID");
   const header = candidateHeaders[0];
@@ -472,7 +531,7 @@ export function analyzeCapabilityIndex(sourceText: string): CapabilityIndexRepor
     return { rows: 0, violations };
   }
 
-  const separator = tableCells(lines[header.index + 1] ?? "");
+  const separator = tableCells(visibleLines[header.index + 1] ?? "");
   if (
     !separator ||
     separator.length !== CAPABILITY_INDEX_COLUMNS.length ||
@@ -487,8 +546,8 @@ export function analyzeCapabilityIndex(sourceText: string): CapabilityIndexRepor
   }
 
   const parsedRows: ParsedRow[] = [];
-  for (let index = header.index + 2; index < lines.length; index += 1) {
-    const cells = tableCells(lines[index] ?? "");
+  for (let index = header.index + 2; index < visibleLines.length; index += 1) {
+    const cells = tableCells(visibleLines[index] ?? "");
     if (!cells) {
       break;
     }

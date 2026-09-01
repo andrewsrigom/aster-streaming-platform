@@ -291,6 +291,26 @@ platform-policy,39 CI-policy and13 repository-memory tests. Protected
 publication and confirmation of this correction, merge and exact-main
 acceptance remain pending.
 
+Confirmation on evidence head `28617148ec66d4a2bf5051ace49e67956ba553c4`
+completed at `2026-09-01T12:30:55Z` and opened two additional public-contract
+findings:
+
+- discussion `3904105488` found that a complete table inside a balanced fence
+  or HTML comment still satisfied the capability verifier while remaining
+  unavailable to a Markdown reader;
+- discussion `3904105494` found that command text in an unused step-level
+  environment value still satisfied the governance matcher without an actual
+  invocation.
+
+The findings are accepted for batched correction. Table discovery now excludes
+fenced and HTML-commented regions while preserving source line numbers. The CI
+policy proof extracts only unsuppressed step-level `run` commands and rejects
+comment-only, environment-only, printed, suppressed and cross-job command text.
+Focused protected-boundary tests pass35/35, documentation tests pass19/19 and
+the repeated changed-scope gate passes15/15 tasks, including101
+platform-policy,39 CI-policy and13 repository-memory tests. Publication,
+protected acceptance and one blocker-boundary confirmation remain pending.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory

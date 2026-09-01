@@ -286,10 +286,26 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       requiredCommand,
       `true # ${requiredCommand}`,
     );
+    const retainedOnlyAsGovernanceEnvironment = source
+      .replace(requiredCommand, "true")
+      .replace(
+        "      - name: Validate repository memory\n",
+        `      - name: Retain unused command text\n        env:\n          UNUSED_COMMAND: ${requiredCommand}\n        run: true\n      - name: Validate repository memory\n`,
+      );
+    const retainedOnlyInSuppressedGovernanceStep = source
+      .replace(requiredCommand, "true")
+      .replace(
+        "      - name: Validate repository memory\n",
+        `      - name: Suppressed capability command\n        if: false\n        run: ${requiredCommand}\n      - name: Validate repository memory\n`,
+      );
+    const retainedOnlyAsPrintedText = source.replace(requiredCommand, `echo '${requiredCommand}'`);
     for (const weakened of [
       movedOutsideGovernance,
       movedIntoSkippedIntermediateJob,
       retainedOnlyAsGovernanceComment,
+      retainedOnlyAsGovernanceEnvironment,
+      retainedOnlyInSuppressedGovernanceStep,
+      retainedOnlyAsPrintedText,
     ]) {
       assert.ok(
         validateWorkflowPolicy(weakened).some(

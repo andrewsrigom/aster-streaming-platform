@@ -61,6 +61,13 @@ full snapshot through the archival checkpoint remains in
   checking governance commands, binds exact public capability names and
   advances from the existing checkpoint. Focused tests pass34/34,
   documentation tests pass18/18 and the changed-scope gate passes15/15.
+- Confirmation on evidence head `2861714` completed at
+  `2026-09-01T12:30:55Z` and opened discussions
+  `3904105488`/`3904105494`: a hidden table still satisfied public coverage and
+  environment-only command text still satisfied governance policy.
+- The accepted correction ignores fenced/HTML-commented Markdown and extracts
+  only unsuppressed step-level `run` commands. Focused boundary tests pass35/35;
+  documentation tests pass19/19 and the affected gate passes15/15.
 
 ### Evidence
 
@@ -75,9 +82,10 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish the existing correction evidence checkpoint, resolve the three
-  discussions and require one blocker-boundary confirmation. Then merge and
-  complete exact-main verification before activating P14-R15.
+- Freeze the current two-finding correction, record its exact source hash
+  without amending it, publish, resolve both discussions and require one
+  blocker-boundary confirmation. Then merge and complete exact-main
+  verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

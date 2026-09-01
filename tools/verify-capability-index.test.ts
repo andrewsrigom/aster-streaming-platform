@@ -119,6 +119,17 @@ test("rejects a changed table contract and oversized input", () => {
   assert.equal(oversized.violations[0]?.rule, "source-limit");
 });
 
+test("rejects a capability table hidden in a fence or HTML comment", () => {
+  for (const hidden of [
+    `# Capability Index\n\n\`\`\`markdown\n${validIndex()}\`\`\`\n`,
+    `# Capability Index\n\n<!--\n${validIndex()}-->\n`,
+  ]) {
+    const report = analyzeCapabilityIndex(hidden);
+    assert.equal(report.rows, 0);
+    assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+  }
+});
+
 test("reads the canonical path from an explicit repository root", async (context) => {
   const root = await mkdtemp(join(tmpdir(), "aster-capability-index-"));
   context.after(async () => rm(root, { force: true, recursive: true }));

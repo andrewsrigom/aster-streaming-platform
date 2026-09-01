@@ -102,7 +102,14 @@ resolved. Correction source `73efa54`, tree `8538ffc`, strips comment text from
 the job-scoped command proof, binds reviewed capability display names and
 advances from the existing checkpoint. Focused tests pass34/34, documentation
 tests pass18/18 and the repeated changed-scope gate passes15/15. Protected
-publication and confirmation of this correction remain pending.
+publication and confirmation of this correction began on head `2861714`.
+Confirmation completed at `2026-09-01T12:30:55Z` and opened discussions
+`3904105488`/`3904105494`: hidden Markdown tables still satisfied coverage and
+environment-only command text still satisfied governance policy. The accepted
+correction ignores fenced/commented tables and extracts only unsuppressed
+step-level `run` commands. Focused boundary tests pass35/35, documentation tests
+pass19/19 and the repeated changed-scope gate passes15/15. Protected
+publication remains pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

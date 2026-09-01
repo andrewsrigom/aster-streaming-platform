@@ -86,15 +86,25 @@ path/anchor validity to the existing documentation validator.
   the job-scoped command proof, binds exact public capability names and
   advances from the existing result checkpoint. Focused tests pass34/34,
   documentation tests pass18/18 and the changed-scope gate passes15/15.
+- Confirmation on evidence head `2861714` completed at
+  `2026-09-01T12:30:55Z` and opened discussions
+  `3904105488`/`3904105494`: hidden tables still satisfied public coverage and
+  environment-only command text still satisfied governance policy.
+- The accepted correction filters fenced and HTML-commented Markdown regions
+  and extracts only unsuppressed step-level `run` commands. It rejects comment,
+  environment, printed, suppressed and cross-job substitutes. Focused boundary
+  tests pass35/35, documentation tests pass19/19 and the changed-scope gate
+  passes15/15.
 
 ## Exact next actions
 
-1. Publish the existing correction evidence checkpoint without amending source
-   `73efa54` or creating a duplicate evidence commit, then resolve discussions
-   `3903836632`/`3903836639`/`3903836650`.
-2. Require protected CI and one confirmation only because these findings alter
-   the public/governance boundary. Then merge, verify exact-main CI and close
-   item69 before activating item70/P14-R15.
+1. Freeze the current two-finding correction source, record its exact hash in
+   the evidence without amending it and publish that existing checkpoint.
+2. Resolve discussions `3904105488`/`3904105494` and
+   require protected CI plus one blocker-boundary confirmation because these
+   findings alter the public/governance contract.
+3. Merge, verify exact-main CI and close item69 before activating
+   item70/P14-R15.
 
 ## Execution boundary
 

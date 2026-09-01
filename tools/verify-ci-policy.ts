@@ -75,11 +75,60 @@ function workflowJobSource(source: string, jobName: string): string {
   return lines.slice(start + 1, end).join("\n");
 }
 
-function withoutWorkflowComments(source: string): string {
-  return source
-    .split("\n")
-    .map((line) => line.replace(/\s+#.*$/u, "").replace(/^\s*#.*$/u, ""))
-    .join("\n");
+function uncommentedYamlValue(value: string): string {
+  return value.replace(/\s+#.*$/u, "").trim();
+}
+
+function executableWorkflowSteps(jobSource: string): string {
+  const lines = jobSource.replace(/\r\n?/gu, "\n").split("\n");
+  const stepsStart = lines.findIndex((line) => line === "    steps:");
+  if (stepsStart < 0) {
+    return "";
+  }
+
+  const stepStarts = lines
+    .map((line, index) => ({ index, isStep: index > stepsStart && /^ {6}-\s+/u.test(line) }))
+    .filter(({ isStep }) => isStep)
+    .map(({ index }) => index);
+  const commands: string[] = [];
+  for (const [stepIndex, start] of stepStarts.entries()) {
+    const end = stepStarts[stepIndex + 1] ?? lines.length;
+    const step = lines.slice(start, end);
+    if (
+      step.some((line) =>
+        /^if:\s*(?:false|\$\{\{\s*false\s*\}\})\s*$/u.test(uncommentedYamlValue(line)),
+      )
+    ) {
+      continue;
+    }
+
+    const runIndex = step.findIndex(
+      (line) => /^ {6}-\s+run:/u.test(line) || /^ {8}run:/u.test(line),
+    );
+    if (runIndex < 0) {
+      continue;
+    }
+    const runLine = step[runIndex] ?? "";
+    const runMatch = /^(?<indent> {6}-\s+| {8})run:\s*(?<value>.*)$/u.exec(runLine);
+    const value = uncommentedYamlValue(runMatch?.groups?.["value"] ?? "");
+    if (!/^[>|][+-]?$/u.test(value)) {
+      commands.push(value);
+      continue;
+    }
+
+    const runIndent = runLine.search(/\S/u);
+    for (const line of step.slice(runIndex + 1)) {
+      const contentIndent = line.search(/\S/u);
+      if (contentIndent >= 0 && contentIndent <= runIndent) {
+        break;
+      }
+      const command = uncommentedYamlValue(line);
+      if (command) {
+        commands.push(command);
+      }
+    }
+  }
+  return commands.join("\n");
 }
 
 export function validateWorkflowPolicy(
@@ -242,14 +291,14 @@ export function validateWorkflowPolicy(
     /package-manager-cache:\s*false/u,
     "implicit setup-node caching must be disabled",
   );
-  const governanceJob = withoutWorkflowComments(workflowJobSource(source, "governance"));
+  const governanceJob = executableWorkflowSteps(workflowJobSource(source, "governance"));
   for (const [pattern, detail] of [
     [
-      /node \.\/tools\/verify-capability-index\.ts/u,
+      /(?:^|\n)node \.\/tools\/verify-capability-index\.ts(?:\s|$)/u,
       "capability-index check is required in the always-run governance job",
     ],
     [
-      /\.\/tools\/verify-capability-index\.test\.ts/u,
+      /(?:^|\n)node --test(?:\s+\.\/tools\/[^\s]+)*\s+\.\/tools\/verify-capability-index\.test\.ts(?:\s|$)/u,
       "capability-index policy tests are required in the always-run governance job",
     ],
   ] as const) {
