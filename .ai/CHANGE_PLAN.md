@@ -96,8 +96,10 @@ memory; do not change product behavior in this item.
 ## Evidence
 
 - Commands: `pnpm ai:check`, `pnpm docs:check`, `pnpm prettier --check ...`, `pnpm check:changed`
-- Raw artifact path: `evidence/phase-13/release.md`; later `evidence/phase-14/`
-- Acceptance result: pending
+- Raw artifact path: `evidence/phase-13/release.md` and
+  `evidence/phase-14/README.md`
+- Acceptance result: source `bd1191d`, tree `80337eb7`, passes the local
+  iteration and changed-scope candidate gates; protected acceptance is pending
 - Iteration gate: repository-memory, documentation and formatting checks
 - Candidate gate: affected-scope gate selected from the exact documentation diff
 - Heavyweight repeat triggers: repeat runtime, PostgreSQL, browser, media or platform evidence only if executable behavior or its gate selection changes
@@ -120,8 +122,8 @@ to roll back.
 ## Completion checklist
 
 - [ ] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
+- [x] Tests pass
+- [x] Evidence captured
 - [ ] Documentation current
 - [ ] `.ai/` state updated
 - [ ] Remaining risks recorded

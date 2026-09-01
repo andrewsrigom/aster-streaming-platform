@@ -59,6 +59,13 @@ Item68 implements P14-R13 as a documentation and delivery-governance slice:
 No GraphQL schema, service behavior, database, cache, event, media or runtime
 configuration changes in item68.
 
+Source `bd1191d0fb09f623c442ce6cee598cff2375b0d0`, tree
+`80337eb7bc06f5c10fd86d30044ab9a77cdbb6a5`, passes repository-memory,
+documentation, formatting, JSONL and changed-scope gates. The selected gate
+passes9/9 tasks, including101 platform-policy and13 repository-memory tests.
+[Phase14 evidence](../evidence/phase-14/README.md) records the exact local
+candidate result. Protected acceptance remains pending.
+
 ## Ordered reference-quality runway
 
 Only one item may be active at a time:

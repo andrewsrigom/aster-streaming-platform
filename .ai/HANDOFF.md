@@ -39,20 +39,18 @@ Publish one documentation candidate that:
 - Replaced stale current-state and handoff narratives with the released
   baseline and active reference track.
 - Updated work queue, decision ledger and context.
+- Source `bd1191d`, tree `80337eb7`, passes the local iteration and
+  changed-scope candidate gates; `evidence/phase-14/README.md` records exact
+  results and the heavyweight-evidence carry-forward rationale.
 
 Executable product behavior is unchanged.
 
 ## Exact next actions
 
-1. Finish the session-log and repository-memory updates.
-2. Format all changed files and parse the Phase13 JSONL.
-3. Run `pnpm ai:check`, `pnpm docs:check`, the changed-file formatting check,
-   `git diff --check` and `pnpm check:changed`.
-4. Inspect the complete diff for false release, hosting, rights or capability
-   claims.
-5. Commit and publish the item68 candidate, require protected CI and review,
+1. Commit and publish the item68 evidence checkpoint.
+2. Require protected CI and review,
    then squash merge and require exact-main CI.
-6. Start item69 from clean released main and build the capability index.
+3. Start item69 from clean released main and build the capability index.
 
 ## Execution boundary
 

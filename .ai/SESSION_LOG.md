@@ -21,6 +21,10 @@ full snapshot through the archival checkpoint remains in
   P14-R01–R12 retain their requirements but remain planned and inactive.
 - Item68 updates the roadmap, specification, public status, Phase13 release
   evidence and repository memory without changing executable behavior.
+- Source `bd1191d`, tree `80337eb7`, passes repository-memory,
+  documentation, formatting, JSONL and changed-scope gates. The selected gate
+  passes9/9 tasks with101 platform-policy and13 repository-memory tests; no
+  executable change triggers a heavyweight environment repeat.
 
 ### Evidence
 
@@ -28,6 +32,8 @@ full snapshot through the archival checkpoint remains in
   tree-identical merge, exact-main acceptance and limitations.
 - ADR-0048 and the Phase14 specification define the activation boundary and
   observable reference-track acceptance.
+- `evidence/phase-14/README.md` records the source/tree and exact local
+  candidate checks.
 
 ### Next action
 
