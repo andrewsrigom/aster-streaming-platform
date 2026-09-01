@@ -87,6 +87,8 @@ full snapshot through the archival checkpoint remains in
 - The accepted working correction tracks raw HTML containers and requires
   complete standalone Node.js/test steps. Focused boundary tests pass37/37,
   documentation tests pass21/21 and the affected gate passes15/15.
+- Correction source `c7c9c50`, tree `e65dbc0`, is frozen without product
+  runtime or deployment changes.
 
 ### Evidence
 
@@ -101,9 +103,10 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Freeze and publish the current two-finding correction, resolve both
-  discussions and require one blocker-boundary confirmation. Then merge and
-  complete exact-main verification before activating P14-R15.
+- Publish the existing correction evidence checkpoint without amending source
+  `c7c9c50`, resolve both discussions and require one blocker-boundary
+  confirmation. Then merge and complete exact-main verification before
+  activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

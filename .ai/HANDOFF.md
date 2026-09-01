@@ -115,12 +115,14 @@ path/anchor validity to the existing documentation validator.
   complete standalone Node.js/test steps with no shell wrapper or modified
   execution context. Focused boundary tests pass37/37, documentation tests
   pass21/21 and the affected gate passes15/15.
+- Correction source `c7c9c50`, tree `e65dbc0`, is frozen without product
+  runtime or deployment changes.
 
 ## Exact next actions
 
-1. Freeze the current correction source for discussions
-   `3904288838`/`3904288847` and record its exact hash without amending it.
-2. Publish the existing evidence checkpoint, resolve both discussions and
+1. Publish the existing correction evidence checkpoint without amending source
+   `c7c9c50` or creating a duplicate evidence commit.
+2. Resolve discussions `3904288838`/`3904288847` and
    require protected CI plus one blocker-boundary confirmation because the
    findings alter the public/governance contract.
 3. Merge, verify exact-main CI and close item69 before activating

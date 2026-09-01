@@ -360,7 +360,12 @@ here-document, function body, printed string, extra shell control or modified
 execution environment fails closed. Focused boundary tests pass37/37,
 documentation tests pass21/21 and the repeated changed-scope gate passes15/15
 tasks, including101 platform-policy,39 CI-policy and13 repository-memory tests.
-Correction freeze and protected publication remain pending.
+Protected publication remains pending.
+
+Correction source `c7c9c50fe65a011438c533c8ff3434c3b3e7eb09`, tree
+`e65dbc0b3cda2c24ad7a1bf974082a026a9afc9d`, freezes the raw-HTML and
+standalone-step correction without changing product runtime or deployment
+behavior.
 
 ## Planned evidence
 

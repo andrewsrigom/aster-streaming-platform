@@ -65,8 +65,8 @@ evidence remains applicable. Prior protected acceptance passes; correction of
 the current public/governance/repository-memory findings, merge and exact-main
 acceptance remain pending.
 
-Correction source `fe36d5b22ab59ed25812c6c59cd0e2ef9448c33f`, tree
-`e47c8a06a6f05c18f659be3938867364e032e988`, is the latest frozen correction
+Correction source `c7c9c50fe65a011438c533c8ff3434c3b3e7eb09`, tree
+`e65dbc0b3cda2c24ad7a1bf974082a026a9afc9d`, is the latest frozen correction
 recorded in [Phase14 evidence](../evidence/phase-14/README.md).
 
 Evidence head `136def8`, tree `58e640d`, passed protected run
@@ -124,7 +124,8 @@ began on evidence head `6236aa9`. Its confirmation completed at
 could retain command text without executing it. The accepted working correction
 tracks raw HTML blocks and validates complete standalone Node.js/test steps.
 Focused boundary tests pass37/37, documentation tests pass21/21 and the affected
-gate passes15/15. Correction freeze remains pending.
+gate passes15/15. Correction source `c7c9c50`, tree `e65dbc0`, is frozen;
+protected publication remains pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
