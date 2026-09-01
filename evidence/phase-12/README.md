@@ -7,6 +7,18 @@ Status: Phase 12 is released. P12-R10 final source
 `2b77a32f43a87fcdfc5032faf856f369de183998` retained the tree; exact-main run
 `33348247619` passed every required job.
 
+The later Phase13 protected gate preserved all released product behavior but
+exposed a P12-R10 recent-store ordering defect: run `33476967426` attempt1
+timed out on Redis after recovery and attempt2 timed out on Catalog after
+recovery; both exact projects cleaned. Source `b2c77a8`, tree `a0b091c`, adds
+Tempo's supported `most_recent=true` hint while retaining the exact trace and
+scenario predicates, 45-second wait, privacy/recovery checks and twelve-minute
+budget. Focused tests pass14/14, a complete local three-scenario run passes with
+exact cleanup, and the affected gate passes73/73 with60 cached in62.328 seconds.
+Evidence head `a7c0ae6`, tree `267ab80`, passed protected run `33480268553`,
+including all three diagnostics, exact cleanup, every owner runtime, the
+Docker-only playable demo and aggregate protection.
+
 Status: P12-R01/R02/R08/R09 are released from source `03abe8a`, evidence head
 `9a058ee`, protected run `33300561121`, clean exact-head confirmation, PR45
 squash main `ce66f9c` and successful exact-main run `33301425220`. The released

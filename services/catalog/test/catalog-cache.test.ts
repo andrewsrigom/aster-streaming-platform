@@ -4,6 +4,8 @@ import { test } from "node:test";
 
 import {
   CATALOG_PUBLIC_CACHE_POLICY,
+  CATALOG_PUBLIC_ENTITY_MAXIMUM_OWNER_QUERIES_PER_BATCH,
+  CATALOG_PUBLIC_ENTITY_OWNER_QUERY_PLAN,
   createCachedCatalogPublicEntities,
 } from "../src/application/public-cache.js";
 import type {
@@ -73,6 +75,7 @@ function sourceFixture(initial: readonly PublicCatalogCandidate[] = [publicCandi
     fenceReads: 0,
     sourceReads: 0,
     sourceBatches: [] as string[][],
+    ownerQueries: [] as Array<"findFences" | "findManyAtFences">,
     beforeFences: undefined as (() => Promise<void>) | undefined,
     beforeSource: undefined as (() => Promise<void>) | undefined,
     fenceEligibleAt: undefined as
@@ -81,6 +84,7 @@ function sourceFixture(initial: readonly PublicCatalogCandidate[] = [publicCandi
   const source: CatalogPublicEntitySource = {
     async findFences(ids, readScope) {
       state.fenceReads += 1;
+      state.ownerQueries.push("findFences");
       await state.beforeFences?.();
       return {
         status: "completed",
@@ -97,6 +101,7 @@ function sourceFixture(initial: readonly PublicCatalogCandidate[] = [publicCandi
     },
     async findManyAtFences(fences) {
       state.sourceReads += 1;
+      state.ownerQueries.push("findManyAtFences");
       state.sourceBatches.push(fences.map((value) => value.id));
       await state.beforeSource?.();
       return {
@@ -162,6 +167,43 @@ test("a positive hit still checks the current PostgreSQL fence and skips the ful
     positive.ttlMs <=
       CATALOG_PUBLIC_CACHE_POLICY.positiveTtlMs + CATALOG_PUBLIC_CACHE_POLICY.positiveJitterMs,
     true,
+  );
+});
+
+test("the cold fence-change path matches the exported finite owner-query plan", async () => {
+  const initial = publicCandidate();
+  const changed: PublicCatalogCandidate = {
+    ...initial,
+    title: { ...(initial.title as Record<string, unknown>), version: 6 },
+  };
+  const f = readerFixture([initial]);
+  let changedOnce = false;
+  f.source.state.beforeSource = () => {
+    if (!changedOnce) {
+      changedOnce = true;
+      f.source.state.candidates = [changed];
+    }
+    return Promise.resolve();
+  };
+
+  const result = await f.reader.findMany([id(1)], scope, signal());
+
+  assert.equal(result.status, "completed");
+  assert.deepEqual(
+    result.value.map((title) => title.id),
+    [id(1)],
+  );
+  const expected = [
+    ...CATALOG_PUBLIC_ENTITY_OWNER_QUERY_PLAN.initial,
+    ...Array.from(
+      { length: CATALOG_PUBLIC_ENTITY_OWNER_QUERY_PLAN.retry.maximumAttempts },
+      () => CATALOG_PUBLIC_ENTITY_OWNER_QUERY_PLAN.retry.sequence,
+    ).flat(),
+  ];
+  assert.deepEqual(f.source.state.ownerQueries, expected);
+  assert.equal(
+    f.source.state.ownerQueries.length,
+    CATALOG_PUBLIC_ENTITY_MAXIMUM_OWNER_QUERIES_PER_BATCH,
   );
 });
 

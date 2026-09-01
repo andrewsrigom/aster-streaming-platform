@@ -421,3 +421,37 @@ that exact engine and exact labelled project reappear. It did not exist in the
 protected projects and does not weaken their zero-resource postconditions. The
 released local profile proves the documented diagnostic behavior, not hosted
 retention, authentication, capacity or availability.
+
+## 2026-09-01 recent-trace ordering correction
+
+The later Phase13 documentation checkpoint `1ba7d1c`, tree `a41922f`, preserved
+all released source and owner runtime behavior. Its protected workflow
+`33476967426` nevertheless exposed a systematic P12-R10 verification-harness
+boundary. Attempt1 recovered all services and timed out waiting for the exact
+Redis trace to become visible through recent-store TraceQL search. The single
+permitted failed-job retry recovered Catalog and timed out waiting for that
+scenario's exact trace. Both UUID-scoped projects cleaned, and all unchanged
+source/owner jobs passed.
+
+The acceptance predicate was not broadened and the 45-second per-search wait
+was not lengthened. Source `b2c77a8de402552881a101665723a19bff3f8760`, tree
+`a0b091c0ac8bde4d7f7f25d4db6f2e24b5df10b1`, adds Tempo's supported
+`most_recent=true` query hint so the distributed recent-store search prioritizes
+newly ingested blocks. Exact trace ID, scenario/dependency boundary, finite
+selected fields, failure outcomes, complete stored-trace privacy, recovery and
+cleanup remain mandatory. The source policy also rejects removing or disabling
+the hint.
+
+Focused runner/profile tests pass14/14. One complete local run diagnosed and
+recovered Catalog trace `7bf2f8d50b4505fc5ddd40d7a58025b8`, PostgreSQL trace
+`f61a1c88e019373fe626f22f333acb06` with causal outcome `cancelled`, and Redis
+trace `b1889e043b4f3793ebb96b6303027928` with unavailable reads/writes and a
+latency-qualified successful fallback. The exact project cleaned. The affected
+gate passes73/73 with60 cached in62.328 seconds. Evidence head
+`a7c0ae61ba772f75216c572e8351c4f7eccfa3d8`, tree
+`267ab804740e9743220d8da586cf620bcbd32dce`, passed protected workflow
+`33480268553`. Local platform job `99768130579` passed the complete diagnostic
+exercise and exact cleanup; every source/owner runtime, Docker-only playable
+demo and aggregate gate also passed. The historical P12 release claim remains
+scoped to its already recorded exact release source and CI; this later result
+verifies the corrected reusable harness.

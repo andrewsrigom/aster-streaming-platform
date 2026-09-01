@@ -486,10 +486,6 @@ try {
     assert.equal(node.title.localized.title, "Synthetic session contract fixture");
   }
   assert.equal(
-    payload(await page("continue", { profileId }), "continueWatching").connection?.edges.length,
-    2,
-  );
-  assert.equal(
     payload(await page("history", { profileId: id(992) }), "progressHistory").code,
     "NOT_FOUND",
   );

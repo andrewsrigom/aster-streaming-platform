@@ -329,6 +329,7 @@ function validateRunner(source, violations) {
       "diagnosticTraceQuery(traceId, scenario)",
       "| select(",
       "diagnosticTraceReady(response, traceId, scenario)",
+      "with (most_recent=true)",
       '"timeout|cancelled|unavailable|error"',
       "const search = await tempoSearch(ports.grafana, traceId, scenario);\n    const facts = traceSearchFacts(search, traceId);",
       "const storedTrace = await tempoStoredTrace(ports.grafana, traceId);",

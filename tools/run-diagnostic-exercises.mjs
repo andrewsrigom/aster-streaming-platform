@@ -190,7 +190,7 @@ export function diagnosticTraceQuery(traceId, scenario) {
     scenario === "catalog"
       ? "span.subgraph.name, span:name, span:status, resource.service.name"
       : "span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name";
-  return `{ trace:id = "${traceId}" && ${boundary} } | select(${selected})`;
+  return `{ trace:id = "${traceId}" && ${boundary} } | select(${selected}) with (most_recent=true)`;
 }
 
 export function traceSearchFacts(payload, traceId) {

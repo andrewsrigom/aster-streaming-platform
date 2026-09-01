@@ -2,7 +2,11 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { Pool } from "pg";
-import { createAsterPostgresAdapter } from "@aster/postgres";
+import {
+  createAsterPostgresAdapter,
+  type AsterPostgresAdapter,
+  type AsterPostgresQuery,
+} from "@aster/postgres";
 import { createTitleProjector } from "../../src/application/apply-title-snapshot.js";
 import { createHomeRails } from "../../src/application/home-rails.js";
 import { createProjectionRebuilder } from "../../src/application/rebuild-projection.js";
@@ -45,7 +49,23 @@ const database = (username: string, maxConnections: number) => {
   });
 };
 const projectorDatabase = database("aster_discovery_projector_fixture", 2);
-const runtimeDatabase = database("aster_discovery_runtime_fixture", 4);
+const runtimeOwner = database("aster_discovery_runtime_fixture", 4);
+let runtimeStatements = 0;
+const runtimeDatabase: Pick<AsterPostgresAdapter, "transaction"> = {
+  transaction: (work, requestSignal) =>
+    runtimeOwner.transaction(
+      (tx) =>
+        work(
+          Object.freeze({
+            query: (query: AsterPostgresQuery) => {
+              runtimeStatements++;
+              return tx.query(query);
+            },
+          }),
+        ),
+      requestSignal,
+    ),
+};
 const projector = createTitleProjector({
   transactions: createPostgresProjectionUnitOfWork(projectorDatabase),
 });
@@ -213,7 +233,14 @@ try {
       .status,
     "applied",
   );
+  runtimeStatements = 0;
+  const searchStartedAt = performance.now();
   const relevance = await find({ query: "signal", locale: "en", first: 20, after: null });
+  const searchMeasurement = {
+    queries: runtimeStatements,
+    durationMs: Number((performance.now() - searchStartedAt).toFixed(3)),
+  };
+  assert.equal(searchMeasurement.queries, 3);
   assert.deepEqual(
     relevance.edges.map((edge) => edge.titleId),
     [titleSignal, titleSynopsis],
@@ -227,6 +254,12 @@ try {
     titleBeforeSynopsis: true,
     diacriticNormalization: true,
     resultCount: relevance.edges.length,
+  });
+  output("phase13_search_query_count", {
+    operation: "SearchTitles",
+    workload: "three visible projection rows, first 20, one matching locale",
+    ...searchMeasurement,
+    limitation: "single local fixture observation; not a throughput or SLO claim",
   });
 
   const first = await find({ query: "signal", locale: "en", first: 1, after: null });
@@ -257,7 +290,14 @@ try {
     genreProbe.value.map((group) => group.genre),
     ["drama", "nature"],
   );
+  runtimeStatements = 0;
+  const homeStartedAt = performance.now();
   const rails = await home.execute({ first: 2 }, now, signal());
+  const homeMeasurement = {
+    queries: runtimeStatements,
+    durationMs: Number((performance.now() - homeStartedAt).toFixed(3)),
+  };
+  assert.equal(homeMeasurement.queries, 5);
   assert.equal(rails.status, "completed");
   assert.equal(rails.value.status, "completed");
   assert.equal(rails.value.value.status, "partial");
@@ -273,6 +313,12 @@ try {
     independentGroups: 4,
     recentFallback: true,
     genreRails: rails.value.value.genres.rails.length,
+  });
+  output("phase13_home_query_count", {
+    operation: "HomePublic",
+    workload: "projection state plus featured, recent, trending and genre rails",
+    ...homeMeasurement,
+    limitation: "single local fixture observation; not a throughput or SLO claim",
   });
 
   assert.equal((await apply(snapshot(titleSignal, 1, null), null)).status, "refreshed");
@@ -494,6 +540,6 @@ try {
   output("discovery_query_plan", { ginIndex: "discovery_search_vector", guardedRollback: true });
 } finally {
   await projectorDatabase.close(AbortSignal.timeout(3000));
-  await runtimeDatabase.close(AbortSignal.timeout(3000));
+  await runtimeOwner.close(AbortSignal.timeout(3000));
   await admin.end();
 }

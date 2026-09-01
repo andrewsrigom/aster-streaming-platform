@@ -150,15 +150,15 @@ test("builds exact finite TraceQL queries for each scenario boundary", () => {
   const traceId = "a".repeat(32);
   assert.equal(
     diagnosticTraceQuery(traceId, "catalog"),
-    `{ trace:id = "${traceId}" && span.subgraph.name = "catalog" && span:status = error } | select(span.subgraph.name, span:name, span:status, resource.service.name)`,
+    `{ trace:id = "${traceId}" && span.subgraph.name = "catalog" && span:status = error } | select(span.subgraph.name, span:name, span:status, resource.service.name) with (most_recent=true)`,
   );
   assert.equal(
     diagnosticTraceQuery(traceId, "postgres"),
-    `{ trace:id = "${traceId}" && span.aster.dependency = "postgresql" && span.aster.outcome =~ "timeout|cancelled|unavailable|error" } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
+    `{ trace:id = "${traceId}" && span.aster.dependency = "postgresql" && span.aster.outcome =~ "timeout|cancelled|unavailable|error" } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name) with (most_recent=true)`,
   );
   assert.equal(
     diagnosticTraceQuery(traceId, "redis"),
-    `{ trace:id = "${traceId}" && span.aster.dependency = "redis" && span.aster.outcome =~ "timeout|cancelled|unavailable|error" } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
+    `{ trace:id = "${traceId}" && span.aster.dependency = "redis" && span.aster.outcome =~ "timeout|cancelled|unavailable|error" } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name) with (most_recent=true)`,
   );
   assert.throws(() => diagnosticTraceQuery("unsafe", "redis"));
 });

@@ -93,6 +93,7 @@ test("rejects an externally selected or broadly destructive runner", () => {
     ['Buffer.from(traceId, "hex").toString("base64")', "traceId"],
     ["      assertStoredTraceMatches(value, traceId);", "      assert.ok(value);"],
     ["| select(", "| unbounded("],
+    ["with (most_recent=true)", "with (most_recent=false)"],
     ["diagnosticTraceReady(response, traceId, scenario)", "true"],
     ["/api/datasources/uid/aster-tempo/health", "/api/health"],
     ['response.value?.status === "OK"', "response.status === 200"],

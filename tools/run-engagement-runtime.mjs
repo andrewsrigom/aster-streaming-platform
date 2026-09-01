@@ -5,6 +5,11 @@ import { readFile } from "node:fs/promises";
 import { fileURLToPath, URL } from "node:url";
 import { promisify } from "node:util";
 import { eventShutdownComplete } from "./verify-engagement-runtime.mjs";
+import {
+  PREPARE_QUERY_COUNT_SQL,
+  READ_QUERY_COUNT_SQL,
+  selectCurrentTrustedOperation,
+} from "./graphql-query-count-proof.mjs";
 
 assert.equal(process.argv.length, 2, "Engagement proof accepts no target or extra flags.");
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -32,10 +37,25 @@ const composeArgs = [
   // Query plans are exposed only in this disposable, loopback-only proof.
   "--file",
   "infra/compose/router-diagnostics.yml",
+  "--file",
+  "infra/compose/query-count-proof.yml",
   "--profile",
   "runtime",
 ];
 const compose = (args, timeout) => docker([...composeArgs, ...args], timeout);
+const continueWatchingOperation = selectCurrentTrustedOperation(
+  await readFile(
+    new URL("../infra/router/generated/persisted-query-manifest.json", import.meta.url),
+    "utf8",
+  ),
+  await readFile(new URL("../infra/router/generated/manifest.json", import.meta.url), "utf8"),
+  "ContinueWatching",
+);
+const encodedContinueWatchingOperation = Buffer.from(
+  JSON.stringify(continueWatchingOperation),
+  "utf8",
+).toString("base64");
+const encodedQueryCountSql = Buffer.from(READ_QUERY_COUNT_SQL, "utf8").toString("base64");
 const allowedServices = new Set([
   "postgres",
   "redis",
@@ -175,11 +195,22 @@ try {
         ]),
     ),
   });
+  await compose([
+    "exec",
+    "-T",
+    "postgres",
+    "psql",
+    "--username=aster",
+    "--dbname=aster",
+    "--set=ON_ERROR_STOP=1",
+    "--command",
+    PREPARE_QUERY_COUNT_SQL,
+  ]);
   const worker = await readFile(
     new URL("../services/engagement/dist/test/integration/federated-progress.js", import.meta.url),
     "utf8",
   );
-  assert.ok(Buffer.byteLength(worker) < 32768);
+  assert.ok(Buffer.byteLength(worker) < 49152);
   const result = await docker(
     [
       "exec",
@@ -263,6 +294,74 @@ try {
       ],
       45000,
     )) + "\n",
+  );
+  const queryCountWorker = await readFile(
+    new URL(
+      "../services/engagement/dist/test/integration/federated-query-count.js",
+      import.meta.url,
+    ),
+    "utf8",
+  );
+  assert.ok(Buffer.byteLength(queryCountWorker) < 24576);
+  let queryCountProfileId = "";
+  const queryCountWorkerArgs = (mode) => [
+    "exec",
+    "--env",
+    "ASTER_FIXTURE_ID=" + project,
+    "--env",
+    "ASTER_QUERY_COUNT_MODE=" + mode,
+    "--env",
+    "ASTER_QUERY_COUNT_OPERATION=" + encodedContinueWatchingOperation,
+    "--env",
+    "ASTER_QUERY_COUNT_SQL=" + encodedQueryCountSql,
+    ...(mode === "measure" ? ["--env", "ASTER_QUERY_COUNT_PROFILE_ID=" + queryCountProfileId] : []),
+    engagement.Id,
+    "node",
+    "--input-type=module",
+    "--eval",
+    queryCountWorker,
+  ];
+  const queryCountSetup = await docker(queryCountWorkerArgs("setup"), 45000);
+  for (const line of queryCountSetup.split("\n").filter(Boolean)) {
+    const record = JSON.parse(line);
+    if (record.event === "phase13_query_count_control") {
+      assert.match(
+        record.profileId ?? "",
+        /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u,
+      );
+      assert.equal(queryCountProfileId, "");
+      queryCountProfileId = record.profileId;
+    } else {
+      process.stdout.write(line + "\n");
+    }
+  }
+  assert.notEqual(queryCountProfileId, "");
+  await compose(["stop", "--timeout", "5", "playback"], 15000);
+  const [stoppedPlayback] = JSON.parse(await docker(["inspect", project + "-playback-1"]));
+  assert.equal(stoppedPlayback.State.Running, false);
+  const removedCatalogCacheKeys = Number(
+    await compose([
+      "exec",
+      "-T",
+      "redis",
+      "redis-cli",
+      "--raw",
+      "EVAL",
+      "local keys=redis.call('KEYS',ARGV[1]); if #keys == 0 then return 0 end; return redis.call('UNLINK',unpack(keys))",
+      "0",
+      "aster:local:catalog:*",
+    ]),
+  );
+  assert.ok(Number.isSafeInteger(removedCatalogCacheKeys) && removedCatalogCacheKeys >= 0);
+  emit("phase13_query_count_isolation", {
+    stoppedNonParticipantServices: ["playback"],
+    removedCatalogCacheKeys,
+    excludedActivity: "declared readiness probes and non-participating owner roles",
+  });
+  process.stdout.write((await docker(queryCountWorkerArgs("measure"), 45000)) + "\n");
+  await compose(
+    ["up", "--no-build", "--no-deps", "--wait", "--wait-timeout", "60", "playback"],
+    70000,
   );
   await compose(
     [

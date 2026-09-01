@@ -163,6 +163,25 @@ Each request creates loaders scoped by:
 
 Loaders batch entity and list joins, cap batch sizes, preserve order, and return missing values explicitly.
 
+The dependent Phase13 closing candidate makes that review executable rather
+than relying on prose. It exactly inventories 12 public list paths, 10 public
+entity-return paths and 5 federated contributors against the generated schemas.
+Each entry records owner, authorization scope, parent/list/batch maximum,
+resolution strategy and owner-query budget. A new list/entity contributor or a
+changed `@listSize` fails the Router test until reviewed. Existing owner tests
+remain the authority for per-request cache disposal, credential isolation,
+freshness, ordering and missing values. See the [query-count and authorization
+report](../../evidence/phase-13/query-count-authorization.txt).
+
+Catalog owns and exports its exact entity-read query plan: one fence read and
+one exact projection load on a normal cold batch, plus at most one repeat of
+that pair when the fence changes between reads. The Router audit derives the
+worst-case budget of four from that owner contract instead of duplicating a
+number. An owner test observes the four calls in order, and composition rejects
+a reduced total or a removed retry plan. The recorded representative cold
+operations used the normal two-query Catalog path; four is a safety bound, not
+their measured result.
+
 ## Operation controls
 
 The generated Apollo manifest and finite Rhai matcher now bind every first-party
@@ -217,8 +236,16 @@ which the owner write path repeats authorization. The degraded local marker set
 prunes expired entries before applying its finite capacity, including after
 healthy Redis decisions. Engagement progress/watchlist and Discovery search retain
 their released operation-specific controls. Owner authorization,
-N+1/query-count and latency proof remain the closing slice rather than being
-inferred from a passing cost score.
+N+1/query-count and latency are never inferred from a passing cost score. The
+closing candidate derives audit semantics from owner schemas, exact operation
+policy and implementation contracts during every composition. Exact documents
+through Router record bounded per-owner PostgreSQL counts for home, title,
+continue-watching and search, and map12 owner-side abuse cases across all five
+contexts. Measurement compares the complete observed owner set with the exact
+operation budget. Only statements matching the shared SQL's named readiness or
+fixture-background fingerprints are removed before observation; no runner may
+project the observation onto expected owners. It remains unreleased until
+PR57's protected, confirmation, merge and exact-main gates pass.
 
 ## Schema evolution
 

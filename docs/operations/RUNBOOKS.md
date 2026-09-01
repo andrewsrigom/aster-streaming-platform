@@ -155,6 +155,10 @@ It creates its own UUID-scoped project and accepts no target or flags.
 2. Read the bounded Router operation log and take its validated trace ID.
 3. Require recent-store TraceQL search to return that exact trace ID and select
    only the scenario boundary, operation, outcome, status and service fields.
+   Apply Tempo's `most_recent=true` query hint so the bounded search prioritizes
+   recently ingested blocks; this changes search order, not the exact trace or
+   scenario predicate. See the official
+   [TraceQL query-hint documentation](https://grafana.com/docs/tempo/latest/traceql/construct-traceql-queries/).
    For dependencies, require the exact dependency plus the causal outcome
    `timeout`, `cancelled`, `unavailable` or `error` in the query and polling
    result. A `success`, `rejected` or incomplete preview cannot end the wait.

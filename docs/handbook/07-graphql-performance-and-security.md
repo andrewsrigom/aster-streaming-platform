@@ -52,6 +52,20 @@ DataLoader or set-based repositories reduce this:
 - no hidden cross-request cache;
 - collect batch-size and backend-query evidence.
 
+Aster's Phase13 closing candidate applies those rules to the complete generated
+graph: 12 lists, 10 entity returns and 5 contributors derive exact owner, scope,
+resolution and bound records during composition. Exact current documents through
+Router observed TitleDetail2, SearchTitles5, HomePublic7 and ContinueWatching7
+PostgreSQL queries across all participating owners. These are constant-count
+checks at fixed workloads, not hosted latency objectives. The proof compares
+the complete observed owner set with the exact budget; it filters only the
+shared SQL's explicitly named readiness and fixture-background statements and
+never narrows observations to expected owner keys.
+The concrete before/after remains the Phase08 twenty-pair comparison:20
+sequential SELECTs versus 1 request-scoped batched SELECT. See the [Phase13
+report](../../evidence/phase-13/query-count-authorization.txt) for commands,
+plans, timings and limitations.
+
 ## 2. Pagination
 
 Every list has a server maximum.
@@ -254,3 +268,9 @@ Include:
 - batching abuse.
 
 Measure rejection stage and resource cost. A rejected request that consumes seconds of CPU is not a successful control.
+
+Authorization acceptance must also execute at each data owner. Aster's Phase13
+matrix covers identifier substitution, cross-profile access and role/private
+transport escalation across Catalog, Discovery, Engagement, Identity and
+Playback. A manifest reference is insufficient by itself: the complete owner
+test suites run in the same candidate gate.

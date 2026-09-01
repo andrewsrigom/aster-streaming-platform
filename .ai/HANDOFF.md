@@ -2,112 +2,137 @@
 
 ## Resume point
 
-Phases00–12 are released. Phase13 item64 is released through PR52/main
-`fb5cf014` and exact-main run `33412728404`. Item65 final candidate head
-`94c17b9`, tree `d034c03`, passed protected run `33424006919`; PR55 squash main
-`8cd6c0b25938f605ded95df736b2c53b4ecff150` retained that exact tree.
-Exact-main run `33425758870` passed on attempt2 after one isolated TraceQL
-indexing timeout. Item65 is released.
+Phases00–12 and Phase13 items64–66 are released. Item66 exact head `e6134ae`
+passed protected run `33447062908`; both discussions are resolved and final
+confirmation `5485910820` found no major issue. PR56 squash main `98deb52`
+retained candidate tree `897c44c`, and exact-main run `33448911764` passed all
+required jobs.
 
-Item66 (P13-R06/R11) is the sole `IN_PROGRESS` item on
-`feat/p13-execution-rate-cache-controls`, worktree `/tmp/aster-p13-runtime`,
-from exact main `8cd6c0b`. Initial source `a090285`, tree `98d3064`, passed its
-candidate gate; evidence head `59b7215`, tree `ee1c908`, opened PR56. Protected
-run `33432579598` failed and initial review found one blocker. Corrected source
-`8d2633d`, tree `d75aca0`, reached published head `82ba630`, passed protected run
-`33437257163` and resolved discussion `3897861197`. Confirmation discussion
-`3898385895` found the 30-second marker expires before the 86,400-second durable
-receipt. Second corrected head `1e115fe` passed protected run `33442875698` and
-resolved that discussion. Blocker-focused discussions `3898857100` and
-`3898857110` found a fixed-count retained-union verifier and missing expired
-local-marker pruning. Third corrected source `af47c62`, tree `bb2d476`, is
-committed and locally accepted. It is not pushed, confirmed or released yet.
+Item67 (P13-R07/R08/R09) is the sole `IN_PROGRESS` item on
+`feat/p13-n-plus-one-authorization`, worktree `/tmp/aster-p13-final`, from
+released main `98deb52`. PR57 initial review and the subsequent restart,
+exact-profile and source-owned Catalog query-plan remediations are recorded in
+the Phase13 evidence. Published head `c9ef4ea` passed protected run
+`33470076413`; discussions through `3900633355` are addressed.
 
-## Implemented locally
+Final confirmation discussion `3900877477` found that the one-title Search/Home
+workload could not detect per-entity query amplification. The first ten-title
+run exposed a real Catalog adapter boundary: four parameters per fence required
+43 parameters against the shared maximum32. Search reached Discovery3 and one
+Catalog fence statement, but all Catalog entity hydration failed closed. No
+acceptance was claimed and cleanup reported remaining0.
 
-- ADR-0047 records bounded GraphQL execution, account admission and cache scope.
-- Operation-demand manifest version2 classifies all25 current/retained exact
-  hashes as public/account/profile, assigns finite rate classes, pins the Router
-  3,000 ms/eight-request boundary and requires `no-store`.
-- Packaged verification derives the exact bounded current-plus-retained
-  name/hash union from the persisted manifest and permits at most two versions
-  per operation name; it does not assume a fixed operation count.
-- Composition derives minimum private scope from selected owner coordinates and
-  fails missing/stale/weaker policy.
-- Router's GraphQL service overwrites admitted responses with
-  `Cache-Control: no-store`; the pre-service body rejection must be data-free
-  without reusable freshness or cache validators.
-- Identity create/update/delete use `profile_mutation` (8 burst,2/s); selection
-  uses `profile_selection` (16 burst,4/s). A current session supplies the
-  authoritative account partition, then the existing profile command repeats
-  authorization before writing.
-- Create/update/delete first validate and authorize the canonical request and
-  read its retained PostgreSQL receipt. Exact durable replay or changed-payload
-  conflict returns before admission. Missing receipts bind admission to the
-  validated mutation ID plus canonical request digest; selection uses a fresh
-  admission identity.
-- The limiter has at most1,024 local partitions and8,192 expiring local
-  admission markers. Redis uses its existing atomic server-time bucket with
-  30-second TTL and only SHA-256 account/admission pseudonyms. The shared
-  decision runs before outage-only local admission; cancellation/capacity fail
-  closed. Expired markers are pruned before capacity on successful Redis and
-  degraded local paths.
-- PostgreSQL is Identity's sole readiness-critical dependency. Redis remains
-  lifecycle-owned and closes cleanly.
-- Telemetry accepts finite `profile_mutation` and `profile_selection` labels.
+Local source `3d90dff`, tree `331be6b`, encodes the already validated and bounded
+fence tuples in one JSON parameter while preserving exact ID, title-version,
+rights-revision and publication matching. Focused proof4/4, Catalog249/249 and
+real maximum-batch20 integration pass. The complete Discovery runtime proves ten
+distinct hydrated titles for exact persisted SearchTitles(first:20) and
+HomePublic(first:10) at unchanged totals5/7, passes projection, quarantine,
+failure-isolation, log-safety and coordinated restart recovery, and cleans
+remaining0. The affected candidate passes73/73 with56 cached in69.532 seconds.
 
-## Current evidence
+Evidence head `71f3ff5` entered protected run `33474006491`. Clean source, real
+platform integration and owner runtimes through Engagement passed. Discovery
+kept the exact counts and ten hydrated Search titles, then rejected legitimate
+freshness299 because the harness required exact300; cleanup0. Local platform
+separately timed out waiting for TraceQL to index the PostgreSQL diagnostic after
+recovery and cleaned its exact project. Source `3d2f6ee`, tree `cef2ee2`, derives
+the valid inclusive 298–300-second interval from the existing 300-second source
+lease and two-second indexing-lag contract. Focused proof5/5, the complete
+ten-title runtime and affected73/73 with60 cached in61.806 seconds pass with
+cleanup0.
 
-- Initial protected run `33432579598` failed the Identity subgraph readiness
-  assertion and Router startup because a static response-header YAML shape was
-  unsupported. Its real fixture cleaned remaining0.
-- Initial review discussion `3897861197` found fresh admission could block
-  durable receipt replay. Corrected protected head `82ba630` passed run
-  `33437257163`, and that thread is resolved. Confirmation discussion
-  `3898385895` found the marker/receipt lifetime mismatch.
-- Third corrected source is `af47c62`, tree `bb2d476`.
-- Identity tests:163/163 pass.
-- Router tests:21/21 plus deterministic schema check pass.
-- Telemetry tests:19/19 pass.
-- Router source verifier:6/6 pass.
-- GraphQL rejection/cache verifier:3/3 pass.
-- Build:15/15 relevant dependency/package tasks pass.
-- `pnpm --filter @aster/identity integration:core` passed four disposable
-  scenarios in58.870s: real atomic two-replica Redis admission, Redis outage
-  fallback/recovery, PostgreSQL/optional-Redis readiness, cancellation/capacity,
-  SIGTERM/HTTP drain and cleanup remaining0.
-- Raw checkpoint:
-  `evidence/phase-13/execution-rate-cache-controls.txt`.
-- Full `pnpm integration`: all11 scenarios passed again in142.098 seconds on the
-  second correction; exact project cleanup remaining0. Exact committed source
-  repeated the real subgraph in18.137 seconds with bucket exhausted, marker
-  removed, durable replay passing, no marker recreation and cleanup remaining0.
-- Isolated `aster-p13-remediation` packaged Router proof passed accepted/adverse
-  cache behavior and removed its owned resources.
-- Third corrected source gate:57/57 tasks,39 cached,66.529 seconds on source
-  `af47c62`/tree `bb2d476`; pre-publication evidence-head gate:57/57 tasks,46
-  cached,82.472 seconds on head `2d4a9da`/tree `6b17b2b`.
+Published evidence head `35d46d9`, tree `1371744`, passed protected run
+`33475401067`. Every required job completed successfully, including clean source,
+all real owner runtimes, the Docker-only playable demo, Local platform and its
+three diagnostic scenarios, dependency review, documentation/security and the
+aggregate gate.
+
+Documentation checkpoint `1ba7d1c`, tree `a41922f`, then entered protected run
+`33476967426`. Every unchanged source and owner job passed. Local platform
+attempt1 recovered all services but timed out on the exact Redis recent-store
+TraceQL search; attempt2 recovered Catalog but timed out on that exact search.
+Both UUID-scoped projects cleaned. Source `b2c77a8`, tree `a0b091c`, adds
+Tempo's supported `most_recent=true` hint without changing the exact predicate,
+45-second search deadline, privacy/recovery checks or twelve-minute run budget.
+Focused runner/profile tests pass14/14. A complete local three-scenario run
+passes and cleans its exact project. The affected gate passes73/73 with60 cached
+in62.328 seconds.
+
+Evidence head `a7c0ae6`, tree `267ab80`, passed protected run `33480268553`.
+Local platform passed the complete three-scenario diagnostic exercise and exact
+cleanup in7m22s. Source quality, every owner runtime and the Docker-only playable
+demo passed in17m37s; classification, dependency review, documentation/security
+and aggregate protection also passed.
+
+Documentation head `c195a1d`, tree `a028aa1`, passed protected run
+`33481864676`, and all existing discussions were resolved. The permitted
+confirmation opened discussion `3901909548`: both federated runners narrowed
+the observed owner map to known budget keys before strict comparison, allowing
+a new owner to escape the total. Source `a99b3af`, tree `dc84bbc`, passes the
+complete observed owner set into exact validation and leaves only the shared
+SQL's explicitly named background fingerprints excluded. Focused proof5/5,
+strict Engagement build, both full federated runtimes and the affected73/73 gate
+pass. Evidence head `71823fe`, tree `5d075d0`, passed protected run
+`33485233911`: every source/owner runtime, the Docker-only demo, all three
+platform diagnostics and exact cleanup passed.
+
+## Active outcome
+
+- Publish one result checkpoint containing protected run `33485233911`, then
+  close Phase13 only after that checkpoint's exact CI passes, discussion
+  `3901909548` is resolved, one final corrected-candidate confirmation completes,
+  and merge/exact-main evidence passes.
+
+## Current local evidence
+
+- Federated source: `e0f5e27`, tree `da9b02b`.
+- Initial recovery source: `c5ae760`, tree `11b11c2`.
+- Process-restart source: `c5b0eca`, tree `5dadb0a`.
+- Coordinated local recovery source: `02d6739`, tree `6d9e27b`.
+- Exact-profile source: `f5fbe29`, tree `4f44b71`.
+- Catalog query-plan source: `20b5f27`, tree `700bdc4`.
+- Final typed contract source: `1ec01c3`, tree `f27a9f8`.
+- Representative multi-entity source: `3d90dff`, tree `331be6b`.
+- Projection-lease source: `3d2f6ee`, tree `cef2ee2`.
+- Diagnostic ordering source: `b2c77a8`, tree `a0b091c`.
+- Exact owner-set source: `a99b3af`, tree `dc84bbc`.
+- Focused diagnostic/profile tests pass14/14; complete local Catalog/PostgreSQL/
+  Redis diagnosis and recovery pass with exact cleanup.
+- Router focused tests pass26/26; focused query proof passes5/5.
+- Catalog passes249/249; real PostgreSQL resolves all20 reviewed batch entities
+  and cleanup is0.
+- Discovery exact Router counts at the latest source: TitleDetail2/Catalog2 in
+  40.123 ms; Search5/Catalog2+Discovery3 in61.441 ms;
+  Home7/Catalog2+Discovery5 in79.513 ms. Search and Home each hydrate ten
+  distinct titles; recovery and cleanup0 pass in101.498 seconds total.
+- Engagement exact ContinueWatching count: Catalog3/Engagement1/Identity3 at
+  88.033 ms with the complete owner set. Full event/outage suite passes,
+  retained runtime is untouched and cleanup0.
+- Fresh detached clean source gate passes63/63 with0 cached in159.682 seconds.
+- Latest affected gate passes73/73 with55 cached in65.919 seconds.
+- Earlier 1/3/5/1 counts are retained only as owner-local supporting evidence.
 
 ## Exact next actions
 
-1. Push the third corrected evidence head once to existing PR56.
-2. Require protected exact-head CI including the pinned Router `no-store`
-   proof. Answer/resolve discussions `3898857100` and `3898857110`, then request
-   one final blocker-focused confirmation review on the third corrected head.
-3. Squash merge only after those gates. Verify candidate-tree identity and
-   exact-main CI before publishing item67.
+1. Commit and publish the protected-result checkpoint once to existing PR57.
+2. Require that checkpoint's exact-head gate, reply to and resolve discussion `3901909548`,
+   then run one final corrected-candidate confirmation; batch only requirement,
+   security/data, availability or public-contract blockers.
+3. Squash merge after all required gates, then require exact-main CI.
+4. Mark Phase13 released and, from clean main, formalize the owner-directed
+   reference/readability roadmap. Hosted deployment is no longer the immediate
+   objective.
 
 ## Execution boundary
 
 Use WSL Git and Node.js24.19.0/pnpm11.24.0 from
-`/mnt/c/Users/andre/.cache/aster-node-24.19.0`. Never create a `codex/` branch.
-Docker server26.0.0 was reachable at the one bounded check. Preserve retained
-media/databases and unrelated projects; all new integration resources use exact
-fixture ownership and were removed.
+`/mnt/c/Users/andre/.cache/aster-node-24.19.0`. Never use a `codex/` branch.
+All fixtures require exact labels, loopback-only ports, tmpfs PostgreSQL and
+cleanup remaining0. Preserve retained media/databases and unrelated Docker
+projects.
 
 ## Do not do yet
 
-Do not publish or merge item67 before item66 releases. Do not add GraphOS
-credentials, a paid plan, APQ, a proxy,
-hosted resources or forwarded client identity. Phase14 owns hosted provider and
-deployment decisions.
+Do not start the new readability item, add GraphOS/hosted credentials, or repeat
+unchanged PostgreSQL/browser/media evidence before item67 releases.

@@ -158,8 +158,8 @@ Historical stashes are superseded.
 | 63 | Diagnose three injected failures from telemetry and close Phase 12 | P12-R10 | DONE |
 | 64 | Generate trusted operations, enforce the environment rollout and document safe schema delivery (also P13-R02/R12) | P13-R01 | DONE |
 | 65 | Enforce GraphQL parser, shape, list, cost and introspection controls (also P13-R04/R05/R10) | P13-R03 | DONE |
-| 66 | Enforce execution, concurrency, identity-rate and cache-scope controls (also P13-R11) | P13-R06 | IN_PROGRESS |
-| 67 | Prove N+1/query counts and owner authorization; close Phase 13 (also P13-R08/R09) | P13-R07 | READY |
+| 66 | Enforce execution, concurrency, identity-rate and cache-scope controls (also P13-R11) | P13-R06 | DONE |
+| 67 | Prove N+1/query counts and owner authorization; close Phase 13 (also P13-R08/R09) | P13-R07 | IN_PROGRESS |
 
 Item64 final source `a353164`, evidence head `de50b3e`, passed protected run
 `33410126892`, clean confirmation and all resolved threads. PR52 squash main
@@ -184,7 +184,7 @@ issue. Final candidate head `94c17b9`, tree `d034c03`, passed protected run
 `33424006919`. PR55 squash main `8cd6c0b` retained that exact tree. Exact-main
 run `33425758870` passed on attempt2 after attempt1's isolated TraceQL indexing
 timeout; every source and product job was unchanged and cleanup was clean.
-Item65 is released. Item66 is active on
+Item65 is released. Item66 was implemented on
 `feat/p13-execution-rate-cache-controls` from that exact main.
 ADR-0047, manifest-v2 runtime/cache classification, authorized-account Identity
 admission and optional-Redis readiness are implemented locally. Initial source
@@ -207,9 +207,94 @@ subgraph proof and the final57/57 gate with46 cached in61.880 seconds pass.
 Published head `1e115fe` passed protected run `33442875698`. Blocker-focused
 review found a fixed-count retained-union verifier and missing expired-marker
 pruning. Third source `af47c62`, tree `bb2d476`, fixes both; Identity163/163,
-Router verifier6/6 and gate57/57 with39 cached in66.529 seconds pass. One third
-correction evidence-head push, protected exact-head CI, final confirmation and
-release remain.
+Router verifier6/6 and gate57/57 with39 cached in66.529 seconds pass. Evidence
+head `e6134ae` passed protected run `33447062908`; both discussions are resolved
+and final confirmation `5485910820` found no major issue. PR56 squash main
+`98deb52` retained candidate tree `897c44c`; exact-main run `33448911764` passed.
+Item66 is released.
+
+Item67 is the sole `IN_PROGRESS` item on
+`feat/p13-n-plus-one-authorization`, rebased exactly on released main `98deb52`.
+PR57 initial discussions `3899340521` and `3899340535` found owner-local counts
+and self-asserted audit semantics. Corrected source `e0f5e27`, tree `da9b02b`,
+derives owner/scope/resolution during composition and measures the exact current
+documents through Router. Observed totals are title2, search5, home7 and
+continue-watching7 with every participating owner named. Router26/26, query
+proof15/15, strict Engagement build and both full disposable runtimes pass with
+cleanup0. The corrected affected gate passes73/73 with36 cached in162.116
+seconds. Published head `aca2558` entered protected run `33456003304`; attempts3
+and4 repeated a post-restart `SUBREQUEST_HTTP_ERROR` after Discovery was healthy
+with the preserved generation. Recovery source `c5ae760`, tree `11b11c2`, adds
+one finite 10-second probe and retries only that transient classification. The
+repeated runtime passed with one attempt in129.793 ms and cleanup0; the final
+affected gate passes73/73 with64 cached in52.555 seconds. Record the new
+checkpoint head `996798b` entered protected run `33460420680`; Local platform
+and every prior job passed, but the runtime proved Router retries cannot heal a
+Compose replacement endpoint. Process-restart source `c5b0eca`, tree `5dadb0a`,
+uses `--no-recreate` and asserts identity/endpoint preservation. The full runtime
+passes with unchanged counts, exact generation, one recovery attempt in64.738
+ms and cleanup0; its affected gate passes73/73 with61 cached in65.141
+seconds. Published head `be6b57d` entered protected run `33462043470`; every
+earlier job and Local platform passed, while Discovery proved the same container
+can receive a new direct endpoint. Final source `02d6739`, tree `6d9e27b`,
+renews Router DNS, re-resolves the current loopback port and retains the finite
+semantic probe. The full runtime passes with unchanged counts, both identities
+preserved, endpoint/port changes observed, exact generation/search, one attempt
+in269.302 ms and cleanup0; the final gate passes73/73 with61 cached in84.672
+seconds. Evidence head `7272f3f` passed protected run `33463962414`; both initial
+discussions are resolved. Confirmation discussion `3900443731` found
+nondeterministic rediscovery of a prior two-row profile. Source `f5fbe29`, tree
+`4f44b71`, carries the exact setup profile privately into measurement. Focused
+proof3/3, strict Engagement build, the complete runtime and gate73/73 pass; the
+runtime records ContinueWatching7 in104.127 ms and cleanup0. Evidence head
+`10bef1f` passed protected run `33465978576` attempt2; discussion `3900443731`
+is resolved. Confirmation discussion `3900633355` found Catalog's query budget
+omitted its cold fence/load pair and single fence-change retry. Source `20b5f27`,
+tree `700bdc4`, exports the exact owner plan, derives the four-query worst case
+and proves the observed retry sequence. Catalog249/249, Router26/26 and the
+affected73/73 gate with56 cached in86.394 seconds pass. Published head `65e5dc2`
+entered run `33468676673`; all but source quality passed, including Local
+platform. Clean checkout exposed Router lint before Catalog's top-level build
+declaration. Final source `1ec01c3`, tree `f27a9f8`, resolves the owner contract
+through a narrow typed subpath. Fresh clean source passes63/63 with0 cached in
+159.682 seconds; the repeated affected gate passes73/73 with63 cached in54.731
+seconds. Published head `c9ef4ea` passed protected run `33470076413`. Final
+confirmation discussion `3900877477` found the single-title workload could not
+detect per-entity amplification. Source `3d90dff`, tree `331be6b`, proves ten
+distinct Search/Home hydrations and repairs the four-parameters-per-fence
+adapter boundary it exposed. Catalog249/249, real maximum-batch20 integration,
+full Discovery runtime and affected73/73 with56 cached in69.532 seconds pass
+with cleanup0. Evidence head `71f3ff5` entered protected run `33474006491`.
+Clean source and owners through Engagement passed; Discovery then rejected valid
+freshness299 because the harness assumed exact300, and Local platform separately
+timed out on known TraceQL indexing after PostgreSQL recovered. Both fixtures
+cleaned. Source `3d2f6ee`, tree `cef2ee2`, derives the valid 298–300 interval;
+focused proof5/5, full runtime and affected73/73 with60 cached in61.806 seconds
+pass. Published evidence head `35d46d9`, tree `1371744`, passed protected run
+`33475401067`, including clean source, every real owner runtime, the Docker-only
+playable demo, Local platform diagnostics and aggregate protection.
+Documentation checkpoint `1ba7d1c`, tree `a41922f`, then passed every unchanged
+source/owner job but protected run `33476967426` reproduced exact recent-store
+TraceQL timeouts on Redis in attempt1 and Catalog in attempt2 after recovery;
+both projects cleaned. Source `b2c77a8`, tree `a0b091c`, retains the exact
+predicate and timing bounds while applying Tempo's supported
+`most_recent=true` hint. Focused14/14, a complete local three-scenario runtime
+and affected73/73 with60 cached in62.328 seconds pass. Evidence head `a7c0ae6`,
+tree `267ab80`, passed protected run `33480268553`, including the corrected
+diagnostic exercise, exact cleanup, every owner runtime, Docker-only playable
+demo and aggregate protection. Documentation head `c195a1d`, tree `a028aa1`,
+passed protected run `33481864676`, and all existing discussions were resolved.
+The permitted confirmation opened discussion `3901909548`: both federated
+runners projected observations onto known owner-budget keys before strict
+validation. Source `a99b3af`, tree `dc84bbc`, now compares the complete observed
+owner set, removes post-observation exclusions and leaves only the shared SQL's
+explicitly fingerprinted background statements filtered. Focused proof5/5,
+strict Engagement build, both full federated runtimes and affected73/73 with55
+cached in65.919 seconds pass with cleanup0. Evidence head `71823fe`, tree
+`5d075d0`, passed protected run `33485233911`, including every source/owner
+runtime, the Docker-only demo, all three diagnostics and exact cleanup. Publish
+that result checkpoint, require exact-head CI, resolve the discussion, complete
+one final corrected-candidate confirmation and release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

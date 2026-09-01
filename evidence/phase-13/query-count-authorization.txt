@@ -1,0 +1,603 @@
+Phase 13 — GraphQL execution-path, query-count and authorization acceptance
+Date: 2026-08-31
+Requirements: P13-R07, P13-R08, P13-R09
+Branch: feat/p13-n-plus-one-authorization
+Released predecessor main: 98deb52cabd43c8a65741436ffbea7c5863f52bb (item66 PR56)
+Corrected source commit: e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0
+Corrected source tree: da9b02bcdc09d0438762baa299f40d4b93be4c76
+Initial recovery source commit: c5ae76077cb981ccaf5a98c6e41dc47cbd2d67d7
+Initial recovery source tree: 11b11c2e90376ac5d3a77e002afc3764b122b51e
+Process-restart source commit: c5b0ecaf247406bcd66bcbc06f9f24c641a2dab0
+Process-restart source tree: 5dadb0a69fee7b3146a50c4041893109be917a2a
+Coordinated recovery source commit: 02d67399aa89f722d44df41de719207472fa9f81
+Coordinated recovery source tree: 6d9e27b59077244a6da8b79f6e15424760ec0d7b
+Federated measurement source commit: e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0
+Federated measurement source tree: da9b02bcdc09d0438762baa299f40d4b93be4c76
+Catalog query-plan source commit: 20b5f27eafe49779bc4ac832a6436c32076d8846
+Catalog query-plan source tree: 700bdc480e9e62a65ee9e111c2e2eeaefc609d73
+Final typed-contract source commit: 1ec01c320193e558661520db0303d4f37ecf76f4
+Final typed-contract source tree: f27a9f85fce67f5372685fe9a10e37672b7dae99
+Diagnostic ordering source commit: b2c77a8de402552881a101665723a19bff3f8760
+Diagnostic ordering source tree: a0b091c0ac8bde4d7f7f25d4db6f2e24b5df10b1
+Exact owner-set source commit: a99b3af5212e4fb967ed41230c3ca59fa394cca7
+Exact owner-set source tree: dc84bbc4cf63b0e8ce977a8f90fbb296f9f6903e
+
+FINAL LOCAL CANDIDATE (PR57 OPEN; EXACT OWNER-SET CORRECTION NOT YET PUBLISHED OR RELEASED)
+
+EXECUTION-PATH AUDIT
+
+The source-owned Router audit runs during every composition and exactly covers
+the generated public API, all five generated owner schemas and every exact
+trusted operation. Schema ownership derives each owner; the trusted-operation
+runtime policy derives public/account/profile scope; and an explicit
+implementation contract derives list/entity resolution and batch/query bounds.
+The validator rejects arbitrary labels as well as schema drift.
+
+Observed exact inventory on the source commit:
+  public list paths: 12
+  public entity-return paths: 10
+  federated entity contributors: 5
+
+Request-scoped loaders remain owned by the subgraph request context:
+  Catalog Title: at most 20 keys; the normal cold path performs one fence query
+    plus one exact load, and the single fence-change retry makes the worst-case
+    budget four owner queries per batch;
+  Engagement Title/Profile: at most 20 pairs, five profiles and one owner query
+    per batch;
+  Identity Profile: at most 16 keys and one memoized owner read per request;
+  Discovery Title: reference-only and performs no owner query.
+
+The exact audit test rejects an added public list, changed @listSize metadata,
+removed entity contributor, parent bound above 20, a query budget assigned to a
+reference-only contributor, a reduced Catalog total, removal of its retry plan,
+a swapped owner, weakened authorization scope and invented resolution strategy.
+The Catalog owner test observes the exact `findFences`/`findManyAtFences`
+initial sequence and its one fence-change retry, while existing owner tests prove
+duplicate/order/null semantics, per-request cache disposal, cross-credential
+isolation, freshness, cancellation and batch overflow.
+
+N+1 BEFORE/AFTER
+
+The unchanged Phase08 Engagement experiment remains the concrete before/after
+comparison for a federated entity contribution. Twenty sequential profile/title
+reads performed 20 SELECTs in 55.249 ms; forty fields through one request-scoped
+DataLoader performed one SELECT in 7.229 ms, one Identity check and one Catalog
+visibility batch. The source path and bounds did not change in this item, so the
+heavyweight experiment was not repeated. Its raw artifact and limitations are
+in evidence/phase-08/engagement-fields-postgres.jsonl and
+evidence/phase-08/engagement-fields.md.
+
+PHASE13 EXACT FEDERATED POSTGRESQL MEASUREMENTS
+
+Raw bounded events:
+  evidence/phase-13/query-count-measurements.jsonl
+
+Environment:
+  WSL2 Ubuntu 20.04; Node.js 24.19.0; Docker server 26.0.0; PostgreSQL image
+  docker.io/library/postgres:18.6-alpine3.23@sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f.
+  Every run used one exact random-name disposable Compose project. The exact
+  current persisted document traversed the loopback Router and all participating
+  subgraphs. PostgreSQL pg_stat_statements counted restricted runtime roles.
+  Fixed readiness statements are excluded; non-participating Playback is stopped
+  during the measurement window. Every run removed its labelled project and
+  reported remaining 0.
+
+Command:
+  pnpm discovery:runtime
+Result:
+  PASS. TitleDetail used 2 Catalog queries in 42.396 ms. SearchTitles used 5
+  queries in 58.104 ms: Catalog2 and Discovery3. HomePublic used 7 queries in
+  51.232 ms: Catalog2 and Discovery5. Search/home projection, cache outage,
+  quarantine/replay, failure isolation and restart recovery also passed. Exact
+  project cleanup reported remaining0 in 113,285 ms.
+
+Command:
+  pnpm engagement:runtime
+Result:
+  PASS. ContinueWatching used 7 queries in 56.631 ms for two owned in-progress
+  titles: Catalog3, Engagement1 and Identity3. Catalog performs one batched
+  owner-visibility read plus a two-query cold entity fence/load; Identity's
+  constant session/profile/authority checks account for three. The same run
+  passed progress/watchlist authorization, batching plans, Kafka redelivery,
+  quarantine/replay, broker outage/recovery and owner shutdown. Cleanup reported
+  remaining0 and retainedRuntimeTouched false.
+
+Prior owner-local measurements 1/3/5/1 remain in the raw JSONL as supporting
+adapter observations only. They are explicitly superseded for federated closure
+because they omitted Router and cross-subgraph work. Review discussions
+3899340521 and 3899340535 prompted this correction.
+
+Interpretation:
+  Counts include every participating owner and remain constant within the
+  declared list/page bounds. They are not a throughput claim, hosted SLO or
+  comparison of machine speed. Durations are single local observations retained
+  to expose large regressions only. Phase14 owns calibrated mixed load,
+  saturation and hosted budgets.
+
+OWNER AUTHORIZATION MATRIX
+
+Artifact:
+  evidence/phase-13/authorization-matrix.json
+
+The executable matrix contains 12 negative cases across Catalog, Discovery,
+Engagement, Identity and Playback. It covers identifier substitution,
+cross-profile access and role/private-transport escalation. Each row references
+an exact test name. The Router test fails if a file/test/category/owner or case
+identity drifts. The combined five-owner test gate passed19/19 Turbo tasks;
+  Router passed26/26 and verified all matrix references. Owner tests assert
+rejection before disclosure or durable mutation, not merely a UI response.
+
+FOCUSED GATES
+
+Commands:
+  turbo run build --filter=@aster/router --filter=@aster/catalog \
+    --filter=@aster/discovery --filter=@aster/engagement --concurrency=3
+  pnpm --filter @aster/router test
+  turbo run test --filter=@aster/catalog --filter=@aster/discovery \
+    --filter=@aster/engagement --filter=@aster/identity \
+    --filter=@aster/playback --concurrency=3
+Results before PR review:
+  PASS — affected builds 15/15 with 13 cached; Router25/25 plus deterministic
+  composition; five-owner gate19/19 tasks with14 cached.
+
+Corrected focused results:
+  PASS — Router build/test26/26 plus schema check; Engagement strict build;
+  query-count/classification tests15/15; staged secrets0, formatting and lint.
+  The exact Discovery and Engagement runtime commands above pass with cleanup0.
+
+Third-predecessor candidate:
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    pnpm check:changed
+Result:
+  PASS — 57/57 tasks, 41 cached, in 69.406 seconds on the third corrected
+  predecessor.
+
+The earlier exact-diff carry-forward remains valid only for the owner-local
+adapter observations. It does not certify a federated operation. Corrected
+source e0f5e27 adds exact operation selection, bounded pg_stat_statements
+instrumentation, participating-owner assertions and composition-time semantic
+derivation. Both heavyweight runtime proofs were therefore repeated.
+
+Post-squash-main candidate:
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    pnpm check:changed
+Result:
+  PASS — 57/57 tasks, 49 cached, in 16.401 seconds after the original candidate
+  rebased onto released main98deb52. This is historical pre-review evidence; the
+  corrected source is certified by the new affected candidate gate below.
+
+Corrected federated candidate:
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    pnpm check:changed
+Result:
+  PASS — 73/73 tasks, 36 cached, in 162.116 seconds. This exact-diff gate covers
+  the semantic audit, query-count proof, owner packages, platform policy,
+  documentation, repository memory, formatting, lint, types, builds, tests,
+  secret scanning and dependency policy.
+
+Protected restart boundary:
+  Published evidence head aca255870f88e6bd73d37a706b272c90cc798ab4
+  entered protected run 33456003304. Attempts 3 and 4 repeated the same
+  availability failure: Discovery restarted healthy with its preserved durable
+  generation, while Router's first fetch still used the stopped endpoint and
+  returned only SUBREQUEST_HTTP_ERROR. Both attempts cleaned remaining0.
+
+Restart recovery correction:
+  Source c5ae76077cb981ccaf5a98c6e41dc47cbd2d67d7, tree
+  11b11c2e90376ac5d3a77e002afc3764b122b51e, bounds the complete recovery probe
+  to 10 seconds. It retries only an HTTP200 GraphQL response whose errors all
+  have code SUBREQUEST_HTTP_ERROR. Non-200 responses, any other GraphQL error
+  and a wrong generation fail immediately.
+
+Command:
+  pnpm discovery:runtime
+Result:
+  PASS — the exact federated counts and Discovery outage/recovery suite remain
+  valid. Restart recovery succeeded in one attempt in 129.793 ms with the exact
+  preserved generation. Project cleanup reported remaining0; the complete
+  runtime finished in 182,041 ms.
+
+Initial recovery candidate:
+  TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm exec turbo run build test \
+    toolchain:check toolchain:test typecheck lint:workspace format:check \
+    unused:check architecture:check architecture:test platform:check \
+    platform:test docs:check docs:test ai:check ai:test community:check \
+    community:test security:check security:test ci:check ci:test staged:test \
+    commit:test --affected --concurrency=2 --output-logs=errors-only
+Result:
+  PASS — 73/73 tasks, 64 cached, in 52.555 seconds. A first local invocation
+  encountered host ENOMEM in knip; standalone knip passed. The first bounded-
+  concurrency gate then exposed one lint-only global reference, corrected to
+  globalThis.setTimeout. The final exact gate above is authoritative.
+
+Protected exact-head retry result:
+  Evidence head 996798b56110c9be751a46a1f37dd9b9fdf2409c entered run
+  33460420680. Classify, dependency review, documentation/security and Local
+  platform passed. Install/source quality passed through Engagement, then the
+  Discovery runtime failed only at restart. Discovery was ready with the exact
+  preserved generation, but Compose had replaced its direct endpoint and Router
+  retained the stopped 172.18.0.5 address for the complete 10-second probe.
+  Cleanup reported remaining0 in 130,830 ms. This is a deterministic proof-
+  scenario mismatch, not a reason to widen the retry deadline.
+
+Process-restart correction:
+  Source c5b0ecaf247406bcd66bcbc06f9f24c641a2dab0, tree
+  5dadb0a69fee7b3146a50c4041893109be917a2a, starts the stopped service with
+  --no-recreate and asserts the exact container identity and network endpoint
+  before applying the same finite semantic recovery probe. Container replacement
+  remains a deployment/orchestrator boundary and is not mislabeled as a local
+  process restart.
+
+Command:
+  pnpm discovery:runtime
+Result:
+  PASS — TitleDetail2, SearchTitles5 and HomePublic7 remain unchanged. Container
+  identity, network endpoint and durable generation were preserved; search
+  recovered in one attempt in 64.738 ms. Logs remained finite and safe. Project
+  cleanup reported remaining0; the complete runtime finished in 181,547 ms.
+
+Process-restart candidate:
+  TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm exec turbo run build test \
+    toolchain:check toolchain:test typecheck lint:workspace format:check \
+    unused:check architecture:check architecture:test platform:check \
+    platform:test docs:check docs:test ai:check ai:test community:check \
+    community:test security:check security:test ci:check ci:test staged:test \
+    commit:test --affected --concurrency=2 --output-logs=errors-only
+Result:
+  PASS — 73/73 tasks, 61 cached, in 65.141 seconds.
+
+Protected process-restart result:
+  Evidence head be6b57da5025cdd2cae3ec65bd6ec5863dc607bf entered run
+  33462043470. Classify, dependency review, documentation/security and Local
+  platform passed. The source job passed through Engagement, then Discovery
+  failed only at the endpoint-preservation assertion. --no-recreate retained the
+  exact Discovery container identity while Docker changed its direct address
+  from 172.18.0.4 to 172.18.0.6. Cleanup reported remaining0 in 120,062 ms.
+
+Coordinated local recovery correction:
+  Source 02d67399aa89f722d44df41de719207472fa9f81, tree
+  6d9e27b59077244a6da8b79f6e15424760ec0d7b, waits for the same Discovery
+  container, restarts only the same Router container process to renew Compose
+  DNS and then resolves the current loopback-only ephemeral proof port. The
+  unchanged 10-second semantic deadline retries only named local transport-
+  startup codes or Router SUBREQUEST_HTTP_ERROR. Hosted stable-address
+  replacement recovery remains P14-R10.
+
+  The first exact local coordinated run exposed immediate ECONNREFUSED on the
+  old ephemeral host port and cleaned remaining0 in 105,616 ms. A bounded retry
+  correctly expired rather than hiding that stale port and cleaned remaining0
+  in 116,617 ms. Re-resolving the current port is the correction; the deadline
+  was not widened.
+
+Command:
+  pnpm discovery:runtime
+Result:
+  PASS — TitleDetail2 in 55.813 ms, SearchTitles5 in 62.867 ms and HomePublic7
+  in 74.915 ms. Discovery and Router container identities were preserved while
+  the Discovery endpoint and Router host port both changed. Router DNS was
+  renewed, the exact durable generation/search recovered in one attempt in
+  269.302 ms, logs remained finite/safe and cleanup reported remaining0. The
+  complete runtime finished in 111,911 ms.
+
+Final coordinated-recovery candidate:
+  TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm exec turbo run build test \
+    toolchain:check toolchain:test typecheck lint:workspace format:check \
+    unused:check architecture:check architecture:test platform:check \
+    platform:test docs:check docs:test ai:check ai:test community:check \
+    community:test security:check security:test ci:check ci:test staged:test \
+    commit:test --affected --concurrency=2 --output-logs=errors-only
+Result:
+  PASS — 73/73 tasks, 61 cached, in 84.672 seconds.
+
+Commands:
+  pnpm --filter @aster/engagement typecheck
+  pnpm ai:check
+  pnpm security:staged
+  pnpm staged:check
+Results:
+  PASS — strict Engagement types, repository memory, zero staged secrets,
+  formatting and staged lint.
+
+PR57 REVIEW AND PENDING RELEASE EVIDENCE
+
+- Item66 is released through PR56 squash main `98deb52` and exact-main run
+  `33448911764`.
+- PR57 initial review discussions `3899340521` and `3899340535` identified the
+  owner-local measurement and self-asserted semantic labels. Corrected source
+  `e0f5e27`, tree `da9b02b`, addresses both. Published evidence head `aca2558`
+  entered protected run `33456003304`; attempts3 and4 exposed the repeatable
+  post-restart endpoint boundary. Recovery source `c5ae760`, tree `11b11c2`,
+  passes the repeated runtime and 73/73 affected gate. Its published checkpoint
+  `996798b` entered run `33460420680`, which proved the retry cannot repair
+  endpoint replacement. Process-restart source `c5b0eca`, tree `5dadb0a`, passes
+  the full repeated runtime and 73/73 affected gate. Its evidence head `be6b57d`
+  entered run `33462043470`, which proved container identity does not guarantee
+  a stable Compose endpoint. Final source `02d6739`, tree `6d9e27b`, passes the
+  complete coordinated-recovery runtime and final 73/73 affected gate. Evidence
+  head 7272f3f passed protected run 33463962414; both initial discussions are
+  resolved. Confirmation discussion 3900443731 then found that the Engagement
+  worker rediscovered an arbitrary two-row profile after setup, so an earlier
+  deleted fixture could be selected nondeterministically.
+
+CONFIRMATION REMEDIATION
+
+Exact-profile correction:
+  Source f5fbe2972c0f844ebf1fac7868d1d4c4116e1df3, tree
+  4f44b714b7a276cf2765d024fc925afddd418607, carries the exact synthetic profile
+  ID emitted by setup inside the runner and supplies only that ID to measurement.
+  The control record is consumed rather than copied to evidence. Measurement
+  verifies the exact profile still owns two in-progress titles and no longer
+  scans or orders unrelated profiles.
+
+Commands:
+  node --test tools/graphql-query-count-proof.test.mjs
+  pnpm --filter @aster/engagement build
+  pnpm engagement:runtime
+  pnpm check:changed
+Results:
+  PASS — focused proof3/3 and strict build pass. The complete Engagement runtime
+  replays the earlier deleted-profile sequence, measures the exact setup profile
+  through Router at ContinueWatching7 (Catalog3/Engagement1/Identity3) in
+  104.127 ms, excludes the control ID from evidence, passes the event/outage
+  suite and cleans remaining0 with retainedRuntimeTouched false. The corrected
+  affected gate passes73/73 with56 cached in79.85 seconds.
+
+- Evidence checkpoint 10bef1f published the exact-profile correction; its
+  protected result and subsequent confirmation are recorded below.
+
+CATALOG QUERY-BUDGET CONFIRMATION REMEDIATION
+
+Evidence head 10bef1fc04a1481d45074bf00e3d23c9f8ccaa13 passed protected
+run 33465978576 attempt2. Attempt1 had one isolated existing PostgreSQL
+transaction-timeout assertion under runner contention; the failed job alone
+passed on its single retry. Discussion 3900443731 is resolved. Confirmation
+discussion 3900633355 then found the Catalog contributor budget was still one,
+below both the measured cold fence/load path and its bounded fence-change path.
+
+Source 20b5f27eafe49779bc4ac832a6436c32076d8846, tree
+700bdc480e9e62a65ee9e111c2e2eeaefc609d73, exports Catalog's authoritative
+query plan: initial `findFences` then `findManyAtFences`, followed by at most one
+`fence_changed` retry with the same sequence. The maximum of four is derived
+from that plan; Router composition consumes the owner export and rejects a
+reduced total or removed retry. A Catalog test changes the fence between reads
+and observes all four calls in order.
+
+Commands:
+  pnpm --filter @aster/catalog build
+  pnpm --filter @aster/catalog test
+  pnpm --filter @aster/router build
+  pnpm --filter @aster/router test
+  TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm check:changed
+Results:
+  PASS — Catalog249/249 and Router26/26 pass, including exact observed retry and
+  composition drift rejection. The affected candidate gate passes73/73 with56
+  cached in86.394 seconds. The correction changes only the owner-exported audit
+  contract and its tests; it does not change the query path, adapter, schema,
+  authorization policy or measurement. The protected exact-document
+  observations therefore remain applicable and no heavyweight runtime was
+  repeated.
+
+Protected run 33468676673 at published head
+65e5dc28e8f59f49a9f793e192ded565838dea86 passed dependency review,
+documentation/security and Local platform, including the unchanged Docker
+runtime. Install and source quality failed because Router lint resolved the
+top-level Catalog package before Catalog build declarations existed.
+
+Final source 1ec01c320193e558661520db0303d4f37ecf76f4, tree
+f27a9f85fce67f5372685fe9a10e37672b7dae99, exposes only
+`@aster/catalog/query-plan`. Its checked-in declaration describes the plan
+shape but duplicates no query values; runtime resolves the compiled owner
+module. A fresh detached checkout at that exact source passed:
+  pnpm check:source
+  PASS — 63/63 tasks, 0 cached, 159.682 seconds.
+The repeated candidate passed:
+  TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm check:changed
+  PASS — 73/73 tasks, 63 cached, 54.731 seconds.
+
+MULTI-ENTITY CONFIRMATION REMEDIATION
+
+Final confirmation discussion 3900877477 found that the one-title Search and
+Home observations could not detect query amplification per hydrated entity. The
+proof now creates ten exact rights-valid Catalog titles before Discovery's real
+rebuild, sends the current persisted SearchTitles(first:20) and
+HomePublic(first:10) documents through Router, and requires ten distinct fully
+hydrated Catalog entities in both responses.
+
+The first execution exposed a real Catalog boundary rather than an N+1 count:
+`findManyAtFences` expanded four parameters per entity. Three scope parameters
+plus ten four-field fences required 43 parameters, exceeding the shared
+PostgreSQL transaction guard of 32. Search reached Discovery3 and the initial
+Catalog fence query, but all entity hydration failed closed as unavailable.
+The run made no acceptance claim and cleanup reported remaining0.
+
+Source 3d90dffb7fcb36bfcddf4cdeceb33e8c1e7fd088, tree
+331be6b6e1e3082b130258c4675e2b8fa8e991a5, encodes the already validated and
+bounded fence tuples in one JSON parameter. PostgreSQL still matches each exact
+ID, title version, rights revision and publication ID. This uses four statement
+parameters regardless of batch cardinality and therefore preserves Catalog's
+reviewed 20-title request-scoped DataLoader maximum below the shared guard.
+
+Commands:
+  node --test tools/graphql-query-count-proof.test.mjs
+  pnpm --filter @aster/catalog build
+  pnpm --filter @aster/catalog test
+  pnpm catalog:integration
+  pnpm discovery:runtime
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm check:changed
+Results:
+  PASS — focused proof4/4, Catalog249/249 and strict Catalog build pass. Real
+  Catalog integration resolves all20 maximum-batch candidates at their exact
+  fences and cleans remaining0 in25,011 ms. The complete Discovery runtime
+  creates/projects ten titles, observes TitleDetail2 (Catalog2) in36.338 ms,
+  SearchTitles5 (Catalog2/Discovery3) in211.665 ms and HomePublic7
+  (Catalog2/Discovery5) in149.035 ms, with ten distinct hydrated titles in each
+  list. Projection10/documents20, broker lag0, quarantine/replay,
+  failure-isolation, finite safe logs and coordinated restart recovery all pass;
+  restart recovery completes in one attempt in68.789 ms and cleanup reports
+  remaining0. The full runtime completes in142,430 ms. The affected candidate
+  gate passes73/73 with56 cached in69.532 seconds.
+
+PROTECTED PROJECTION-LEASE ASSERTION CORRECTION
+
+Evidence head 71f3ff50bd210a6c873636ab7db2bfd59833dc70 entered protected run
+33474006491. Dependency review, classification and documentation/security
+passed. The source job passed clean source quality, real platform integration,
+Catalog, Playback and Engagement. Discovery integration also passed. The full
+Discovery runtime created and projected all ten titles, then observed
+TitleDetail2 (Catalog2) in32.354 ms and SearchTitles5 (Catalog2/Discovery3) in
+77.788 ms with ten distinct hydrated titles. The proof stopped only because a
+legitimate 299-second `visibleUntil - indexedAt` value did not equal its assumed
+300 seconds. Cleanup reported remaining0 in93,921 ms.
+
+The Catalog source lease is at most300 seconds. Discovery's accepted projection
+contract permits indexing from the same observation second through two seconds
+later. Source 3d2f6ee30ccf9ce5ce0b230e54595419635d38b6, tree
+cef2ee2c31436e608b71e03396c3a38bf5884114, therefore validates the derived
+inclusive 298–300-second interval. It rejects shorter, longer and non-integer
+values instead of weakening expiry or freshness semantics.
+
+Commands:
+  node --test tools/graphql-query-count-proof.test.mjs
+  pnpm discovery:runtime
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm check:changed
+Results:
+  PASS — focused proof5/5 covers300,299,298 and rejects297,301/non-integer. The
+  complete repeated runtime observes TitleDetail2 in45.277 ms, SearchTitles5 in
+  197.579 ms and HomePublic7 in152.744 ms with ten distinct Search/Home titles,
+  freshness300, one restart-recovery attempt in65.042 ms and cleanup0 in100,689
+  ms. The affected candidate gate passes73/73 with60 cached in61.806 seconds.
+
+Protected run 33474006491 had one independent Local platform failure: the
+Catalog diagnostic passed, PostgreSQL recovered, then its finite wait expired
+before TraceQL indexed the PostgreSQL scenario trace. The exact diagnostic
+project cleaned successfully. This known isolated indexing timeout does not
+change the Discovery correction; the protected workflow must still pass before
+release.
+
+PROTECTED EXACT-HEAD ACCEPTANCE
+
+Published evidence head 35d46d91b10721cb7336b70dda2b0c71df9f4164, tree
+1371744566235fbb86f27e7b4d6d4b9350091a7c, passed corrected protected run
+33475401067. Clean source quality, real platform integration, Catalog, Playback,
+Engagement and Discovery runtimes, the Docker-only playable demo, dependency
+review, documentation/security, the complete Local platform with all three
+diagnostic scenarios, and aggregate protection all completed successfully.
+The run started 2026-09-01T05:54:26Z and completed 2026-09-01T06:13:43Z.
+
+PROTECTED DIAGNOSTIC GATE CORRECTION
+
+Documentation checkpoint 1ba7d1cca514f4f7083186b9722964c06a4cfadc,
+tree a41922fb0d22783458b263d25f6012ae05753396, entered protected run
+33476967426. Every unchanged source and owner runtime passed. Local platform
+attempt1 recovered all services, then its exact Redis TraceQL search expired;
+the exact project cleaned. The single permitted failed-job retry recovered
+Catalog, then that scenario's exact TraceQL search expired; its project also
+cleaned. Consecutive timeouts in different scenarios prove a recent-store search
+ordering defect rather than one isolated retry.
+
+Source b2c77a8de402552881a101665723a19bff3f8760, tree
+a0b091c0ac8bde4d7f7f25d4db6f2e24b5df10b1, adds Tempo's supported
+with (most_recent=true) query hint. Exact trace/scenario/dependency predicates,
+the finite selected fields, failure outcomes, 45-second search wait, complete
+stored-trace privacy, recovery, cleanup and twelve-minute run budget remain
+unchanged. The source policy rejects removing or disabling the hint.
+
+Commands:
+  node --test tools/run-diagnostic-exercises.test.mjs \
+    tools/verify-diagnostics-profile.test.mjs
+  pnpm diagnostics:run
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm check:changed
+Results:
+  PASS — focused runner/profile tests14/14. The complete local run diagnosed
+  and recovered Catalog trace 7bf2f8d50b4505fc5ddd40d7a58025b8,
+  PostgreSQL trace f61a1c88e019373fe626f22f333acb06 with outcome cancelled,
+  and Redis trace b1889e043b4f3793ebb96b6303027928 with unavailable reads and
+  writes plus latency-qualified PostgreSQL fallback. The exact project cleaned.
+  The affected gate passes73/73 with60 cached in62.328 seconds.
+
+Published evidence head a7c0ae61ba772f75216c572e8351c4f7eccfa3d8,
+tree 267ab804740e9743220d8da586cf620bcbd32dce, passed protected run
+33480268553. Local platform job 99768130579 passed the complete three-scenario
+diagnostic exercise and exact cleanup in7m22s. Install/source job 99768130618
+passed source quality, real platform integration, Catalog, Playback, Engagement,
+Discovery and the Docker-only playable demo in17m37s. Classification, dependency
+review, documentation/security and aggregate protection also passed. The run
+started 2026-09-01T07:02:40Z and completed 2026-09-01T07:20:34Z.
+
+- Documentation head c195a1db75f194fb3369a44401d9adf7cbef02f4,
+  tree a028aa1232eb8f6cb5b0c432a5f53494938d6901, passed protected run
+  33481864676. All existing discussions were resolved before the permitted
+  confirmation.
+
+EXACT OWNER-SET CORRECTION
+
+Confirmation discussion 3901909548 found that the Discovery and Engagement
+runners projected the observed database-owner map onto the operation budget's
+known keys before validation. The shared assertion rejected mismatched owner
+sets, but that narrowing prevented it from seeing a newly participating owner
+and could undercount the total.
+
+Source a99b3af5212e4fb967ed41230c3ca59fa394cca7, tree
+dc84bbc4cf63b0e8ce977a8f90fbb296f9f6903e, passes the complete observed owner
+map into exact comparison. Engagement independently compares the sorted
+observed and expected owner sets before summing them. Both runners remove the
+post-observation exclusion field. The shared SQL remains responsible for the
+only exclusions and names their readiness and fixture-background statement
+fingerprints explicitly.
+
+Commands:
+  node --test tools/graphql-query-count-proof.test.mjs
+  pnpm --filter @aster/engagement build
+  pnpm discovery:runtime
+  pnpm engagement:runtime
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm check:changed
+Results:
+  PASS — focused query proof5/5 and strict Engagement build. Discovery observed
+  the complete owner maps at TitleDetail2/Catalog2 in40.123 ms,
+  Search5/Catalog2+Discovery3 in61.441 ms and
+  Home7/Catalog2+Discovery5 in79.513 ms; Search and Home each hydrated ten
+  distinct titles. Projection covered10 titles/20 documents, recovery needed
+  one attempt in63.978 ms and cleanup was0 for project
+  aster-discovery-proof-b05efaf3-0935-49b3-9058-0efe245ce5ab; total runtime was
+  101.498 seconds.
+  PASS — Engagement observed the complete Catalog3/Engagement1/Identity3 map
+  for ContinueWatching7 in88.033 ms, passed its event, backlog, outage,
+  recovery and shutdown sequence, did not touch retained runtime and cleaned
+  project aster-engagement-proof-d4792eb8-5f11-4010-9430-bffaa71bf013 to0.
+  PASS — affected gate73/73 with55 cached in65.919 seconds.
+
+PROTECTED EXACT OWNER-SET ACCEPTANCE
+
+Evidence head 71823fe18d11832183e6af8acdab2210e7486af4, tree
+5d075d0296c862202f3db59d7a276ba6795490b8, passed protected run33485233911.
+Local platform job99783677357 passed the complete three-scenario diagnostic and
+exact cleanup in7m14s. Install/source job99783677488 passed source quality, real
+platform integration, every owner runtime and the Docker-only playable demo in
+17m12s. Classification, dependency review, documentation/security and aggregate
+protection also passed. The run started2026-09-01T08:04:57Z and completed
+2026-09-01T08:22:26Z.
+
+- Publish this result checkpoint once, require its exact protected CI, reply to
+  and resolve discussion3901909548, run one final corrected-candidate
+  confirmation, then merge and confirm exact-main CI before declaring
+  P13-R07/R08/R09 or Phase13 released.
+
+ROLLBACK
+
+Revert projection-lease assertion source
+3d2f6ee30ccf9ce5ce0b230e54595419635d38b6, multi-entity source
+3d90dffb7fcb36bfcddf4cdeceb33e8c1e7fd088,
+final typed-contract source 1ec01c320193e558661520db0303d4f37ecf76f4,
+Catalog query-plan source 20b5f27eafe49779bc4ac832a6436c32076d8846,
+exact-profile source f5fbe2972c0f844ebf1fac7868d1d4c4116e1df3,
+coordinated-recovery source 02d67399aa89f722d44df41de719207472fa9f81,
+process-restart source c5b0ecaf247406bcd66bcbc06f9f24c641a2dab0,
+initial recovery source c5ae76077cb981ccaf5a98c6e41dc47cbd2d67d7,
+federated source e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0 and their
+evidence checkpoint. No schema, migration, event, retained media or durable data
+change exists. The instrumentation overlay is opt-in; fixtures own only exact
+random-name disposable projects and clear only their scoped Catalog cache.

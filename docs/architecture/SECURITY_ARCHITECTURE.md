@@ -78,8 +78,14 @@ enforced, so healthy Redis traffic cannot disable later bounded failover.
 Router still rejects oversized or parser-hostile bodies, bounds execution
 to three seconds/eight concurrent requests, overwrites response cache control,
 and disables batching and introspection. N+1/query-count and final
-owner-authorization abuse proof remain the closing Phase13 work; neither demand
-nor rate admission grants authority.
+owner-authorization abuse proof now exist in the Phase13 closing candidate:12
+exact negative cases cover identifier substitution, cross-profile access and
+role/private-transport escalation across all five owners. The matrix points to
+executable owner tests and the Router verifies every reference. Owner, scope and
+resolution audit semantics derive from owner schemas, exact operation policy and
+implementation contracts during composition. The candidate remains unreleased
+until PR57's remaining gates pass. Neither demand nor rate admission grants
+authority.
 
 ## Media threat model
 

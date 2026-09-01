@@ -306,13 +306,19 @@ Third corrected evidence-head result:
   formatting, documentation, repository-memory and staged security checks are
   repeated on the amended publication head.
 
-PENDING PROTECTED/RELEASE EVIDENCE
+PROTECTED/RELEASE EVIDENCE
 
-- Push the third corrected source/evidence head once and require protected
-  exact-head CI, including the pinned packaged Router proof.
-- Reply to and resolve discussions 3898857100 and 3898857110 after the
-  published evidence is green. Because this remediation changes rollout and
-  availability boundaries, complete one final blocker-focused confirmation on
-  that exact head.
-- Protected exact-head CI, tree-identical squash merge and exact-main CI remain
-  required before this item is verified/released.
+- Published third corrected head e6134ae0d570f0cd9c7376f6d5cc79f1538708e7
+  passed protected run 33447062908, including source quality, the packaged
+  Router, every owner integration, failure diagnostics and the Docker-only
+  playable demo.
+- Replies 3899151404 and 3899151588 recorded the exact remediation evidence;
+  discussions 3898857100 and 3898857110 are resolved. Final blocker-focused
+  confirmation 5485910820 reviewed exact head e6134ae and found no major issue.
+- PR56 squash-merged as main 98deb52cabd43c8a65741436ffbea7c5863f52bb.
+  Candidate and main retain the identical tree
+  897c44c87d4d16ffe69baa869cb30661ee4c53b8.
+- Exact-main run 33448911764 passed every applicable job: source quality and all
+  owner integrations, the packaged Docker-only playable demo, Local platform,
+  three telemetry-led failure diagnoses, documentation and security. Item66 is
+  verified and released.

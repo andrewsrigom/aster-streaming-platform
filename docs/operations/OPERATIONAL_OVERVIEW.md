@@ -120,9 +120,13 @@ The corrected profile keeps Tempo off product networks. Collector exports over
 internal `diagnostics-ingest`; Grafana queries over internal
 `diagnostics-query`. Tempo publishes no host port; the runner requires Grafana's
 Tempo data-source health endpoint to return `OK` and sends bounded TraceQL reads
-through Grafana's UID-scoped proxy. It rejects raw or JSON-escaped GraphQL
-document canaries before any failure exercise is accepted. These
-targeted-confirmation corrections still require protected runtime acceptance.
+through Grafana's UID-scoped proxy. Exact scenario queries use the supported
+`most_recent=true` hint to prioritize newly ingested blocks without changing
+their trace, dependency or failure predicate. It rejects raw or JSON-escaped
+GraphQL document canaries before any failure exercise is accepted. P12-R10 is
+released; source `b2c77a8` later corrected only this bounded recent-store
+ordering after the Phase13 protected gate reproduced two different scenario
+timeouts.
 
 ## Limits
 

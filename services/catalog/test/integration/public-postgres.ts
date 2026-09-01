@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { performance } from "node:perf_hooks";
 import { setTimeout as delay } from "node:timers/promises";
 import type { Pool } from "pg";
 import type { AsterPostgresAdapter } from "@aster/postgres";
@@ -278,6 +279,21 @@ export async function verifyPublicCatalog(
     );
     assert.equal(exact.status, "completed");
     assert.equal(exact.value.length, 2);
+    const representativeIds = Array.from({ length: 20 }, (_, index) => id(108 + index));
+    const representativeFences = await entitySource.findFences(
+      representativeIds,
+      { now: clock, policy: { commercial: true } },
+      signal(),
+    );
+    assert.equal(representativeFences.status, "completed");
+    assert.equal(representativeFences.value.length, representativeIds.length);
+    const representativeCandidates = await entitySource.findManyAtFences(
+      representativeFences.value,
+      { now: clock, policy: { commercial: true } },
+      signal(),
+    );
+    assert.equal(representativeCandidates.status, "completed");
+    assert.equal(representativeCandidates.value.length, representativeIds.length);
     assert.equal(
       (
         await commands.execute(
@@ -303,6 +319,7 @@ export async function verifyPublicCatalog(
     output("catalog_public_cache_fence", {
       compactFenceFields: 4,
       exactCandidateRows: exact.value.length,
+      representativeBatchRows: representativeCandidates.value.length,
       staleFenceRowsAfterDispute: retiredFence.value.length,
     });
     const allIds: string[] = [];
@@ -407,6 +424,25 @@ export async function verifyPublicCatalog(
 
     const http = await catalogHttpFixture(queries);
     try {
+      const titleStart = statements.length;
+      const titleStartedAt = performance.now();
+      const title = await http.send({
+        query: 'query Detail { title(id: "' + id(110) + '") { id genres credits { name } } }',
+      });
+      const titleMeasurement = {
+        queries: statements.length - titleStart,
+        durationMs: Number((performance.now() - titleStartedAt).toFixed(3)),
+      };
+      assert.equal(title.status, 200);
+      assert.equal(title.json.errors, undefined);
+      assert.equal((title.json.data?.["title"] as { id?: string } | undefined)?.id, id(110));
+      assert.equal(titleMeasurement.queries, 1);
+      output("phase13_title_query_count", {
+        operation: "TitleDetail",
+        workload: "one published title with materialized list metadata",
+        ...titleMeasurement,
+        limitation: "single local fixture observation; not a throughput or SLO claim",
+      });
       const before = statements.length;
       const response = await http.send({
         query:

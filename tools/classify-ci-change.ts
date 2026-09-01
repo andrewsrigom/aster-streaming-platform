@@ -71,6 +71,8 @@ const PLATFORM_FILES = new Set([
   "tools/run-engagement-runtime.mjs",
   "tools/run-discovery-integration.mjs",
   "tools/run-discovery-runtime.mjs",
+  "tools/graphql-query-count-proof.mjs",
+  "tools/graphql-query-count-proof.test.mjs",
   "tools/verify-engagement-runtime.mjs",
   "tools/verify-engagement-runtime.test.mjs",
   "tools/run-playback-runtime.mjs",
