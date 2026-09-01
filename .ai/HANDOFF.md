@@ -140,11 +140,12 @@ path/anchor validity to the existing documentation validator.
   and CDATA end markers and binds requirement labels to target anchors. Focused
   capability tests pass14/14, combined contract tests pass40/40, documentation
   tests pass24/24 and the affected gate passes15/15, including101 platform
-  tests. Source freeze remains pending.
+  tests. Correction source `df8510b`, tree `6b6f81b`, is frozen without product
+  runtime or deployment changes.
 
 ## Exact next actions
 
-1. Freeze and publish the correction for discussions
+1. Publish the exact correction evidence for discussions
    `3904518312`/`3904518324`, then resolve both discussions and require protected
    CI plus one blocker-boundary confirmation.
 2. Merge only after a clean exact-head review, verify exact-main CI and close

@@ -65,8 +65,8 @@ evidence remains applicable. Prior protected acceptance passes; protected
 acceptance of the current public-rendering/traceability correction, merge and
 exact-main acceptance remain pending.
 
-Correction source `51f49bc845a99ce23c65a12c436c02390ca92083`, tree
-`510a0da0fd67879bb397d22356da34d57ad936b6`, is the latest frozen correction
+Correction source `df8510b0804c54dc36d829e017798f8de322bca5`, tree
+`6b6f81b7e249b0771dce1751ce1dd6b1e1245784`, is the latest frozen correction
 recorded in [Phase14 evidence](../evidence/phase-14/README.md).
 
 Evidence head `136def8`, tree `58e640d`, passed protected run
@@ -145,10 +145,11 @@ dependency audit and local diagnostic. Confirmation completed at
 still hide the table, and visible requirement labels were not bound to their
 reviewed targets. The accepted working correction tracks all three
 marker-terminated block forms and requires the exact requirement label derived
-from each target anchor. Focused capability tests pass14/14; the affected gate,
-the combined contract tests pass40/40, documentation tests pass24/24 and the
-affected gate passes15/15, including101 platform tests. Source freeze and
-protected publication remain pending.
+from each target anchor. Focused capability tests pass14/14, combined contract
+tests pass40/40, documentation tests pass24/24 and the affected gate passes15/15,
+including101 platform tests. Correction source `df8510b`, tree `6b6f81b`, is
+frozen without product runtime or deployment changes; protected publication
+remains pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

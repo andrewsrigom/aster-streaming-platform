@@ -163,8 +163,8 @@ file and anchor exists.
   head `4cfb46c`; its confirmation opened one remaining HTML-visibility and one
   visible-requirement-label finding. Their working correction passes focused
   contract tests40/40, documentation tests24/24 and the affected gate15/15;
-  source freeze, protected acceptance, merge and exact-main acceptance remain
-  pending
+  source `df8510b`, tree `6b6f81b`, is frozen. Protected acceptance, merge and
+  exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

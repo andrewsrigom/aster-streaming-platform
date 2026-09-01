@@ -123,15 +123,16 @@ full snapshot through the archival checkpoint remains in
   and derives exact visible labels from requirement target anchors. Focused
   capability tests pass14/14, combined contract tests pass40/40, documentation
   tests pass24/24 and the affected gate passes15/15, including101 platform
-  tests. Source freeze remains pending.
+  tests. Correction source `df8510b`, tree `6b6f81b`, is frozen without product
+  runtime or deployment changes.
 - Source `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
   `78742f48c2f939b9073f419aaded775be1e58876`, is recorded in the Phase14
   evidence index.
 
 ### Next action
 
-- Freeze and publish the latest two-finding correction, resolve both discussions
-  and require one blocker-boundary
+- Publish the exact latest two-finding correction evidence, resolve both
+  discussions and require one blocker-boundary
   confirmation. Then merge and complete exact-main verification before
   activating P14-R15.
 

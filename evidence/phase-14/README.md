@@ -413,8 +413,11 @@ The findings are accepted for one batch. Visibility state now tracks the exact
 anchor in canonical uppercase form. Focused capability tests pass14/14,
 combined contract tests pass40/40 and documentation tests pass24/24. The
 affected gate passes15/15, including101 platform tests; TypeScript, lint,
-formatting and diff validation also pass. Correction freeze and protected
-publication remain pending.
+formatting and diff validation also pass. Correction source
+`df8510b0804c54dc36d829e017798f8de322bca5`, tree
+`6b6f81b7e249b0771dce1751ce1dd6b1e1245784`, freezes the two-finding batch
+without product runtime or deployment changes. Protected publication remains
+pending.
 
 ## Planned evidence
 
