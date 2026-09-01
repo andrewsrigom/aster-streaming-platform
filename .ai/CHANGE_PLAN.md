@@ -40,7 +40,14 @@ that explicit transient fetch classification and fails immediately on any HTTP,
 other GraphQL or generation semantic mismatch. The repeated local Discovery
 runtime passed with the exact preserved generation, one recovery attempt in
 129.793 ms and cleanup0. The final affected gate passes73/73 with64 cached in
-52.555 seconds.
+52.555 seconds. Published evidence head `996798b` then entered protected run
+`33460420680`: every job before Discovery passed, but the runtime showed that
+Compose `up` had replaced the stopped service endpoint while the Router retained
+the old direct Compose address for the entire 10-second probe. The proof must
+model a process restart explicitly: reuse the stopped container, assert its
+identity and network endpoint are unchanged, and retain the finite semantic
+recovery probe. Replacement recovery belongs to an orchestrator/service-address
+deployment proof, not this local process-restart assertion.
 
 ## Proposed behavior
 
@@ -100,7 +107,7 @@ matrix.
 | Role or private-credential escalation | Public/foreign caller cannot invoke operator/private path | matrix case/outcome |
 | PostgreSQL fixture or measurement fails | No acceptance claim; exact fixture cleans up | command failure/remaining resources |
 | Background readiness or non-participant traffic enters the count | Exclude only declared probe fingerprints, stop the named non-participant and retain the isolation event | per-owner count/isolation event |
-| Discovery is healthy but Router still holds the stopped endpoint | Retry only `SUBREQUEST_HTTP_ERROR` inside one finite end-to-end recovery deadline; any other response fails immediately | attempt count, duration, preserved generation and cleanup |
+| Discovery process restart accidentally becomes container replacement | Start with `--no-recreate`, assert container identity and network endpoint are unchanged, then retry only `SUBREQUEST_HTTP_ERROR` inside one finite end-to-end recovery deadline; any other response fails immediately | identity/endpoint preservation, attempt count, duration, generation and cleanup |
 | Predecessor PR changes | Rebase this dependent branch and repeat affected gates/evidence | exact base/head |
 
 ## Data and contracts
@@ -140,7 +147,9 @@ matrix.
    merge and exact-main gates.
 7. If protected restart recovery returns the explicit transient subrequest
    classification, prove bounded end-to-end recovery without weakening logical
-   response or generation assertions, then repeat only the affected heavyweight
+   response or generation assertions. If Compose replaces the stopped endpoint,
+   constrain the harness to the declared process-restart scenario and assert
+   container/endpoint preservation. Then repeat only the affected heavyweight
    Discovery runtime and candidate gate.
 
 ## Tests

@@ -63,6 +63,17 @@ const docker = async (args, timeout = 15_000) => {
 };
 const compose = (args, timeout) => docker([...composeArgs, ...args], timeout);
 const emit = (event, facts) => process.stdout.write(JSON.stringify({ event, ...facts }) + "\n");
+const containerEndpoint = async (containerId) => {
+  const raw = await docker([
+    "inspect",
+    "--format",
+    "{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}",
+    containerId,
+  ]);
+  const endpoints = raw.split(/\s+/u).filter(Boolean).sort();
+  assert.equal(endpoints.length, 1, "Discovery proof requires one explicit service endpoint.");
+  return endpoints[0];
+};
 const browseOperation =
   "query Browse($first:Int!,$locale:String!){titles(first:$first){edges{node{id localized(locale:$locale){title}}}}}";
 const knownOperations = await readFile(root + "infra/router/known-operations.graphql", "utf8");
@@ -524,6 +535,9 @@ try {
   emit("discovery_quarantine_replay", { exactRecord: true, reclaimed: true });
 
   stage = "isolation";
+  const discoveryContainerBefore = await compose(["ps", "--quiet", "discovery"]);
+  assert.ok(discoveryContainerBefore.length > 0 && !/\s/u.test(discoveryContainerBefore));
+  const discoveryEndpointBefore = await containerEndpoint(discoveryContainerBefore);
   await compose(["stop", "--timeout", "15", "discovery"], 30_000);
   const browse = await executeGraphql(port, {
     query: browseOperation,
@@ -536,12 +550,19 @@ try {
   emit("discovery_failure_isolation", { routerReady: true, catalogBrowse: true });
 
   stage = "restart";
+  // A stopped-process recovery must not silently become a replacement-endpoint deployment test.
   await compose(
-    ["up", "--no-build", "--wait", "--wait-timeout", "90", "discovery", "router"],
+    ["up", "--no-build", "--no-recreate", "--wait", "--wait-timeout", "90", "discovery", "router"],
     120_000,
   );
+  const discoveryContainerAfter = await compose(["ps", "--quiet", "discovery"]);
+  const discoveryEndpointAfter = await containerEndpoint(discoveryContainerAfter);
+  assert.equal(discoveryContainerAfter, discoveryContainerBefore);
+  assert.equal(discoveryEndpointAfter, discoveryEndpointBefore);
   const recovery = await waitForDiscoveryRecovery(port, "Signal", projection.activeGeneration);
   emit("discovery_restart_recovery", {
+    containerIdentityPreserved: true,
+    networkEndpointPreserved: true,
     generationPreserved: true,
     searchRecovered: true,
     attempts: recovery.attempts,
