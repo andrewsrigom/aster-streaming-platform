@@ -25,6 +25,11 @@ full snapshot through the archival checkpoint remains in
   documentation, formatting, JSONL and changed-scope gates. The selected gate
   passes9/9 tasks with101 platform-policy and13 repository-memory tests; no
   executable change triggers a heavyweight environment repeat.
+- Evidence head `6bbb3da`, tree `f05fc60`, passed protected run
+  `33492326127`. Initial review discussion `3902757945` found the handoff
+  could ask a resuming agent to duplicate the already committed evidence.
+  Correction `7976c17`, tree `0af69fe`, advances from the current checkpoint
+  and passes the repeated local gate9/9.
 
 ### Evidence
 
@@ -33,7 +38,7 @@ full snapshot through the archival checkpoint remains in
 - ADR-0048 and the Phase14 specification define the activation boundary and
   observable reference-track acceptance.
 - `evidence/phase-14/README.md` records the source/tree and exact local
-  candidate checks.
+  candidate checks, protected result and initial review correction.
 
 ### Next action
 

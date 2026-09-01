@@ -40,11 +40,27 @@ remains applicable.
 
 ### Pending acceptance
 
-- evidence-checkpoint protected CI;
-- one initial review and any requirement/security/data/availability/
-  public-contract remediation it requires;
+- corrected evidence-checkpoint protected CI;
+- confirmation review after the initial continuity correction;
 - squash merge with candidate-tree identity;
 - exact-main CI.
+
+### Protected result and review correction
+
+Evidence checkpoint `6bbb3da3ab18f2279be945a072b97f66a36cc056`,
+tree `f05fc60b7a5a2873a3c3830628d4b3da2d01772d`, passed protected run
+`33492326127`. Classification, dependency review, documentation/security and
+the aggregate gate passed; executable source quality and Local platform jobs
+were correctly skipped.
+
+Initial review completed on that exact head at
+`2026-09-01T09:32:05Z`. Discussion `3902757945` found that the handoff's
+first action asked a resuming agent to commit the evidence checkpoint even
+though that commit already contained the evidence. Source
+`7976c170049b5f43d83b4c6fd2c9ffd867ca315f`, tree
+`0af69fee9a8985fca9f04bc06546ffd433010c2c`, now directs the agent to publish
+the existing checkpoint if needed and explicitly forbids an empty or duplicate
+evidence commit. The repeated local changed-scope gate passes9/9 tasks.
 
 ## Planned evidence
 

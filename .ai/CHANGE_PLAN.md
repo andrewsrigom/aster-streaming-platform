@@ -99,7 +99,10 @@ memory; do not change product behavior in this item.
 - Raw artifact path: `evidence/phase-13/release.md` and
   `evidence/phase-14/README.md`
 - Acceptance result: source `bd1191d`, tree `80337eb7`, passes the local
-  iteration and changed-scope candidate gates; protected acceptance is pending
+  iteration and changed-scope candidate gates. Evidence head `6bbb3da` passed
+  protected run `33492326127`; review discussion `3902757945` identified a
+  stale handoff action. Correction `7976c17`, tree `0af69fe`, passes the
+  repeated local gate; corrected protected acceptance is pending
 - Iteration gate: repository-memory, documentation and formatting checks
 - Candidate gate: affected-scope gate selected from the exact documentation diff
 - Heavyweight repeat triggers: repeat runtime, PostgreSQL, browser, media or platform evidence only if executable behavior or its gate selection changes

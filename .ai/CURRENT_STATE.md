@@ -64,7 +64,11 @@ Source `bd1191d0fb09f623c442ce6cee598cff2375b0d0`, tree
 documentation, formatting, JSONL and changed-scope gates. The selected gate
 passes9/9 tasks, including101 platform-policy and13 repository-memory tests.
 [Phase14 evidence](../evidence/phase-14/README.md) records the exact local
-candidate result. Protected acceptance remains pending.
+candidate result. Evidence head `6bbb3da` passed protected run
+`33492326127`. Initial review discussion `3902757945` found that the handoff
+could request a duplicate evidence commit. Correction `7976c17`, tree
+`0af69fe`, starts from the committed checkpoint and passes the repeated local
+gate. Corrected protected acceptance remains pending.
 
 ## Ordered reference-quality runway
 
