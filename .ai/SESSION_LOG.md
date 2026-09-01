@@ -4,6 +4,36 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — PR57 bounded Discovery restart recovery
+
+### Completed
+
+- Published evidence head `aca2558` entered protected run `33456003304`.
+  Attempts3 and4 repeated the same post-restart availability failure: Discovery
+  was healthy with the preserved durable generation, but Router's first fetch
+  returned `SUBREQUEST_HTTP_ERROR` for the stopped endpoint. Both attempts
+  cleaned remaining0.
+- Source `c5ae760`, tree `11b11c2`, bounds the complete recovery probe to10
+  seconds, retries only that explicit transient GraphQL classification and
+  fails immediately for HTTP, other GraphQL or generation mismatches.
+- The full Discovery runtime passes in182.041 seconds with exact federated
+  counts, one restart-recovery attempt in129.793 ms and cleanup0. The final
+  affected candidate gate passes73/73 with64 cached in52.555 seconds.
+
+### Evidence
+
+- `evidence/phase-13/query-count-authorization.txt` and the raw JSONL record the
+  repeated protected failure, exact correction boundary, local runtime and
+  final candidate gate.
+- An earlier local canonical gate hit host ENOMEM in knip; standalone knip
+  passed. A first bounded-concurrency gate exposed one lint-only global
+  reference; after correction, the final exact gate above passed.
+
+### Next action
+
+- Commit and publish this evidence checkpoint once, require new exact-head
+  protected CI, resolve both initial discussions and request one confirmation.
+
 ## 2026-08-31 — PR57 federated-count and semantic-audit remediation
 
 ### Completed

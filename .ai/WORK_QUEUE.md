@@ -222,8 +222,14 @@ documents through Router. Observed totals are title2, search5, home7 and
 continue-watching7 with every participating owner named. Router26/26, query
 proof15/15, strict Engagement build and both full disposable runtimes pass with
 cleanup0. The corrected affected gate passes73/73 with36 cached in162.116
-seconds. Record the checkpoint, publish once and complete protected CI,
-discussion resolution, confirmation and release.
+seconds. Published head `aca2558` entered protected run `33456003304`; attempts3
+and4 repeated a post-restart `SUBREQUEST_HTTP_ERROR` after Discovery was healthy
+with the preserved generation. Recovery source `c5ae760`, tree `11b11c2`, adds
+one finite 10-second probe and retries only that transient classification. The
+repeated runtime passed with one attempt in129.793 ms and cleanup0; the final
+affected gate passes73/73 with64 cached in52.555 seconds. Record the new
+checkpoint, publish once and complete protected CI, discussion resolution,
+confirmation and release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

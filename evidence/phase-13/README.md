@@ -113,7 +113,14 @@ commands, per-owner counts and limitations. Router26/26, query proof15/15 and
 strict Engagement build pass. The full Discovery and Engagement disposable
 runtimes pass with exact cleanup0; the latter also repeats the event/outage
 suite. The corrected affected gate passes73/73 with36 cached in162.116 seconds.
-Publication, protected CI, confirmation and release gates remain.
+Published evidence head `aca2558` entered protected run `33456003304`.
+Attempts3 and4 repeated a post-restart `SUBREQUEST_HTTP_ERROR` after Discovery
+was healthy with the preserved generation. Recovery source `c5ae760`, tree
+`11b11c2`, adds one finite 10-second probe that retries only that explicit
+transport classification. The repeated local runtime passed with one recovery
+attempt in129.793 ms and cleanup0; the final affected gate passes73/73 with64
+cached in52.555 seconds. The new evidence checkpoint, protected CI,
+confirmation and release gates remain.
 
 ## Requirement traceability
 
@@ -136,5 +143,6 @@ Publication, protected CI, confirmation and release gates remain.
 - A trusted document is not user authority. Owner authorization remains required.
 - Shape/list/cost and Identity-aware rate/cache controls are released. The
   N+1/query-count/authorization closeout has corrected local proof after PR57's
-  initial review, but its affected/protected/confirmation/release gates remain.
+  initial review and a final passing affected gate, but its new
+  protected/confirmation/release gates remain.
 - Hosted providers, credentials, deployment and capacity remain Phase 14.

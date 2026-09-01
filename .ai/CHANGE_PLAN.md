@@ -34,10 +34,13 @@ disposable runtimes pass with cleanup0. The 12-case matrix remains unchanged.
 Protected run `33456003304` then exposed a repeatable Docker restart boundary:
 Discovery became healthy with the preserved generation, but the still-running
 Router's first post-restart fetch used the stopped container endpoint and
-returned `SUBREQUEST_HTTP_ERROR`. The recovery proof will therefore use a
-finite end-to-end probe deadline, retry only that explicit transient fetch
-classification, and fail immediately on any HTTP, GraphQL or generation
-semantic mismatch.
+returned `SUBREQUEST_HTTP_ERROR` in attempts 3 and 4. Source `c5ae760`, tree
+`11b11c2`, now uses one 10-second end-to-end recovery deadline, retries only
+that explicit transient fetch classification and fails immediately on any HTTP,
+other GraphQL or generation semantic mismatch. The repeated local Discovery
+runtime passed with the exact preserved generation, one recovery attempt in
+129.793 ms and cleanup0. The final affected gate passes73/73 with64 cached in
+52.555 seconds.
 
 ## Proposed behavior
 
@@ -161,11 +164,15 @@ matrix.
   PostgreSQL fixtures; affected candidate gate; protected CI.
 - Raw artifact path: `evidence/phase-13/query-count-authorization.txt` plus
   `evidence/phase-13/query-count-measurements.jsonl`.
-- Acceptance result: corrected source `e0f5e27`, tree `da9b02b`, passes
+- Acceptance result: federated source `e0f5e27`, tree `da9b02b`, passes
   Router26/26, query proof15/15, strict Engagement build and both repeated exact
-  federated runtime proofs with cleanup0. The corrected affected gate passes
-  73/73 with36 cached in162.116 seconds. Publication, protected CI,
-  confirmation, merge and exact-main gates remain.
+  federated runtime proofs with cleanup0. Protected run `33456003304` attempts3
+  and4 then repeated the post-restart Router endpoint failure. Recovery source
+  `c5ae760`, tree `11b11c2`, passes the full Discovery runtime with the exact
+  generation, one bounded recovery attempt in129.793 ms and cleanup0. The final
+  affected gate passes73/73 with64 cached in52.555 seconds. Evidence checkpoint
+  publication, new protected CI, confirmation, merge and exact-main gates
+  remain.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.
@@ -178,10 +185,11 @@ matrix.
 
 ## Rollback or recovery
 
-Revert the audit, fixture instrumentation and documentation as one item. No
-schema, database, event, cache or media migration exists. If main changes before
-publication, rebase, rerun affected contracts and only the heavyweight
-measurements whose path changed.
+Revert recovery source `c5ae760`, federated source `e0f5e27`, the audit, fixture
+instrumentation and documentation as one item. No schema, database, event,
+cache or media migration exists. If main changes before publication, rebase,
+rerun affected contracts and only the heavyweight measurements whose path
+changed.
 
 ## Documentation updates
 

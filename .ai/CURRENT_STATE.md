@@ -269,7 +269,14 @@ SearchTitles5 (Catalog2/Discovery3), HomePublic7 (Catalog2/Discovery5) and
 ContinueWatching7 (Catalog3/Engagement1/Identity3). Router26/26, query
 proof15/15, strict Engagement build and both full disposable runtimes pass with
 cleanup0. The 12-case matrix remains valid. The corrected affected gate passes
-73/73 with36 cached in162.116 seconds. Publication, protected CI, discussion
+73/73 with36 cached in162.116 seconds. Published evidence head `aca2558` entered
+protected run `33456003304`; attempts3 and4 repeated a post-restart
+`SUBREQUEST_HTTP_ERROR` after Discovery was healthy with the preserved
+generation. Recovery source `c5ae760`, tree `11b11c2`, adds one finite 10-second
+probe that retries only that explicit transient transport classification. The
+repeated local runtime passed in182.041 seconds with one recovery attempt in
+129.793 ms and cleanup0. The final affected gate passes73/73 with64 cached in
+52.555 seconds. Evidence checkpoint publication, new protected CI, discussion
 resolution, confirmation and release remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
@@ -826,16 +833,16 @@ shape/list/cost controls are released through tree-identical PR55 merge
 controls are released through PR56 squash main `98deb52` and exact-main run
 `33448911764`.
 N+1/query-count proof and owner-authorization abuse tests have corrected local
-evidence and a passing 73/73 affected gate after PR57 initial review, but the
-protected/confirmation/release gates remain. Phase14 capacity validation and
-hosted deployment remain planned.
+evidence and a passing final 73/73 affected gate after PR57 initial review and a
+bounded restart-recovery correction, but the new protected/confirmation/release
+gates remain. Phase14 capacity validation and hosted deployment remain planned.
 
 ## Next outcome
 
-For P13-R07/P13-R08/P13-R09 item67, commit the passing affected-gate evidence,
-publish the correction once and complete protected CI, resolve both initial
-discussions, request one confirmation, squash merge and verify exact-main CI.
-Then close Phase13 and activate Phase14 from clean main.
+For P13-R07/P13-R08/P13-R09 item67, commit the restart-recovery evidence,
+publish source `c5ae760` and its checkpoint once, complete exact-head protected
+CI, resolve both initial discussions, request one confirmation, squash merge and
+verify exact-main CI. Then close Phase13 and activate Phase14 from clean main.
 Inspect the exact historical interrupted Phase12 project only when that same
 Docker engine becomes reachable.
 

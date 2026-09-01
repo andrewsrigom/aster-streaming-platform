@@ -97,8 +97,13 @@ semantics. Corrected source `e0f5e27`, tree `da9b02b`, derives semantics during
 composition and measures exact persisted documents through Router and all
 participating owners. Router26/26, query proof15/15, strict Engagement build and
 the full Discovery/Engagement runtimes pass with cleanup0. Evidence is under
-`evidence/phase-13/`. The corrected affected gate passes73/73 with36 cached in
-162.116 seconds. Publication, protected CI, confirmation and release remain.
+`evidence/phase-13/`. Published evidence head `aca2558` entered protected run
+`33456003304`; attempts3 and4 repeated the same post-restart Router endpoint
+failure. Recovery source `c5ae760`, tree `11b11c2`, uses one bounded 10-second
+probe that retries only explicit `SUBREQUEST_HTTP_ERROR`. The repeated Discovery
+runtime passed with one recovery attempt in129.793 ms and cleanup0; the final
+affected gate passes73/73 with64 cached in52.555 seconds. The evidence checkpoint,
+new protected CI, confirmation and release remain.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

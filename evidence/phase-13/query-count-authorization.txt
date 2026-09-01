@@ -5,6 +5,8 @@ Branch: feat/p13-n-plus-one-authorization
 Released predecessor main: 98deb52cabd43c8a65741436ffbea7c5863f52bb (item66 PR56)
 Corrected source commit: e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0
 Corrected source tree: da9b02bcdc09d0438762baa299f40d4b93be4c76
+Restart recovery source commit: c5ae76077cb981ccaf5a98c6e41dc47cbd2d67d7
+Restart recovery source tree: 11b11c2e90376ac5d3a77e002afc3764b122b51e
 Federated measurement source commit: e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0
 Federated measurement source tree: da9b02bcdc09d0438762baa299f40d4b93be4c76
 
@@ -157,6 +159,41 @@ Result:
   documentation, repository memory, formatting, lint, types, builds, tests,
   secret scanning and dependency policy.
 
+Protected restart boundary:
+  Published evidence head aca255870f88e6bd73d37a706b272c90cc798ab4
+  entered protected run 33456003304. Attempts 3 and 4 repeated the same
+  availability failure: Discovery restarted healthy with its preserved durable
+  generation, while Router's first fetch still used the stopped endpoint and
+  returned only SUBREQUEST_HTTP_ERROR. Both attempts cleaned remaining0.
+
+Restart recovery correction:
+  Source c5ae76077cb981ccaf5a98c6e41dc47cbd2d67d7, tree
+  11b11c2e90376ac5d3a77e002afc3764b122b51e, bounds the complete recovery probe
+  to 10 seconds. It retries only an HTTP200 GraphQL response whose errors all
+  have code SUBREQUEST_HTTP_ERROR. Non-200 responses, any other GraphQL error
+  and a wrong generation fail immediately.
+
+Command:
+  pnpm discovery:runtime
+Result:
+  PASS — the exact federated counts and Discovery outage/recovery suite remain
+  valid. Restart recovery succeeded in one attempt in 129.793 ms with the exact
+  preserved generation. Project cleanup reported remaining0; the complete
+  runtime finished in 182,041 ms.
+
+Final corrected candidate:
+  TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm exec turbo run build test \
+    toolchain:check toolchain:test typecheck lint:workspace format:check \
+    unused:check architecture:check architecture:test platform:check \
+    platform:test docs:check docs:test ai:check ai:test community:check \
+    community:test security:check security:test ci:check ci:test staged:test \
+    commit:test --affected --concurrency=2 --output-logs=errors-only
+Result:
+  PASS — 73/73 tasks, 64 cached, in 52.555 seconds. A first local invocation
+  encountered host ENOMEM in knip; standalone knip passed. The first bounded-
+  concurrency gate then exposed one lint-only global reference, corrected to
+  globalThis.setTimeout. The final exact gate above is authoritative.
+
 Commands:
   pnpm --filter @aster/engagement typecheck
   pnpm ai:check
@@ -166,22 +203,25 @@ Results:
   PASS — strict Engagement types, repository memory, zero staged secrets,
   formatting and staged lint.
 
-PR57 INITIAL REVIEW AND PENDING RELEASE EVIDENCE
+PR57 REVIEW AND PENDING RELEASE EVIDENCE
 
 - Item66 is released through PR56 squash main `98deb52` and exact-main run
   `33448911764`.
 - PR57 initial review discussions `3899340521` and `3899340535` identified the
   owner-local measurement and self-asserted semantic labels. Corrected source
-  `e0f5e27`, tree `da9b02b`, addresses both. Its corrected 73/73 affected gate
-  passes; publication, protected CI, discussion resolution and confirmation
-  remain.
-- Publish the correction once, require protected CI and one confirmation review,
-  merge and confirm exact-main CI before
+  `e0f5e27`, tree `da9b02b`, addresses both. Published evidence head `aca2558`
+  entered protected run `33456003304`; attempts3 and4 exposed the repeatable
+  post-restart endpoint boundary. Recovery source `c5ae760`, tree `11b11c2`,
+  passes the repeated runtime and final 73/73 affected gate. Its evidence
+  checkpoint, new protected CI, discussion resolution and confirmation remain.
+- Publish the new checkpoint once, require protected CI and one confirmation
+  review, merge and confirm exact-main CI before
   declaring P13-R07/R08/R09 or Phase13 verified/released.
 
 ROLLBACK
 
-Revert corrected source commit e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0 and
-its evidence checkpoint. No schema, migration, event, retained media or durable
-data change exists. The instrumentation overlay is opt-in; fixtures own only
-exact random-name disposable projects and clear only their scoped Catalog cache.
+Revert restart recovery source c5ae76077cb981ccaf5a98c6e41dc47cbd2d67d7,
+federated source e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0 and their evidence
+checkpoint. No schema, migration, event, retained media or durable data change
+exists. The instrumentation overlay is opt-in; fixtures own only exact
+random-name disposable projects and clear only their scoped Catalog cache.
