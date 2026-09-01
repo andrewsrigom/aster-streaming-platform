@@ -127,8 +127,14 @@ export const CAPABILITY_INDEX_ROWS = [
         "../specs/phase-13-graphql-performance-security.md#p13-r06",
         "../specs/phase-13-graphql-performance-security.md#p13-r07",
       ],
-      Implementation: ["../../apps/router/src/demand.ts"],
-      "Adverse test": ["../../apps/router/test/demand.test.ts"],
+      Implementation: [
+        "../../apps/router/src/demand.ts",
+        "../../services/catalog/src/transport/catalog-schema.ts",
+      ],
+      "Adverse test": [
+        "../../apps/router/test/demand.test.ts",
+        "../../tools/graphql-query-count-proof.test.mjs",
+      ],
       Evidence: ["../../evidence/phase-13/release.md"],
       Operations: ["../../apps/router/README.md"],
     },
@@ -264,6 +270,7 @@ interface MarkdownVisibilityState {
   fence: { character: "`" | "~"; length: number } | undefined;
   htmlComment: boolean;
   htmlTag: string | undefined;
+  htmlUntilBlank: boolean;
 }
 
 const RAW_HTML_BLOCK_TAGS = new Set([
@@ -394,6 +401,7 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
     fence: undefined,
     htmlComment: false,
     htmlTag: undefined,
+    htmlUntilBlank: false,
   };
   return lines.map((line) => {
     if (state.fence) {
@@ -408,6 +416,12 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
     }
 
     const uncommented = withoutHtmlComments(line, state);
+    if (state.htmlUntilBlank) {
+      if (!uncommented.trim()) {
+        state.htmlUntilBlank = false;
+      }
+      return "";
+    }
     if (state.htmlTag) {
       const closing = new RegExp(`</${state.htmlTag}\\s*>`, "iu");
       if (closing.test(uncommented)) {
@@ -421,6 +435,11 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
       if (!new RegExp(`</${htmlTag}\\s*>`, "iu").test(uncommented)) {
         state.htmlTag = htmlTag;
       }
+      return "";
+    }
+
+    if (/^ {0,3}<\/?[A-Za-z][A-Za-z0-9-]*(?:\s+[^<>]*)?\/?>\s*$/u.test(uncommented)) {
+      state.htmlUntilBlank = true;
       return "";
     }
 

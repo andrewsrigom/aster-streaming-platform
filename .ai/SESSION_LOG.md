@@ -89,6 +89,16 @@ full snapshot through the archival checkpoint remains in
   documentation tests pass21/21 and the affected gate passes15/15.
 - Correction source `c7c9c50`, tree `e65dbc0`, is frozen without product
   runtime or deployment changes.
+- Confirmation on evidence head `253756c` completed at
+  `2026-09-01T13:09:32Z` and opened discussions
+  `3904407727`/`3904407741`: arbitrary CommonMark type-7 HTML could hide the
+  matrix, and the Router row did not substantiate P13-R07 DataLoader/query-count
+  behavior.
+- The accepted working correction tracks arbitrary standalone HTML blocks and
+  adds the Catalog request DataLoader plus federated query-count test to the
+  Router destination sequence. Focused boundary tests pass38/38; the affected
+  documentation tests pass22/22 and the affected gate passes15/15, including101
+  platform tests. Source freeze remains pending.
 
 ### Evidence
 
@@ -103,10 +113,9 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish the existing correction evidence checkpoint without amending source
-  `c7c9c50`, resolve both discussions and require one blocker-boundary
-  confirmation. Then merge and complete exact-main verification before
-  activating P14-R15.
+- Freeze and publish the two-finding correction, resolve both discussions and
+  require one blocker-boundary confirmation. Then merge and complete exact-main
+  verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

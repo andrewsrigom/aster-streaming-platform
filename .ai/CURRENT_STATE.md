@@ -125,7 +125,15 @@ could retain command text without executing it. The accepted working correction
 tracks raw HTML blocks and validates complete standalone Node.js/test steps.
 Focused boundary tests pass37/37, documentation tests pass21/21 and the affected
 gate passes15/15. Correction source `c7c9c50`, tree `e65dbc0`, is frozen;
-protected publication remains pending.
+protected publication began on evidence head `253756c`. Its confirmation
+completed at `2026-09-01T13:09:32Z` and opened discussions
+`3904407727`/`3904407741`: an arbitrary type-7 HTML block could hide the matrix,
+and the Router row did not connect P13-R07 to DataLoader/query-count proof. The
+accepted working correction tracks arbitrary standalone HTML tags through the
+blank-line boundary and adds the Catalog DataLoader plus federated query-count
+test to the exact Router destination sequence. Focused boundary tests pass38/38;
+documentation tests pass22/22 and the affected gate passes15/15, including101
+platform tests. Source freeze and protected publication remain pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

@@ -367,6 +367,27 @@ Correction source `c7c9c50fe65a011438c533c8ff3434c3b3e7eb09`, tree
 standalone-step correction without changing product runtime or deployment
 behavior.
 
+Confirmation on evidence head `253756c758c83e550db1d34ee94e85cc47c8b9ca`
+completed at `2026-09-01T13:09:32Z` and opened two findings:
+
+- discussion `3904407727` found that an arbitrary standalone `<span>` tag starts
+  a CommonMark type-7 HTML block until the next blank line, while the parser
+  only tracked a named tag set;
+- discussion `3904407741` found that the Router row listed P13-R07 but linked
+  only demand-control source/tests rather than a request-scoped DataLoader and
+  query-count proof.
+
+The findings are accepted for one batch. Visibility state now treats any
+standalone complete HTML tag as a raw block through the blank-line boundary,
+while named raw containers remain active through their closing tag. The Router
+row and its reviewed destination sequence add the Catalog request-scoped
+DataLoader and the federated query-count proof alongside demand controls.
+Focused boundary tests pass38/38; documentation validation covers1,625 links
+with zero violations, and documentation tests pass22/22. The affected gate
+passes15/15, including101 platform tests; TypeScript, focused lint and diff
+validation also pass. Correction freeze and protected publication remain
+pending.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory

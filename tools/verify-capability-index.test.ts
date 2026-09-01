@@ -144,6 +144,19 @@ test("rejects a capability table inside a raw HTML block", () => {
   assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
 });
 
+test("rejects a capability table inside an arbitrary CommonMark HTML block", () => {
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  const lastRow = source.split("\n").find((line) => line.startsWith("| repository-workflows |"));
+  assert.ok(lastRow);
+  const hidden = source
+    .replace(header, `<span>\n${header}`)
+    .replace(lastRow, `${lastRow}\n</span>`);
+  const report = analyzeCapabilityIndex(hidden);
+  assert.equal(report.rows, 0);
+  assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
 test("reads the canonical path from an explicit repository root", async (context) => {
   const root = await mkdtemp(join(tmpdir(), "aster-capability-index-"));
   context.after(async () => rm(root, { force: true, recursive: true }));

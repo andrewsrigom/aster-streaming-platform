@@ -66,11 +66,14 @@ file and anchor exists.
 - Existing but unrelated repository links fail when they do not match the
   reviewed requirement, implementation, adverse-test, evidence or operations
   destination for that capability.
+- A row may name multiple representative destinations when one source/test pair
+  cannot substantiate every listed requirement; the exact ordered sequence
+  remains protected.
 - Each capability ID is bound to its reviewed public display name; links and
   owner metadata cannot mask a misleading label.
 - Only a visible Markdown table satisfies capability coverage; rows inside
-  fenced code, HTML comments, raw HTML blocks or four-column indented code are
-  ignored.
+  fenced code, HTML comments, named raw containers, arbitrary CommonMark type-7
+  HTML blocks or four-column indented code are ignored.
 - Documentation-only changes cannot bypass the capability-index verifier or
   its adverse tests in protected CI; the policy parser bounds `governance` at
   the next top-level job rather than a later named job and recognizes only
@@ -95,6 +98,8 @@ file and anchor exists.
 | The complete table is moved into a fence or HTML comment | Treat the public table as missing | Visibility-aware table diagnostic |
 | The complete table is indented as CommonMark code | Treat the public table as missing | Indentation-aware table diagnostic |
 | The complete table is wrapped in a raw HTML block | Treat the public table as missing | HTML-block-aware table diagnostic |
+| An arbitrary complete HTML tag begins a type-7 block around the table | Ignore rows through the CommonMark blank-line boundary | Generic HTML-block diagnostic |
+| A listed requirement lacks a representative implementation or adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
 | A required command is conditional, non-blocking or belongs to a conditional job | Treat the command as absent | Executable-step diagnostic |
 | Required command text exists only inside a here-document or shell structure | Treat the command as absent | Standalone-command diagnostic |
 | Table size or input encoding is invalid | Stop within fixed byte/row limits | Bounded input diagnostic |
@@ -139,7 +144,8 @@ file and anchor exists.
 - Integration: capability-index verifier against the checked-in document
 - Contract: accept exact coverage; reject missing/duplicate/extra rows,
   capability/owner/status drift, missing columns/links, role-swapped
-  destinations, fenced/commented/raw-HTML/indented tables, conditional/
+  destinations, incomplete multi-requirement proof, fenced/commented/raw-HTML/
+  indented tables, conditional/
   non-blocking/commented/printed/environment/here-document-only or isolated
   governance commands, malformed UTF-8 and bounds
 - Browser: not applicable
@@ -151,9 +157,10 @@ file and anchor exists.
 - Commands: focused Node.js test, `pnpm docs:check`, `pnpm docs:test`,
   `pnpm ai:check`, `pnpm check:changed`
 - Raw artifact path: `evidence/phase-14/README.md`
-- Acceptance result: prior protected full gates pass and the two latest
-  public/governance findings pass local correction checks; protected
-  acceptance, merge and exact-main acceptance remain pending
+- Acceptance result: prior protected full gates pass; the latest
+  public-rendering and traceability correction passes focused tests38/38,
+  documentation tests22/22 and the affected gate15/15. Source freeze,
+  protected acceptance, merge and exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff
