@@ -222,6 +222,20 @@ export function validateWorkflowPolicy(
     /package-manager-cache:\s*false/u,
     "implicit setup-node caching must be disabled",
   );
+  const governanceJob =
+    source.match(/\n {2}governance:\n(?<job>[\s\S]*?)\n {2}quality:\n/u)?.groups?.["job"] ?? "";
+  for (const [pattern, detail] of [
+    [
+      /node \.\/tools\/verify-capability-index\.ts/u,
+      "capability-index check is required in the always-run governance job",
+    ],
+    [
+      /\.\/tools\/verify-capability-index\.test\.ts/u,
+      "capability-index policy tests are required in the always-run governance job",
+    ],
+  ] as const) {
+    addRequirement(violations, file, governanceJob, "commands", pattern, detail);
+  }
   for (const [pattern, detail] of [
     [/node \.\/tools\/verify-ai-state\.ts/u, "repository-memory check is required"],
     [/\.\/tools\/verify-ai-state\.test\.ts/u, "repository-memory policy tests are required"],

@@ -58,7 +58,9 @@ jobs:
       - name: Validate repository memory
         run: node ./tools/verify-ai-state.ts
       - name: Validate documentation
-        run: node ./tools/verify-documentation.ts
+        run: |
+          node ./tools/verify-documentation.ts
+          node ./tools/verify-capability-index.ts
       - name: Validate public contribution contract
         run: node ./tools/verify-community-files.ts
       - name: Scan tracked files for secrets
@@ -72,6 +74,7 @@ jobs:
           node --test
           ./tools/verify-ai-state.test.ts
           ./tools/verify-documentation.test.ts
+          ./tools/verify-capability-index.test.ts
           ./tools/verify-community-files.test.ts
           ./tools/scan-secrets.test.ts
           ./tools/classify-ci-change.test.ts

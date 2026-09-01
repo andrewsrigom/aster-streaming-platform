@@ -266,6 +266,25 @@ test("rejects a missing public contribution check", async () => {
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "commands"));
 });
 
+test("docs-only CI cannot bypass capability-index validation", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const requiredCommand of [
+    "node ./tools/verify-capability-index.ts",
+    "./tools/verify-capability-index.test.ts",
+  ] as const) {
+    assert.ok(source.includes(requiredCommand), requiredCommand);
+    const movedOutsideGovernance = source
+      .replace(requiredCommand, "true")
+      .replace("  quality:\n", `  quality:\n    # ${requiredCommand}\n`);
+    assert.ok(
+      validateWorkflowPolicy(movedOutsideGovernance).some(
+        ({ detail, rule }) => rule === "commands" && detail.includes("capability-index"),
+      ),
+      requiredCommand,
+    );
+  }
+});
+
 test("rejects missing or unbounded Docker-only build and metric verification", async () => {
   const source = await readFile(workflowPath, "utf8");
   for (const [before, after] of [

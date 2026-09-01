@@ -35,15 +35,18 @@ the five bounded contexts plus Router/GraphQL, Web/accessibility, media,
 resilience, observability and repository workflows. Each row uses explicit
 domain vocabulary and repository-relative links.
 
-Add a dependency-free verifier with focused tests. It requires the exact
-capability IDs, authoritative owner and status vocabulary, the complete mapping
-columns and at least one Markdown link per traceability cell. Existing
-`docs:check` continues to prove that every linked file and anchor exists.
+Add a dependency-free verifier with focused tests and execute both in the
+always-required governance job, including for documentation-only changes. It
+requires the exact capability IDs, authoritative owner and status vocabulary,
+the complete mapping columns and at least one Markdown link per traceability
+cell. Existing `docs:check` continues to prove that every linked file and anchor
+exists.
 
 ## Boundaries
 
 - Owning context: repository documentation and verification tooling
-- Affected services/packages: root documentation scripts only
+- Affected services/packages: root documentation scripts and protected CI
+  governance job only
 - Authoritative data: phase specifications, source, tests, evidence and
   operations documents remain authoritative; the index is navigation
 - Read models/caches: none
@@ -60,6 +63,8 @@ columns and at least one Markdown link per traceability cell. Existing
   vocabulary and does not promote hosted P14-R01–R12 work.
 - Missing, duplicate, extra or malformed capability rows fail closed with
   bounded deterministic diagnostics.
+- Documentation-only changes cannot bypass the capability-index verifier or
+  its adverse tests in protected CI.
 - No product behavior, schema, persistence, event, cache, media or deployment
   configuration changes.
 
@@ -71,6 +76,7 @@ columns and at least one Markdown link per traceability cell. Existing
 | Unknown row or owner/status drift appears | Reject the index before publication | Finite verifier diagnostic |
 | A traceability column lacks a Markdown link | Reject the row before the general link scan | Column-specific diagnostic |
 | A linked path or anchor disappears | Existing documentation validation fails | Broken-link or missing-anchor diagnostic |
+| A later workflow edit removes the index check or its tests | CI policy tests fail before protected acceptance | Command-specific policy diagnostic |
 | Table size or input encoding is invalid | Stop within fixed byte/row limits | Bounded input diagnostic |
 
 ## Data and contracts
@@ -80,7 +86,7 @@ columns and at least one Markdown link per traceability cell. Existing
 - Events: none
 - Cache: none
 - Compatibility: adds one public navigation document and extends the existing
-  `docs:check` contract
+  `docs:check` plus always-required protected governance contracts
 - Retention/deletion: no product data or evidence deletion
 
 ## Security and privacy
@@ -99,7 +105,9 @@ columns and at least one Markdown link per traceability cell. Existing
    operations paths for all eleven required capability IDs.
 2. Define the compact capability-index table and status/owner vocabulary.
 3. Implement the bounded dependency-free verifier and focused tests.
-4. Add the verifier to `docs:check`/`docs:test` and relevant file maps.
+4. Add the verifier to `docs:check`/`docs:test`, the always-required governance
+   job and relevant file maps; make CI policy fail if either protected command
+   disappears.
 5. Run focused verifier tests, documentation/repository-memory checks and the
    changed-scope candidate gate.
 6. Publish one candidate, complete review, merge and exact-main acceptance.
