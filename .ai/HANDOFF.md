@@ -71,17 +71,22 @@ path/anchor validity to the existing documentation validator.
   the next top-level job and requires the exact reviewed destination sequence
   for every capability/role pair. Focused tests pass33/33, documentation tests
   pass17/17 and the changed-scope gate passes15/15.
+- Evidence head `2200bcd`, tree `dae7665`, passed protected run `33503123616`,
+  including the always-run governance proof, every owner runtime, the
+  Docker/browser journey, all three diagnostic scenarios and exact cleanup.
+- Discussions `3903615478`/`3903615489` are resolved. Final blocker-boundary
+  confirmation completed on exact head `2200bcd` at
+  `2026-09-01T11:55:49Z` without a new finding. All five PR60 discussions are
+  resolved.
 
 ## Exact next actions
 
-1. Record and publish the current correction evidence without amending source
-   `6d17f13`.
-2. Resolve discussions `3903615478`/`3903615489` after the correction is
-   visible, then wait for protected CI on the exact evidence head.
-3. Request one further blocker-boundary confirmation on the corrected head;
-   this extra round is permitted because both findings changed the protected
-   CI/public traceability contract.
-4. Merge the accepted candidate, verify exact-main CI and close item69 before
+1. Commit and publish the final immutable protected-result/review record without
+   amending source `6d17f13` or duplicating the already recorded checkpoint.
+2. Wait for the always-required documentation-only checks on that result
+   checkpoint; no further review round is permitted without a new blocking
+   public, security, data or availability boundary.
+3. Merge the accepted candidate, verify exact-main CI and close item69 before
    activating item70/P14-R15.
 
 ## Execution boundary

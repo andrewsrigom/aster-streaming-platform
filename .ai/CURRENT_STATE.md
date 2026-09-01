@@ -61,8 +61,8 @@ documentation-only change; CI policy fails if either command moves outside that
 job. The corrected changed-scope gate passes15/15 tasks, including101
 platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
 behavior changed, so heavyweight PostgreSQL, browser, media and Docker journey
-evidence remains applicable. Protected publication, review, merge and
-exact-main acceptance remain pending.
+evidence remains applicable. Protected acceptance and final confirmation pass;
+the result checkpoint, merge and exact-main acceptance remain pending.
 
 Correction source `6d17f13eaffd3c2c3243cbd7f983bd066afd90a2`, tree
 `37ded461d71b2e23ea5197650f879c94888b3b04`, is the current local candidate
@@ -86,8 +86,13 @@ diagnostic scenarios and scoped cleanup. Its confirmation opened discussions
 `3903615478`/`3903615489` for an over-broad governance-job match and
 role-agnostic repository links. Current correction `6d17f13`, tree `37ded46`,
 bounds the job at the next top-level key, binds exact per-role destinations and
-passes focused tests33/33 plus the local gate15/15. Publication and protected
-confirmation remain pending.
+passes focused tests33/33 plus the local gate15/15. Evidence head `2200bcd`,
+tree `dae7665`, passed protected run `33503123616`, including all owner
+runtimes, the Docker/browser journey, all three diagnostic scenarios and exact
+cleanup. Discussions `3903615478`/`3903615489` are resolved. Final
+blocker-boundary confirmation completed on that exact head at
+`2026-09-01T11:55:49Z` without a new finding; all five PR60 discussions are
+resolved. Merge and exact-main acceptance remain pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

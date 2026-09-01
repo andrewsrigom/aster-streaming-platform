@@ -246,9 +246,20 @@ the next top-level job and binds every capability/role pair to its reviewed
 destination sequence. Regression tests insert the skipped intermediate job and
 swap real Requirement, Implementation, Adverse test, Evidence and Operations
 destinations. Focused policy/index tests pass33/33, documentation tests pass
-17/17 and the repeated changed-scope gate passes15/15 tasks. Publication,
-protected acceptance and one further blocker-boundary confirmation remain
-pending because both findings change the protected/public contract.
+17/17 and the repeated changed-scope gate passes15/15 tasks.
+
+Evidence head `2200bcdc837b9e97ebf6b1e17fd84865d43b6032`, tree
+`dae7665d34441890d2337ea5245e60ac66d85ecc`, passed protected run
+`33503123616`. The always-run documentation/security job exercised the exact
+capability verifier and its adverse tests. Source quality, every owner runtime,
+the generated-media path, Docker/browser journey, dependency audit, all three
+injected diagnostic scenarios, exact scoped cleanup and the aggregate gate
+passed. Discussions `3903615478` and `3903615489` are resolved.
+
+The permitted final blocker-boundary confirmation completed on that exact head
+at `2026-09-01T11:55:49Z` without a new finding. All five PR60 review
+discussions are resolved. The final result checkpoint, merge and exact-main
+acceptance remain pending.
 
 ## Planned evidence
 

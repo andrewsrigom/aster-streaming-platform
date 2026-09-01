@@ -47,6 +47,12 @@ full snapshot through the archival checkpoint remains in
   Correction `6d17f13`, tree `37ded46`, bounds the job structurally and binds
   exact reviewed per-role destinations. Focused tests pass33/33,
   documentation tests pass17/17 and the changed-scope gate passes15/15.
+- Evidence head `2200bcd`, tree `dae7665`, passed protected run `33503123616`,
+  including every owner runtime, the Docker/browser journey, all three
+  diagnostic scenarios and exact cleanup. Both discussions are resolved.
+- Final blocker-boundary confirmation completed on exact head `2200bcd` at
+  `2026-09-01T11:55:49Z` without a new finding. All five PR60 discussions are
+  resolved.
 
 ### Evidence
 
@@ -61,10 +67,9 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish the current correction evidence, resolve discussions
-  `3903615478`/`3903615489`, wait for protected CI and request one further
-  blocker-boundary confirmation. Then merge and complete exact-main
-  verification before activating P14-R15.
+- Publish one final result checkpoint containing only the immutable protected
+  run and review record. After its documentation-only checks pass, merge and
+  complete exact-main verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 
