@@ -282,9 +282,17 @@ predicate and timing bounds while applying Tempo's supported
 and affected73/73 with60 cached in62.328 seconds pass. Evidence head `a7c0ae6`,
 tree `267ab80`, passed protected run `33480268553`, including the corrected
 diagnostic exercise, exact cleanup, every owner runtime, Docker-only playable
-demo and aggregate protection. Publish the result, require its exact-head gate,
-resolve discussion `3900877477`, complete the permitted exact-candidate
-confirmation and release.
+demo and aggregate protection. Documentation head `c195a1d`, tree `a028aa1`,
+passed protected run `33481864676`, and all existing discussions were resolved.
+The permitted confirmation opened discussion `3901909548`: both federated
+runners projected observations onto known owner-budget keys before strict
+validation. Source `a99b3af`, tree `dc84bbc`, now compares the complete observed
+owner set, removes post-observation exclusions and leaves only the shared SQL's
+explicitly fingerprinted background statements filtered. Focused proof5/5,
+strict Engagement build, both full federated runtimes and affected73/73 with55
+cached in65.919 seconds pass with cleanup0. Publish one evidence checkpoint,
+require exact-head CI, resolve the discussion, complete one final corrected-
+candidate confirmation and release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

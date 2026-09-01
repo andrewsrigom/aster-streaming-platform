@@ -4,6 +4,34 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-01 — PR57 exact owner-set correction
+
+### Completed
+
+- Documentation head `c195a1d`, tree `a028aa1`, passed protected run
+  `33481864676`; all prior discussions were resolved. The permitted confirmation
+  opened discussion `3901909548` because both federated runners projected the
+  observed owner map onto known budget keys before strict validation.
+- Source `a99b3af`, tree `dc84bbc`, passes the complete observed owner set into
+  exact comparison, removes post-observation exclusions and retains only the
+  shared SQL's explicit background fingerprints. Focused proof5/5 and strict
+  Engagement build pass.
+- Discovery repeats TitleDetail2, Search5 and Home7 with ten distinct titles,
+  recovery and cleanup0 in101.498 seconds. Engagement repeats
+  ContinueWatching7 in88.033 ms, the event/outage suite and cleanup0. The
+  affected gate passes73/73 with55 cached in65.919 seconds.
+
+### Evidence
+
+- Phase13 index, execution/query report and raw JSONL record the protected
+  finding, exact source/tree and both complete local runtimes.
+
+### Next action
+
+- Publish one evidence checkpoint, require exact-head CI, resolve discussion
+  `3901909548`, request one final corrected-candidate confirmation and complete
+  merge/exact-main acceptance.
+
 ## 2026-09-01 — PR57 corrected diagnostic protected acceptance
 
 ### Completed

@@ -241,8 +241,11 @@ closing candidate derives audit semantics from owner schemas, exact operation
 policy and implementation contracts during every composition. Exact documents
 through Router record bounded per-owner PostgreSQL counts for home, title,
 continue-watching and search, and map12 owner-side abuse cases across all five
-contexts. It remains unreleased until PR57's protected, confirmation, merge and
-exact-main gates pass.
+contexts. Measurement compares the complete observed owner set with the exact
+operation budget. Only statements matching the shared SQL's named readiness or
+fixture-background fingerprints are removed before observation; no runner may
+project the observation onto expected owners. It remains unreleased until
+PR57's protected, confirmation, merge and exact-main gates pass.
 
 ## Schema evolution
 

@@ -391,7 +391,8 @@ scenario, dependency, outcome or incomplete result.
   The local correction passes the complete observed owner map into the strict
   comparison, removes the exclusion field and retains only the SQL's explicitly
   named background fingerprints. Focused proof5/5 and strict Engagement build
-  pass. Discovery repeats TitleDetail2, Search5 and Home7 with ten distinct
+  pass. Source `a99b3af`, tree `dc84bbc`, records the correction. Discovery
+  repeats TitleDetail2, Search5 and Home7 with ten distinct
   titles, recovery and cleanup0 in101.498 seconds. Engagement repeats
   ContinueWatching7 in88.033 ms plus its event/outage suite and cleanup0. The
   affected gate passes73/73 with55 cached in65.919 seconds.

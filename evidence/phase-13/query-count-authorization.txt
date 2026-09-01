@@ -19,8 +19,10 @@ Final typed-contract source commit: 1ec01c320193e558661520db0303d4f37ecf76f4
 Final typed-contract source tree: f27a9f85fce67f5372685fe9a10e37672b7dae99
 Diagnostic ordering source commit: b2c77a8de402552881a101665723a19bff3f8760
 Diagnostic ordering source tree: a0b091c0ac8bde4d7f7f25d4db6f2e24b5df10b1
+Exact owner-set source commit: a99b3af5212e4fb967ed41230c3ca59fa394cca7
+Exact owner-set source tree: dc84bbc4cf63b0e8ce977a8f90fbb296f9f6903e
 
-FINAL LOCAL CANDIDATE (PR57 OPEN; DIAGNOSTIC CORRECTION NOT YET PUBLISHED OR RELEASED)
+FINAL LOCAL CANDIDATE (PR57 OPEN; EXACT OWNER-SET CORRECTION NOT YET PUBLISHED OR RELEASED)
 
 EXECUTION-PATH AUDIT
 
@@ -525,10 +527,53 @@ Discovery and the Docker-only playable demo in17m37s. Classification, dependency
 review, documentation/security and aggregate protection also passed. The run
 started 2026-09-01T07:02:40Z and completed 2026-09-01T07:20:34Z.
 
-- Publish this protected result once, require its exact-head gate, resolve
-  discussion 3900877477, run the permitted exact-candidate confirmation, then
-  merge and confirm exact-main CI before declaring P13-R07/R08/R09 or Phase13
-  released.
+- Documentation head c195a1db75f194fb3369a44401d9adf7cbef02f4,
+  tree a028aa1232eb8f6cb5b0c432a5f53494938d6901, passed protected run
+  33481864676. All existing discussions were resolved before the permitted
+  confirmation.
+
+EXACT OWNER-SET CORRECTION
+
+Confirmation discussion 3901909548 found that the Discovery and Engagement
+runners projected the observed database-owner map onto the operation budget's
+known keys before validation. The shared assertion rejected mismatched owner
+sets, but that narrowing prevented it from seeing a newly participating owner
+and could undercount the total.
+
+Source a99b3af5212e4fb967ed41230c3ca59fa394cca7, tree
+dc84bbc4cf63b0e8ce977a8f90fbb296f9f6903e, passes the complete observed owner
+map into exact comparison. Engagement independently compares the sorted
+observed and expected owner sets before summing them. Both runners remove the
+post-observation exclusion field. The shared SQL remains responsible for the
+only exclusions and names their readiness and fixture-background statement
+fingerprints explicitly.
+
+Commands:
+  node --test tools/graphql-query-count-proof.test.mjs
+  pnpm --filter @aster/engagement build
+  pnpm discovery:runtime
+  pnpm engagement:runtime
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm check:changed
+Results:
+  PASS — focused query proof5/5 and strict Engagement build. Discovery observed
+  the complete owner maps at TitleDetail2/Catalog2 in40.123 ms,
+  Search5/Catalog2+Discovery3 in61.441 ms and
+  Home7/Catalog2+Discovery5 in79.513 ms; Search and Home each hydrated ten
+  distinct titles. Projection covered10 titles/20 documents, recovery needed
+  one attempt in63.978 ms and cleanup was0 for project
+  aster-discovery-proof-b05efaf3-0935-49b3-9058-0efe245ce5ab; total runtime was
+  101.498 seconds.
+  PASS — Engagement observed the complete Catalog3/Engagement1/Identity3 map
+  for ContinueWatching7 in88.033 ms, passed its event, backlog, outage,
+  recovery and shutdown sequence, did not touch retained runtime and cleaned
+  project aster-engagement-proof-d4792eb8-5f11-4010-9430-bffaa71bf013 to0.
+  PASS — affected gate73/73 with55 cached in65.919 seconds.
+
+- Publish one evidence checkpoint for this exact source, require protected CI,
+  reply to and resolve discussion 3901909548, run one final corrected-candidate
+  confirmation, then merge and confirm exact-main CI before declaring
+  P13-R07/R08/R09 or Phase13 released.
 
 ROLLBACK
 

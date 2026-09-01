@@ -355,8 +355,15 @@ tests14/14, a complete local three-scenario run and affected73/73 with60 cached
 in62.328 seconds pass. Evidence head `a7c0ae6`, tree `267ab80`, passed protected
 run `33480268553`: the corrected complete diagnostic exercise, exact cleanup,
 every owner runtime, Docker-only playable demo and aggregate protection passed.
-Protected-result publication, exact-head gate, discussion resolution, permitted
-exact-candidate confirmation and release remain.
+Documentation head `c195a1d`, tree `a028aa1`, passed protected run
+`33481864676`, and all existing discussions were resolved. The permitted
+confirmation opened discussion `3901909548`: both federated runners narrowed
+observations to expected owners before validation. Source `a99b3af`, tree
+`dc84bbc`, validates the complete observed owner set and removes the post-
+observation exclusion field. Focused proof5/5, strict Engagement build, both
+complete federated runtimes and affected73/73 with55 cached in65.919 seconds
+pass with cleanup0. Protected acceptance, discussion resolution, one final
+corrected-candidate confirmation and release remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -919,16 +926,18 @@ remediation plus the derived projection-lease assertion. Evidence head `35d46d9`
 passed protected run `33475401067`. Later protected run `33476967426` exposed a
 P12-R10 recent-store ordering defect; source `b2c77a8` passes focused14/14, one
 complete local diagnostic runtime, affected73/73 and protected run
-`33480268553`. Protected-result exact-head gate, exact-candidate confirmation
-and release remain.
+`33480268553`. Documentation head `c195a1d` passed run `33481864676`; the
+resulting confirmation exposed observed-owner projection. Exact-owner-set source
+`a99b3af` passes focused5/5, both full federated runtimes and affected73/73.
+Its protected, discussion, final confirmation and release gates remain.
 Phase14 capacity validation and hosted deployment remain planned.
 
 ## Next outcome
 
-For P13-R07/P13-R08/P13-R09 item67, publish protected run `33480268553`, require
-the evidence head's exact protected CI, resolve discussion `3900877477`, request
-the single permitted exact-candidate confirmation, squash merge and verify
-exact-main CI. Then close Phase13 and activate the newly documented
+For P13-R07/P13-R08/P13-R09 item67, publish one evidence checkpoint containing
+exact-owner-set source `a99b3af`, require exact protected CI, resolve discussion
+`3901909548`, request one final corrected-candidate confirmation, squash merge
+and verify exact-main CI. Then close Phase13 and activate the newly documented
 reference/readability direction from clean main; hosted deployment is not its
 immediate objective.
 Inspect the exact historical interrupted Phase12 project only when that same
