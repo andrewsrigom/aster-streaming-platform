@@ -25,6 +25,12 @@ full snapshot through the archival checkpoint remains in
   documents and eleven capability rows. The final changed-scope gate passes
   13/13 tasks after building all17 packages needed by type-aware lint in this
   fresh worktree.
+- Evidence head `136def8`, tree `58e640d`, passed protected run
+  `33498081610`. Initial review discussions `3903242620`/`3903242629` found an
+  extended status label and a stale already-completed commit instruction.
+- Correction `845933f`, tree `73b5487`, uses canonical `released`, keeps
+  local/non-hosted qualification in prose, advances from the existing
+  checkpoint and passes the repeated local gate13/13.
 
 ### Evidence
 

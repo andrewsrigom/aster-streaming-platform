@@ -169,6 +169,30 @@ Existing PostgreSQL, browser, media and Docker journey evidence remains
 applicable. Protected CI, review, merge and exact-main acceptance remain
 pending.
 
+### Initial protected result and batched review remediation
+
+Evidence checkpoint `136def8e12116cf0e498d7b28d58f2ece3c7087b`, tree
+`58e640dee5bc42db03f94ebb49261ffcc6f7b602`, passed protected run
+`33498081610`. Dependency review, documentation/security, source quality, the
+Local platform, every owner runtime, the Docker-only playable demo and the
+stable aggregate all passed.
+
+Initial review completed on that exact head at
+`2026-09-01T10:37:36Z` and opened two findings:
+
+- discussion `3903242620` found that `released locally` extended the canonical
+  maturity vocabulary instead of using `released` with local/hosted scope in
+  surrounding prose;
+- discussion `3903242629` found that the session log asked a resuming agent to
+  commit source/evidence already present in the checkpoint.
+
+Source `845933f4c396b9f81a4cff3d5e1b6a530aec7482`, tree
+`73b5487efe3a66780e00eb146ddb0a3b6f9cc9a0`, uses the exact canonical status,
+keeps the non-hosted qualification explicit, and directs resumption to publish
+the existing checkpoint without a duplicate commit. Focused documentation,
+repository-memory and lint checks pass; the repeated changed-scope gate passes
+13/13 tasks. Protected confirmation remains pending.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory

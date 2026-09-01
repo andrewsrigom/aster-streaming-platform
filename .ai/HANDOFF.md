@@ -49,14 +49,17 @@ path/anchor validity to the existing documentation validator.
   lint in the fresh worktree.
 - Source `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
   `78742f48c2f939b9073f419aaded775be1e58876`, is the coherent local candidate.
+- Evidence head `136def8` passed protected run `33498081610`. Initial review
+  opened discussions `3903242620`/`3903242629`; correction source `845933f`,
+  tree `73b5487`, addresses both and passes the repeated local gate13/13.
 
 ## Exact next actions
 
-1. Publish the commit that contains this evidence checkpoint; do not create an
+1. Publish the commit that contains the remediation evidence; do not create an
    empty or duplicate evidence-only commit.
-2. Wait for protected CI on that exact head.
-3. Complete the initial review, batch any material remediation and run one
-   confirmation review when required.
+2. Wait for protected CI on that exact head and resolve both addressed review
+   discussions.
+3. Request one confirmation review on the corrected head.
 4. Merge the accepted candidate, verify exact-main CI and close item69 before
    activating item70/P14-R15.
 
