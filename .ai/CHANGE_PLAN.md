@@ -99,6 +99,8 @@ file and anchor exists.
 | The complete table is indented as CommonMark code | Treat the public table as missing | Indentation-aware table diagnostic |
 | The complete table is wrapped in a raw HTML block | Treat the public table as missing | HTML-block-aware table diagnostic |
 | An arbitrary complete HTML tag begins a type-7 block around the table | Ignore rows through the CommonMark blank-line boundary | Generic HTML-block diagnostic |
+| A processing instruction, declaration or CDATA block wraps the table | Ignore rows through the matching CommonMark end marker | Marker-terminated HTML-block diagnostic |
+| A requirement link keeps its target but mislabels the visible requirement ID | Reject the row before publication | Requirement-label diagnostic |
 | A listed requirement lacks a representative implementation or adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
 | A required command is conditional, non-blocking or belongs to a conditional job | Treat the command as absent | Executable-step diagnostic |
 | Required command text exists only inside a here-document or shell structure | Treat the command as absent | Standalone-command diagnostic |
@@ -144,8 +146,8 @@ file and anchor exists.
 - Integration: capability-index verifier against the checked-in document
 - Contract: accept exact coverage; reject missing/duplicate/extra rows,
   capability/owner/status drift, missing columns/links, role-swapped
-  destinations, incomplete multi-requirement proof, fenced/commented/raw-HTML/
-  indented tables, conditional/
+  destinations, misleading requirement labels, incomplete multi-requirement
+  proof, fenced/commented/raw-HTML/indented tables, conditional/
   non-blocking/commented/printed/environment/here-document-only or isolated
   governance commands, malformed UTF-8 and bounds
 - Browser: not applicable
@@ -157,11 +159,12 @@ file and anchor exists.
 - Commands: focused Node.js test, `pnpm docs:check`, `pnpm docs:test`,
   `pnpm ai:check`, `pnpm check:changed`
 - Raw artifact path: `evidence/phase-14/README.md`
-- Acceptance result: prior protected full gates pass; the latest
-  public-rendering and traceability correction passes focused tests38/38,
-  documentation tests22/22 and the affected gate15/15. Source `51f49bc`, tree
-  `510a0da`, is frozen; protected acceptance, merge and exact-main acceptance
-  remain pending
+- Acceptance result: protected run `33512605098` passes on attempt2 for evidence
+  head `4cfb46c`; its confirmation opened one remaining HTML-visibility and one
+  visible-requirement-label finding. Their working correction passes focused
+  contract tests40/40, documentation tests24/24 and the affected gate15/15;
+  source freeze, protected acceptance, merge and exact-main acceptance remain
+  pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

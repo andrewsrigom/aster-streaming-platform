@@ -111,15 +111,29 @@ full snapshot through the archival checkpoint remains in
 - Correction source `51f49bc845a99ce23c65a12c436c02390ca92083`, tree
   `510a0da0fd67879bb397d22356da34d57ad936b6`, freezes the latest public-rendering
   and traceability correction.
+- Evidence head `4cfb46cb2699406d999ae1294483effa0a64fff2` passed protected
+  run `33512605098` on attempt2. Attempt1 failed one unchanged
+  conditional-immutable storage assertion after earlier scenarios passed and
+  cleaned zero resources; the rerun passed the full source/runtime/Docker/local
+  platform suite.
+- Confirmation completed at `2026-09-01T13:22:12Z` and opened discussions
+  `3904518312`/`3904518324` for the remaining marker-terminated CommonMark HTML
+  block forms and unbound visible requirement labels. The accepted working
+  correction tracks processing-instruction, declaration and CDATA end markers
+  and derives exact visible labels from requirement target anchors. Focused
+  capability tests pass14/14, combined contract tests pass40/40, documentation
+  tests pass24/24 and the affected gate passes15/15, including101 platform
+  tests. Source freeze remains pending.
 - Source `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
   `78742f48c2f939b9073f419aaded775be1e58876`, is recorded in the Phase14
   evidence index.
 
 ### Next action
 
-- Publish the exact two-finding correction evidence, resolve both discussions
-  and require one blocker-boundary confirmation. Then merge and complete
-  exact-main verification before activating P14-R15.
+- Freeze and publish the latest two-finding correction, resolve both discussions
+  and require one blocker-boundary
+  confirmation. Then merge and complete exact-main verification before
+  activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

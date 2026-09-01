@@ -10,7 +10,7 @@ const MAX_LINE_CHARACTERS = 10_000;
 const MAX_ROWS = 50;
 const MAX_CELL_CHARACTERS = 4_000;
 const MAX_DIAGNOSTICS = 100;
-const MARKDOWN_LINK = /\[[^\]\n]+\]\((?<target>[^\s)\n]+)\)/gu;
+const MARKDOWN_LINK = /\[(?<label>[^\]\n]+)\]\((?<target>[^\s)\n]+)\)/gu;
 const SEPARATOR_CELL = /^:?-{3,}:?$/u;
 
 export const CAPABILITY_INDEX_COLUMNS = [
@@ -237,6 +237,7 @@ export type CapabilityIndexRule =
   | "invalid-header"
   | "invalid-link"
   | "invalid-owner"
+  | "invalid-requirement-label"
   | "invalid-row"
   | "invalid-separator"
   | "invalid-status"
@@ -269,6 +270,7 @@ interface ParsedRow {
 interface MarkdownVisibilityState {
   fence: { character: "`" | "~"; length: number } | undefined;
   htmlComment: boolean;
+  htmlEndMarker: ">" | "?>" | "]]>" | undefined;
   htmlTag: string | undefined;
   htmlUntilBlank: boolean;
 }
@@ -364,11 +366,21 @@ function cellsMatch(left: readonly string[], right: readonly string[]): boolean 
   return left.length === right.length && left.every((cell, index) => cell === right[index]);
 }
 
-function markdownLinkTargets(value: string): string[] {
+function markdownLinks(value: string): { label: string; target: string }[] {
   return [...value.matchAll(MARKDOWN_LINK)].flatMap((match) => {
+    const label = match.groups?.["label"];
     const target = match.groups?.["target"];
-    return target ? [target] : [];
+    return label && target ? [{ label, target }] : [];
   });
+}
+
+function markdownLinkTargets(value: string): string[] {
+  return markdownLinks(value).map(({ target }) => target);
+}
+
+function requirementLabel(target: string): string {
+  const anchor = target.split("#", 2)[1];
+  return anchor?.toUpperCase() ?? "";
 }
 
 function withoutHtmlComments(line: string, state: MarkdownVisibilityState): string {
@@ -400,6 +412,7 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
   const state: MarkdownVisibilityState = {
     fence: undefined,
     htmlComment: false,
+    htmlEndMarker: undefined,
     htmlTag: undefined,
     htmlUntilBlank: false,
   };
@@ -415,6 +428,13 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
       return "";
     }
 
+    if (state.htmlEndMarker) {
+      if (line.includes(state.htmlEndMarker)) {
+        state.htmlEndMarker = undefined;
+      }
+      return "";
+    }
+
     const uncommented = withoutHtmlComments(line, state);
     if (state.htmlUntilBlank) {
       if (!uncommented.trim()) {
@@ -426,6 +446,20 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
       const closing = new RegExp(`</${state.htmlTag}\\s*>`, "iu");
       if (closing.test(uncommented)) {
         state.htmlTag = undefined;
+      }
+      return "";
+    }
+
+    const htmlEndMarker = /^ {0,3}<\?/u.test(uncommented)
+      ? "?>"
+      : /^ {0,3}<!\[CDATA\[/u.test(uncommented)
+        ? "]]>"
+        : /^ {0,3}<![A-Z]/u.test(uncommented)
+          ? ">"
+          : undefined;
+    if (htmlEndMarker) {
+      if (!uncommented.includes(htmlEndMarker)) {
+        state.htmlEndMarker = htmlEndMarker;
       }
       return "";
     }
@@ -563,6 +597,15 @@ function validateRow(
         rule: "invalid-link",
       });
     }
+  }
+  const actualRequirementLabels = markdownLinks(row.cells.Requirement).map(({ label }) => label);
+  const expectedRequirementLabels = expected.targets.Requirement.map(requirementLabel);
+  if (!cellsMatch(actualRequirementLabels, expectedRequirementLabels)) {
+    addViolation(violations, {
+      detail: `${id} requirement labels must match their reviewed destinations`,
+      line: row.line,
+      rule: "invalid-requirement-label",
+    });
   }
   if (CAPABILITY_INDEX_ROWS[index]?.id !== id) {
     addViolation(violations, {

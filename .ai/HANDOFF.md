@@ -128,14 +128,27 @@ path/anchor validity to the existing documentation validator.
   tests pass38/38, documentation tests pass22/22 and the affected gate
   passes15/15, including101 platform tests. Correction source `51f49bc`, tree
   `510a0da`, is frozen without product runtime or deployment changes.
+- Evidence head `4cfb46c` passed protected run `33512605098` on attempt2. Its
+  first attempt failed one unchanged conditional-immutable storage assertion
+  after prior integration scenarios passed and cleaned zero resources; the
+  rerun passed the full source/runtime/Docker/platform suite.
+- Confirmation completed at `2026-09-01T13:22:12Z` and opened discussions
+  `3904518312`/`3904518324`: marker-terminated CommonMark HTML blocks could hide
+  the matrix, and visible requirement labels could drift independently of their
+  reviewed destinations.
+- The accepted working correction tracks processing-instruction, declaration
+  and CDATA end markers and binds requirement labels to target anchors. Focused
+  capability tests pass14/14, combined contract tests pass40/40, documentation
+  tests pass24/24 and the affected gate passes15/15, including101 platform
+  tests. Source freeze remains pending.
 
 ## Exact next actions
 
-1. Publish the exact correction evidence checkpoint, resolve discussions
-   `3904407727`/`3904407741` and
-   require protected CI plus one blocker-boundary confirmation because the
-   findings alter the public/traceability contract.
-2. Merge, verify exact-main CI and close item69 before activating
+1. Freeze and publish the correction for discussions
+   `3904518312`/`3904518324`, then resolve both discussions and require protected
+   CI plus one blocker-boundary confirmation.
+2. Merge only after a clean exact-head review, verify exact-main CI and close
+   item69 before activating
    item70/P14-R15.
 
 ## Execution boundary

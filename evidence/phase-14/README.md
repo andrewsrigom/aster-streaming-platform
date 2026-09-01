@@ -391,6 +391,31 @@ validation also pass. Correction source
 without product runtime or deployment changes. Protected publication remains
 pending.
 
+Evidence head `4cfb46cb2699406d999ae1294483effa0a64fff2`, tree
+`61e91ce91b9bcd9eccef95290d2b0e7cee965158`, passed protected run
+`33512605098` in full on attempt2 at `2026-09-01T13:44:21Z`. Attempt1 remains a
+temporal observation rather than accepted evidence: the unchanged Identity
+storage integration reached conditional-immutable assertion `0 !== 1` after
+all earlier scenarios passed, then scoped cleanup reported zero remaining
+resources. The selective rerun passed that scenario, every owner runtime, the
+Docker-only journey, dependency audit and complete local-platform diagnostics.
+
+The confirmation on that exact head completed at `2026-09-01T13:22:12Z` and
+opened two findings:
+
+- discussion `3904518312` found that CommonMark processing-instruction,
+  declaration and CDATA blocks could still hide the public matrix;
+- discussion `3904518324` found that a visible requirement label could drift
+  while retaining its reviewed target.
+
+The findings are accepted for one batch. Visibility state now tracks the exact
+`?>`, `>` and `]]>` end markers, and requirement labels must equal the target
+anchor in canonical uppercase form. Focused capability tests pass14/14,
+combined contract tests pass40/40 and documentation tests pass24/24. The
+affected gate passes15/15, including101 platform tests; TypeScript, lint,
+formatting and diff validation also pass. Correction freeze and protected
+publication remain pending.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory

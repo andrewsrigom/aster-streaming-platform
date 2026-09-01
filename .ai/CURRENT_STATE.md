@@ -134,7 +134,21 @@ blank-line boundary and adds the Catalog DataLoader plus federated query-count
 test to the exact Router destination sequence. Focused boundary tests pass38/38;
 documentation tests pass22/22 and the affected gate passes15/15, including101
 platform tests. Correction source `51f49bc`, tree `510a0da`, is frozen;
-protected publication remains pending.
+protected run `33512605098` passed in full on attempt2 for evidence head
+`4cfb46c`. Attempt1 is retained as a temporal observation: the unchanged
+Identity storage integration reached conditional-immutable assertion `0 !== 1`
+after all earlier scenarios passed and then cleaned zero remaining resources;
+the rerun passed that scenario plus every owner runtime, Docker journey,
+dependency audit and local diagnostic. Confirmation completed at
+`2026-09-01T13:22:12Z` and opened discussions
+`3904518312`/`3904518324`: processing-instruction/declaration/CDATA blocks could
+still hide the table, and visible requirement labels were not bound to their
+reviewed targets. The accepted working correction tracks all three
+marker-terminated block forms and requires the exact requirement label derived
+from each target anchor. Focused capability tests pass14/14; the affected gate,
+the combined contract tests pass40/40, documentation tests pass24/24 and the
+affected gate passes15/15, including101 platform tests. Source freeze and
+protected publication remain pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

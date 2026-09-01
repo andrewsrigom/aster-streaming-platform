@@ -14,7 +14,15 @@ import {
 function validIndex(): string {
   const rows = CAPABILITY_INDEX_ROWS.map(({ capability, id, owner, status, targets }) => {
     const links = (column: keyof typeof targets): string =>
-      targets[column].map((target, index) => `[${column} ${index + 1}](${target})`).join(", ");
+      targets[column]
+        .map((target, index) => {
+          const label =
+            column === "Requirement"
+              ? (target.split("#", 2)[1]?.toUpperCase() ?? "")
+              : `${column} ${index + 1}`;
+          return `[${label}](${target})`;
+        })
+        .join(", ");
     return `| ${id} | ${capability} | ${owner} | ${links("Requirement")} | ${status} | ${links("Implementation")} | ${links("Adverse test")} | ${links("Evidence")} | ${links("Operations")} |`;
   });
   return [
@@ -62,6 +70,17 @@ test("rejects a misleading displayed capability name", () => {
   assert.ok(
     report.violations.some(
       ({ detail, rule }) => rule === "invalid-capability" && detail.includes("identity-profiles"),
+    ),
+  );
+});
+
+test("rejects a misleading displayed requirement label", () => {
+  const source = validIndex().replace("[P13-R07]", "[P99-R99]");
+  const report = analyzeCapabilityIndex(source);
+  assert.ok(
+    report.violations.some(
+      ({ detail, rule }) =>
+        rule === "invalid-requirement-label" && detail.includes("router-graphql"),
     ),
   );
 });
@@ -155,6 +174,22 @@ test("rejects a capability table inside an arbitrary CommonMark HTML block", () 
   const report = analyzeCapabilityIndex(hidden);
   assert.equal(report.rows, 0);
   assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
+test("rejects a capability table inside every marker-terminated CommonMark HTML block", () => {
+  for (const [opening, closing] of [
+    ["<?hide", "?>"],
+    ["<!HIDE", ">"],
+    ["<![CDATA[", "]]>"],
+  ] as const) {
+    const hidden = `# Capability Index\n\n${opening}\n${validIndex()}${closing}\n`;
+    const report = analyzeCapabilityIndex(hidden);
+    assert.equal(report.rows, 0, opening);
+    assert.ok(
+      report.violations.some(({ rule }) => rule === "missing-table"),
+      opening,
+    );
+  }
 });
 
 test("reads the canonical path from an explicit repository root", async (context) => {
