@@ -74,6 +74,12 @@ const containerEndpoint = async (containerId) => {
   assert.equal(endpoints.length, 1, "Discovery proof requires one explicit service endpoint.");
   return endpoints[0];
 };
+const resolveRouterPort = async () => {
+  const endpoint = await compose(["port", "router", "4000"]);
+  const match = /^127\.0\.0\.1:([1-9][0-9]{3,4})$/u.exec(endpoint);
+  assert.ok(match);
+  return Number(match[1]);
+};
 const browseOperation =
   "query Browse($first:Int!,$locale:String!){titles(first:$first){edges{node{id localized(locale:$locale){title}}}}}";
 const knownOperations = await readFile(root + "infra/router/known-operations.graphql", "utf8");
@@ -181,6 +187,19 @@ const isTransientSubrequestFailure = (response) => {
   );
 };
 
+const recoveryTransportCodes = new Set(["ABORT_ERR", "ECONNREFUSED", "ECONNRESET", "EPIPE"]);
+const isTransientRecoveryTransportFailure = (error) =>
+  typeof error === "object" &&
+  error !== null &&
+  "code" in error &&
+  recoveryTransportCodes.has(error.code);
+const waitForRecoveryRetry = async (deadlineAt) => {
+  const delayMs = Math.min(250, Math.max(0, deadlineAt - performance.now()));
+  if (delayMs > 0) {
+    await new Promise((resolve) => globalThis.setTimeout(resolve, delayMs));
+  }
+};
+
 async function waitForDiscoveryRecovery(port, query, expectedGeneration) {
   const startedAt = performance.now();
   const deadlineAt = startedAt + 10_000;
@@ -189,7 +208,16 @@ async function waitForDiscoveryRecovery(port, query, expectedGeneration) {
   while (performance.now() < deadlineAt) {
     attempts += 1;
     const remainingMs = Math.max(1, Math.ceil(deadlineAt - performance.now()));
-    const response = await graphql(port, query, Math.min(1_000, remainingMs));
+    let response;
+    try {
+      response = await graphql(port, query, Math.min(1_000, remainingMs));
+    } catch (error) {
+      if (!isTransientRecoveryTransportFailure(error)) {
+        throw error;
+      }
+      await waitForRecoveryRetry(deadlineAt);
+      continue;
+    }
     const errors = response.body?.errors;
     const generation = response.body?.data?.searchTitles?.connection?.generation;
 
@@ -209,10 +237,7 @@ async function waitForDiscoveryRecovery(port, query, expectedGeneration) {
       throw new Error("Discovery recovery returned an unexpected GraphQL error.");
     }
 
-    const delayMs = Math.min(250, Math.max(0, deadlineAt - performance.now()));
-    if (delayMs > 0) {
-      await new Promise((resolve) => globalThis.setTimeout(resolve, delayMs));
-    }
+    await waitForRecoveryRetry(deadlineAt);
   }
 
   throw new Error("Discovery recovery exceeded its 10-second end-to-end deadline.");
@@ -333,10 +358,7 @@ try {
     excludedActivity: "declared readiness probes and non-participating owner roles",
   });
 
-  const endpoint = await compose(["port", "router", "4000"]);
-  const match = /^127\.0\.0\.1:([1-9][0-9]{3,4})$/u.exec(endpoint);
-  assert.ok(match);
-  const port = Number(match[1]);
+  const port = await resolveRouterPort();
   await postgres(PREPARE_QUERY_COUNT_SQL);
   const titleDetail = await measureOperation(
     port,
@@ -538,6 +560,8 @@ try {
   const discoveryContainerBefore = await compose(["ps", "--quiet", "discovery"]);
   assert.ok(discoveryContainerBefore.length > 0 && !/\s/u.test(discoveryContainerBefore));
   const discoveryEndpointBefore = await containerEndpoint(discoveryContainerBefore);
+  const routerContainerBefore = await compose(["ps", "--quiet", "router"]);
+  assert.ok(routerContainerBefore.length > 0 && !/\s/u.test(routerContainerBefore));
   await compose(["stop", "--timeout", "15", "discovery"], 30_000);
   const browse = await executeGraphql(port, {
     query: browseOperation,
@@ -550,19 +574,52 @@ try {
   emit("discovery_failure_isolation", { routerReady: true, catalogBrowse: true });
 
   stage = "restart";
-  // A stopped-process recovery must not silently become a replacement-endpoint deployment test.
   await compose(
-    ["up", "--no-build", "--no-recreate", "--wait", "--wait-timeout", "90", "discovery", "router"],
+    [
+      "up",
+      "--no-deps",
+      "--no-build",
+      "--no-recreate",
+      "--wait",
+      "--wait-timeout",
+      "90",
+      "discovery",
+    ],
     120_000,
   );
   const discoveryContainerAfter = await compose(["ps", "--quiet", "discovery"]);
   const discoveryEndpointAfter = await containerEndpoint(discoveryContainerAfter);
   assert.equal(discoveryContainerAfter, discoveryContainerBefore);
-  assert.equal(discoveryEndpointAfter, discoveryEndpointBefore);
-  const recovery = await waitForDiscoveryRecovery(port, "Signal", projection.activeGeneration);
+  // Compose may reassign a stopped container's direct IP; restart Router to renew local DNS only.
+  await compose(["restart", "--no-deps", "--timeout", "10", "router"], 30_000);
+  await compose(
+    [
+      "up",
+      "--no-deps",
+      "--no-build",
+      "--no-recreate",
+      "--wait",
+      "--wait-timeout",
+      "90",
+      "discovery",
+      "router",
+    ],
+    120_000,
+  );
+  const routerContainerAfter = await compose(["ps", "--quiet", "router"]);
+  assert.equal(routerContainerAfter, routerContainerBefore);
+  const recoveryPort = await resolveRouterPort();
+  const recovery = await waitForDiscoveryRecovery(
+    recoveryPort,
+    "Signal",
+    projection.activeGeneration,
+  );
   emit("discovery_restart_recovery", {
-    containerIdentityPreserved: true,
-    networkEndpointPreserved: true,
+    discoveryContainerIdentityPreserved: true,
+    discoveryEndpointChanged: discoveryEndpointAfter !== discoveryEndpointBefore,
+    routerContainerIdentityPreserved: true,
+    routerProcessRestarted: true,
+    routerPortChanged: recoveryPort !== port,
     generationPreserved: true,
     searchRecovered: true,
     attempts: recovery.attempts,

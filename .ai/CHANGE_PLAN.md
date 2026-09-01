@@ -43,11 +43,29 @@ runtime passed with the exact preserved generation, one recovery attempt in
 52.555 seconds. Published evidence head `996798b` then entered protected run
 `33460420680`: every job before Discovery passed, but the runtime showed that
 Compose `up` had replaced the stopped service endpoint while the Router retained
-the old direct Compose address for the entire 10-second probe. The proof must
-model a process restart explicitly: reuse the stopped container, assert its
-identity and network endpoint are unchanged, and retain the finite semantic
-recovery probe. Replacement recovery belongs to an orchestrator/service-address
-deployment proof, not this local process-restart assertion.
+the old direct Compose address for the entire 10-second probe. Source `c5b0eca`,
+tree `5dadb0a`, then used `--no-recreate` to distinguish container identity from
+its endpoint; its local runtime and 73/73 gate passed with both preserved.
+Protected run `33462043470` made the cross-engine semantic explicit:
+`--no-recreate` preserved the Discovery container identity, but Docker reassigned
+its direct network address from `172.18.0.4` to `172.18.0.6`. A local Compose
+service restart therefore requires a bounded Router process restart so its DNS
+resolution observes the current endpoint. The proof will assert both container
+identities, restart only the Router process after Discovery is healthy, and then
+apply the unchanged finite generation/search probe. Phase14 must separately
+prove replacement recovery through the selected hosted platform's stable service
+address; this local harness must not claim that deployment behavior.
+The first exact local execution of that coordinated restart reached a healthy
+Router but its host-published port still returned `ECONNREFUSED` on the first
+probe while Docker renewed the forwarding path. The same 10-second end-to-end
+probe may retry only explicit local transport-startup codes (`ECONNREFUSED`,
+`ECONNRESET`, `EPIPE` or the per-attempt `ABORT_ERR`) in addition to Router's
+`SUBREQUEST_HTTP_ERROR`; all semantic mismatches still fail immediately.
+That exact local execution then proved the Router container restart can also
+reassign the proof overlay's ephemeral host port (`127.0.0.1::4000`). The
+harness must resolve and validate the current loopback-only published port after
+the controlled restart instead of probing the pre-restart port. This changes no
+application endpoint or hosted contract.
 
 ## Proposed behavior
 
@@ -107,7 +125,8 @@ matrix.
 | Role or private-credential escalation | Public/foreign caller cannot invoke operator/private path | matrix case/outcome |
 | PostgreSQL fixture or measurement fails | No acceptance claim; exact fixture cleans up | command failure/remaining resources |
 | Background readiness or non-participant traffic enters the count | Exclude only declared probe fingerprints, stop the named non-participant and retain the isolation event | per-owner count/isolation event |
-| Discovery process restart accidentally becomes container replacement | Start with `--no-recreate`, assert container identity and network endpoint are unchanged, then retry only `SUBREQUEST_HTTP_ERROR` inside one finite end-to-end recovery deadline; any other response fails immediately | identity/endpoint preservation, attempt count, duration, generation and cleanup |
+| Discovery process restart keeps identity but Compose reassigns its direct endpoint | Start with `--no-recreate`, assert Discovery identity, restart only the Router process to renew local DNS resolution, assert Router identity, then apply the finite semantic probe | identity preservation, endpoint-change fact, Router restart, attempt count, generation and cleanup |
+| Router restart reassigns the proof's ephemeral host port or health precedes forwarding readiness | Resolve/validate the current loopback port after restart, then retry only the named local transport-startup codes inside the same 10-second end-to-end deadline | port-change fact, attempts, duration and final semantic response |
 | Predecessor PR changes | Rebase this dependent branch and repeat affected gates/evidence | exact base/head |
 
 ## Data and contracts
@@ -149,8 +168,10 @@ matrix.
    classification, prove bounded end-to-end recovery without weakening logical
    response or generation assertions. If Compose replaces the stopped endpoint,
    constrain the harness to the declared process-restart scenario and assert
-   container/endpoint preservation. Then repeat only the affected heavyweight
-   Discovery runtime and candidate gate.
+   container preservation. If Docker reassigns that container's direct endpoint,
+   restart only the Router process and record the local DNS-renewal boundary.
+   Then repeat only the affected heavyweight Discovery runtime and candidate
+   gate. Keep hosted stable-address replacement recovery in P14-R10.
 
 ## Tests
 
