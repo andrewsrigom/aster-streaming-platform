@@ -192,8 +192,9 @@ file and anchor exists.
   opened findings `3905459958`/`3905459969`/`3905459981`/`3905459992`. The
   working correction completes P07-R10/P11-R08 proof routes and closes quoted
   HTML/YAML parser gaps. Focused contracts pass44/44, documentation tests
-  pass28/28 and the affected gate passes15/15. Publication, protected
-  acceptance, merge and exact-main acceptance remain pending
+  pass28/28 and the affected gate passes15/15. Correction source `94b6c45`,
+  tree `f5604e4`, freezes the batch. Publication, protected acceptance, merge
+  and exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

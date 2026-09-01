@@ -519,7 +519,10 @@ documentation tests pass28/28 and documentation validation covers250 documents,
 2,880 headings, 1,628 links, four status claims and eleven rows with zero
 violations. The affected gate passes15/15, including101 platform-policy,39
 CI-policy and13 repository-memory tests. No product runtime or deployment
-behavior changed. Publication remains pending.
+behavior changed. Correction source
+`94b6c453f5ceb9da7731a5c6778d3e520854c091`, tree
+`f5604e41aac98388ab657ba0166f67790a9493b4`, freezes the batch. Publication
+remains pending.
 
 ## Planned evidence
 

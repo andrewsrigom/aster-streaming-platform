@@ -175,7 +175,8 @@ full snapshot through the archival checkpoint remains in
   laboratory/injection proof, quoted-attribute-aware CommonMark visibility and
   quoted unsafe YAML-key recognition. Focused contracts pass44/44,
   documentation tests pass28/28, documentation validation covers1,628 links and
-  the affected gate passes15/15, including101 platform tests.
+  the affected gate passes15/15, including101 platform tests. Correction source
+  `94b6c45`, tree `f5604e4`, freezes the batch.
 
 ### Next action
 

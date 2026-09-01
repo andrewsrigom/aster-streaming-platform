@@ -69,7 +69,10 @@ exact-main acceptance remain pending.
 The current working correction adds the web player/browser proof for P07-R10,
 the failure laboratory/injection proof for P11-R08, quoted-attribute-aware
 CommonMark type-7 visibility and quoted unsafe YAML-key recognition. It passes
-the complete local candidate gate and remains to be frozen and published.
+the complete local candidate gate. Correction source
+`94b6c453f5ceb9da7731a5c6778d3e520854c091`, tree
+`f5604e41aac98388ab657ba0166f67790a9493b4`, freezes the batch and remains to be
+published.
 
 Evidence head `136def8`, tree `58e640d`, passed protected run
 `33498081610`. Initial review discussions `3903242620`/`3903242629` found an
