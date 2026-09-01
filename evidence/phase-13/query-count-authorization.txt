@@ -15,8 +15,10 @@ Federated measurement source commit: e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0
 Federated measurement source tree: da9b02bcdc09d0438762baa299f40d4b93be4c76
 Catalog query-plan source commit: 20b5f27eafe49779bc4ac832a6436c32076d8846
 Catalog query-plan source tree: 700bdc480e9e62a65ee9e111c2e2eeaefc609d73
+Final typed-contract source commit: 1ec01c320193e558661520db0303d4f37ecf76f4
+Final typed-contract source tree: f27a9f85fce67f5372685fe9a10e37672b7dae99
 
-CORRECTED LOCAL CANDIDATE (PR57 OPEN; CORRECTION NOT YET PUBLISHED OR RELEASED)
+FINAL LOCAL CANDIDATE (PR57 OPEN; CORRECTION NOT YET PUBLISHED OR RELEASED)
 
 EXECUTION-PATH AUDIT
 
@@ -371,14 +373,32 @@ Results:
   observations therefore remain applicable and no heavyweight runtime was
   repeated.
 
-- Publish one evidence checkpoint for source 20b5f27, resolve discussion
+Protected run 33468676673 at published head
+65e5dc28e8f59f49a9f793e192ded565838dea86 passed dependency review,
+documentation/security and Local platform, including the unchanged Docker
+runtime. Install and source quality failed because Router lint resolved the
+top-level Catalog package before Catalog build declarations existed.
+
+Final source 1ec01c320193e558661520db0303d4f37ecf76f4, tree
+f27a9f85fce67f5372685fe9a10e37672b7dae99, exposes only
+`@aster/catalog/query-plan`. Its checked-in declaration describes the plan
+shape but duplicates no query values; runtime resolves the compiled owner
+module. A fresh detached checkout at that exact source passed:
+  pnpm check:source
+  PASS — 63/63 tasks, 0 cached, 159.682 seconds.
+The repeated candidate passed:
+  TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm check:changed
+  PASS — 73/73 tasks, 63 cached, 54.731 seconds.
+
+- Publish one evidence checkpoint for source 1ec01c3, resolve discussion
   3900633355 after protected CI, run one final blocker-boundary confirmation,
   then merge and confirm exact-main CI before declaring P13-R07/R08/R09 or
   Phase13 released.
 
 ROLLBACK
 
-Revert Catalog query-plan source 20b5f27eafe49779bc4ac832a6436c32076d8846,
+Revert final typed-contract source 1ec01c320193e558661520db0303d4f37ecf76f4,
+Catalog query-plan source 20b5f27eafe49779bc4ac832a6436c32076d8846,
 exact-profile source f5fbe2972c0f844ebf1fac7868d1d4c4116e1df3,
 coordinated-recovery source 02d67399aa89f722d44df41de719207472fa9f81,
 process-restart source c5b0ecaf247406bcd66bcbc06f9f24c641a2dab0,

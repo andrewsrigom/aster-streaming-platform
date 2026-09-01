@@ -151,9 +151,15 @@ plan, derives a four-query worst-case budget and observes that sequence in a
 Catalog test; Router consumes the owner contract and rejects drift. Catalog
 249/249, Router26/26 and the affected73/73 gate with56 cached in86.394 seconds
 pass. No query path, adapter, schema, authorization policy or measurement
-changed, so heavyweight runtime evidence remains applicable. Publication,
-protected CI, discussion resolution, final blocker-boundary confirmation and
-release remain.
+changed, so heavyweight runtime evidence remains applicable. Published head
+`65e5dc2` entered protected run `33468676673`; dependency review,
+documentation/security and Local platform passed, while clean source quality
+exposed Router lint before Catalog's top-level build declaration. Final source
+`1ec01c3`, tree `f27a9f8`, exposes the contract through a narrow typed subpath.
+A fresh detached clean source gate passes63/63 with0 cached in159.682 seconds,
+and the repeated affected gate passes73/73 with63 cached in54.731 seconds.
+Corrected protected CI, discussion resolution, final blocker-boundary
+confirmation and release remain.
 
 ## Requirement traceability
 
@@ -164,7 +170,7 @@ release remain.
 | P13-R12 | [ADR-0045](../../docs/adr/0045-source-owned-trusted-operations.md), GraphQL architecture and release sequence |
 | P13-R03/R04/R05/R10 | Released through [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json), [demand-control evidence](graphql-demand-controls.txt), PR55 tree-identical main `8cd6c0b` and exact-main run `33425758870` attempt2 |
 | P13-R06/R11 | Released through third corrected source `af47c62`, protected head `e6134ae`, PR56 squash main `98deb52` and exact-main run `33448911764`; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record exact-union verification, expired-marker pruning and all review corrections |
-| P13-R07–R09 | Query-plan correction source `20b5f27`, tree `700bdc4`, derives Catalog's four-query worst case from its exact cold/retry sequence; Catalog249/249, Router26/26 and affected73/73 pass, but protected confirmation/release remain: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and composition-time semantic audit |
+| P13-R07–R09 | Final source `1ec01c3`, tree `f27a9f8`, exposes Catalog source `20b5f27`'s exact four-query cold/retry plan through a clean-checkout-safe typed subpath; clean source63/63 and affected73/73 pass, but protected confirmation/release remain: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and composition-time semantic audit |
 
 ## Current limitations
 
@@ -176,6 +182,6 @@ release remain.
 - A trusted document is not user authority. Owner authorization remains required.
 - Shape/list/cost and Identity-aware rate/cache controls are released. The
   N+1/query-count/authorization closeout has corrected the exact-profile and
-  Catalog worst-case query-plan findings with passing focused and affected
-  gates, but its new protected/confirmation/release gates remain.
+  Catalog worst-case query-plan findings with passing focused, clean source and
+  affected gates, but its new protected/confirmation/release gates remain.
 - Hosted providers, credentials, deployment and capacity remain Phase 14.

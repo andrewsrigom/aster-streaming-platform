@@ -121,8 +121,17 @@ Confirmation discussion `3900443731` found nondeterministic rediscovery of a
 prior two-row profile. Source `f5fbe29`, tree `4f44b71`, carries the exact setup
 profile into measurement without publishing its synthetic ID. Focused proof3/3,
 strict Engagement build, the complete runtime and gate73/73 pass; the runtime
-records ContinueWatching7 in104.127 ms and cleanup0. New protected CI,
-discussion resolution, blocker-boundary confirmation and release remain.
+records ContinueWatching7 in104.127 ms and cleanup0. Evidence head `10bef1f`
+passed protected run `33465978576` attempt2 and the discussion is resolved.
+Confirmation discussion `3900633355` found Catalog's cold fence/load plus one
+fence-change retry missing from its audited budget. Source `20b5f27`, tree
+`700bdc4`, exports and proves the exact four-query owner plan. Published head
+`65e5dc2` passed dependency review, documentation/security and Local platform
+in run `33468676673`, but clean source quality exposed a build-order type gap.
+Final source `1ec01c3`, tree `f27a9f8`, exposes a narrow typed query-plan
+subpath. Fresh clean source passes63/63 with0 cached in159.682 seconds and the
+affected gate passes73/73 with63 cached in54.731 seconds. Corrected protected
+CI, discussion resolution, blocker-boundary confirmation and release remain.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

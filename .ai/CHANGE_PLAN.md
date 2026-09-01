@@ -93,7 +93,12 @@ security and dependency review passed, while clean-checkout source quality found
 that Router's top-level Catalog import was linted before Catalog declarations
 were built. The correction exposes only the query-plan subpath with a checked-in
 shape declaration included by Catalog's TypeScript project; runtime still loads
-the compiled owner module, and the declaration duplicates no plan values.
+the compiled owner module, and the declaration duplicates no plan values. Final
+source `1ec01c3`, tree `f27a9f8`, passes the complete clean-checkout source gate
+63/63 with zero cached tasks in 159.682 seconds. The repeated affected gate
+passes73/73 with63 cached in54.731 seconds. Protected run `33468676673` also
+passed Local platform, so no unchanged heavyweight runtime is repeated before
+the corrected publication.
 
 ## Proposed behavior
 
@@ -268,8 +273,12 @@ matrix.
   Protected run `33468676673` then failed only clean-checkout lint because the
   top-level Catalog declaration did not yet exist when Router was analyzed. The
   subpath correction retains the same runtime plan while making its non-value
-  type shape available before build. Clean-worktree lint and the repeated
-  affected gate remain required before republishing.
+  type shape available before build. Final source
+  `1ec01c320193e558661520db0303d4f37ecf76f4`, tree
+  `f27a9f85fce67f5372685fe9a10e37672b7dae99`, passes a fresh detached
+  clean-checkout `pnpm check:source` 63/63 with0 cached in159.682 seconds. The
+  repeated affected candidate passes73/73 with63 cached in54.731 seconds.
+  Runtime/query paths are unchanged; publish this source and evidence once.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.
@@ -284,7 +293,8 @@ matrix.
 
 ## Rollback or recovery
 
-Revert the Catalog owner-query-plan correction, exact-profile source `f5fbe29`,
+Revert the typed query-plan contract source `1ec01c3`, Catalog owner-query-plan
+source `20b5f27`, exact-profile source `f5fbe29`,
 final coordinated-recovery source
 `02d6739`, process-restart source
 `c5b0eca`, initial recovery source `c5ae760`, federated source `e0f5e27`, the

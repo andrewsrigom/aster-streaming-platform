@@ -49,13 +49,18 @@ discussion `3900633355` found Catalog's audited query maximum omitted its cold
 fence/load pair and single fence-change retry. Source `20b5f27`, tree `700bdc4`,
 exports the exact owner plan, derives the four-query maximum and proves the
 observed retry sequence. Catalog249/249, Router26/26 and affected gate73/73 with
-56 cached in86.394 seconds pass. Only its evidence checkpoint remains before
-publication.
+56 cached in86.394 seconds pass. Published head `65e5dc2` entered protected run
+`33468676673`; dependency review, documentation/security and Local platform
+passed, while clean source quality exposed Router lint before Catalog's
+top-level build declaration. Final source `1ec01c3`, tree `f27a9f8`, uses a
+narrow typed query-plan subpath. Fresh detached clean source passes63/63 with0
+cached in159.682 seconds and the affected gate passes73/73 with63 cached in
+54.731 seconds. Its evidence checkpoint remains before corrected publication.
 
 ## Active outcome
 
-- Commit the Catalog query-plan remediation evidence, publish source `20b5f27`
-  and its checkpoint once and close Phase13 only after protected CI, discussion
+- Commit the final query-plan package evidence, publish source `1ec01c3` and its
+  checkpoint once and close Phase13 only after protected CI, discussion
   `3900633355` resolution, final blocker-boundary confirmation, merge and
   exact-main evidence.
 
@@ -67,6 +72,7 @@ publication.
 - Coordinated local recovery source: `02d6739`, tree `6d9e27b`.
 - Exact-profile source: `f5fbe29`, tree `4f44b71`.
 - Catalog query-plan source: `20b5f27`, tree `700bdc4`.
+- Final typed contract source: `1ec01c3`, tree `f27a9f8`.
 - Router focused tests pass26/26; query proof/classification pass15/15.
 - Catalog passes249/249; the exact fence-change path observes four owner calls
   matching the exported query plan.
@@ -75,12 +81,13 @@ publication.
 - Engagement exact ContinueWatching count: Catalog3/Engagement1/Identity3 at
   104.127 ms after carrying the exact setup profile. Full event/outage suite
   passes and runtime cleanup0.
-- Latest affected gate passes73/73 with56 cached in86.394 seconds.
+- Fresh detached clean source gate passes63/63 with0 cached in159.682 seconds.
+- Latest affected gate passes73/73 with63 cached in54.731 seconds.
 - Earlier 1/3/5/1 counts are retained only as owner-local supporting evidence.
 
 ## Exact next actions
 
-1. Commit and publish the Catalog query-plan remediation checkpoint once to
+1. Commit and publish the final typed query-plan remediation checkpoint once to
    existing PR57.
 2. Require protected CI, resolve discussion `3900633355` and run one final
    blocker-boundary confirmation; batch only requirement, security/data,

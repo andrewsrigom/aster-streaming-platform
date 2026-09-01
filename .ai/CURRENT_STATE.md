@@ -56,8 +56,9 @@ protected run `33447062908`, its discussions are resolved, final confirmation
 `5485910820` found no major issue, PR56 squash main `98deb52` retained the
 candidate tree and exact-main run `33448911764` passed. Item67 is the sole
 `IN_PROGRESS` item on `feat/p13-n-plus-one-authorization`, rebased onto that
-released main. Its latest source `20b5f27`, tree `700bdc4`, corrects the final
-known Catalog query-budget blocker; local focused and affected gates pass.
+released main. Final local source `1ec01c3`, tree `f27a9f8`, corrects the final
+known Catalog query-budget blocker and its clean-checkout package typing;
+clean source63/63 and affected73/73 gates pass.
 
 ## Verified
 
@@ -310,9 +311,15 @@ observed four-call retry sequence. Router consumes the owner contract and reject
 both a reduced total and removed retry. Catalog249/249, Router26/26 and the
 affected73/73 gate with56 cached in86.394 seconds pass. No executable query
 path, adapter, schema, authorization policy or measurement changed, so existing
-heavyweight runtime evidence remains valid. Publication, protected CI,
-discussion resolution, one final blocker-boundary confirmation and release
-remain.
+heavyweight runtime evidence remains valid. Published head `65e5dc2` entered
+protected run `33468676673`; dependency review, documentation/security and Local
+platform passed, while source quality exposed that Router lint preceded the
+top-level Catalog build declaration. Final source `1ec01c3`, tree `f27a9f8`,
+uses a narrow typed `@aster/catalog/query-plan` subpath without duplicating plan
+values. A fresh detached clean-checkout source gate passes63/63 with0 cached in
+159.682 seconds; the repeated affected gate passes73/73 with63 cached in54.731
+seconds. Publication, protected CI, discussion resolution, one final
+blocker-boundary confirmation and release remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -868,15 +875,15 @@ shape/list/cost controls are released through tree-identical PR55 merge
 controls are released through PR56 squash main `98deb52` and exact-main run
 `33448911764`.
 N+1/query-count proof and owner-authorization abuse tests have corrected local
-evidence and a passing final 73/73 affected gate after PR57 initial review,
+evidence plus passing clean63/63 and final73/73 gates after PR57 initial review,
 bounded process-restart correction, exact-profile correction and Catalog
-query-plan correction, but the new protected/confirmation/release gates remain.
+query-plan/clean-package correction, but protected confirmation/release remain.
 Phase14 capacity validation and hosted deployment remain planned.
 
 ## Next outcome
 
-For P13-R07/P13-R08/P13-R09 item67, commit and publish one checkpoint for source
-`20b5f27`, complete exact-head protected CI, resolve discussion `3900633355`,
+For P13-R07/P13-R08/P13-R09 item67, commit and publish one checkpoint for final
+source `1ec01c3`, complete exact-head protected CI, resolve discussion `3900633355`,
 request one final blocker-boundary confirmation, squash merge and verify
 exact-main CI. Then close Phase13 and activate Phase14 from clean main.
 Inspect the exact historical interrupted Phase12 project only when that same

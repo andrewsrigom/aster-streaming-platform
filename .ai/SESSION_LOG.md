@@ -19,6 +19,13 @@ full snapshot through the archival checkpoint remains in
 - Catalog249/249, Router26/26 and the affected73/73 gate with56 cached pass in
   86.394 seconds. No query path, adapter, schema, authorization policy or
   measurement changed, so no heavyweight runtime was repeated.
+- Published head `65e5dc2` entered protected run `33468676673`. Dependency
+  review, documentation/security and Local platform passed. Clean source quality
+  found that Router lint ran before Catalog's top-level declaration existed.
+- Final source `1ec01c3`, tree `f27a9f8`, exposes the owner contract through the
+  typed `@aster/catalog/query-plan` subpath. Fresh detached clean source passes
+  63/63 with0 cached in159.682 seconds; the affected gate passes73/73 with63
+  cached in54.731 seconds.
 
 ### Evidence
 
@@ -28,7 +35,7 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish one evidence checkpoint, require exact-head protected CI, resolve
+- Publish the corrected source and one evidence checkpoint, require exact-head protected CI, resolve
   discussion `3900633355`, request one final blocker-boundary confirmation and
   complete merge/exact-main acceptance.
 

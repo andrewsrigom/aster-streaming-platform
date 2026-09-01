@@ -252,9 +252,14 @@ is resolved. Confirmation discussion `3900633355` found Catalog's query budget
 omitted its cold fence/load pair and single fence-change retry. Source `20b5f27`,
 tree `700bdc4`, exports the exact owner plan, derives the four-query worst case
 and proves the observed retry sequence. Catalog249/249, Router26/26 and the
-affected73/73 gate with56 cached in86.394 seconds pass. Record this final
-checkpoint, publish once and complete protected CI, discussion resolution, one
-final blocker-boundary confirmation and release.
+affected73/73 gate with56 cached in86.394 seconds pass. Published head `65e5dc2`
+entered run `33468676673`; all but source quality passed, including Local
+platform. Clean checkout exposed Router lint before Catalog's top-level build
+declaration. Final source `1ec01c3`, tree `f27a9f8`, resolves the owner contract
+through a narrow typed subpath. Fresh clean source passes63/63 with0 cached in
+159.682 seconds; the repeated affected gate passes73/73 with63 cached in54.731
+seconds. Record this final checkpoint, publish once and complete protected CI,
+discussion resolution, one final blocker-boundary confirmation and release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head
