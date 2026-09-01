@@ -125,9 +125,16 @@ that retries cannot heal a replaced direct Compose endpoint retained by Router.
 Process-restart source `c5b0eca`, tree `5dadb0a`, uses `--no-recreate` and
 asserts container identity/network endpoint. Its full runtime passed with
 unchanged counts, exact generation, one recovery attempt in64.738 ms and
-cleanup0; the final affected gate passes73/73 with61 cached in65.141 seconds.
-The final evidence checkpoint, protected CI, confirmation and release gates
-remain.
+cleanup0; its affected gate passes73/73 with61 cached in65.141 seconds.
+Published head `be6b57d` entered protected run `33462043470`; every earlier job
+and Local platform passed, while Discovery proved Docker can reassign the same
+container's direct endpoint. Final source `02d6739`, tree `6d9e27b`, renews
+Router DNS, re-resolves its current loopback-only proof port and keeps the finite
+semantic deadline. Its full runtime passed with unchanged counts, both identities
+preserved, endpoint/port changes observed, exact generation/search, one attempt
+in269.302 ms and cleanup0; the final gate passes73/73 with61 cached in84.672
+seconds. The final evidence checkpoint, protected CI, confirmation and release
+gates remain.
 
 ## Requirement traceability
 

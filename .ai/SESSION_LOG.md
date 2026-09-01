@@ -4,6 +4,33 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — PR57 coordinated local service recovery
+
+### Completed
+
+- Evidence head `be6b57d` entered protected run `33462043470`. Every earlier job
+  and Local platform passed. Discovery failed only because Docker preserved the
+  container identity but reassigned its direct Compose endpoint; cleanup was0.
+- Source `02d6739`, tree `6d9e27b`, waits for that same Discovery container,
+  restarts only the same Router container process to renew local DNS, re-resolves
+  its loopback-only ephemeral proof port and retains the 10-second semantic
+  deadline. Hosted stable-address replacement recovery remains P14-R10.
+- The final Discovery runtime passes in111.911 seconds with unchanged federated
+  counts, both identities preserved, endpoint/port changes observed, exact
+  generation/search, one recovery attempt in269.302 ms and cleanup0. The final
+  affected gate passes73/73 with61 cached in84.672 seconds.
+
+### Evidence
+
+- `evidence/phase-13/query-count-authorization.txt` and the raw JSONL record run
+  `33462043470`, the two bounded local diagnostic iterations, exact final
+  recovery semantics, runtime facts and candidate gate.
+
+### Next action
+
+- Commit and publish the final evidence checkpoint once, require new exact-head
+  protected CI, resolve both initial discussions and request one confirmation.
+
 ## 2026-08-31 — PR57 process-restart boundary correction
 
 ### Completed

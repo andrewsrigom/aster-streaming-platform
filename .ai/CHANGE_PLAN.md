@@ -64,8 +64,12 @@ probe may retry only explicit local transport-startup codes (`ECONNREFUSED`,
 That exact local execution then proved the Router container restart can also
 reassign the proof overlay's ephemeral host port (`127.0.0.1::4000`). The
 harness must resolve and validate the current loopback-only published port after
-the controlled restart instead of probing the pre-restart port. This changes no
-application endpoint or hosted contract.
+the controlled restart instead of probing the pre-restart port. Source
+`02d6739`, tree `6d9e27b`, implements the complete coordinated local recovery.
+The final runtime passed with Discovery/Router identities preserved, both direct
+endpoint and host port changes observed, exact generation/search restored in one
+attempt in269.302 ms and cleanup0. The final affected gate passes73/73 with61
+cached in84.672 seconds. This changes no application endpoint or hosted contract.
 
 ## Proposed behavior
 
@@ -203,11 +207,16 @@ matrix.
   affected gate passes73/73. Exact-head run `33460420680` proved retries cannot
   heal a Compose replacement endpoint held by Router. Process-restart source
   `c5b0eca`, tree `5dadb0a`, preserves and asserts container identity/network
-  endpoint. The full runtime passes with unchanged exact counts, generation,
-  identity and endpoint preserved, one recovery attempt in64.738 ms and
-  cleanup0. Its final affected gate passes73/73 with61 cached in65.141 seconds.
-  Evidence checkpoint publication, new protected CI, confirmation, merge and
-  exact-main gates remain.
+  endpoint. Its published evidence head `be6b57d` entered protected run
+  `33462043470`; every earlier job and Local platform passed, while Discovery
+  proved the same container can receive a new direct Compose endpoint. Final
+  source `02d6739`, tree `6d9e27b`, coordinates the bounded Router DNS renewal,
+  resolves the current ephemeral loopback port and keeps the semantic deadline.
+  The full runtime passes with unchanged exact counts, both identities preserved,
+  endpoint/port changes observed, exact generation/search, one recovery attempt
+  in269.302 ms and cleanup0. Its final affected gate passes73/73 with61 cached in
+  84.672 seconds. Evidence checkpoint publication, new protected CI,
+  confirmation, merge and exact-main gates remain.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.
@@ -220,11 +229,12 @@ matrix.
 
 ## Rollback or recovery
 
-Revert process-restart source `c5b0eca`, initial recovery source `c5ae760`,
-federated source `e0f5e27`, the audit, fixture instrumentation and documentation
-as one item. No schema, database, event, cache or media migration exists. If
-main changes before publication, rebase, rerun affected contracts and only the
-heavyweight measurements whose path changed.
+Revert final coordinated-recovery source `02d6739`, process-restart source
+`c5b0eca`, initial recovery source `c5ae760`, federated source `e0f5e27`, the
+audit, fixture instrumentation and documentation as one item. No schema,
+database, event, cache or media migration exists. If main changes before
+publication, rebase, rerun affected contracts and only the heavyweight
+measurements whose path changed.
 
 ## Documentation updates
 

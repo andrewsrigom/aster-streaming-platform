@@ -108,8 +108,15 @@ but the Discovery proof showed Compose endpoint replacement cannot be healed by
 Router retries. Process-restart source `c5b0eca`, tree `5dadb0a`, preserves and
 asserts the container identity/network endpoint. Its full runtime passes with
 unchanged counts, exact generation, one recovery attempt in64.738 ms and
-cleanup0; the final affected gate passes73/73 with61 cached in65.141 seconds.
-The evidence checkpoint, new protected CI, confirmation and release remain.
+cleanup0; its affected gate passes73/73. Published head `be6b57d` entered run
+`33462043470`; all earlier jobs and Local platform passed, while the runtime
+proved Docker can reassign the same container's direct endpoint. Final source
+`02d6739`, tree `6d9e27b`, renews Router DNS, re-resolves the loopback proof port
+and retains the finite semantic deadline. Its full runtime passes with unchanged
+counts, identities preserved, endpoint/port changes observed, exact generation,
+one recovery attempt in269.302 ms and cleanup0; the final affected gate
+passes73/73 with61 cached in84.672 seconds. The evidence checkpoint, new
+protected CI, confirmation and release remain.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

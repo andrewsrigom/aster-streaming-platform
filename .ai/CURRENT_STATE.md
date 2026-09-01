@@ -284,8 +284,17 @@ uses `--no-recreate` and asserts container identity/network endpoint before the
 same finite semantic probe. The full local runtime passed with unchanged exact
 counts, preserved generation/identity/endpoint, one recovery attempt in64.738
 ms and cleanup0 in181.547 seconds. The final affected gate passes73/73 with61
-cached in65.141 seconds. Evidence checkpoint publication, new protected CI,
-discussion resolution, confirmation and release remain.
+cached in65.141 seconds. Published head `be6b57d` entered protected run
+`33462043470`; every earlier job and Local platform passed, while Discovery
+proved the same container received a new direct endpoint. Final source
+`02d6739`, tree `6d9e27b`, restarts only the Router process to renew local DNS,
+re-resolves its loopback-only ephemeral port and retains the 10-second semantic
+deadline. The full runtime passes with unchanged counts, both container
+identities preserved, endpoint/port changes observed, exact generation/search,
+one recovery attempt in269.302 ms and cleanup0 in111.911 seconds. The final
+affected gate passes73/73 with61 cached in84.672 seconds. Evidence checkpoint
+publication, new protected CI, discussion resolution, confirmation and release
+remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -848,7 +857,7 @@ gates remain. Phase14 capacity validation and hosted deployment remain planned.
 ## Next outcome
 
 For P13-R07/P13-R08/P13-R09 item67, commit the restart-recovery evidence,
-publish source `c5b0eca` and its checkpoint once, complete exact-head protected
+publish source `02d6739` and its checkpoint once, complete exact-head protected
 CI, resolve both initial discussions, request one confirmation, squash merge and
 verify exact-main CI. Then close Phase13 and activate Phase14 from clean main.
 Inspect the exact historical interrupted Phase12 project only when that same

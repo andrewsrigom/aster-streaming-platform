@@ -9,6 +9,8 @@ Initial recovery source commit: c5ae76077cb981ccaf5a98c6e41dc47cbd2d67d7
 Initial recovery source tree: 11b11c2e90376ac5d3a77e002afc3764b122b51e
 Process-restart source commit: c5b0ecaf247406bcd66bcbc06f9f24c641a2dab0
 Process-restart source tree: 5dadb0a69fee7b3146a50c4041893109be917a2a
+Coordinated recovery source commit: 02d67399aa89f722d44df41de719207472fa9f81
+Coordinated recovery source tree: 6d9e27b59077244a6da8b79f6e15424760ec0d7b
 Federated measurement source commit: e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0
 Federated measurement source tree: da9b02bcdc09d0438762baa299f40d4b93be4c76
 
@@ -222,7 +224,7 @@ Result:
   recovered in one attempt in 64.738 ms. Logs remained finite and safe. Project
   cleanup reported remaining0; the complete runtime finished in 181,547 ms.
 
-Final process-restart candidate:
+Process-restart candidate:
   TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm exec turbo run build test \
     toolchain:check toolchain:test typecheck lint:workspace format:check \
     unused:check architecture:check architecture:test platform:check \
@@ -231,6 +233,49 @@ Final process-restart candidate:
     commit:test --affected --concurrency=2 --output-logs=errors-only
 Result:
   PASS — 73/73 tasks, 61 cached, in 65.141 seconds.
+
+Protected process-restart result:
+  Evidence head be6b57da5025cdd2cae3ec65bd6ec5863dc607bf entered run
+  33462043470. Classify, dependency review, documentation/security and Local
+  platform passed. The source job passed through Engagement, then Discovery
+  failed only at the endpoint-preservation assertion. --no-recreate retained the
+  exact Discovery container identity while Docker changed its direct address
+  from 172.18.0.4 to 172.18.0.6. Cleanup reported remaining0 in 120,062 ms.
+
+Coordinated local recovery correction:
+  Source 02d67399aa89f722d44df41de719207472fa9f81, tree
+  6d9e27b59077244a6da8b79f6e15424760ec0d7b, waits for the same Discovery
+  container, restarts only the same Router container process to renew Compose
+  DNS and then resolves the current loopback-only ephemeral proof port. The
+  unchanged 10-second semantic deadline retries only named local transport-
+  startup codes or Router SUBREQUEST_HTTP_ERROR. Hosted stable-address
+  replacement recovery remains P14-R10.
+
+  The first exact local coordinated run exposed immediate ECONNREFUSED on the
+  old ephemeral host port and cleaned remaining0 in 105,616 ms. A bounded retry
+  correctly expired rather than hiding that stale port and cleaned remaining0
+  in 116,617 ms. Re-resolving the current port is the correction; the deadline
+  was not widened.
+
+Command:
+  pnpm discovery:runtime
+Result:
+  PASS — TitleDetail2 in 55.813 ms, SearchTitles5 in 62.867 ms and HomePublic7
+  in 74.915 ms. Discovery and Router container identities were preserved while
+  the Discovery endpoint and Router host port both changed. Router DNS was
+  renewed, the exact durable generation/search recovered in one attempt in
+  269.302 ms, logs remained finite/safe and cleanup reported remaining0. The
+  complete runtime finished in 111,911 ms.
+
+Final coordinated-recovery candidate:
+  TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm exec turbo run build test \
+    toolchain:check toolchain:test typecheck lint:workspace format:check \
+    unused:check architecture:check architecture:test platform:check \
+    platform:test docs:check docs:test ai:check ai:test community:check \
+    community:test security:check security:test ci:check ci:test staged:test \
+    commit:test --affected --concurrency=2 --output-logs=errors-only
+Result:
+  PASS — 73/73 tasks, 61 cached, in 84.672 seconds.
 
 Commands:
   pnpm --filter @aster/engagement typecheck
@@ -253,15 +298,20 @@ PR57 REVIEW AND PENDING RELEASE EVIDENCE
   passes the repeated runtime and 73/73 affected gate. Its published checkpoint
   `996798b` entered run `33460420680`, which proved the retry cannot repair
   endpoint replacement. Process-restart source `c5b0eca`, tree `5dadb0a`, passes
-  the full repeated runtime and final 73/73 affected gate. Its evidence
-  checkpoint, new protected CI, discussion resolution and confirmation remain.
+  the full repeated runtime and 73/73 affected gate. Its evidence head `be6b57d`
+  entered run `33462043470`, which proved container identity does not guarantee
+  a stable Compose endpoint. Final source `02d6739`, tree `6d9e27b`, passes the
+  complete coordinated-recovery runtime and final 73/73 affected gate. Its
+  evidence checkpoint, new protected CI, discussion resolution and confirmation
+  remain.
 - Publish the new checkpoint once, require protected CI and one confirmation
   review, merge and confirm exact-main CI before
   declaring P13-R07/R08/R09 or Phase13 verified/released.
 
 ROLLBACK
 
-Revert process-restart source c5b0ecaf247406bcd66bcbc06f9f24c641a2dab0,
+Revert coordinated-recovery source 02d67399aa89f722d44df41de719207472fa9f81,
+process-restart source c5b0ecaf247406bcd66bcbc06f9f24c641a2dab0,
 initial recovery source c5ae76077cb981ccaf5a98c6e41dc47cbd2d67d7,
 federated source e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0 and their
 evidence checkpoint. No schema, migration, event, retained media or durable data

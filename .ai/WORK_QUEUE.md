@@ -233,7 +233,14 @@ and every prior job passed, but the runtime proved Router retries cannot heal a
 Compose replacement endpoint. Process-restart source `c5b0eca`, tree `5dadb0a`,
 uses `--no-recreate` and asserts identity/endpoint preservation. The full runtime
 passes with unchanged counts, exact generation, one recovery attempt in64.738
-ms and cleanup0; the final affected gate passes73/73 with61 cached in65.141
+ms and cleanup0; its affected gate passes73/73 with61 cached in65.141
+seconds. Published head `be6b57d` entered protected run `33462043470`; every
+earlier job and Local platform passed, while Discovery proved the same container
+can receive a new direct endpoint. Final source `02d6739`, tree `6d9e27b`,
+renews Router DNS, re-resolves the current loopback port and retains the finite
+semantic probe. The full runtime passes with unchanged counts, both identities
+preserved, endpoint/port changes observed, exact generation/search, one attempt
+in269.302 ms and cleanup0; the final gate passes73/73 with61 cached in84.672
 seconds. Record this checkpoint, publish once and complete protected CI,
 discussion resolution, confirmation and release.
 
