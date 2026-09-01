@@ -56,16 +56,17 @@ Publish one documentation candidate that:
   hosted-only matrix evidence still blocking the reference checkpoint. Source
   `1a6233f`, tree `2f9a7b1`, separates the completion conditions and passes
   the repeated gate9/9.
+- Evidence head `3087be1`, tree `34f70cb`, passed protected run
+  `33494434609`; discussion `3902887907` is resolved. Final confirmation
+  completed without a new finding and all four PR58 threads are resolved.
 
 Executable product behavior is unchanged.
 
 ## Exact next actions
 
-1. Publish the current corrected checkpoint to PR58 if needed; do not create an
+1. Publish the current result checkpoint to PR58 if needed; do not create an
    additional empty or duplicate evidence commit.
-2. Require final corrected protected CI, resolve discussion `3902887907`,
-   request blocker-boundary confirmation, then squash merge and require
-   exact-main CI.
+2. Require its exact protected CI, then squash merge and require exact-main CI.
 3. Start item69 from clean released main and build the capability index.
 
 ## Execution boundary

@@ -40,8 +40,7 @@ remains applicable.
 
 ### Pending acceptance
 
-- final corrected evidence-checkpoint protected CI;
-- blocker-boundary confirmation after the completion-scope correction;
+- final result-checkpoint protected CI;
 - squash merge with candidate-tree identity;
 - exact-main CI.
 
@@ -91,6 +90,13 @@ Source `1a6233fb90edfd6ab1100ee752147b6ff8a96236`, tree
 hosted P14-R01–R12 work and makes P14-R13–R18 plus fresh reproduction of already
 released local checkpoints the complete reference-verification condition. The
 repeated local changed-scope gate passes9/9 tasks.
+
+Corrected evidence checkpoint
+`3087be155af83eb1b61184e1385d629338b8e6a9`, tree
+`34f70cb758606a0d01f38cc0d36a9eb1dd980574`, passed protected run
+`33494434609`; discussion `3902887907` is resolved. Final blocker-boundary
+confirmation completed on that exact head at `2026-09-01T09:56:10Z` without
+a new finding. All four PR58 review threads are resolved.
 
 ## Planned evidence
 

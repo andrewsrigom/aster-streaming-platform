@@ -111,7 +111,9 @@ memory; do not change product behavior in this item.
   blocker-boundary discussion `3902887907` found hosted-only matrix cells
   could still block reference verification. Source `1a6233f`, tree
   `2f9a7b1`, separates those completion conditions and passes the repeated
-  gate9/9; final corrected protected acceptance is pending
+  gate9/9. Evidence head `3087be1` passed protected run `33494434609`;
+  discussion `3902887907` is resolved and final confirmation completed
+  without a new finding. Result-checkpoint protected acceptance is pending
 - Iteration gate: repository-memory, documentation and formatting checks
 - Candidate gate: affected-scope gate selected from the exact documentation diff
 - Heavyweight repeat triggers: repeat runtime, PostgreSQL, browser, media or platform evidence only if executable behavior or its gate selection changes
@@ -133,9 +135,9 @@ to roll back.
 
 ## Completion checklist
 
-- [ ] Requirements satisfied
+- [x] Requirements satisfied
 - [x] Tests pass
 - [x] Evidence captured
-- [ ] Documentation current
+- [x] Documentation current
 - [ ] `.ai/` state updated
-- [ ] Remaining risks recorded
+- [x] Remaining risks recorded

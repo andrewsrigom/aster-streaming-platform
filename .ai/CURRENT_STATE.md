@@ -77,7 +77,10 @@ and passes the repeated gate9/9. Evidence head `514467d` passed protected run
 `3902887907` found hosted-only matrix cells still blocking reference
 verification. Source `1a6233f`, tree `2f9a7b1`, separates P14-R13–R18 local
 completion from P14-R01–R12 hosted evidence and passes the repeated gate9/9.
-Final corrected protected acceptance remains pending.
+Evidence head `3087be1` passed protected run `33494434609`; discussion
+`3902887907` is resolved. Final confirmation completed on that exact head
+without a new finding, and all four PR58 threads are resolved. Result-checkpoint
+protected acceptance remains pending.
 
 ## Ordered reference-quality runway
 

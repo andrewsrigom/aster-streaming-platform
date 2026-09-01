@@ -42,6 +42,10 @@ full snapshot through the archival checkpoint remains in
   that hosted-only coverage-matrix cells still blocked reference verification.
   Source `1a6233f`, tree `2f9a7b1`, scopes local completion to P14-R13–R18
   plus fresh released-checkpoint reproduction and passes the repeated gate9/9.
+- Evidence head `3087be1`, tree `34f70cb`, passed protected run
+  `33494434609`; discussion `3902887907` is resolved. Final confirmation
+  completed at `2026-09-01T09:56:10Z` without a new finding and all four PR58
+  threads are resolved.
 
 ### Evidence
 
