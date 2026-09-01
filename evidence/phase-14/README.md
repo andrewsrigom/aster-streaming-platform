@@ -343,6 +343,25 @@ Correction source `fe36d5b22ab59ed25812c6c59cd0e2ef9448c33f`, tree
 conditional-execution and repository-memory correction without changing
 product runtime or deployment behavior.
 
+Confirmation on evidence head `6236aa9f3a30a63a09141e252774b3469aef0e66`
+completed at `2026-09-01T12:56:03Z` and opened two further findings:
+
+- discussion `3904288838` found that a matrix wrapped in `<pre>` remained
+  accepted even though raw HTML rendered its links as preformatted text;
+- discussion `3904288847` found that a literal here-document body containing
+  the exact command line remained accepted without executing Node.js.
+
+The findings are accepted for one batch. Markdown visibility now tracks raw
+HTML block containers as well as comments, fences and indentation. Governance
+validation evaluates complete unsuppressed steps: the capability check must be
+a standalone simple Node.js command and its tests must be one finite
+`node --test` invocation containing only checked-in tool-test paths. A
+here-document, function body, printed string, extra shell control or modified
+execution environment fails closed. Focused boundary tests pass37/37,
+documentation tests pass21/21 and the repeated changed-scope gate passes15/15
+tasks, including101 platform-policy,39 CI-policy and13 repository-memory tests.
+Correction freeze and protected publication remain pending.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory

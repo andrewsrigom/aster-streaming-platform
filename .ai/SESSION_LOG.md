@@ -80,6 +80,13 @@ full snapshot through the archival checkpoint remains in
   affected gate passes15/15.
 - Correction source `fe36d5b`, tree `e47c8a0`, is frozen without product
   runtime or deployment changes.
+- Confirmation on evidence head `6236aa9` completed at
+  `2026-09-01T12:56:03Z` and opened discussions
+  `3904288838`/`3904288847`: raw HTML could hide the matrix and a here-document
+  could preserve command text without executing it.
+- The accepted working correction tracks raw HTML containers and requires
+  complete standalone Node.js/test steps. Focused boundary tests pass37/37,
+  documentation tests pass21/21 and the affected gate passes15/15.
 
 ### Evidence
 
@@ -94,10 +101,9 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish the existing correction evidence checkpoint without amending source
-  `fe36d5b`, resolve all three discussions and require one blocker-boundary
-  confirmation. Then merge and complete exact-main verification before
-  activating P14-R15.
+- Freeze and publish the current two-finding correction, resolve both
+  discussions and require one blocker-boundary confirmation. Then merge and
+  complete exact-main verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

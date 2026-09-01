@@ -107,12 +107,20 @@ path/anchor validity to the existing documentation validator.
   documentation tests pass20/20 and the affected gate passes15/15.
 - Correction source `fe36d5b`, tree `e47c8a0`, is frozen without product
   runtime or deployment changes.
+- Confirmation on evidence head `6236aa9` completed at
+  `2026-09-01T12:56:03Z` and opened discussions
+  `3904288838`/`3904288847`: raw HTML could hide the table and a here-document
+  could retain command text without executing it.
+- The accepted working correction tracks raw HTML containers and requires
+  complete standalone Node.js/test steps with no shell wrapper or modified
+  execution context. Focused boundary tests pass37/37, documentation tests
+  pass21/21 and the affected gate passes15/15.
 
 ## Exact next actions
 
-1. Publish the existing correction evidence checkpoint without amending source
-   `fe36d5b` or creating a duplicate evidence commit.
-2. Resolve discussions `3904209124`/`3904209135`/`3904209144` and
+1. Freeze the current correction source for discussions
+   `3904288838`/`3904288847` and record its exact hash without amending it.
+2. Publish the existing evidence checkpoint, resolve both discussions and
    require protected CI plus one blocker-boundary confirmation because the
    findings alter the public/governance contract.
 3. Merge, verify exact-main CI and close item69 before activating

@@ -137,6 +137,13 @@ test("rejects a capability table rendered as indented code", () => {
   assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
 });
 
+test("rejects a capability table inside a raw HTML block", () => {
+  const hidden = `# Capability Index\n\n<pre>\n${validIndex()}</pre>\n`;
+  const report = analyzeCapabilityIndex(hidden);
+  assert.equal(report.rows, 0);
+  assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
 test("reads the canonical path from an explicit repository root", async (context) => {
   const root = await mkdtemp(join(tmpdir(), "aster-capability-index-"));
   context.after(async () => rm(root, { force: true, recursive: true }));

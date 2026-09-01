@@ -118,7 +118,13 @@ working correction rejects CommonMark code indentation and any conditional or
 non-blocking command step/job, and aligns this summary. Focused boundary tests
 pass36/36, documentation tests pass20/20 and the affected gate passes15/15.
 Correction source `fe36d5b`, tree `e47c8a0`, is frozen; protected publication
-remains pending.
+began on evidence head `6236aa9`. Its confirmation completed at
+`2026-09-01T12:56:03Z` and opened discussions
+`3904288838`/`3904288847`: raw HTML could hide the matrix and a here-document
+could retain command text without executing it. The accepted working correction
+tracks raw HTML blocks and validates complete standalone Node.js/test steps.
+Focused boundary tests pass37/37, documentation tests pass21/21 and the affected
+gate passes15/15. Correction freeze remains pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

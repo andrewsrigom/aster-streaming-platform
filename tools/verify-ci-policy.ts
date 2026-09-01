@@ -79,16 +79,18 @@ function uncommentedYamlValue(value: string): string {
   return value.replace(/\s+#.*$/u, "").trim();
 }
 
-function executableWorkflowSteps(jobSource: string): string {
+function executableWorkflowSteps(jobSource: string): string[] {
   const lines = jobSource.replace(/\r\n?/gu, "\n").split("\n");
   const stepsStart = lines.findIndex((line) => line === "    steps:");
   if (stepsStart < 0) {
-    return "";
+    return [];
   }
   if (
-    lines.slice(0, stepsStart).some((line) => /^(?:if|defaults):/u.test(uncommentedYamlValue(line)))
+    lines
+      .slice(0, stepsStart)
+      .some((line) => /^(?:if|defaults|env):/u.test(uncommentedYamlValue(line)))
   ) {
-    return "";
+    return [];
   }
 
   const stepStarts = lines
@@ -101,7 +103,9 @@ function executableWorkflowSteps(jobSource: string): string {
     const step = lines.slice(start, end);
     if (
       step.some((line) =>
-        /^(?:if|continue-on-error|shell):/u.test(uncommentedYamlValue(line).replace(/^-\s+/u, "")),
+        /^(?:if|continue-on-error|env|shell|working-directory):/u.test(
+          uncommentedYamlValue(line).replace(/^-\s+/u, ""),
+        ),
       )
     ) {
       continue;
@@ -136,10 +140,35 @@ function executableWorkflowSteps(jobSource: string): string {
     if (value.startsWith(">")) {
       commands.push(blockLines.join(" "));
     } else {
-      commands.push(...blockLines);
+      commands.push(blockLines.join("\n"));
     }
   }
-  return commands.join("\n");
+  return commands;
+}
+
+function hasStandaloneCapabilityCheck(steps: readonly string[]): boolean {
+  const required = "node ./tools/verify-capability-index.ts";
+  return steps.some((step) => {
+    const commands = step.split("\n").filter(Boolean);
+    return (
+      commands.includes(required) &&
+      commands.every((command) => /^node \.\/tools\/[A-Za-z0-9./-]+\.(?:mjs|ts)$/u.test(command))
+    );
+  });
+}
+
+function hasStandaloneCapabilityTests(steps: readonly string[]): boolean {
+  return steps.some((step) => {
+    const tokens = step.split(/\s+/u).filter(Boolean);
+    return (
+      tokens[0] === "node" &&
+      tokens[1] === "--test" &&
+      tokens.slice(2).includes("./tools/verify-capability-index.test.ts") &&
+      tokens
+        .slice(2)
+        .every((token) => /^\.\/tools\/[A-Za-z0-9./*-]+\.test\.(?:mjs|ts)$/u.test(token))
+    );
+  });
 }
 
 export function validateWorkflowPolicy(
@@ -302,18 +331,20 @@ export function validateWorkflowPolicy(
     /package-manager-cache:\s*false/u,
     "implicit setup-node caching must be disabled",
   );
-  const governanceJob = executableWorkflowSteps(workflowJobSource(source, "governance"));
-  for (const [pattern, detail] of [
+  const governanceSteps = executableWorkflowSteps(workflowJobSource(source, "governance"));
+  for (const [present, detail] of [
     [
-      /(?:^|\n)node \.\/tools\/verify-capability-index\.ts(?:\n|$)/u,
+      hasStandaloneCapabilityCheck(governanceSteps),
       "capability-index check is required in the always-run governance job",
     ],
     [
-      /(?:^|\n)node --test(?: \.\/tools\/[^\s]+)* \.\/tools\/verify-capability-index\.test\.ts(?: \.\/tools\/[^\s]+)*(?:\n|$)/u,
+      hasStandaloneCapabilityTests(governanceSteps),
       "capability-index policy tests are required in the always-run governance job",
     ],
   ] as const) {
-    addRequirement(violations, file, governanceJob, "commands", pattern, detail);
+    if (!present) {
+      violations.push({ detail, file, line: 1, rule: "commands" });
+    }
   }
   for (const [pattern, detail] of [
     [/node \.\/tools\/verify-ai-state\.ts/u, "repository-memory check is required"],

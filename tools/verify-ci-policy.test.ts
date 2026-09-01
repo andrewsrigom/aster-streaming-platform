@@ -318,6 +318,12 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       "  governance:\n    if: github.event_name == 'push'\n",
     );
     const retainedOnlyAsPrintedText = source.replace(requiredCommand, `echo '${requiredCommand}'`);
+    const retainedOnlyInHereDocument = source
+      .replace(requiredCommand, "true")
+      .replace(
+        "      - name: Validate repository memory\n",
+        `      - name: Retain a non-executed here-document\n        run: |\n          cat <<'CAPABILITY_CHECK'\n          ${requiredInvocation}\n          CAPABILITY_CHECK\n      - name: Validate repository memory\n`,
+      );
     for (const weakened of [
       movedOutsideGovernance,
       movedIntoSkippedIntermediateJob,
@@ -328,6 +334,7 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       retainedOnlyInNonBlockingGovernanceStep,
       retainedOnlyInConditionalGovernanceJob,
       retainedOnlyAsPrintedText,
+      retainedOnlyInHereDocument,
     ]) {
       assert.ok(
         validateWorkflowPolicy(weakened).some(

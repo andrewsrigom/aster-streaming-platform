@@ -263,7 +263,57 @@ interface ParsedRow {
 interface MarkdownVisibilityState {
   fence: { character: "`" | "~"; length: number } | undefined;
   htmlComment: boolean;
+  htmlTag: string | undefined;
 }
+
+const RAW_HTML_BLOCK_TAGS = new Set([
+  "address",
+  "article",
+  "aside",
+  "blockquote",
+  "body",
+  "caption",
+  "center",
+  "code",
+  "details",
+  "dialog",
+  "dir",
+  "div",
+  "dl",
+  "fieldset",
+  "figcaption",
+  "figure",
+  "footer",
+  "form",
+  "frameset",
+  "head",
+  "header",
+  "html",
+  "iframe",
+  "kbd",
+  "listing",
+  "main",
+  "menu",
+  "nav",
+  "noframes",
+  "ol",
+  "pre",
+  "samp",
+  "script",
+  "search",
+  "section",
+  "style",
+  "summary",
+  "table",
+  "tbody",
+  "tfoot",
+  "thead",
+  "title",
+  "tr",
+  "textarea",
+  "ul",
+  "xmp",
+]);
 
 const currentFile = fileURLToPath(import.meta.url);
 const defaultRepositoryRoot = resolve(dirname(currentFile), "..");
@@ -340,7 +390,11 @@ function withoutHtmlComments(line: string, state: MarkdownVisibilityState): stri
 }
 
 function visibleMarkdownLines(lines: readonly string[]): string[] {
-  const state: MarkdownVisibilityState = { fence: undefined, htmlComment: false };
+  const state: MarkdownVisibilityState = {
+    fence: undefined,
+    htmlComment: false,
+    htmlTag: undefined,
+  };
   return lines.map((line) => {
     if (state.fence) {
       const closing = new RegExp(
@@ -354,6 +408,22 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
     }
 
     const uncommented = withoutHtmlComments(line, state);
+    if (state.htmlTag) {
+      const closing = new RegExp(`</${state.htmlTag}\\s*>`, "iu");
+      if (closing.test(uncommented)) {
+        state.htmlTag = undefined;
+      }
+      return "";
+    }
+
+    const htmlTag = /^ {0,3}<(?<tag>[A-Za-z][A-Za-z0-9-]*)\b/u.exec(uncommented)?.groups?.["tag"];
+    if (htmlTag && RAW_HTML_BLOCK_TAGS.has(htmlTag.toLowerCase())) {
+      if (!new RegExp(`</${htmlTag}\\s*>`, "iu").test(uncommented)) {
+        state.htmlTag = htmlTag;
+      }
+      return "";
+    }
+
     const opening = /^ {0,3}(?<delimiter>`{3,}|~{3,})/u.exec(uncommented)?.groups?.["delimiter"];
     if (opening) {
       state.fence = {
