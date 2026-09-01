@@ -177,10 +177,20 @@ full snapshot through the archival checkpoint remains in
   documentation tests pass28/28, documentation validation covers1,628 links and
   the affected gate passes15/15, including101 platform tests. Correction source
   `94b6c45`, tree `f5604e4`, freezes the batch.
+- Evidence head `70e6a4f` passed protected run `33555283617` on attempt2 after
+  attempt1 hit a cleanly recovered Redis TraceQL timeout. Exact-head review at
+  `2026-09-01T20:32:44Z` opened findings `3908181277`/`3908181285`/
+  `3908181293` for job-level non-blocking expressions, missing Identity
+  concurrency proof and mismatched observability evidence.
+- The accepted working correction rejects job-level `continue-on-error`, adds
+  both Identity concurrency/session integration workers and replaces P12-R10
+  diagnosis evidence with the exact P12-R01/R08/R09 artifacts. Focused
+  contracts pass44/44, documentation validation covers1,633 links and the
+  affected gate passes15/15, including101 platform tests.
 
 ### Next action
 
-- Freeze and publish the exact four-finding correction, resolve its threads and
+- Freeze and publish the exact three-finding correction, resolve its threads and
   request confirmation only after the PR exposes the new exact head. Then merge
   and complete exact-main verification before activating P14-R15.
 

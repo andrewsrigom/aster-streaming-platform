@@ -63,6 +63,9 @@ file and anchor exists.
   proves current rights are rechecked before claim, check and completion.
 - Playback P07-R10 reaches the web player and its browser adverse-state proof;
   resilience P11-R08 reaches the failure laboratory and its injection tests.
+- Identity P02-R10 reaches the PostgreSQL and GraphQL concurrency/session
+  workers. Observability P12-R01/R08/R09 reaches its exact trace, cardinality and
+  exporter-failure evidence rather than the separate P12-R10 diagnosis proof.
 - Status follows the repository's planned/implemented/verified/released
   vocabulary and does not promote hosted P14-R01–R12 work.
 - Missing, duplicate, extra or malformed capability rows fail closed with
@@ -87,7 +90,9 @@ file and anchor exists.
   the next top-level job rather than a later named job and recognizes only
   unconditional, blocking step-level `run` invocations in an unconditional job.
   Job-level conditions are recognized independently of YAML key order. Quoted
-  YAML keys have the same suppressing semantics as plain keys.
+  YAML keys have the same suppressing semantics as plain keys. Job-level
+  `continue-on-error` expressions are non-blocking even when their value is not
+  the literal `true`.
   The required check is a standalone simple Node.js command and the required
   test is one finite `node --test` invocation, not comments, here-documents,
   environment values, printed command text or suppressed steps.
@@ -117,6 +122,7 @@ file and anchor exists.
 | A listed requirement lacks a representative implementation or adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
 | A required command is conditional, non-blocking or belongs to a conditional job | Treat the command as absent | Executable-step diagnostic |
 | An unsafe workflow key is quoted | Treat it like the equivalent plain YAML key | YAML-key diagnostic |
+| A governance job is non-blocking through an expression | Treat every command in the job as absent | Job-level execution diagnostic |
 | A job-level condition appears after `steps` | Treat every command in the job as absent | Order-independent job diagnostic |
 | Required command text exists only inside a here-document or shell structure | Treat the command as absent | Standalone-command diagnostic |
 | Table size or input encoding is invalid | Stop within fixed byte/row limits | Bounded input diagnostic |
@@ -165,8 +171,8 @@ file and anchor exists.
   escaped/image destinations, incomplete multi-requirement
   proof, fenced/commented/raw-HTML/indented tables, conditional/
   non-blocking/commented/printed/environment/here-document-only or isolated
-  governance commands, quoted HTML delimiters, quoted unsafe YAML keys,
-  malformed UTF-8 and bounds
+  governance commands, job-level non-blocking expressions, quoted HTML
+  delimiters, quoted unsafe YAML keys, malformed UTF-8 and bounds
 - Browser: not applicable
 - Performance/failure: dependency-free bounded parser completes within the
   existing documentation gate
@@ -193,8 +199,13 @@ file and anchor exists.
   working correction completes P07-R10/P11-R08 proof routes and closes quoted
   HTML/YAML parser gaps. Focused contracts pass44/44, documentation tests
   pass28/28 and the affected gate passes15/15. Correction source `94b6c45`,
-  tree `f5604e4`, freezes the batch. Publication, protected acceptance, merge
-  and exact-main acceptance remain pending
+  tree `f5604e4`, freezes the batch. Evidence head `70e6a4f` passed protected
+  run `33555283617` on attempt2 after a Redis TraceQL timeout on attempt1.
+  Exact-head review opened findings `3908181277`/`3908181285`/`3908181293`.
+  The working correction closes job-level non-blocking expressions, Identity
+  concurrency proof and observability evidence routing. Focused contracts
+  pass44/44 and the affected gate passes15/15. Publication, protected
+  acceptance, merge and exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

@@ -94,7 +94,7 @@ function executableWorkflowSteps(jobSource: string): string[] {
   if (stepsStart < 0) {
     return [];
   }
-  const unsafeJobKeys = new Set(["defaults", "env", "if"]);
+  const unsafeJobKeys = new Set(["continue-on-error", "defaults", "env", "if"]);
   if (lines.some((line) => /^ {4}\S/u.test(line) && unsafeJobKeys.has(yamlKey(line) ?? ""))) {
     return [];
   }

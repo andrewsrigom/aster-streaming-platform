@@ -54,7 +54,7 @@ validation proves the concrete paths, anchors, root-escape policy and
 symbolic-target policy.
 
 Focused documentation tests pass28/28. Documentation validation passes for250
-documents, 2,880 headings, 1,628 links, four supported status claims and the
+documents, 2,880 headings, 1,633 links, four supported status claims and the
 eleven exact capability rows. The always-run protected governance job now
 executes the capability verifier and its adverse tests even for a
 documentation-only change; CI policy fails if either command moves outside that
@@ -66,13 +66,12 @@ evidence remains applicable. Prior protected acceptance passes; protected
 acceptance of the current public-rendering/traceability correction, merge and
 exact-main acceptance remain pending.
 
-The current working correction adds the web player/browser proof for P07-R10,
+The preceding correction adds the web player/browser proof for P07-R10,
 the failure laboratory/injection proof for P11-R08, quoted-attribute-aware
 CommonMark type-7 visibility and quoted unsafe YAML-key recognition. It passes
 the complete local candidate gate. Correction source
 `94b6c453f5ceb9da7731a5c6778d3e520854c091`, tree
-`f5604e41aac98388ab657ba0166f67790a9493b4`, freezes the batch and remains to be
-published.
+`f5604e41aac98388ab657ba0166f67790a9493b4`, froze that batch.
 
 Evidence head `136def8`, tree `58e640d`, passed protected run
 `33498081610`. Initial review discussions `3903242620`/`3903242629` found an
@@ -199,6 +198,19 @@ quoted YAML `if` key could bypass CI policy. The accepted working correction
 closes all four boundaries. Focused contracts pass44/44, documentation tests
 pass28/28, documentation validation covers1,628 links and the affected gate
 passes15/15, including101 platform tests. Publication remains pending.
+
+Evidence head `70e6a4f` passed protected workflow `33555283617` on attempt2.
+Attempt1 passed source quality but its Redis diagnostic timed out waiting for
+TraceQL after the Catalog/PostgreSQL scenarios passed; scoped cleanup was clean.
+Exact-head review completed at `2026-09-01T20:32:44Z` and opened findings
+`3908181277`/`3908181285`/`3908181293`: job-level non-blocking expressions
+could bypass governance, Identity P02-R10 lacked its concurrent integration
+proof and observability linked P12-R10 evidence instead of the listed
+P12-R01/R08/R09 evidence. The accepted working correction closes all three
+boundaries. Focused contracts pass44/44 and documentation validation covers
+1,633 links. The complete affected gate passes15/15, including101
+platform-policy,39 CI-policy and13 repository-memory tests. Publication remains
+pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

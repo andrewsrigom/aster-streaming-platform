@@ -524,6 +524,30 @@ behavior changed. Correction source
 `f5604e41aac98388ab657ba0166f67790a9493b4`, freezes the batch. Publication
 remains pending.
 
+Evidence head `70e6a4fa8de7c85c525157e593bd3141043d2435` passed protected
+workflow `33555283617` on attempt2. Attempt1 passed source quality, Catalog and
+PostgreSQL diagnosis but the Redis scenario timed out waiting for TraceQL trace
+`099ba9acafd6a9809a8572f925c42470`; scoped cleanup reported clean. The selective
+rerun passed Local platform and the aggregate gate.
+
+Exact-head review completed at `2026-09-01T20:32:44Z` and opened three findings:
+
+- `3908181277` found that a job-level `continue-on-error` expression could make
+  governance non-blocking without a CI-policy violation;
+- `3908181285` found that Identity P02-R10 did not link the PostgreSQL/GraphQL
+  concurrency and session integration workers;
+- `3908181293` found that the observability row linked P12-R10 diagnosis evidence
+  rather than the exact artifacts for its listed P12-R01/R08/R09 requirements.
+
+The findings are accepted for one batch. The working correction rejects any
+job-level `continue-on-error` key, adds both Identity integration workers and
+maps observability to the trace contract, trace continuity, cardinality/privacy
+review and exporter-failure proof. Focused capability/CI-policy tests pass44/44.
+Documentation validation covers250 documents, 2,880 headings, 1,633 links, four
+status claims and eleven rows with zero violations. The affected gate passes
+15/15, including101 platform-policy,39 CI-policy and13 repository-memory tests.
+Publication remains pending.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory
