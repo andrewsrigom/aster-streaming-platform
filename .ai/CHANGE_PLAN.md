@@ -5,7 +5,7 @@
 - Phase: 13
 - Requirement IDs: P13-R07, P13-R08, P13-R09
 - Created: 2026-08-31
-- Updated: 2026-08-31
+- Updated: 2026-09-01
 
 ## Outcome
 
@@ -70,6 +70,14 @@ The final runtime passed with Discovery/Router identities preserved, both direct
 endpoint and host port changes observed, exact generation/search restored in one
 attempt in269.302 ms and cleanup0. The final affected gate passes73/73 with61
 cached in84.672 seconds. This changes no application endpoint or hosted contract.
+Evidence head `7272f3f` passed protected run `33463962414`, and both initial
+discussions are resolved. Confirmation discussion `3900443731` found that the
+Engagement proof could rediscover a different two-row profile left by the earlier
+deleted-profile scenario. Source `f5fbe29`, tree `4f44b71`, carries the exact
+setup profile into measurement, consumes its control record without publishing
+the synthetic ID, and removes arbitrary profile ordering. Focused proof3/3,
+strict build, the complete Engagement runtime and the 73/73 affected gate pass;
+the runtime records ContinueWatching7 in104.127 ms and cleanup0.
 
 ## Proposed behavior
 
@@ -131,6 +139,7 @@ matrix.
 | Background readiness or non-participant traffic enters the count | Exclude only declared probe fingerprints, stop the named non-participant and retain the isolation event | per-owner count/isolation event |
 | Discovery process restart keeps identity but Compose reassigns its direct endpoint | Start with `--no-recreate`, assert Discovery identity, restart only the Router process to renew local DNS resolution, assert Router identity, then apply the finite semantic probe | identity preservation, endpoint-change fact, Router restart, attempt count, generation and cleanup |
 | Router restart reassigns the proof's ephemeral host port or health precedes forwarding readiness | Resolve/validate the current loopback port after restart, then retry only the named local transport-startup codes inside the same 10-second end-to-end deadline | port-change fact, attempts, duration and final semantic response |
+| Setup and an earlier scenario leave multiple two-row progress profiles | Carry the exact setup profile through a private runner control record; never rediscover it by row count/order | exact-profile assertion, ID excluded from evidence, repeated full runtime |
 | Predecessor PR changes | Rebase this dependent branch and repeat affected gates/evidence | exact base/head |
 
 ## Data and contracts
@@ -216,7 +225,15 @@ matrix.
   endpoint/port changes observed, exact generation/search, one recovery attempt
   in269.302 ms and cleanup0. Its final affected gate passes73/73 with61 cached in
   84.672 seconds. Evidence checkpoint publication, new protected CI,
-  confirmation, merge and exact-main gates remain.
+  confirmation, merge and exact-main gates remained. Evidence head `7272f3f`
+  passed protected run `33463962414`; both initial discussions are resolved.
+  Confirmation discussion `3900443731` found nondeterministic profile
+  rediscovery. Final correction source `f5fbe29`, tree `4f44b71`, carries the
+  exact setup profile into measurement. Focused proof3/3, strict Engagement
+  build, the complete runtime and corrected gate73/73 pass. The runtime records
+  ContinueWatching7 in104.127 ms, cleanup0 and retainedRuntimeTouched false.
+  Final protected CI, discussion resolution, blocker-boundary confirmation,
+  merge and exact-main gates remain.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.
@@ -229,7 +246,8 @@ matrix.
 
 ## Rollback or recovery
 
-Revert final coordinated-recovery source `02d6739`, process-restart source
+Revert exact-profile source `f5fbe29`, final coordinated-recovery source
+`02d6739`, process-restart source
 `c5b0eca`, initial recovery source `c5ae760`, federated source `e0f5e27`, the
 audit, fixture instrumentation and documentation as one item. No schema,
 database, event, cache or media migration exists. If main changes before

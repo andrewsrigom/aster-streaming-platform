@@ -4,6 +4,32 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-01 — PR57 exact-profile confirmation remediation
+
+### Completed
+
+- Evidence head `7272f3f` passed protected run `33463962414`; both initial PR57
+  discussions are resolved. Confirmation discussion `3900443731` found that the
+  Engagement proof could rediscover an earlier deleted two-row profile.
+- Source `f5fbe29`, tree `4f44b71`, carries the exact setup profile into
+  measurement through a runner-consumed control record, excludes the synthetic
+  ID from evidence and removes arbitrary profile ordering.
+- Focused proof3/3 and strict Engagement build pass. The complete runtime records
+  ContinueWatching7 in104.127 ms, passes the event/outage suite and cleans
+  remaining0 with retainedRuntimeTouched false. The corrected affected gate
+  passes73/73 with56 cached in79.85 seconds.
+
+### Evidence
+
+- `evidence/phase-13/query-count-authorization.txt` and the raw JSONL record the
+  protected acceptance, confirmation finding, exact correction and repeated
+  heavyweight evidence.
+
+### Next action
+
+- Commit and publish one evidence checkpoint, require exact-head protected CI,
+  resolve discussion `3900443731` and request one blocker-boundary confirmation.
+
 ## 2026-08-31 — PR57 coordinated local service recovery
 
 ### Completed

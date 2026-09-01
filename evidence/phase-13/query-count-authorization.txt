@@ -301,16 +301,43 @@ PR57 REVIEW AND PENDING RELEASE EVIDENCE
   the full repeated runtime and 73/73 affected gate. Its evidence head `be6b57d`
   entered run `33462043470`, which proved container identity does not guarantee
   a stable Compose endpoint. Final source `02d6739`, tree `6d9e27b`, passes the
-  complete coordinated-recovery runtime and final 73/73 affected gate. Its
-  evidence checkpoint, new protected CI, discussion resolution and confirmation
-  remain.
-- Publish the new checkpoint once, require protected CI and one confirmation
-  review, merge and confirm exact-main CI before
-  declaring P13-R07/R08/R09 or Phase13 verified/released.
+  complete coordinated-recovery runtime and final 73/73 affected gate. Evidence
+  head 7272f3f passed protected run 33463962414; both initial discussions are
+  resolved. Confirmation discussion 3900443731 then found that the Engagement
+  worker rediscovered an arbitrary two-row profile after setup, so an earlier
+  deleted fixture could be selected nondeterministically.
+
+CONFIRMATION REMEDIATION
+
+Exact-profile correction:
+  Source f5fbe2972c0f844ebf1fac7868d1d4c4116e1df3, tree
+  4f44b714b7a276cf2765d024fc925afddd418607, carries the exact synthetic profile
+  ID emitted by setup inside the runner and supplies only that ID to measurement.
+  The control record is consumed rather than copied to evidence. Measurement
+  verifies the exact profile still owns two in-progress titles and no longer
+  scans or orders unrelated profiles.
+
+Commands:
+  node --test tools/graphql-query-count-proof.test.mjs
+  pnpm --filter @aster/engagement build
+  pnpm engagement:runtime
+  pnpm check:changed
+Results:
+  PASS — focused proof3/3 and strict build pass. The complete Engagement runtime
+  replays the earlier deleted-profile sequence, measures the exact setup profile
+  through Router at ContinueWatching7 (Catalog3/Engagement1/Identity3) in
+  104.127 ms, excludes the control ID from evidence, passes the event/outage
+  suite and cleans remaining0 with retainedRuntimeTouched false. The corrected
+  affected gate passes73/73 with56 cached in79.85 seconds.
+
+- Publish one evidence checkpoint for f5fbe29, require protected CI and one
+  blocker-boundary confirmation, resolve discussion 3900443731, merge and
+  confirm exact-main CI before declaring P13-R07/R08/R09 or Phase13 released.
 
 ROLLBACK
 
-Revert coordinated-recovery source 02d67399aa89f722d44df41de719207472fa9f81,
+Revert exact-profile source f5fbe2972c0f844ebf1fac7868d1d4c4116e1df3,
+coordinated-recovery source 02d67399aa89f722d44df41de719207472fa9f81,
 process-restart source c5b0ecaf247406bcd66bcbc06f9f24c641a2dab0,
 initial recovery source c5ae76077cb981ccaf5a98c6e41dc47cbd2d67d7,
 federated source e0f5e2722b4eb87949671ab7c99f4fb2577fcdb0 and their

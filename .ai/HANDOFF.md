@@ -36,13 +36,22 @@ re-resolves the current loopback proof port and retains the finite semantic
 deadline. The full runtime passes with unchanged counts, both identities
 preserved, endpoint/port changes observed, exact generation/search, one attempt
 in269.302 ms and cleanup0; the final affected gate passes73/73 with61 cached in
-84.672 seconds. Only the final evidence checkpoint remains before publication.
+84.672 seconds. Evidence head `7272f3f` passed protected run `33463962414`; both
+initial discussions are resolved. Confirmation discussion `3900443731` found
+that measurement could rediscover an earlier deleted two-row profile. Final
+source `f5fbe29`, tree `4f44b71`, carries the exact setup profile through a
+private runner control record and removes arbitrary profile ordering. Focused
+proof3/3, strict Engagement build, the complete runtime and corrected gate73/73
+pass. ContinueWatching remains7 queries in104.127 ms; cleanup is0 and retained
+runtime was untouched. Only the final evidence checkpoint remains before
+publication.
 
 ## Active outcome
 
-- Commit the coordinated-recovery evidence, publish source `02d6739` and its
-  checkpoint once and close Phase13 only after protected CI, both initial
-  discussions are resolved, one confirmation, merge and exact-main evidence.
+- Commit the exact-profile remediation evidence, publish source `f5fbe29` and
+  its checkpoint once and close Phase13 only after protected CI, discussion
+  `3900443731` resolution, blocker-boundary confirmation, merge and exact-main
+  evidence.
 
 ## Current local evidence
 
@@ -50,21 +59,23 @@ in269.302 ms and cleanup0; the final affected gate passes73/73 with61 cached in
 - Initial recovery source: `c5ae760`, tree `11b11c2`.
 - Process-restart source: `c5b0eca`, tree `5dadb0a`.
 - Coordinated local recovery source: `02d6739`, tree `6d9e27b`.
+- Exact-profile source: `f5fbe29`, tree `4f44b71`.
 - Router focused tests pass26/26; query proof/classification pass15/15.
 - Discovery exact Router counts: TitleDetail Catalog2; Search Catalog2/
   Discovery3; Home Catalog2/Discovery5. Runtime cleanup0.
-- Engagement exact ContinueWatching count: Catalog3/Engagement1/Identity3.
-  Full event/outage suite passes and runtime cleanup0.
-- Final affected gate passes73/73 with61 cached in84.672 seconds.
+- Engagement exact ContinueWatching count: Catalog3/Engagement1/Identity3 at
+  104.127 ms after carrying the exact setup profile. Full event/outage suite
+  passes and runtime cleanup0.
+- Final affected gate passes73/73 with56 cached in79.85 seconds.
 - Earlier 1/3/5/1 counts are retained only as owner-local supporting evidence.
 
 ## Exact next actions
 
-1. Commit and publish the coordinated-recovery evidence checkpoint once to existing
+1. Commit and publish the exact-profile remediation checkpoint once to existing
    PR57.
-2. Require protected CI, resolve discussions `3899340521`/`3899340535` and run
-   one confirmation review; batch only requirement, security/data, availability
-   or public-contract blockers.
+2. Require protected CI, resolve discussion `3900443731` and run one
+   blocker-boundary confirmation; batch only requirement, security/data,
+   availability or public-contract blockers.
 3. Squash merge after all required gates, then require exact-main CI.
 4. Mark Phase13 released and activate the first Phase14 work item from clean
    main.

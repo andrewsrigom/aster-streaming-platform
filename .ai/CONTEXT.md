@@ -115,8 +115,14 @@ proved Docker can reassign the same container's direct endpoint. Final source
 and retains the finite semantic deadline. Its full runtime passes with unchanged
 counts, identities preserved, endpoint/port changes observed, exact generation,
 one recovery attempt in269.302 ms and cleanup0; the final affected gate
-passes73/73 with61 cached in84.672 seconds. The evidence checkpoint, new
-protected CI, confirmation and release remain.
+passes73/73 with61 cached in84.672 seconds. Evidence head `7272f3f` passed
+protected run `33463962414`, and both initial discussions are resolved.
+Confirmation discussion `3900443731` found nondeterministic rediscovery of a
+prior two-row profile. Source `f5fbe29`, tree `4f44b71`, carries the exact setup
+profile into measurement without publishing its synthetic ID. Focused proof3/3,
+strict Engagement build, the complete runtime and gate73/73 pass; the runtime
+records ContinueWatching7 in104.127 ms and cleanup0. New protected CI,
+discussion resolution, blocker-boundary confirmation and release remain.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

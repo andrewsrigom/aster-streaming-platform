@@ -293,8 +293,15 @@ deadline. The full runtime passes with unchanged counts, both container
 identities preserved, endpoint/port changes observed, exact generation/search,
 one recovery attempt in269.302 ms and cleanup0 in111.911 seconds. The final
 affected gate passes73/73 with61 cached in84.672 seconds. Evidence checkpoint
-publication, new protected CI, discussion resolution, confirmation and release
-remain.
+head `7272f3f` passed protected run `33463962414`, and both initial discussions
+are resolved. Confirmation discussion `3900443731` found that the Engagement
+worker could select an earlier deleted two-row profile after setup. Source
+`f5fbe29`, tree `4f44b71`, now carries the exact setup profile privately into
+measurement and removes arbitrary profile ordering. Focused proof3/3, strict
+Engagement build, the complete runtime and corrected gate73/73 pass. The runtime
+records ContinueWatching7 in104.127 ms, cleanup0 and retainedRuntimeTouched
+false. New protected CI, discussion resolution, blocker-boundary confirmation
+and release remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -856,10 +863,10 @@ gates remain. Phase14 capacity validation and hosted deployment remain planned.
 
 ## Next outcome
 
-For P13-R07/P13-R08/P13-R09 item67, commit the restart-recovery evidence,
-publish source `02d6739` and its checkpoint once, complete exact-head protected
-CI, resolve both initial discussions, request one confirmation, squash merge and
-verify exact-main CI. Then close Phase13 and activate Phase14 from clean main.
+For P13-R07/P13-R08/P13-R09 item67, commit and publish one checkpoint for final
+source `f5fbe29`, complete exact-head protected CI, resolve confirmation
+discussion `3900443731`, request one blocker-boundary confirmation, squash merge
+and verify exact-main CI. Then close Phase13 and activate Phase14 from clean main.
 Inspect the exact historical interrupted Phase12 project only when that same
 Docker engine becomes reachable.
 

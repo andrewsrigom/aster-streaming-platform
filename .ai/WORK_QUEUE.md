@@ -241,8 +241,14 @@ renews Router DNS, re-resolves the current loopback port and retains the finite
 semantic probe. The full runtime passes with unchanged counts, both identities
 preserved, endpoint/port changes observed, exact generation/search, one attempt
 in269.302 ms and cleanup0; the final gate passes73/73 with61 cached in84.672
-seconds. Record this checkpoint, publish once and complete protected CI,
-discussion resolution, confirmation and release.
+seconds. Evidence head `7272f3f` passed protected run `33463962414`; both initial
+discussions are resolved. Confirmation discussion `3900443731` found
+nondeterministic rediscovery of a prior two-row profile. Source `f5fbe29`, tree
+`4f44b71`, carries the exact setup profile privately into measurement. Focused
+proof3/3, strict Engagement build, the complete runtime and gate73/73 pass; the
+runtime records ContinueWatching7 in104.127 ms and cleanup0. Record this final
+checkpoint, publish once and complete protected CI, discussion resolution,
+blocker-boundary confirmation and release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

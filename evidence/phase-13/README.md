@@ -134,7 +134,17 @@ semantic deadline. Its full runtime passed with unchanged counts, both identitie
 preserved, endpoint/port changes observed, exact generation/search, one attempt
 in269.302 ms and cleanup0; the final gate passes73/73 with61 cached in84.672
 seconds. The final evidence checkpoint, protected CI, confirmation and release
-gates remain.
+gates remained at that checkpoint. Evidence head `7272f3f` then passed protected
+run `33463962414`; both initial discussions are resolved. Confirmation discussion
+`3900443731` found that the Engagement worker could rediscover an earlier deleted
+two-row profile instead of the profile created by its setup. Source `f5fbe29`,
+tree `4f44b71`, now carries the exact setup profile into measurement without
+publishing its synthetic ID. Focused proof3/3 and strict Engagement build pass.
+The complete runtime measures ContinueWatching7 in104.127 ms, passes the existing
+event/outage sequence and cleans remaining0 without touching retained runtime.
+The corrected affected gate passes73/73 with56 cached in79.85 seconds. New
+protected CI, discussion resolution, blocker-boundary confirmation and release
+remain.
 
 ## Requirement traceability
 
@@ -145,7 +155,7 @@ gates remain.
 | P13-R12 | [ADR-0045](../../docs/adr/0045-source-owned-trusted-operations.md), GraphQL architecture and release sequence |
 | P13-R03/R04/R05/R10 | Released through [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json), [demand-control evidence](graphql-demand-controls.txt), PR55 tree-identical main `8cd6c0b` and exact-main run `33425758870` attempt2 |
 | P13-R06/R11 | Released through third corrected source `af47c62`, protected head `e6134ae`, PR56 squash main `98deb52` and exact-main run `33448911764`; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record exact-union verification, expired-marker pruning and all review corrections |
-| P13-R07–R09 | Corrected source `e0f5e27`, tree `da9b02b`, passes Router26/26, query proof15/15, both exact federated runtime proofs and the 73/73 affected gate but is not released: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and composition-time semantic audit |
+| P13-R07–R09 | Final correction source `f5fbe29`, tree `4f44b71`, carries the exact setup profile into the Router measurement; focused proof3/3, complete Engagement runtime and corrected 73/73 affected gate pass, but protected confirmation/release remain: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and composition-time semantic audit |
 
 ## Current limitations
 
@@ -157,6 +167,6 @@ gates remain.
 - A trusted document is not user authority. Owner authorization remains required.
 - Shape/list/cost and Identity-aware rate/cache controls are released. The
   N+1/query-count/authorization closeout has corrected local proof after PR57's
-  initial review and a final passing affected gate, but its new
+  initial and confirmation reviews and a passing affected gate, but its new
   protected/confirmation/release gates remain.
 - Hosted providers, credentials, deployment and capacity remain Phase 14.
