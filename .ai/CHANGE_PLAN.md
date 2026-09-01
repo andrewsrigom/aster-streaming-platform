@@ -164,8 +164,8 @@ file and anchor exists.
 - Acceptance result: protected run `33516560847` passes for evidence head
   `d2e4f02`, including every owner runtime, the Docker-only journey and local
   diagnostics. Its confirmation opened one remaining CommonMark type-6
-  visibility finding. The working correction separates end-tag blocks from the
-  complete blank-line-terminated tag set and passes focused contract
+  visibility finding. Source `2f94fdf`, tree `9f05826`, separates end-tag blocks
+  from the complete blank-line-terminated tag set and passes focused contract
   tests41/41, documentation tests25/25 and the affected gate15/15. Publication,
   protected acceptance, merge and exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory

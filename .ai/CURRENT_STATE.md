@@ -66,8 +66,8 @@ evidence remains applicable. Prior protected acceptance passes; protected
 acceptance of the current public-rendering/traceability correction, merge and
 exact-main acceptance remain pending.
 
-Correction source `df8510b0804c54dc36d829e017798f8de322bca5`, tree
-`6b6f81b7e249b0771dce1751ce1dd6b1e1245784`, is the latest frozen correction
+Correction source `2f94fdf2d5d8acf0adb4438a0036f54dc9c1749f`, tree
+`9f058267a8fbdac5102d80f0928478595d99c638`, is the latest frozen correction
 recorded in [Phase14 evidence](../evidence/phase-14/README.md).
 
 Evidence head `136def8`, tree `58e640d`, passed protected run
@@ -152,8 +152,8 @@ including101 platform tests. Correction source `df8510b`, tree `6b6f81b`, is
 frozen without product runtime or deployment changes. Evidence head `d2e4f02`
 passed protected run `33516560847` in full. Its confirmation completed at
 `2026-09-01T14:02:06Z` and discussion `3904890702` found that the incomplete
-CommonMark type-6 tag set could still hide the table. The accepted working
-correction separates the four closing-tag blocks from all62
+CommonMark type-6 tag set could still hide the table. Correction source
+`2f94fdf`, tree `9f05826`, separates the four closing-tag blocks from all62
 blank-line-terminated tags and tests every named tag. Focused capability tests
 pass15/15, combined contract tests pass41/41, documentation tests pass25/25 and
 the affected gate passes15/15, including101 platform tests. Protected

@@ -150,7 +150,8 @@ path/anchor validity to the existing documentation validator.
   complete62-tag blank-line-terminated set and exercises every named tag.
   Focused capability tests pass15/15, combined contract tests pass41/41,
   documentation tests pass25/25 and the affected gate passes15/15, including101
-  platform tests.
+  platform tests. Correction source `2f94fdf`, tree `9f05826`, is frozen without
+  product runtime or deployment changes.
 
 ## Exact next actions
 
