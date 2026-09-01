@@ -72,8 +72,12 @@ passed protected run `33492941279`; that discussion is resolved. Confirmation
 discussions `3902818119`/`3902818121` found incorrect reference-release
 terminology and four stale Phase13 candidate descriptions. Source `c0e4c85`,
 tree `f559fab`, reserves `released` for deployment, aligns the current guides
-and passes the repeated gate9/9. Final corrected protected acceptance remains
-pending.
+and passes the repeated gate9/9. Evidence head `514467d` passed protected run
+`33493742758`; those discussions are resolved. Blocker-boundary discussion
+`3902887907` found hosted-only matrix cells still blocking reference
+verification. Source `1a6233f`, tree `2f9a7b1`, separates P14-R13–R18 local
+completion from P14-R01–R12 hosted evidence and passes the repeated gate9/9.
+Final corrected protected acceptance remains pending.
 
 ## Ordered reference-quality runway
 

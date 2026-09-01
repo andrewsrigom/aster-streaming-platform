@@ -37,6 +37,11 @@ full snapshot through the archival checkpoint remains in
   descriptions. Source `c0e4c85`, tree `f559fab`, uses `verified` for the
   local checkpoint, aligns the guides and passes the repeated gate9/9 with0
   cached.
+- Evidence head `514467d` passed protected run `33493742758`; both status
+  discussions are resolved. Blocker-boundary discussion `3902887907` found
+  that hosted-only coverage-matrix cells still blocked reference verification.
+  Source `1a6233f`, tree `2f9a7b1`, scopes local completion to P14-R13–R18
+  plus fresh released-checkpoint reproduction and passes the repeated gate9/9.
 
 ### Evidence
 

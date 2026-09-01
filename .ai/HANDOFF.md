@@ -51,6 +51,11 @@ Publish one documentation candidate that:
   found incorrect reference-release terminology and four stale Phase13
   candidate descriptions. Source `c0e4c85`, tree `f559fab`, corrects both
   public-contract findings and passes the repeated gate9/9.
+- Evidence head `514467d` passed protected run `33493742758`; both status
+  discussions are resolved. Blocker-boundary discussion `3902887907` found
+  hosted-only matrix evidence still blocking the reference checkpoint. Source
+  `1a6233f`, tree `2f9a7b1`, separates the completion conditions and passes
+  the repeated gate9/9.
 
 Executable product behavior is unchanged.
 
@@ -58,9 +63,9 @@ Executable product behavior is unchanged.
 
 1. Publish the current corrected checkpoint to PR58 if needed; do not create an
    additional empty or duplicate evidence commit.
-2. Require final corrected protected CI, resolve discussions
-   `3902818119`/`3902818121`, request blocker-boundary confirmation, then
-   squash merge and require exact-main CI.
+2. Require final corrected protected CI, resolve discussion `3902887907`,
+   request blocker-boundary confirmation, then squash merge and require
+   exact-main CI.
 3. Start item69 from clean released main and build the capability index.
 
 ## Execution boundary

@@ -107,6 +107,10 @@ memory; do not change product behavior in this item.
   `33492941279`. Confirmation discussions `3902818119`/`3902818121` found
   reference-release terminology and four stale Phase13 candidate descriptions.
   Source `c0e4c85`, tree `f559fab`, corrects both and passes the repeated
+  gate9/9. Evidence head `514467d` passed protected run `33493742758`;
+  blocker-boundary discussion `3902887907` found hosted-only matrix cells
+  could still block reference verification. Source `1a6233f`, tree
+  `2f9a7b1`, separates those completion conditions and passes the repeated
   gate9/9; final corrected protected acceptance is pending
 - Iteration gate: repository-memory, documentation and formatting checks
 - Candidate gate: affected-scope gate selected from the exact documentation diff

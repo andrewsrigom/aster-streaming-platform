@@ -41,7 +41,7 @@ remains applicable.
 ### Pending acceptance
 
 - final corrected evidence-checkpoint protected CI;
-- blocker-boundary confirmation after the status corrections;
+- blocker-boundary confirmation after the completion-scope correction;
 - squash merge with candidate-tree identity;
 - exact-main CI.
 
@@ -77,6 +77,20 @@ Source `c0e4c8585f752bf1f7bcada2c38cb047a23e89b1`, tree
 deployed track, uses `verified` for the local reference checkpoint and aligns
 all four current Phase13 guides with its exact release record. The repeated
 local changed-scope gate passes9/9 tasks with0 cached.
+
+Evidence checkpoint `514467dc17e948e56354827a0d85c9181445e7b3`,
+tree `e34853bcfc594b7b1bc07a5e0cdb9ae5ef6e7d6d`, passed protected run
+`33493742758`; both status discussions are resolved. Blocker-boundary
+confirmation completed at `2026-09-01T09:49:05Z`. Discussion `3902887907`
+found that the engineering-demonstration completion rule still treated hosted
+event-loop/load/heap, game-day, operational-readiness and media-capacity cells as
+reference-track prerequisites.
+
+Source `1a6233fb90edfd6ab1100ee752147b6ff8a96236`, tree
+`2f9a7b19c49120be82ac6e2152d18a4f11f3b3f0`, labels those matrix cells as
+hosted P14-R01–R12 work and makes P14-R13–R18 plus fresh reproduction of already
+released local checkpoints the complete reference-verification condition. The
+repeated local changed-scope gate passes9/9 tasks.
 
 ## Planned evidence
 
