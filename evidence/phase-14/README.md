@@ -144,12 +144,12 @@ Source commit `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
 ### Local candidate evidence
 
 The following final checks pass on the corrected source tree at
-`2026-09-01T11:02:18Z`:
+`2026-09-01T11:32:09Z`:
 
 | Check | Result |
 |---|---|
-| `pnpm docs:test` | PASS — 16/16 documentation and capability-verifier tests |
-| `pnpm docs:check` | PASS — 250 documents, 2,879 headings, 1,623 links, four supported status claims, eleven capability rows, zero violations |
+| `pnpm docs:test` | PASS — 17/17 documentation and capability-verifier tests |
+| `pnpm docs:check` | PASS — 250 documents, 2,880 headings, 1,623 links, four supported status claims, eleven capability rows, zero violations |
 | `pnpm typecheck` | PASS |
 | Focused ESLint | PASS — verifier and its tests |
 | `pnpm ai:check` | PASS — 10 files, 75 queue items, 62 session entries, active/target P14-R14 |
@@ -202,8 +202,8 @@ waiting for the `scenario-catalog` TraceQL search for trace
 `0e089c7a8a474aaf0241cc3323d1ad8d`; scoped cleanup completed. The same
 diagnostic path passed on initial protected run `33498081610`, and no product
 runtime path changed. The run is recorded as a failed temporal observation,
-not accepted evidence; the later CI-contract correction supersedes this head
-and requires a new protected run.
+not accepted evidence; the failed step belongs to a subsequently cancelled run,
+and the later CI-contract correction supersedes this head.
 
 Confirmation review completed at `2026-09-01T10:55:55Z` and opened discussion
 `3903385086`: a later change confined to the capability index would select the
@@ -218,6 +218,37 @@ validation checks that both commands remain in that specific job; moving them
 elsewhere fails the new regression test. Focused policy/index tests pass32/32,
 and the repeated changed-scope gate passes15/15 tasks. Publication, protected
 acceptance and one final blocker-boundary confirmation remain pending.
+
+### Protected correction result and additional boundary remediation
+
+Evidence head `6c899e575df86196348fcdae2a01454ee2b9c57b`, tree
+`0f6a6426e37432ac999eb810e86111c59f61cf9e`, passed protected run
+`33500581310`. The always-run governance job exercised the capability verifier
+and tests successfully. Source quality, all owner integrations, generated media,
+the Docker/browser journey, all three injected diagnostic scenarios, scoped
+cleanup, dependency audit and the aggregate gate also passed. This successful
+diagnostic repeat supersedes the temporal TraceQL observation from cancelled
+run `33499512053` without hiding it.
+
+The blocker-boundary confirmation completed at `2026-09-01T11:26:19Z` and
+opened two further public-contract findings:
+
+- discussion `3903615478` demonstrated that the governance-job matcher could
+  consume an inserted job before `quality`, allowing the commands to move into
+  an `if: false` job without a policy violation;
+- discussion `3903615489` demonstrated that existing but unrelated repository
+  links could be exchanged across capability roles while both validators still
+  passed.
+
+Correction source `6d17f13eaffd3c2c3243cbd7f983bd066afd90a2`, tree
+`37ded461d71b2e23ea5197650f879c94888b3b04`, extracts `governance` only until
+the next top-level job and binds every capability/role pair to its reviewed
+destination sequence. Regression tests insert the skipped intermediate job and
+swap real Requirement, Implementation, Adverse test, Evidence and Operations
+destinations. Focused policy/index tests pass33/33, documentation tests pass
+17/17 and the repeated changed-scope gate passes15/15 tasks. Publication,
+protected acceptance and one further blocker-boundary confirmation remain
+pending because both findings change the protected/public contract.
 
 ## Planned evidence
 

@@ -39,6 +39,14 @@ full snapshot through the archival checkpoint remains in
   executes both in the always-run governance job and adds a job-scoped policy
   regression. Focused tests pass32/32 and the corrected changed-scope gate
   passes15/15.
+- Evidence head `6c899e5`, tree `0f6a642`, passed protected run `33500581310`,
+  including owner integrations, the Docker/browser journey, all three injected
+  diagnostic scenarios and scoped cleanup.
+- Confirmation discussions `3903615478`/`3903615489` exposed an
+  intermediate-job bypass in CI policy and role-agnostic capability links.
+  Correction `6d17f13`, tree `37ded46`, bounds the job structurally and binds
+  exact reviewed per-role destinations. Focused tests pass33/33,
+  documentation tests pass17/17 and the changed-scope gate passes15/15.
 
 ### Evidence
 
@@ -53,9 +61,10 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish the current correction evidence, resolve discussion `3903385086`,
-  wait for protected CI and request one final blocker-boundary confirmation.
-  Then merge and complete exact-main verification before activating P14-R15.
+- Publish the current correction evidence, resolve discussions
+  `3903615478`/`3903615489`, wait for protected CI and request one further
+  blocker-boundary confirmation. Then merge and complete exact-main
+  verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

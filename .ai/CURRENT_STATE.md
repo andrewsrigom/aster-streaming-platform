@@ -48,13 +48,13 @@ is claimed.
 Item69 implements P14-R14. The public capability index now maps eleven required
 capabilities to requirements, authoritative owners, representative source,
 focused adverse tests, checked-in evidence and operations. Its dependency-free
-verifier requires exact coverage, owner/status vocabulary and
-repository-relative traceability links; existing documentation validation
-proves the concrete paths, anchors, root-escape policy and symbolic-target
-policy.
+verifier requires exact coverage, owner/status vocabulary and the reviewed
+destination sequence for every capability/role pair; existing documentation
+validation proves the concrete paths, anchors, root-escape policy and
+symbolic-target policy.
 
-Focused documentation tests pass16/16. Documentation validation passes for250
-documents, 2,879 headings, 1,623 links, four supported status claims and the
+Focused documentation tests pass17/17. Documentation validation passes for250
+documents, 2,880 headings, 1,623 links, four supported status claims and the
 eleven exact capability rows. The always-run protected governance job now
 executes the capability verifier and its adverse tests even for a
 documentation-only change; CI policy fails if either command moves outside that
@@ -64,9 +64,9 @@ behavior changed, so heavyweight PostgreSQL, browser, media and Docker journey
 evidence remains applicable. Protected publication, review, merge and
 exact-main acceptance remain pending.
 
-Source `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
-`78742f48c2f939b9073f419aaded775be1e58876`, is the local candidate recorded
-in [Phase14 evidence](../evidence/phase-14/README.md).
+Correction source `6d17f13eaffd3c2c3243cbd7f983bd066afd90a2`, tree
+`37ded461d71b2e23ea5197650f879c94888b3b04`, is the current local candidate
+recorded in [Phase14 evidence](../evidence/phase-14/README.md).
 
 Evidence head `136def8`, tree `58e640d`, passed protected run
 `33498081610`. Initial review discussions `3903242620`/`3903242629` found an
@@ -80,7 +80,14 @@ always-run governance job and adds a job-scoped CI-policy regression. The
 repeated local gate passes15/15; publication and new protected acceptance are
 pending. Run `33499512053` on the superseded head is not accepted because its
 Local platform diagnostic exercise timed out waiting for the Catalog TraceQL
-search, although scoped cleanup completed.
+search, although scoped cleanup completed. Evidence head `6c899e5`, tree
+`0f6a642`, then passed protected run `33500581310`, including all three
+diagnostic scenarios and scoped cleanup. Its confirmation opened discussions
+`3903615478`/`3903615489` for an over-broad governance-job match and
+role-agnostic repository links. Current correction `6d17f13`, tree `37ded46`,
+bounds the job at the next top-level key, binds exact per-role destinations and
+passes focused tests33/33 plus the local gate15/15. Publication and protected
+confirmation remain pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

@@ -40,8 +40,9 @@ path/anchor validity to the existing documentation validator.
 - Published the eleven-row index with concrete requirement, source, adverse
   test, evidence and operations links.
 - Added a bounded dependency-free verifier for exact IDs/order, authoritative
-  owner/status vocabulary, complete cells, local links, UTF-8 and size limits.
-- Added six focused verifier tests and wired the check into `docs:check`,
+  owner/status vocabulary, reviewed per-role destinations, complete cells,
+  local links, UTF-8 and size limits.
+- Added seven focused verifier tests and wired the check into `docs:check`,
   `docs:test`, root navigation, the documentation map and the file index.
 - Wired the verifier and its tests into the always-run protected governance
   job. CI policy now rejects removing either command or moving it to a job that
@@ -61,14 +62,25 @@ path/anchor validity to the existing documentation validator.
   verifier.
 - Correction source `2fff10d`, tree `2b80d56`, closes that CI-contract gap and
   passes the corrected changed-scope gate15/15.
+- Evidence head `6c899e5`, tree `0f6a642`, passed protected run `33500581310`,
+  including all owner integrations, the Docker/browser journey, all three
+  diagnostic scenarios and cleanup. Confirmation discussions
+  `3903615478`/`3903615489` then exposed an intermediate-job bypass and
+  role-agnostic link validation.
+- Current correction source `6d17f13`, tree `37ded46`, bounds `governance` at
+  the next top-level job and requires the exact reviewed destination sequence
+  for every capability/role pair. Focused tests pass33/33, documentation tests
+  pass17/17 and the changed-scope gate passes15/15.
 
 ## Exact next actions
 
 1. Record and publish the current correction evidence without amending source
-   `2fff10d`.
-2. Resolve discussion `3903385086` after the correction is visible, then wait
-   for protected CI on the exact evidence head.
-3. Request one final blocker-boundary confirmation on the corrected head.
+   `6d17f13`.
+2. Resolve discussions `3903615478`/`3903615489` after the correction is
+   visible, then wait for protected CI on the exact evidence head.
+3. Request one further blocker-boundary confirmation on the corrected head;
+   this extra round is permitted because both findings changed the protected
+   CI/public traceability contract.
 4. Merge the accepted candidate, verify exact-main CI and close item69 before
    activating item70/P14-R15.
 
