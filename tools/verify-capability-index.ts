@@ -25,24 +25,6 @@ export const CAPABILITY_INDEX_COLUMNS = [
   "Operations",
 ] as const;
 
-export const CAPABILITY_INDEX_ROWS = [
-  { id: "identity-profiles", owner: "Identity and Profiles", status: "released" },
-  { id: "catalog", owner: "Catalog", status: "released" },
-  { id: "playback", owner: "Playback", status: "released" },
-  { id: "engagement", owner: "Engagement", status: "released" },
-  { id: "discovery", owner: "Discovery", status: "released" },
-  { id: "router-graphql", owner: "Router", status: "released" },
-  { id: "web-accessibility", owner: "Web", status: "released" },
-  { id: "media", owner: "Catalog", status: "released" },
-  { id: "resilience", owner: "Runtime", status: "released" },
-  { id: "observability", owner: "Telemetry", status: "released" },
-  {
-    id: "repository-workflows",
-    owner: "Repository governance",
-    status: "released",
-  },
-] as const;
-
 const TRACEABILITY_COLUMNS = [
   "Requirement",
   "Implementation",
@@ -51,12 +33,190 @@ const TRACEABILITY_COLUMNS = [
   "Operations",
 ] as const;
 
+type TraceabilityColumn = (typeof TRACEABILITY_COLUMNS)[number];
+
+export const CAPABILITY_INDEX_ROWS = [
+  {
+    id: "identity-profiles",
+    owner: "Identity and Profiles",
+    status: "released",
+    targets: {
+      Requirement: [
+        "../specs/phase-02-identity-profiles.md#p02-r03",
+        "../specs/phase-02-identity-profiles.md#p02-r10",
+      ],
+      Implementation: ["../../services/identity/src/application/profiles.ts"],
+      "Adverse test": ["../../services/identity/test/profiles.test.ts"],
+      Evidence: ["../../evidence/phase-02/release.txt"],
+      Operations: ["../../services/identity/README.md"],
+    },
+  },
+  {
+    id: "catalog",
+    owner: "Catalog",
+    status: "released",
+    targets: {
+      Requirement: [
+        "../specs/phase-03-catalog-rights.md#p03-r04",
+        "../specs/phase-03-catalog-rights.md#p03-r10",
+      ],
+      Implementation: ["../../services/catalog/src/application/commands.ts"],
+      "Adverse test": ["../../services/catalog/test/catalog-workflow.test.ts"],
+      Evidence: ["../../evidence/phase-03/release.txt"],
+      Operations: ["../../services/catalog/README.md"],
+    },
+  },
+  {
+    id: "playback",
+    owner: "Playback",
+    status: "released",
+    targets: {
+      Requirement: [
+        "../specs/phase-07-playback.md#p07-r01",
+        "../specs/phase-07-playback.md#p07-r10",
+      ],
+      Implementation: ["../../services/playback/src/application/create-session.ts"],
+      "Adverse test": ["../../services/playback/test/create-session.test.ts"],
+      Evidence: ["../../evidence/phase-07/release.md"],
+      Operations: ["../../services/playback/README.md"],
+    },
+  },
+  {
+    id: "engagement",
+    owner: "Engagement",
+    status: "released",
+    targets: {
+      Requirement: [
+        "../specs/phase-08-engagement.md#p08-r01",
+        "../specs/phase-08-engagement.md#p08-r04",
+      ],
+      Implementation: ["../../services/engagement/src/application/record-progress.ts"],
+      "Adverse test": ["../../services/engagement/test/record-progress.test.ts"],
+      Evidence: ["../../evidence/phase-08/release.md"],
+      Operations: ["../../services/engagement/README.md"],
+    },
+  },
+  {
+    id: "discovery",
+    owner: "Discovery",
+    status: "released",
+    targets: {
+      Requirement: [
+        "../specs/phase-09-discovery.md#p09-r03",
+        "../specs/phase-09-discovery.md#p09-r08",
+      ],
+      Implementation: ["../../services/discovery/src/application/home-cache.ts"],
+      "Adverse test": ["../../services/discovery/test/home-cache.test.ts"],
+      Evidence: ["../../evidence/phase-09/web-discovery-release.md"],
+      Operations: ["../../services/discovery/README.md"],
+    },
+  },
+  {
+    id: "router-graphql",
+    owner: "Router",
+    status: "released",
+    targets: {
+      Requirement: [
+        "../specs/phase-13-graphql-performance-security.md#p13-r03",
+        "../specs/phase-13-graphql-performance-security.md#p13-r06",
+        "../specs/phase-13-graphql-performance-security.md#p13-r07",
+      ],
+      Implementation: ["../../apps/router/src/demand.ts"],
+      "Adverse test": ["../../apps/router/test/demand.test.ts"],
+      Evidence: ["../../evidence/phase-13/release.md"],
+      Operations: ["../../apps/router/README.md"],
+    },
+  },
+  {
+    id: "web-accessibility",
+    owner: "Web",
+    status: "released",
+    targets: {
+      Requirement: ["../specs/phase-05-web-ssr.md#p05-r05", "../specs/phase-05-web-ssr.md#p05-r10"],
+      Implementation: ["../../apps/web/features/identity/dialog.tsx"],
+      "Adverse test": ["../../apps/web/test/browser/accessibility.spec.ts"],
+      Evidence: ["../../evidence/phase-09/web-discovery-release.md"],
+      Operations: ["../../apps/web/README.md"],
+    },
+  },
+  {
+    id: "media",
+    owner: "Catalog",
+    status: "released",
+    targets: {
+      Requirement: [
+        "../specs/phase-06-media-pipeline.md#p06-r01",
+        "../specs/phase-06-media-pipeline.md#p06-r10",
+      ],
+      Implementation: ["../../services/catalog/src/application/process-media.ts"],
+      "Adverse test": ["../../services/catalog/test/media-processing.test.ts"],
+      Evidence: ["../../evidence/phase-06/release.md"],
+      Operations: ["../../services/catalog/MEDIA_PUBLICATION.md"],
+    },
+  },
+  {
+    id: "resilience",
+    owner: "Runtime",
+    status: "released",
+    targets: {
+      Requirement: [
+        "../specs/phase-11-resilience.md#p11-r02",
+        "../specs/phase-11-resilience.md#p11-r03",
+        "../specs/phase-11-resilience.md#p11-r08",
+      ],
+      Implementation: ["../../packages/runtime/src/safe-read.ts"],
+      "Adverse test": ["../../packages/runtime/test/safe-read.test.ts"],
+      Evidence: ["../../evidence/phase-11/game-days.md"],
+      Operations: ["../operations/RUNBOOKS.md"],
+    },
+  },
+  {
+    id: "observability",
+    owner: "Telemetry",
+    status: "released",
+    targets: {
+      Requirement: [
+        "../specs/phase-12-observability.md#p12-r01",
+        "../specs/phase-12-observability.md#p12-r08",
+        "../specs/phase-12-observability.md#p12-r09",
+      ],
+      Implementation: ["../../packages/telemetry/src/infrastructure/create-telemetry.ts"],
+      "Adverse test": ["../../packages/telemetry/test/telemetry-contract.test.ts"],
+      Evidence: ["../../evidence/phase-12/failure-diagnosis.md"],
+      Operations: ["../operations/OPERATIONAL_OVERVIEW.md"],
+    },
+  },
+  {
+    id: "repository-workflows",
+    owner: "Repository governance",
+    status: "released",
+    targets: {
+      Requirement: [
+        "../specs/phase-00-foundation.md#p00-r05",
+        "../specs/phase-00-foundation.md#p00-r06",
+        "../specs/phase-00-foundation.md#p00-r08",
+        "../specs/phase-00-foundation.md#p00-r10",
+      ],
+      Implementation: ["../../tools/run-quality-gate.ts"],
+      "Adverse test": ["../../tools/run-quality-gate.test.ts"],
+      Evidence: ["../../evidence/phase-00/clean-checkout-closeout.txt"],
+      Operations: ["../operations/REPOSITORY_GOVERNANCE.md"],
+    },
+  },
+] as const satisfies readonly {
+  id: string;
+  owner: string;
+  status: string;
+  targets: Readonly<Record<TraceabilityColumn, readonly string[]>>;
+}[];
+
 type CapabilityIndexColumn = (typeof CAPABILITY_INDEX_COLUMNS)[number];
 
 export type CapabilityIndexRule =
   | "duplicate-id"
   | "duplicate-table"
   | "invalid-header"
+  | "invalid-link"
   | "invalid-owner"
   | "invalid-row"
   | "invalid-separator"
@@ -116,14 +276,11 @@ function cellsMatch(left: readonly string[], right: readonly string[]): boolean 
   return left.length === right.length && left.every((cell, index) => cell === right[index]);
 }
 
-function hasRepositoryRelativeLink(value: string): boolean {
-  for (const match of value.matchAll(MARKDOWN_LINK)) {
+function markdownLinkTargets(value: string): string[] {
+  return [...value.matchAll(MARKDOWN_LINK)].flatMap((match) => {
     const target = match.groups?.["target"];
-    if (target?.startsWith("../") || target?.startsWith("./")) {
-      return true;
-    }
-  }
-  return false;
+    return target ? [target] : [];
+  });
 }
 
 function parseDataRow(
@@ -171,7 +328,11 @@ function validateRow(
   }
 
   for (const column of TRACEABILITY_COLUMNS) {
-    if (!hasRepositoryRelativeLink(row.cells[column])) {
+    if (
+      !markdownLinkTargets(row.cells[column]).some(
+        (target) => target.startsWith("../") || target.startsWith("./"),
+      )
+    ) {
       addViolation(violations, {
         detail: `${column} must contain a repository-relative Markdown link`,
         line: row.line,
@@ -213,6 +374,16 @@ function validateRow(
       line: row.line,
       rule: "invalid-status",
     });
+  }
+  for (const column of TRACEABILITY_COLUMNS) {
+    const actualTargets = markdownLinkTargets(row.cells[column]);
+    if (!cellsMatch(actualTargets, expected.targets[column])) {
+      addViolation(violations, {
+        detail: `${id} ${column} links must match the reviewed capability destination`,
+        line: row.line,
+        rule: "invalid-link",
+      });
+    }
   }
   if (CAPABILITY_INDEX_ROWS[index]?.id !== id) {
     addViolation(violations, {

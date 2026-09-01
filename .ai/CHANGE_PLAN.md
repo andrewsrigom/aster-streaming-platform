@@ -38,9 +38,9 @@ domain vocabulary and repository-relative links.
 Add a dependency-free verifier with focused tests and execute both in the
 always-required governance job, including for documentation-only changes. It
 requires the exact capability IDs, authoritative owner and status vocabulary,
-the complete mapping columns and at least one Markdown link per traceability
-cell. Existing `docs:check` continues to prove that every linked file and anchor
-exists.
+the complete mapping columns and the reviewed destination set for every
+capability/role pair. Existing `docs:check` continues to prove that every linked
+file and anchor exists.
 
 ## Boundaries
 
@@ -63,8 +63,12 @@ exists.
   vocabulary and does not promote hosted P14-R01–R12 work.
 - Missing, duplicate, extra or malformed capability rows fail closed with
   bounded deterministic diagnostics.
+- Existing but unrelated repository links fail when they do not match the
+  reviewed requirement, implementation, adverse-test, evidence or operations
+  destination for that capability.
 - Documentation-only changes cannot bypass the capability-index verifier or
-  its adverse tests in protected CI.
+  its adverse tests in protected CI; the policy parser bounds `governance` at
+  the next top-level job rather than a later named job.
 - No product behavior, schema, persistence, event, cache, media or deployment
   configuration changes.
 
@@ -75,8 +79,9 @@ exists.
 | Required capability row is missing or duplicated | `docs:check` fails with its stable capability ID | Finite verifier diagnostic |
 | Unknown row or owner/status drift appears | Reject the index before publication | Finite verifier diagnostic |
 | A traceability column lacks a Markdown link | Reject the row before the general link scan | Column-specific diagnostic |
+| A valid repository link is moved into the wrong capability or role | Reject the row against its reviewed destination set | Capability-and-column diagnostic |
 | A linked path or anchor disappears | Existing documentation validation fails | Broken-link or missing-anchor diagnostic |
-| A later workflow edit removes the index check or its tests | CI policy tests fail before protected acceptance | Command-specific policy diagnostic |
+| A later workflow edit removes, relocates or isolates the index check/tests in another job | CI policy tests fail before protected acceptance | Job-scoped command diagnostic |
 | Table size or input encoding is invalid | Stop within fixed byte/row limits | Bounded input diagnostic |
 
 ## Data and contracts
@@ -118,7 +123,8 @@ exists.
 - Application: not applicable
 - Integration: capability-index verifier against the checked-in document
 - Contract: accept exact coverage; reject missing/duplicate/extra rows,
-  owner/status drift, missing columns/links, malformed UTF-8 and bounds
+  owner/status drift, missing columns/links, role-swapped destinations,
+  governance-job isolation, malformed UTF-8 and bounds
 - Browser: not applicable
 - Performance/failure: dependency-free bounded parser completes within the
   existing documentation gate

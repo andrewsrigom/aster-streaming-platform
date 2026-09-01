@@ -62,6 +62,19 @@ function addRequirement(
   }
 }
 
+function workflowJobSource(source: string, jobName: string): string {
+  const lines = source.replace(/\r\n?/gu, "\n").split("\n");
+  const start = lines.findIndex((line) => line === `  ${jobName}:`);
+  if (start < 0) {
+    return "";
+  }
+  const relativeEnd = lines
+    .slice(start + 1)
+    .findIndex((line) => /^ {2}[A-Za-z0-9_-]+:\s*$/u.test(line));
+  const end = relativeEnd < 0 ? lines.length : start + 1 + relativeEnd;
+  return lines.slice(start + 1, end).join("\n");
+}
+
 export function validateWorkflowPolicy(
   source: string,
   file = ".github/workflows/ci.yml",
@@ -222,8 +235,7 @@ export function validateWorkflowPolicy(
     /package-manager-cache:\s*false/u,
     "implicit setup-node caching must be disabled",
   );
-  const governanceJob =
-    source.match(/\n {2}governance:\n(?<job>[\s\S]*?)\n {2}quality:\n/u)?.groups?.["job"] ?? "";
+  const governanceJob = workflowJobSource(source, "governance");
   for (const [pattern, detail] of [
     [
       /node \.\/tools\/verify-capability-index\.ts/u,
