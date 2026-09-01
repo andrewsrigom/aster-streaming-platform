@@ -196,12 +196,19 @@ path/anchor validity to the existing documentation validator.
   Focused contracts pass44/44, documentation validation covers1,633 links and
   the affected gate passes15/15, including101 platform tests. Correction source
   `d45f3ea`, tree `b1a004f`, freezes the batch.
+- Checkpoint `366c92a` passed exact-head run `33558557773`. Its exact-head review
+  opened findings `3908433143`/`3908433153`/`3908433161` for missing Discovery
+  P10-R04/Phase 10 SWR ownership, missing Engagement P08-R03 replay ownership and
+  incomplete P05-R10 browser proof.
+- Correction source `44218b6`, tree `f2e3665`, links those exact requirements,
+  evidence and browser proofs. Focused contracts pass44/44, documentation tests
+  pass28/28, documentation validation covers1,638 links and the affected gate
+  passes15/15. No product runtime or deployment behavior changed.
 
 ## Exact next actions
 
-1. Freeze and publish the exact three-finding correction, resolve its review
-   threads and request confirmation only after GitHub exposes the new exact PR
-   head.
+1. Publish the exact correction checkpoint, resolve the three review threads
+   and request confirmation only after GitHub exposes the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating
    item70/P14-R15.

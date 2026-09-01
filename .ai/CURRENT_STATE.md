@@ -213,6 +213,18 @@ platform-policy,39 CI-policy and13 repository-memory tests. Publication remains
 pending. Correction source `d45f3eafd56dabaff36b3f60f355110f99432d1d`,
 tree `b1a004f08a1caf8aa8a9df07293df7571e9a3c22`, freezes the batch.
 
+Checkpoint `366c92ad59d4380fa63bf9d081e2b378e7d1d2d8` passed exact-head run
+`33558557773`. Its exact-head review completed at `2026-09-01T21:05:08Z` and
+opened findings `3908433143`/`3908433153`/`3908433161`: the cached Discovery
+row omitted P10-R04 and its Phase 10 SWR evidence, Engagement replay omitted its
+owning P08-R03 requirement, and the P05-R10 route omitted public SSR/hydration
+and real profile-selection browser proofs. Correction source
+`44218b64fd3fae8d4cc17b1679d5c2dadc60eed1`, tree
+`f2e366557fc14bf91227a796d84a9e303d4a00b1`, closes the three navigation gaps.
+Focused contracts pass44/44, documentation tests pass28/28, documentation
+validation covers1,638 links and the affected gate passes15/15. Publication
+remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;

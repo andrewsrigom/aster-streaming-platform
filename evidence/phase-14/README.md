@@ -550,6 +550,28 @@ Correction source `d45f3eafd56dabaff36b3f60f355110f99432d1d`, tree
 `b1a004f08a1caf8aa8a9df07293df7571e9a3c22`, freezes the batch. Publication
 remains pending.
 
+Checkpoint `366c92ad59d4380fa63bf9d081e2b378e7d1d2d8` passed exact-head workflow
+`33558557773`, including source quality, Local platform, governance and the
+aggregate gate. Exact-head review completed at `2026-09-01T21:05:08Z` and
+opened three findings:
+
+- `3908433143` found that the cached Discovery row linked only its Phase 09
+  independent-rail contract and omitted P10-R04 plus Phase 10 SWR evidence;
+- `3908433153` found that the Engagement replay capability omitted its owning
+  P08-R03 requirement;
+- `3908433161` found that the P05-R10 route omitted the browser sources for SSR,
+  hydration, public navigation and real profile selection.
+
+Correction source `44218b64fd3fae8d4cc17b1679d5c2dadc60eed1`, tree
+`f2e366557fc14bf91227a796d84a9e303d4a00b1`, adds the missing requirement,
+evidence and browser destinations while retaining the existing Phase 09 proof
+for the independent rails. Focused capability/CI-policy tests pass44/44.
+Documentation tests pass28/28 and validation covers250 documents, 2,880
+headings, 1,638 links, four status claims and eleven rows with zero violations.
+The affected gate passes15/15, including101 platform-policy,39 CI-policy and13
+repository-memory tests. No product runtime or deployment behavior changed.
+Publication remains pending.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory
