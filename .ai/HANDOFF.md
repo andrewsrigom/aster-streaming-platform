@@ -43,23 +43,32 @@ path/anchor validity to the existing documentation validator.
   owner/status vocabulary, complete cells, local links, UTF-8 and size limits.
 - Added six focused verifier tests and wired the check into `docs:check`,
   `docs:test`, root navigation, the documentation map and the file index.
+- Wired the verifier and its tests into the always-run protected governance
+  job. CI policy now rejects removing either command or moving it to a job that
+  a documentation-only change skips.
 - Focused documentation tests pass16/16; documentation validation passes for250
-  documents and eleven capability rows. The final changed-scope gate passes
-  13/13 tasks after building the17 workspace packages required by type-aware
-  lint in the fresh worktree.
+  documents and eleven capability rows. The corrected changed-scope gate passes
+  15/15 tasks, including39 CI-policy regression tests.
 - Source `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
   `78742f48c2f939b9073f419aaded775be1e58876`, is the coherent local candidate.
 - Evidence head `136def8` passed protected run `33498081610`. Initial review
   opened discussions `3903242620`/`3903242629`; correction source `845933f`,
   tree `73b5487`, addresses both and passes the repeated local gate13/13.
+- Protected run `33499512053` on superseded head `1348c3d` passed governance
+  and dependency review but failed the Local platform job on a Catalog TraceQL
+  search timeout; scoped cleanup completed. Confirmation review then opened
+  discussion `3903385086` because docs-only CI could bypass the capability
+  verifier.
+- Correction source `2fff10d`, tree `2b80d56`, closes that CI-contract gap and
+  passes the corrected changed-scope gate15/15.
 
 ## Exact next actions
 
-1. Publish the commit that contains the remediation evidence; do not create an
-   empty or duplicate evidence-only commit.
-2. Wait for protected CI on that exact head and resolve both addressed review
-   discussions.
-3. Request one confirmation review on the corrected head.
+1. Record and publish the current correction evidence without amending source
+   `2fff10d`.
+2. Resolve discussion `3903385086` after the correction is visible, then wait
+   for protected CI on the exact evidence head.
+3. Request one final blocker-boundary confirmation on the corrected head.
 4. Merge the accepted candidate, verify exact-main CI and close item69 before
    activating item70/P14-R15.
 

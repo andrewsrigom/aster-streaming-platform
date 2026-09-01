@@ -31,6 +31,14 @@ full snapshot through the archival checkpoint remains in
 - Correction `845933f`, tree `73b5487`, uses canonical `released`, keeps
   local/non-hosted qualification in prose, advances from the existing
   checkpoint and passes the repeated local gate13/13.
+- Protected run `33499512053` on superseded head `1348c3d` passed governance
+  and dependency review but the Local platform diagnostic exercise timed out
+  waiting for the Catalog TraceQL search; exact scoped cleanup completed.
+- Confirmation discussion `3903385086` found that docs-only CI could bypass
+  the capability verifier and its tests. Correction `2fff10d`, tree `2b80d56`,
+  executes both in the always-run governance job and adds a job-scoped policy
+  regression. Focused tests pass32/32 and the corrected changed-scope gate
+  passes15/15.
 
 ### Evidence
 
@@ -45,9 +53,9 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish the current evidence checkpoint and wait for protected CI; do not
-  create an empty or duplicate evidence commit. Then complete review, merge and
-  exact-main verification before activating P14-R15.
+- Publish the current correction evidence, resolve discussion `3903385086`,
+  wait for protected CI and request one final blocker-boundary confirmation.
+  Then merge and complete exact-main verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

@@ -143,18 +143,18 @@ Source commit `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
 
 ### Local candidate evidence
 
-The following final checks pass on the source tree at
-`2026-09-01T10:32:30Z`:
+The following final checks pass on the corrected source tree at
+`2026-09-01T11:02:18Z`:
 
 | Check | Result |
 |---|---|
 | `pnpm docs:test` | PASS — 16/16 documentation and capability-verifier tests |
-| `pnpm docs:check` | PASS — 250 documents, 2,875 headings, 1,622 links, four supported status claims, eleven capability rows, zero violations |
+| `pnpm docs:check` | PASS — 250 documents, 2,879 headings, 1,623 links, four supported status claims, eleven capability rows, zero violations |
 | `pnpm typecheck` | PASS |
 | Focused ESLint | PASS — verifier and its tests |
 | `pnpm ai:check` | PASS — 10 files, 75 queue items, 62 session entries, active/target P14-R14 |
 | `pnpm turbo run build` | PASS — 17/17 workspace packages |
-| `pnpm check:changed` | PASS — 13/13 tasks; includes 101 platform-policy and 13 repository-memory tests |
+| `pnpm check:changed` | PASS — 15/15 tasks after the CI-policy correction; includes 101 platform-policy, 39 CI-policy and 13 repository-memory tests |
 | `git diff --check` | PASS |
 
 The first changed-scope attempt in the fresh worktree started type-aware lint
@@ -191,7 +191,33 @@ Source `845933f4c396b9f81a4cff3d5e1b6a530aec7482`, tree
 keeps the non-hosted qualification explicit, and directs resumption to publish
 the existing checkpoint without a duplicate commit. Focused documentation,
 repository-memory and lint checks pass; the repeated changed-scope gate passes
-13/13 tasks. Protected confirmation remains pending.
+13/13 tasks.
+
+### Confirmation finding and protected docs-only enforcement
+
+Evidence head `1348c3d05a706d95ce9ac11e643bdaf4a803bc4d` started protected
+run `33499512053`. Its documentation/security and dependency-review jobs
+passed. The Local platform job reached the diagnostic exercises but timed out
+waiting for the `scenario-catalog` TraceQL search for trace
+`0e089c7a8a474aaf0241cc3323d1ad8d`; scoped cleanup completed. The same
+diagnostic path passed on initial protected run `33498081610`, and no product
+runtime path changed. The run is recorded as a failed temporal observation,
+not accepted evidence; the later CI-contract correction supersedes this head
+and requires a new protected run.
+
+Confirmation review completed at `2026-09-01T10:55:55Z` and opened discussion
+`3903385086`: a later change confined to the capability index would select the
+documentation-only path, while the always-run governance job executed only the
+general documentation verifier and omitted the capability verifier and its
+tests.
+
+Correction source `2fff10d76595abf2372c301d0cacd4c098f7fa14`, tree
+`2b80d5694a2e2cd3bcb52bbd661e4d0dd05cf7fd`, now executes the capability
+verifier and adverse tests inside the always-run governance job. CI policy
+validation checks that both commands remain in that specific job; moving them
+elsewhere fails the new regression test. Focused policy/index tests pass32/32,
+and the repeated changed-scope gate passes15/15 tasks. Publication, protected
+acceptance and one final blocker-boundary confirmation remain pending.
 
 ## Planned evidence
 

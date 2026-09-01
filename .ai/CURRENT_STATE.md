@@ -54,13 +54,15 @@ proves the concrete paths, anchors, root-escape policy and symbolic-target
 policy.
 
 Focused documentation tests pass16/16. Documentation validation passes for250
-documents, 2,875 headings, 1,622 links, four supported status claims and the
-eleven exact capability rows. After building the17 workspace packages required
-by type-aware lint in this fresh worktree, the final changed-scope gate passes
-13/13 tasks, including101 platform-policy and13 repository-memory tests. No
-product runtime behavior changed, so heavyweight PostgreSQL, browser, media and
-Docker journey evidence remains applicable. Protected publication, review,
-merge and exact-main acceptance remain pending.
+documents, 2,879 headings, 1,623 links, four supported status claims and the
+eleven exact capability rows. The always-run protected governance job now
+executes the capability verifier and its adverse tests even for a
+documentation-only change; CI policy fails if either command moves outside that
+job. The corrected changed-scope gate passes15/15 tasks, including101
+platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
+behavior changed, so heavyweight PostgreSQL, browser, media and Docker journey
+evidence remains applicable. Protected publication, review, merge and
+exact-main acceptance remain pending.
 
 Source `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
 `78742f48c2f939b9073f419aaded775be1e58876`, is the local candidate recorded
@@ -71,7 +73,14 @@ Evidence head `136def8`, tree `58e640d`, passed protected run
 extended status label and one stale already-completed commit instruction.
 Correction source `845933f`, tree `73b5487`, uses canonical `released` with
 local/non-hosted qualification in prose, resumes from the existing checkpoint
-and passes the repeated local gate13/13. Protected confirmation is pending.
+and passes the repeated local gate13/13. Confirmation discussion `3903385086`
+then identified that docs-only protected CI could bypass the capability check.
+Source `2fff10d`, tree `2b80d56`, runs the verifier and its tests in the
+always-run governance job and adds a job-scoped CI-policy regression. The
+repeated local gate passes15/15; publication and new protected acceptance are
+pending. Run `33499512053` on the superseded head is not accepted because its
+Local platform diagnostic exercise timed out waiting for the Catalog TraceQL
+search, although scoped cleanup completed.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
