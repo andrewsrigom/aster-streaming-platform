@@ -231,6 +231,13 @@ full snapshot through the archival checkpoint remains in
   pass47/47 and the affected gate passes15/15, including101 platform-policy,39
   CI-policy and13 repository-memory tests. No product runtime or deployment
   behavior changed.
+- Exact-head review on checkpoint `6f45c50`, tree `5323983`, opened findings
+  `3909327287`/`3909327298` for an escaped closing link bracket and incomplete
+  Catalog lifecycle proof.
+- Correction source `c7a1dd7`, tree `79046ff`, closes both. Focused contracts
+  pass47/47, documentation validation covers1,646 links and the affected gate
+  passes15/15, including101 platform-policy,39 CI-policy and13 repository-memory
+  tests. No product runtime or deployment behavior changed.
 
 ### Next action
 

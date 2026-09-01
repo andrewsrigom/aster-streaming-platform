@@ -645,6 +645,25 @@ capability/CI-policy tests pass47/47. The affected gate passes15/15,
 including101 platform-policy,39 CI-policy and13 repository-memory tests. No
 product runtime or deployment behavior changed. Publication remains pending.
 
+Checkpoint `6f45c50ab76e1e55f991ac491e5a407d2213730f`, tree
+`5323983c92fe86cc425567262fb802c4168aa1d3`, received exact-head review at
+`2026-09-01T23:24:56Z`. It opened two findings:
+
+- `3909327287` found that an escaped closing link bracket could satisfy a proof
+  destination that CommonMark does not render as an interactive link;
+- `3909327298` found that the Catalog P03-R04/P03-R10 route stopped before the
+  generated-publication integration proof for public visibility, retirement
+  removal and its outbox record.
+
+Correction source `c7a1dd78ab4ef4a12d8bc88e165410395ece1c7a`, tree
+`79046ff12ad19a4513f20ffdcbd4b1fc4ce0fca2`, rejects escapes on every structural
+link delimiter and adds the generated-publication lifecycle proof. Focused
+capability/CI-policy tests pass47/47. Documentation validation covers250
+documents, 2,880 headings, 1,646 links, four status claims and eleven rows with
+zero violations. The affected gate passes15/15, including101 platform-policy,
+39 CI-policy and13 repository-memory tests. No product runtime or deployment
+behavior changed. Publication remains pending.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and

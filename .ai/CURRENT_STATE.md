@@ -279,6 +279,18 @@ pass47/47 and the affected gate passes15/15, including101 platform-policy,39
 CI-policy and13 repository-memory tests. No product runtime or deployment
 behavior changed. Publication remains pending.
 
+Checkpoint `6f45c50ab76e1e55f991ac491e5a407d2213730f`, tree
+`5323983c92fe86cc425567262fb802c4168aa1d3`, received exact-head review at
+`2026-09-01T23:24:56Z`. Findings `3909327287`/`3909327298` showed that an
+escaped closing link bracket could satisfy a non-rendered proof link and that
+the Catalog row stopped before generated publication, public visibility,
+retirement removal and outbox proof. Correction source
+`c7a1dd78ab4ef4a12d8bc88e165410395ece1c7a`, tree
+`79046ff12ad19a4513f20ffdcbd4b1fc4ce0fca2`, closes both. Focused contracts
+pass47/47, documentation validation covers1,646 links and the affected gate
+passes15/15. No product runtime or deployment behavior changed. Publication
+remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;

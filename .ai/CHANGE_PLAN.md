@@ -271,7 +271,9 @@ file and anchor exists.
   acceptance, merge and exact-main acceptance remain pending. Exact-head review
   on checkpoint `6f45c50` opened findings `3909327287` and `3909327298` for an
   escaped closing link bracket and incomplete Catalog lifecycle proof. The
-  working correction closes both
+  working correction closes both. Focused contracts pass47/47, documentation
+  validation covers1,646 links and the affected gate passes15/15. Correction
+  source `c7a1dd7`, tree `79046ff`, freezes the batch
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff
