@@ -591,6 +591,24 @@ status claims and eleven rows with zero violations. The affected gate passes
 15/15, including101 platform-policy,39 CI-policy and13 repository-memory tests.
 No product runtime or deployment behavior changed. Publication remains pending.
 
+Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
+`33563190969`, including source quality, Local platform, governance and the
+aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and
+opened two findings:
+
+- `3908769122` found that P06-R10 linked rights admission but omitted disposable
+  scratch-cleanup and previous-publication rollback adverse proof;
+- `3908769126` found that the protected half of repository workflows omitted
+  the CI workflow plus path-classification and workflow-policy adverse tests.
+
+Correction source `6d9551a12d5432b438a1221f355d8d8e71fb8485`, tree
+`8bed61ffb3d772d1364d8472878da4c6a7402600`, adds the exact five proof
+destinations. Focused capability/CI-policy tests pass45/45. Documentation tests
+pass29/29 and validation covers250 documents, 2,880 headings, 1,643 links, four
+status claims and eleven rows with zero violations. The affected gate passes
+15/15, including101 platform-policy,39 CI-policy and13 repository-memory tests.
+No product runtime or deployment behavior changed. Publication remains pending.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory

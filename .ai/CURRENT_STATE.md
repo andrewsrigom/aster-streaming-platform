@@ -236,6 +236,17 @@ contracts pass45/45, documentation tests pass29/29 and the affected gate passes
 15/15, including101 platform-policy,39 CI-policy and13 repository-memory tests.
 Publication remains pending.
 
+Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head run
+`33563190969`. Its exact-head review completed at `2026-09-01T21:54:26Z` and
+opened findings `3908769122`/`3908769126`: P06-R10 stopped before scratch
+cleanup/publication rollback proof, and the repository-workflows row stopped
+before the protected-CI implementation and its path/policy adverse tests.
+Correction source `6d9551a12d5432b438a1221f355d8d8e71fb8485`, tree
+`8bed61ffb3d772d1364d8472878da4c6a7402600`, closes both routes. Focused
+contracts pass45/45, documentation tests pass29/29, documentation validation
+covers1,643 links and the affected gate passes15/15. Publication remains
+pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;

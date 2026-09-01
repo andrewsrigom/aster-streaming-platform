@@ -202,6 +202,13 @@ full snapshot through the archival checkpoint remains in
   contracts pass45/45, documentation tests pass29/29 and the affected gate
   passes15/15, including101 platform-policy,39 CI-policy and13
   repository-memory tests. No product runtime or deployment behavior changed.
+- Checkpoint `c69cb0e` passed exact-head run `33563190969`. Its exact-head review
+  opened findings `3908769122`/`3908769126` for missing P06-R10 cleanup/rollback
+  proof and missing protected-CI implementation/adverse proof.
+- Correction source `6d9551a`, tree `8bed61f`, closes both routes. Focused
+  contracts pass45/45, documentation tests pass29/29, documentation validation
+  covers1,643 links and the affected gate passes15/15. No product runtime or
+  deployment behavior changed.
 
 ### Next action
 

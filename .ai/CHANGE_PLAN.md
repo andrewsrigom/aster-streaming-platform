@@ -230,8 +230,10 @@ file and anchor exists.
   tests pass29/29 and the affected gate passes15/15. Exact-head run
   `33563190969` passed on checkpoint `c69cb0e`; its exact-head review opened
   findings `3908769122` and `3908769126` for missing P06-R10 cleanup/rollback
-  proof and missing protected-CI implementation/adverse proof. The working
-  correction closes both routes. Publication, protected acceptance, merge and
+  proof and missing protected-CI implementation/adverse proof. Correction source
+  `6d9551a`, tree `8bed61f`, closes both routes. Focused contracts pass45/45,
+  documentation tests pass29/29, documentation validation covers1,643 links and
+  the affected gate passes15/15. Publication, protected acceptance, merge and
   exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
