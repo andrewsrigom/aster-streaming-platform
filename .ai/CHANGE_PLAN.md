@@ -314,7 +314,10 @@ matrix.
   runtime passes with ten distinct Search and Home hydrations at unchanged
   SearchTitles5 and HomePublic7 counts, plus the existing projection,
   failure-isolation, restart-recovery, log-safety and cleanup0 assertions.
-  Source and affected candidate gates remain before publishing this remediation.
+  Source `3d90dff`, tree `331be6b`, is frozen. Its affected candidate gate
+  passes73/73 with56 cached in69.532 seconds. Evidence checkpoint publication,
+  protected CI, discussion resolution, permitted exact-candidate confirmation,
+  merge and exact-main gates remain.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.

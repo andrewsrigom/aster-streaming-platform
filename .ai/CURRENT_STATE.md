@@ -56,9 +56,12 @@ protected run `33447062908`, its discussions are resolved, final confirmation
 `5485910820` found no major issue, PR56 squash main `98deb52` retained the
 candidate tree and exact-main run `33448911764` passed. Item67 is the sole
 `IN_PROGRESS` item on `feat/p13-n-plus-one-authorization`, rebased onto that
-released main. Final local source `1ec01c3`, tree `f27a9f8`, corrects the final
-known Catalog query-budget blocker and its clean-checkout package typing;
-clean source63/63 and affected73/73 gates pass.
+released main. Published head `c9ef4ea` passed protected run `33470076413`.
+Final confirmation discussion `3900877477` found the single-title workload
+could not detect per-entity amplification. Local source `3d90dff`, tree
+`331be6b`, now proves ten-title Search/Home hydration and repairs the Catalog
+parameter boundary exposed by that workload. Real maximum-batch20 integration,
+full Discovery runtime and affected73/73 gate pass.
 
 ## Verified
 
@@ -318,8 +321,19 @@ top-level Catalog build declaration. Final source `1ec01c3`, tree `f27a9f8`,
 uses a narrow typed `@aster/catalog/query-plan` subpath without duplicating plan
 values. A fresh detached clean-checkout source gate passes63/63 with0 cached in
 159.682 seconds; the repeated affected gate passes73/73 with63 cached in54.731
-seconds. Publication, protected CI, discussion resolution, one final
-blocker-boundary confirmation and release remain.
+seconds. Published evidence head `c9ef4ea` passed protected run `33470076413`.
+Final confirmation discussion `3900877477` found the single-title workload
+could not detect per-entity query amplification. Local source `3d90dff`, tree
+`331be6b`, seeds ten exact rights-valid titles and requires ten distinct Search
+and Home hydrations. Its first run exposed that four parameters per fence made
+ten entities require 43 parameters against the shared maximum32. Catalog now
+sends one bounded JSON tuple parameter while preserving exact ID/version/
+rights/publication matching. Catalog249/249 and real maximum-batch20 integration
+pass with cleanup0. The complete Discovery runtime keeps SearchTitles5 and
+HomePublic7 at ten entities, passes restart/failure/log assertions and cleanup0;
+the affected gate passes73/73 with56 cached in69.532 seconds. Evidence
+publication, corrected protected CI, discussion resolution, permitted
+exact-candidate confirmation and release remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -876,16 +890,19 @@ controls are released through PR56 squash main `98deb52` and exact-main run
 `33448911764`.
 N+1/query-count proof and owner-authorization abuse tests have corrected local
 evidence plus passing clean63/63 and final73/73 gates after PR57 initial review,
-bounded process-restart correction, exact-profile correction and Catalog
-query-plan/clean-package correction, but protected confirmation/release remain.
+bounded process-restart correction, exact-profile correction, Catalog
+query-plan/clean-package correction and a real ten-entity/maximum-batch parameter
+remediation, but corrected protected confirmation/release remain.
 Phase14 capacity validation and hosted deployment remain planned.
 
 ## Next outcome
 
-For P13-R07/P13-R08/P13-R09 item67, commit and publish one checkpoint for final
-source `1ec01c3`, complete exact-head protected CI, resolve discussion `3900633355`,
-request one final blocker-boundary confirmation, squash merge and verify
-exact-main CI. Then close Phase13 and activate Phase14 from clean main.
+For P13-R07/P13-R08/P13-R09 item67, commit and publish one evidence checkpoint
+for source `3d90dff`, complete exact-head protected CI, resolve discussion
+`3900877477`, request the permitted exact-candidate confirmation, squash merge
+and verify exact-main CI. Then close Phase13 and activate the newly documented
+reference/readability direction from clean main; hosted deployment is not its
+immediate objective.
 Inspect the exact historical interrupted Phase12 project only when that same
 Docker engine becomes reachable.
 

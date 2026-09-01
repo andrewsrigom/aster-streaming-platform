@@ -258,8 +258,15 @@ platform. Clean checkout exposed Router lint before Catalog's top-level build
 declaration. Final source `1ec01c3`, tree `f27a9f8`, resolves the owner contract
 through a narrow typed subpath. Fresh clean source passes63/63 with0 cached in
 159.682 seconds; the repeated affected gate passes73/73 with63 cached in54.731
-seconds. Record this final checkpoint, publish once and complete protected CI,
-discussion resolution, one final blocker-boundary confirmation and release.
+seconds. Published head `c9ef4ea` passed protected run `33470076413`. Final
+confirmation discussion `3900877477` found the single-title workload could not
+detect per-entity amplification. Source `3d90dff`, tree `331be6b`, proves ten
+distinct Search/Home hydrations and repairs the four-parameters-per-fence
+adapter boundary it exposed. Catalog249/249, real maximum-batch20 integration,
+full Discovery runtime and affected73/73 with56 cached in69.532 seconds pass
+with cleanup0. Record this checkpoint, publish once and complete corrected
+protected CI, discussion resolution, permitted exact-candidate confirmation
+and release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

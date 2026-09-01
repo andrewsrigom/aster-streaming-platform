@@ -4,6 +4,35 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-01 — PR57 representative multi-entity confirmation remediation
+
+### Completed
+
+- Published head `c9ef4ea` passed protected run `33470076413`. Final confirmation
+  discussion `3900877477` found that one hydrated title could not detect
+  per-entity query amplification.
+- The first ten-title run exposed a real Catalog limit: four parameters per fence
+  required43 parameters against the shared maximum32. Hydration failed closed,
+  no acceptance was claimed and cleanup reported remaining0.
+- Source `3d90dff`, tree `331be6b`, sends one bounded JSON tuple parameter while
+  preserving exact fence matching. Catalog249/249 and the real integration prove
+  all20 DataLoader entities with cleanup0. The complete Discovery runtime proves
+  ten distinct Search/Home entities at unchanged totals5/7, passes recovery and
+  failure checks and cleans remaining0. The affected gate passes73/73 with56
+  cached in69.532 seconds.
+
+### Evidence
+
+- `evidence/phase-13/query-count-authorization.txt`, raw JSONL and the Phase13
+  index record the diagnostic failure, exact remediation, real maximum batch,
+  federated measurements, limitations and rollback.
+
+### Next action
+
+- Publish one evidence checkpoint for source `3d90dff`, require corrected
+  exact-head protected CI, resolve discussion `3900877477`, request the permitted
+  exact-candidate confirmation and complete merge/exact-main acceptance.
+
 ## 2026-09-01 — PR57 Catalog query-budget confirmation remediation
 
 ### Completed

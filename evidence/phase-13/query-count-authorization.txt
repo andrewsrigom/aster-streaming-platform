@@ -390,14 +390,59 @@ The repeated candidate passed:
   TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm check:changed
   PASS — 73/73 tasks, 63 cached, 54.731 seconds.
 
-- Publish one evidence checkpoint for source 1ec01c3, resolve discussion
-  3900633355 after protected CI, run one final blocker-boundary confirmation,
+MULTI-ENTITY CONFIRMATION REMEDIATION
+
+Final confirmation discussion 3900877477 found that the one-title Search and
+Home observations could not detect query amplification per hydrated entity. The
+proof now creates ten exact rights-valid Catalog titles before Discovery's real
+rebuild, sends the current persisted SearchTitles(first:20) and
+HomePublic(first:10) documents through Router, and requires ten distinct fully
+hydrated Catalog entities in both responses.
+
+The first execution exposed a real Catalog boundary rather than an N+1 count:
+`findManyAtFences` expanded four parameters per entity. Three scope parameters
+plus ten four-field fences required 43 parameters, exceeding the shared
+PostgreSQL transaction guard of 32. Search reached Discovery3 and the initial
+Catalog fence query, but all entity hydration failed closed as unavailable.
+The run made no acceptance claim and cleanup reported remaining0.
+
+Source 3d90dffb7fcb36bfcddf4cdeceb33e8c1e7fd088, tree
+331be6b6e1e3082b130258c4675e2b8fa8e991a5, encodes the already validated and
+bounded fence tuples in one JSON parameter. PostgreSQL still matches each exact
+ID, title version, rights revision and publication ID. This uses four statement
+parameters regardless of batch cardinality and therefore preserves Catalog's
+reviewed 20-title request-scoped DataLoader maximum below the shared guard.
+
+Commands:
+  node --test tools/graphql-query-count-proof.test.mjs
+  pnpm --filter @aster/catalog build
+  pnpm --filter @aster/catalog test
+  pnpm catalog:integration
+  pnpm discovery:runtime
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm check:changed
+Results:
+  PASS — focused proof4/4, Catalog249/249 and strict Catalog build pass. Real
+  Catalog integration resolves all20 maximum-batch candidates at their exact
+  fences and cleans remaining0 in25,011 ms. The complete Discovery runtime
+  creates/projects ten titles, observes TitleDetail2 (Catalog2) in36.338 ms,
+  SearchTitles5 (Catalog2/Discovery3) in211.665 ms and HomePublic7
+  (Catalog2/Discovery5) in149.035 ms, with ten distinct hydrated titles in each
+  list. Projection10/documents20, broker lag0, quarantine/replay,
+  failure-isolation, finite safe logs and coordinated restart recovery all pass;
+  restart recovery completes in one attempt in68.789 ms and cleanup reports
+  remaining0. The full runtime completes in142,430 ms. The affected candidate
+  gate passes73/73 with56 cached in69.532 seconds.
+
+- Publish one evidence checkpoint for source 3d90dff, complete protected CI,
+  resolve discussion 3900877477, run the permitted exact-candidate confirmation,
   then merge and confirm exact-main CI before declaring P13-R07/R08/R09 or
   Phase13 released.
 
 ROLLBACK
 
-Revert final typed-contract source 1ec01c320193e558661520db0303d4f37ecf76f4,
+Revert multi-entity source 3d90dffb7fcb36bfcddf4cdeceb33e8c1e7fd088,
+final typed-contract source 1ec01c320193e558661520db0303d4f37ecf76f4,
 Catalog query-plan source 20b5f27eafe49779bc4ac832a6436c32076d8846,
 exact-profile source f5fbe2972c0f844ebf1fac7868d1d4c4116e1df3,
 coordinated-recovery source 02d67399aa89f722d44df41de719207472fa9f81,
