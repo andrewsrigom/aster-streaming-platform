@@ -337,8 +337,9 @@ matrix.
   Discovery runtime pass with unchanged query counts, ten distinct entities,
   recovery and cleanup0. Protected run `33474006491` also had an independent
   known TraceQL indexing timeout in the PostgreSQL diagnostic scenario. Freeze
-  the corrected source, rerun the affected gate, publish one checkpoint and
-  repeat the two failed protected jobs through the normal exact-head workflow.
+  corrected source `3d2f6ee`, tree `cef2ee2`; its affected gate passes73/73 with
+  60 cached in61.806 seconds. Publish one checkpoint and repeat the two failed
+  protected jobs through the normal exact-head workflow.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.
@@ -356,7 +357,8 @@ matrix.
 
 ## Rollback or recovery
 
-Revert the typed query-plan contract source `1ec01c3`, Catalog owner-query-plan
+Revert projection-lease assertion source `3d2f6ee`, multi-entity source
+`3d90dff`, the typed query-plan contract source `1ec01c3`, Catalog owner-query-plan
 source `20b5f27`, exact-profile source `f5fbe29`,
 final coordinated-recovery source
 `02d6739`, process-restart source

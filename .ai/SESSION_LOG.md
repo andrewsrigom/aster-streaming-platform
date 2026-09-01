@@ -4,6 +4,34 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-01 — PR57 protected projection-lease assertion correction
+
+### Completed
+
+- Evidence head `71f3ff5` entered protected run `33474006491`. Clean source and
+  owner jobs through Engagement passed. Discovery kept the exact counts and ten
+  hydrated Search titles, then rejected legitimate freshness299 because its
+  harness required exact300; cleanup was0.
+- The parallel Local platform job passed through GraphQL controls, then its
+  finite wait expired before TraceQL indexed the PostgreSQL diagnostic after
+  recovery. Its exact project cleaned; this is separate from the changed proof.
+- Source `3d2f6ee`, tree `cef2ee2`, derives the inclusive 298–300-second interval
+  from the 300-second Catalog lease and two-second Discovery indexing bound.
+  Focused proof5/5, the complete ten-title runtime and affected73/73 with60
+  cached in61.806 seconds pass; runtime cleanup is0.
+
+### Evidence
+
+- `evidence/phase-13/query-count-authorization.txt`, raw JSONL and the Phase13
+  index retain both protected failures, the exact temporal contract, repeated
+  local results and limitations.
+
+### Next action
+
+- Publish one checkpoint for source `3d2f6ee`, require corrected exact-head
+  protected CI, resolve discussion `3900877477`, request the permitted
+  exact-candidate confirmation and complete merge/exact-main acceptance.
+
 ## 2026-09-01 — PR57 representative multi-entity confirmation remediation
 
 ### Completed

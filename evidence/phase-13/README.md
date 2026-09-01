@@ -168,9 +168,17 @@ bounded JSON tuple parameter while preserving exact fence matching. Focused
 proof4/4, Catalog249/249, real maximum-batch20 integration and the complete
 Discovery runtime pass. SearchTitles remains5 (Catalog2/Discovery3) and
 HomePublic remains7 (Catalog2/Discovery5) while both hydrate ten distinct
-titles; cleanup0 and the affected73/73 gate also pass. Evidence publication,
-protected CI, discussion resolution, permitted exact-candidate confirmation,
-merge and exact-main release remain.
+titles; cleanup0 and the affected73/73 gate also pass. Published evidence head
+`71f3ff5` entered run `33474006491`: clean source and every owner through
+Engagement passed, while Discovery rejected a legitimate freshness299 because
+the harness required exact300. Source `3d2f6ee`, tree `cef2ee2`, derives and
+tests the inclusive 298–300 interval from the existing 300-second source lease
+and two-second indexing-lag bound. Focused proof5/5, the complete ten-title
+runtime and affected73/73 gate pass with cleanup0. The same protected run had an
+independent known TraceQL indexing timeout after PostgreSQL recovered; its exact
+diagnostic project cleaned. Evidence publication, corrected protected CI,
+discussion resolution, permitted exact-candidate confirmation, merge and
+exact-main release remain.
 
 ## Requirement traceability
 
@@ -181,7 +189,7 @@ merge and exact-main release remain.
 | P13-R12 | [ADR-0045](../../docs/adr/0045-source-owned-trusted-operations.md), GraphQL architecture and release sequence |
 | P13-R03/R04/R05/R10 | Released through [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json), [demand-control evidence](graphql-demand-controls.txt), PR55 tree-identical main `8cd6c0b` and exact-main run `33425758870` attempt2 |
 | P13-R06/R11 | Released through third corrected source `af47c62`, protected head `e6134ae`, PR56 squash main `98deb52` and exact-main run `33448911764`; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record exact-union verification, expired-marker pruning and all review corrections |
-| P13-R07–R09 | Multi-entity source `3d90dff`, tree `331be6b`, retains the exact four-query Catalog cold/retry plan and proves ten-entity Search/Home hydration at unchanged counts; real Catalog maximum-batch20 integration, full Discovery runtime and affected73/73 pass, but evidence publication/protected confirmation/release remain: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and composition-time semantic audit |
+| P13-R07–R09 | Projection-lease source `3d2f6ee`, tree `cef2ee2`, retains multi-entity source `3d90dff`'s exact Catalog query plan and ten-entity Search/Home hydration at unchanged counts; focused proof5/5, real Catalog maximum-batch20 integration, full Discovery runtime and affected73/73 pass, but evidence publication/corrected protected confirmation/release remain: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and composition-time semantic audit |
 
 ## Current limitations
 
@@ -193,7 +201,7 @@ merge and exact-main release remain.
 - A trusted document is not user authority. Owner authorization remains required.
 - Shape/list/cost and Identity-aware rate/cache controls are released. The
   N+1/query-count/authorization closeout has corrected the exact-profile,
-  Catalog worst-case query-plan and representative multi-entity findings with
-  passing focused, real PostgreSQL, full runtime and affected gates, but its new
-  protected/confirmation/release gates remain.
+  Catalog worst-case query-plan, representative multi-entity and projection-
+  lease proof findings with passing focused, real PostgreSQL, full runtime and
+  affected gates, but its new protected/confirmation/release gates remain.
 - Hosted providers, credentials, deployment and capacity remain Phase 14.

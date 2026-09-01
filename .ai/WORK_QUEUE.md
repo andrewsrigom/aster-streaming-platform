@@ -264,9 +264,14 @@ detect per-entity amplification. Source `3d90dff`, tree `331be6b`, proves ten
 distinct Search/Home hydrations and repairs the four-parameters-per-fence
 adapter boundary it exposed. Catalog249/249, real maximum-batch20 integration,
 full Discovery runtime and affected73/73 with56 cached in69.532 seconds pass
-with cleanup0. Record this checkpoint, publish once and complete corrected
-protected CI, discussion resolution, permitted exact-candidate confirmation
-and release.
+with cleanup0. Evidence head `71f3ff5` entered protected run `33474006491`.
+Clean source and owners through Engagement passed; Discovery then rejected valid
+freshness299 because the harness assumed exact300, and Local platform separately
+timed out on known TraceQL indexing after PostgreSQL recovered. Both fixtures
+cleaned. Source `3d2f6ee`, tree `cef2ee2`, derives the valid 298–300 interval;
+focused proof5/5, full runtime and affected73/73 with60 cached in61.806 seconds
+pass. Record this checkpoint, publish once and complete corrected protected CI,
+discussion resolution, permitted exact-candidate confirmation and release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

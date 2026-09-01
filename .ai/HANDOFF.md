@@ -31,9 +31,20 @@ HomePublic(first:10) at unchanged totals5/7, passes projection, quarantine,
 failure-isolation, log-safety and coordinated restart recovery, and cleans
 remaining0. The affected candidate passes73/73 with56 cached in69.532 seconds.
 
+Evidence head `71f3ff5` entered protected run `33474006491`. Clean source, real
+platform integration and owner runtimes through Engagement passed. Discovery
+kept the exact counts and ten hydrated Search titles, then rejected legitimate
+freshness299 because the harness required exact300; cleanup0. Local platform
+separately timed out waiting for TraceQL to index the PostgreSQL diagnostic after
+recovery and cleaned its exact project. Source `3d2f6ee`, tree `cef2ee2`, derives
+the valid inclusive 298–300-second interval from the existing 300-second source
+lease and two-second indexing-lag contract. Focused proof5/5, the complete
+ten-title runtime and affected73/73 with60 cached in61.806 seconds pass with
+cleanup0.
+
 ## Active outcome
 
-- Publish one evidence checkpoint for source `3d90dff` and close Phase13 only
+- Publish one evidence checkpoint for source `3d2f6ee` and close Phase13 only
   after corrected protected CI, discussion `3900877477` resolution, the permitted
   exact-candidate confirmation, merge and exact-main evidence.
 
@@ -47,7 +58,8 @@ remaining0. The affected candidate passes73/73 with56 cached in69.532 seconds.
 - Catalog query-plan source: `20b5f27`, tree `700bdc4`.
 - Final typed contract source: `1ec01c3`, tree `f27a9f8`.
 - Representative multi-entity source: `3d90dff`, tree `331be6b`.
-- Router focused tests pass26/26; focused query proof passes4/4.
+- Projection-lease source: `3d2f6ee`, tree `cef2ee2`.
+- Router focused tests pass26/26; focused query proof passes5/5.
 - Catalog passes249/249; real PostgreSQL resolves all20 reviewed batch entities
   and cleanup is0.
 - Discovery exact Router counts: TitleDetail2/Catalog2; Search5/Catalog2+
@@ -57,12 +69,12 @@ remaining0. The affected candidate passes73/73 with56 cached in69.532 seconds.
   104.127 ms after carrying the exact setup profile. Full event/outage suite
   passes and runtime cleanup0.
 - Fresh detached clean source gate passes63/63 with0 cached in159.682 seconds.
-- Latest affected gate passes73/73 with56 cached in69.532 seconds.
+- Latest affected gate passes73/73 with60 cached in61.806 seconds.
 - Earlier 1/3/5/1 counts are retained only as owner-local supporting evidence.
 
 ## Exact next actions
 
-1. Commit and publish the evidence checkpoint for source `3d90dff` once to
+1. Commit and publish the evidence checkpoint for source `3d2f6ee` once to
    existing PR57.
 2. Require protected CI, resolve discussion `3900877477` and run the permitted
    exact-candidate confirmation; batch only requirement, security/data,

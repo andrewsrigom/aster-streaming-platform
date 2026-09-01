@@ -434,14 +434,54 @@ Results:
   remaining0. The full runtime completes in142,430 ms. The affected candidate
   gate passes73/73 with56 cached in69.532 seconds.
 
-- Publish one evidence checkpoint for source 3d90dff, complete protected CI,
-  resolve discussion 3900877477, run the permitted exact-candidate confirmation,
-  then merge and confirm exact-main CI before declaring P13-R07/R08/R09 or
-  Phase13 released.
+PROTECTED PROJECTION-LEASE ASSERTION CORRECTION
+
+Evidence head 71f3ff50bd210a6c873636ab7db2bfd59833dc70 entered protected run
+33474006491. Dependency review, classification and documentation/security
+passed. The source job passed clean source quality, real platform integration,
+Catalog, Playback and Engagement. Discovery integration also passed. The full
+Discovery runtime created and projected all ten titles, then observed
+TitleDetail2 (Catalog2) in32.354 ms and SearchTitles5 (Catalog2/Discovery3) in
+77.788 ms with ten distinct hydrated titles. The proof stopped only because a
+legitimate 299-second `visibleUntil - indexedAt` value did not equal its assumed
+300 seconds. Cleanup reported remaining0 in93,921 ms.
+
+The Catalog source lease is at most300 seconds. Discovery's accepted projection
+contract permits indexing from the same observation second through two seconds
+later. Source 3d2f6ee30ccf9ce5ce0b230e54595419635d38b6, tree
+cef2ee2c31436e608b71e03396c3a38bf5884114, therefore validates the derived
+inclusive 298–300-second interval. It rejects shorter, longer and non-integer
+values instead of weakening expiry or freshness semantics.
+
+Commands:
+  node --test tools/graphql-query-count-proof.test.mjs
+  pnpm discovery:runtime
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+    TURBO_SCM_BASE=main TURBO_SCM_HEAD=HEAD pnpm check:changed
+Results:
+  PASS — focused proof5/5 covers300,299,298 and rejects297,301/non-integer. The
+  complete repeated runtime observes TitleDetail2 in45.277 ms, SearchTitles5 in
+  197.579 ms and HomePublic7 in152.744 ms with ten distinct Search/Home titles,
+  freshness300, one restart-recovery attempt in65.042 ms and cleanup0 in100,689
+  ms. The affected candidate gate passes73/73 with60 cached in61.806 seconds.
+
+Protected run 33474006491 had one independent Local platform failure: the
+Catalog diagnostic passed, PostgreSQL recovered, then its finite wait expired
+before TraceQL indexed the PostgreSQL scenario trace. The exact diagnostic
+project cleaned successfully. This known isolated indexing timeout does not
+change the Discovery correction; the protected workflow must still pass before
+release.
+
+- Publish one evidence checkpoint for source 3d2f6ee, complete corrected
+  protected CI, resolve discussion 3900877477, run the permitted exact-candidate
+  confirmation, then merge and confirm exact-main CI before declaring
+  P13-R07/R08/R09 or Phase13 released.
 
 ROLLBACK
 
-Revert multi-entity source 3d90dffb7fcb36bfcddf4cdeceb33e8c1e7fd088,
+Revert projection-lease assertion source
+3d2f6ee30ccf9ce5ce0b230e54595419635d38b6, multi-entity source
+3d90dffb7fcb36bfcddf4cdeceb33e8c1e7fd088,
 final typed-contract source 1ec01c320193e558661520db0303d4f37ecf76f4,
 Catalog query-plan source 20b5f27eafe49779bc4ac832a6436c32076d8846,
 exact-profile source f5fbe2972c0f844ebf1fac7868d1d4c4116e1df3,

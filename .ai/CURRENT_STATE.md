@@ -61,7 +61,11 @@ Final confirmation discussion `3900877477` found the single-title workload
 could not detect per-entity amplification. Local source `3d90dff`, tree
 `331be6b`, now proves ten-title Search/Home hydration and repairs the Catalog
 parameter boundary exposed by that workload. Real maximum-batch20 integration,
-full Discovery runtime and affected73/73 gate pass.
+full Discovery runtime and affected73/73 gate pass. Published head `71f3ff5`
+entered run `33474006491`; source/owners through Engagement passed, but Discovery
+exposed an exact300 temporal assertion after returning legitimate freshness299.
+Source `3d2f6ee`, tree `cef2ee2`, derives the valid 298–300-second projection
+lease window. Focused proof5/5, full ten-title runtime and affected73/73 pass.
 
 ## Verified
 
@@ -332,8 +336,16 @@ rights/publication matching. Catalog249/249 and real maximum-batch20 integration
 pass with cleanup0. The complete Discovery runtime keeps SearchTitles5 and
 HomePublic7 at ten entities, passes restart/failure/log assertions and cleanup0;
 the affected gate passes73/73 with56 cached in69.532 seconds. Evidence
-publication, corrected protected CI, discussion resolution, permitted
-exact-candidate confirmation and release remain.
+head `71f3ff5` entered protected run `33474006491`: clean source and every owner
+through Engagement passed. Discovery retained ten distinct Search entities and
+the exact query counts, but its harness rejected legitimate freshness299 because
+it required exact300; cleanup0. The Local platform job independently timed out
+waiting for TraceQL to index the PostgreSQL diagnostic after recovery and cleaned
+its project. Source `3d2f6ee`, tree `cef2ee2`, validates the derived inclusive
+298–300 interval from the existing lease/indexing contract. Focused proof5/5,
+complete ten-title runtime and affected73/73 with60 cached in61.806 seconds pass
+with cleanup0. Evidence publication, corrected protected CI, discussion
+resolution, permitted exact-candidate confirmation and release remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -892,13 +904,14 @@ N+1/query-count proof and owner-authorization abuse tests have corrected local
 evidence plus passing clean63/63 and final73/73 gates after PR57 initial review,
 bounded process-restart correction, exact-profile correction, Catalog
 query-plan/clean-package correction and a real ten-entity/maximum-batch parameter
-remediation, but corrected protected confirmation/release remain.
+remediation plus the derived projection-lease assertion, but corrected protected
+confirmation/release remain.
 Phase14 capacity validation and hosted deployment remain planned.
 
 ## Next outcome
 
 For P13-R07/P13-R08/P13-R09 item67, commit and publish one evidence checkpoint
-for source `3d90dff`, complete exact-head protected CI, resolve discussion
+for source `3d2f6ee`, complete exact-head protected CI, resolve discussion
 `3900877477`, request the permitted exact-candidate confirmation, squash merge
 and verify exact-main CI. Then close Phase13 and activate the newly documented
 reference/readability direction from clean main; hosted deployment is not its
