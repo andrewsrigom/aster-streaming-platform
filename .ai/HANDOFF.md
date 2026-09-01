@@ -47,9 +47,10 @@ Executable product behavior is unchanged.
 
 ## Exact next actions
 
-1. Commit and publish the item68 evidence checkpoint.
-2. Require protected CI and review,
-   then squash merge and require exact-main CI.
+1. Publish the current item68 checkpoint to PR58 if needed; do not create an
+   empty or duplicate evidence commit.
+2. Require protected CI and review, then squash merge and require exact-main
+   CI.
 3. Start item69 from clean released main and build the capability index.
 
 ## Execution boundary
