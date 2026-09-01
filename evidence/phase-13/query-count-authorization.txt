@@ -570,8 +570,19 @@ Results:
   project aster-engagement-proof-d4792eb8-5f11-4010-9430-bffaa71bf013 to0.
   PASS — affected gate73/73 with55 cached in65.919 seconds.
 
-- Publish one evidence checkpoint for this exact source, require protected CI,
-  reply to and resolve discussion 3901909548, run one final corrected-candidate
+PROTECTED EXACT OWNER-SET ACCEPTANCE
+
+Evidence head 71823fe18d11832183e6af8acdab2210e7486af4, tree
+5d075d0296c862202f3db59d7a276ba6795490b8, passed protected run33485233911.
+Local platform job99783677357 passed the complete three-scenario diagnostic and
+exact cleanup in7m14s. Install/source job99783677488 passed source quality, real
+platform integration, every owner runtime and the Docker-only playable demo in
+17m12s. Classification, dependency review, documentation/security and aggregate
+protection also passed. The run started2026-09-01T08:04:57Z and completed
+2026-09-01T08:22:26Z.
+
+- Publish this result checkpoint once, require its exact protected CI, reply to
+  and resolve discussion3901909548, run one final corrected-candidate
   confirmation, then merge and confirm exact-main CI before declaring
   P13-R07/R08/R09 or Phase13 released.
 

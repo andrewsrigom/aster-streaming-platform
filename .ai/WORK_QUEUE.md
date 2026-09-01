@@ -290,9 +290,11 @@ validation. Source `a99b3af`, tree `dc84bbc`, now compares the complete observed
 owner set, removes post-observation exclusions and leaves only the shared SQL's
 explicitly fingerprinted background statements filtered. Focused proof5/5,
 strict Engagement build, both full federated runtimes and affected73/73 with55
-cached in65.919 seconds pass with cleanup0. Publish one evidence checkpoint,
-require exact-head CI, resolve the discussion, complete one final corrected-
-candidate confirmation and release.
+cached in65.919 seconds pass with cleanup0. Evidence head `71823fe`, tree
+`5d075d0`, passed protected run `33485233911`, including every source/owner
+runtime, the Docker-only demo, all three diagnostics and exact cleanup. Publish
+that result checkpoint, require exact-head CI, resolve the discussion, complete
+one final corrected-candidate confirmation and release.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

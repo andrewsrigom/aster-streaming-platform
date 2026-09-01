@@ -395,7 +395,10 @@ scenario, dependency, outcome or incomplete result.
   repeats TitleDetail2, Search5 and Home7 with ten distinct
   titles, recovery and cleanup0 in101.498 seconds. Engagement repeats
   ContinueWatching7 in88.033 ms plus its event/outage suite and cleanup0. The
-  affected gate passes73/73 with55 cached in65.919 seconds.
+  affected gate passes73/73 with55 cached in65.919 seconds. Evidence head
+  `71823fe`, tree `5d075d0`, passes protected run `33485233911`, including every
+  source/owner runtime, the Docker-only demo, all three platform diagnostics and
+  exact cleanup.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.

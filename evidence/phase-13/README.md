@@ -201,8 +201,11 @@ statements. Focused proof5/5 and strict Engagement build pass. Full Discovery
 repeats TitleDetail2, Search5 and Home7 with ten distinct titles, recovery and
 cleanup0 in101.498 seconds. Full Engagement repeats ContinueWatching7 in88.033
 ms, its event/outage suite and cleanup0. The affected gate passes73/73 with55
-cached in65.919 seconds. Protected acceptance, discussion resolution, one final
-confirmation, merge and exact-main release remain.
+cached in65.919 seconds. Evidence head `71823fe`, tree `5d075d0`, passed
+protected run `33485233911`: Local platform passed all three diagnostics and
+cleanup in7m14s, while source quality, every owner runtime and the Docker-only
+demo passed in17m12s. Discussion resolution, one final confirmation, merge and
+exact-main release remain.
 
 ## Requirement traceability
 
@@ -213,7 +216,7 @@ confirmation, merge and exact-main release remain.
 | P13-R12 | [ADR-0045](../../docs/adr/0045-source-owned-trusted-operations.md), GraphQL architecture and release sequence |
 | P13-R03/R04/R05/R10 | Released through [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json), [demand-control evidence](graphql-demand-controls.txt), PR55 tree-identical main `8cd6c0b` and exact-main run `33425758870` attempt2 |
 | P13-R06/R11 | Released through third corrected source `af47c62`, protected head `e6134ae`, PR56 squash main `98deb52` and exact-main run `33448911764`; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record exact-union verification, expired-marker pruning and all review corrections |
-| P13-R07–R09 | Exact-owner-set source `a99b3af`, tree `dc84bbc`, retains multi-entity source `3d90dff`'s exact Catalog query plan and ten-entity Search/Home hydration at unchanged counts while rejecting any owner outside the exact operation budget. Focused proof5/5, both full federated runtimes and affected73/73 pass. Earlier diagnostic reliability source `b2c77a8` passes focused14/14, a complete diagnostic run, affected73/73 and protected run `33480268553`; documentation head `c195a1d` passed run `33481864676`. The new exact-owner-set source still requires protected acceptance, discussion resolution, final confirmation and release: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and composition-time semantic audit |
+| P13-R07–R09 | Exact-owner-set source `a99b3af`, tree `dc84bbc`, retains multi-entity source `3d90dff`'s exact Catalog query plan and ten-entity Search/Home hydration at unchanged counts while rejecting any owner outside the exact operation budget. Focused proof5/5, both full federated runtimes and affected73/73 pass. Evidence head `71823fe`, tree `5d075d0`, passed protected run `33485233911`; discussion resolution, final confirmation and release remain: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and composition-time semantic audit |
 
 ## Current limitations
 
@@ -227,6 +230,6 @@ confirmation, merge and exact-main release remain.
   N+1/query-count/authorization closeout has corrected the exact-profile,
   Catalog worst-case query-plan, representative multi-entity and projection-
   lease proof findings. The exact-owner-set correction has passing focused, full
-  runtime and affected gates, but its protected, discussion, confirmation and
+  runtime, affected and protected gates, but its discussion, confirmation and
   release gates remain.
 - Hosted providers, credentials, deployment and capacity remain Phase 14.

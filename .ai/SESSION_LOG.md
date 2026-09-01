@@ -20,6 +20,9 @@ full snapshot through the archival checkpoint remains in
   recovery and cleanup0 in101.498 seconds. Engagement repeats
   ContinueWatching7 in88.033 ms, the event/outage suite and cleanup0. The
   affected gate passes73/73 with55 cached in65.919 seconds.
+- Evidence head `71823fe`, tree `5d075d0`, passed protected run `33485233911`.
+  Local platform passed all three diagnostics and exact cleanup in7m14s; source
+  quality, every owner runtime and the Docker-only demo passed in17m12s.
 
 ### Evidence
 
@@ -28,9 +31,9 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish one evidence checkpoint, require exact-head CI, resolve discussion
-  `3901909548`, request one final corrected-candidate confirmation and complete
-  merge/exact-main acceptance.
+- Publish one protected-result checkpoint, require its exact-head CI, resolve
+  discussion `3901909548`, request one final corrected-candidate confirmation
+  and complete merge/exact-main acceptance.
 
 ## 2026-09-01 — PR57 corrected diagnostic protected acceptance
 

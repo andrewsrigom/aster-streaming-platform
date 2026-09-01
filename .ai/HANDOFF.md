@@ -73,14 +73,16 @@ a new owner to escape the total. Source `a99b3af`, tree `dc84bbc`, passes the
 complete observed owner set into exact validation and leaves only the shared
 SQL's explicitly named background fingerprints excluded. Focused proof5/5,
 strict Engagement build, both full federated runtimes and the affected73/73 gate
-pass. This source is local and not yet published.
+pass. Evidence head `71823fe`, tree `5d075d0`, passed protected run
+`33485233911`: every source/owner runtime, the Docker-only demo, all three
+platform diagnostics and exact cleanup passed.
 
 ## Active outcome
 
-- Publish one evidence checkpoint containing source `a99b3af`, then close
-  Phase13 only after its protected CI passes, discussion `3901909548` is
-  resolved, one final corrected-candidate confirmation completes, and
-  merge/exact-main evidence passes.
+- Publish one result checkpoint containing protected run `33485233911`, then
+  close Phase13 only after that checkpoint's exact CI passes, discussion
+  `3901909548` is resolved, one final corrected-candidate confirmation completes,
+  and merge/exact-main evidence passes.
 
 ## Current local evidence
 
@@ -113,9 +115,8 @@ pass. This source is local and not yet published.
 
 ## Exact next actions
 
-1. Commit the evidence checkpoint and publish source `a99b3af` once to existing
-   PR57.
-2. Require its exact-head gate, reply to and resolve discussion `3901909548`,
+1. Commit and publish the protected-result checkpoint once to existing PR57.
+2. Require that checkpoint's exact-head gate, reply to and resolve discussion `3901909548`,
    then run one final corrected-candidate confirmation; batch only requirement,
    security/data, availability or public-contract blockers.
 3. Squash merge after all required gates, then require exact-main CI.
