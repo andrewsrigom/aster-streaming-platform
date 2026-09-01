@@ -3,7 +3,8 @@
 - Status: IN_PROGRESS
 - Owner: Platform and bounded-context owners
 - Phase: 13
-- Requirement IDs: P13-R07, P13-R08, P13-R09
+- Requirement IDs: P13-R07, P13-R08, P13-R09; P12-R10 verification-harness
+  correction required by the protected release gate
 - Created: 2026-08-31
 - Updated: 2026-09-01
 
@@ -124,7 +125,14 @@ derived inclusive 298–300-second interval and has focused acceptance/rejection
 coverage. The repeated complete local runtime passes with freshness300, ten
 distinct Search/Home titles, unchanged counts and cleanup0. The parallel Local
 platform job failed only its known finite TraceQL indexing wait during the
-PostgreSQL diagnostic scenario; it cleaned its exact project.
+PostgreSQL diagnostic scenario; it cleaned its exact project. Evidence head
+`35d46d9` passed protected run `33475401067`. Documentation checkpoint `1ba7d1c`
+then passed every unchanged source and owner runtime in run `33476967426`, but
+Local platform attempt1 recovered all services and timed out waiting for Redis
+TraceQL indexing. The single permitted retry recovered Catalog and timed out
+waiting for that scenario's TraceQL indexing. Both exact projects cleaned.
+Consecutive timeouts in different scenarios make the 45-second recent-store
+wait a systematic gate reliability failure, not an isolated retry.
 
 ## Proposed behavior
 
@@ -143,6 +151,13 @@ latency remains a single local observation rather than a production objective.
 Current owner-side negative tests form one executable identifier/role/profile
 matrix.
 
+The released P12-R10 finite acceptance predicate, privacy checks, recovery
+semantics, 45-second per-search wait and twelve-minute execution budget remain
+unchanged. Its exact TraceQL query uses Tempo's supported
+`most_recent=true` hint so the recent-store search does not stop on older shards.
+This changes search ordering only; it does not accept a different trace,
+scenario, dependency, outcome or incomplete result.
+
 ## Boundaries
 
 - Owning context: each bounded context retains authorization and data ownership;
@@ -158,6 +173,9 @@ matrix.
   private-owner credentials and fixture output are untrusted.
 - External dependencies: existing pinned Node, PostgreSQL, Router and Docker
   only; no GraphOS, hosted account, proxy or new dependency.
+- Verification infrastructure: the existing disposable P12-R10
+  Collector/Tempo/Grafana diagnostic harness is affected only in its bounded
+  recent-store query ordering and matching source-policy regression.
 
 ## Invariants
 
@@ -192,6 +210,7 @@ matrix.
 | Query-count fixture hydrates only one distinct title | Seed ten disposable Catalog titles before the actual Discovery rebuild, execute the current Search and Home documents at their representative client sizes, require ten distinct hydrated entities and keep Catalog's observed count batch-bounded | exact multi-entity response assertions plus per-owner `pg_stat_statements` counts |
 | Catalog encodes four SQL parameters per entity and exceeds the shared 32-parameter guard before the reviewed 20-title batch maximum | Encode the already validated, bounded fence tuples as one JSON parameter and preserve exact ID/version/rights/publication matching in PostgreSQL | real 20-entity Catalog integration plus exact ten-title Router measurements |
 | Protected runtime spends one second between Catalog observation and Discovery indexing | Validate the derived inclusive 298–300-second lease window rather than an impossible exact300 timing assumption; keep values outside the owner contract rejected | focused boundary test plus repeated complete runtime |
+| A non-deterministic TraceQL search does not prioritize the newly ingested exact trace before its 45-second deadline | Add Tempo's supported `most_recent=true` hint; retain the exact trace/scenario selector, 45-second wait and fail-closed acceptance predicate | exact-query/source-policy regressions plus one complete three-scenario diagnostic run and exact cleanup |
 | Predecessor PR changes | Rebase this dependent branch and repeat affected gates/evidence | exact base/head |
 
 ## Data and contracts
@@ -250,6 +269,9 @@ matrix.
     retain exact fence matching while keeping the reviewed 20-title batch below
     the shared PostgreSQL parameter guard, then prove the maximum batch against
     real PostgreSQL before repeating the federated runtime.
+12. Make the P12-R10 exact recent-trace query deterministic with Tempo's
+    `most_recent=true` hint, retain the existing temporal bounds, add exact-query
+    and source-policy regressions and repeat the complete three-scenario proof.
 
 ## Tests
 
@@ -266,7 +288,9 @@ matrix.
 - Performance/failure: four labelled single-fixture observations, with Search
   and Home hydrating ten distinct Catalog entities at representative client
   sizes, plus the existing twenty-pair synthetic baseline versus one batched
-  query; no throughput claim.
+  query; no throughput claim. Repeat P12-R10 once because its protected
+  recent-store query ordering changes; require all three diagnoses, recoveries
+  and exact project cleanup.
 
 ## Evidence
 
