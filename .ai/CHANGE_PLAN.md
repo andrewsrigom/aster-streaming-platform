@@ -177,7 +177,7 @@ file and anchor exists.
   then found inline-code links and an order-dependent job-condition scan; the
   findings also apply to the current source. Source `39bce7d`, tree `c4504d7`,
   corrects them. Exact-head review on `66ef8d0` then found a media adverse-proof
-  mismatch plus escaped/image link prefixes. Their working correction passes
+  mismatch plus escaped/image link prefixes. Source `00270fd`, tree `0bdbd6a`, passes
   focused contract tests43/43, documentation tests27/27 and the affected
   gate15/15. Runs `33519414100`/`33520880432` were cancelled when their sources
   became superseded. Publication, protected acceptance, merge and exact-main

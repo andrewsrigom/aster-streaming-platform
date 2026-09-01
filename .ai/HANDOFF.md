@@ -171,7 +171,8 @@ path/anchor validity to the existing documentation validator.
 - The accepted working correction links the PostgreSQL rights-gate proof and
   rejects escaped links/images. Focused contracts pass43/43, documentation
   tests pass27/27 and the affected gate passes15/15, including101 platform
-  tests.
+  tests. Correction source `00270fd`, tree `0bdbd6a`, is frozen without product
+  runtime or deployment changes.
 
 ## Exact next actions
 

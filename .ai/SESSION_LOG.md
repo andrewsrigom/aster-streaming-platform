@@ -163,6 +163,8 @@ full snapshot through the archival checkpoint remains in
   working correction links the rights-gate integration proof and rejects
   escaped/image link prefixes. Focused contracts pass43/43, documentation tests
   pass27/27 and the affected gate passes15/15, including101 platform tests.
+  Correction source `00270fd`, tree `0bdbd6a`, is frozen without product runtime
+  or deployment changes.
 
 ### Next action
 

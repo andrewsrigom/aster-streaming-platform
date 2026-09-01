@@ -488,8 +488,10 @@ multi-backtick handling. Focused capability/CI-policy tests pass43/43,
 documentation tests pass27/27 and documentation validation still covers250
 documents, 2,880 headings, 1,625 links, four status claims and eleven rows with
 zero violations. The affected gate passes15/15, including101 platform-policy,
-39 CI-policy and13 repository-memory tests. Protected publication remains
-pending.
+39 CI-policy and13 repository-memory tests. Correction source
+`00270fd6a7bd1f658d4662db3b68e9e82118ccb0`, tree
+`0bdbd6a422f47f1850749fb973533cedb847ca44`, freezes the batch without product
+runtime or deployment changes. Protected publication remains pending.
 
 ## Planned evidence
 

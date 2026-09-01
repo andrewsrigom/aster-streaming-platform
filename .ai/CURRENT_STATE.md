@@ -66,8 +66,8 @@ evidence remains applicable. Prior protected acceptance passes; protected
 acceptance of the current public-rendering/traceability correction, merge and
 exact-main acceptance remain pending.
 
-Correction source `39bce7daa6c55231c4eaba913861d50f0c25e609`, tree
-`c4504d7fd44c0f2c9e13b0a7f647bc42de2d3923`, is the latest frozen correction
+Correction source `00270fd6a7bd1f658d4662db3b68e9e82118ccb0`, tree
+`0bdbd6a422f47f1850749fb973533cedb847ca44`, is the latest frozen correction
 recorded in [Phase14 evidence](../evidence/phase-14/README.md).
 
 Evidence head `136def8`, tree `58e640d`, passed protected run
@@ -178,8 +178,8 @@ tests rather than the PostgreSQL rights rejection, and escaped link syntax or
 images could satisfy the interactive-link matcher. Run `33520880432` was
 cancelled after the source became superseded; its Local platform and governance
 jobs passed, but its cancelled source-quality job and failed aggregate make it
-non-acceptance evidence. The accepted working correction links the actual
-rights-gate integration proof and rejects escaped/image prefixes. Focused
+non-acceptance evidence. Correction source `00270fd`, tree `0bdbd6a`, links the
+actual rights-gate integration proof and rejects escaped/image prefixes. Focused
 contracts pass43/43, documentation tests pass27/27 and the affected gate
 passes15/15, including101 platform tests. Protected publication remains
 pending.
