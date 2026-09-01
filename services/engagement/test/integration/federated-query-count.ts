@@ -7,6 +7,15 @@ import { Pool } from "pg";
 assert.match(process.env["ASTER_FIXTURE_ID"] ?? "", /^aster-engagement-proof-[a-f0-9-]{36}$/u);
 const mode = process.env["ASTER_QUERY_COUNT_MODE"];
 assert.ok(mode === "setup" || mode === "measure");
+const measuredProfileId = process.env["ASTER_QUERY_COUNT_PROFILE_ID"] ?? "";
+if (mode === "setup") {
+  assert.equal(measuredProfileId, "");
+} else {
+  assert.match(
+    measuredProfileId,
+    /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u,
+  );
+}
 const operation = JSON.parse(
   Buffer.from(process.env["ASTER_QUERY_COUNT_OPERATION"] ?? "", "base64").toString("utf8"),
 ) as { body: string; id: string; name: string; type: string };
@@ -148,15 +157,18 @@ try {
       assert.equal(recorded.body.data?.["recordProgress"]?.code, "COMPLETED");
     }
     process.stdout.write(
-      JSON.stringify({ event: "phase13_query_count_fixture", activeTitles: 2 }) + "\n",
+      JSON.stringify({ event: "phase13_query_count_control", profileId }) +
+        "\n" +
+        JSON.stringify({ event: "phase13_query_count_fixture", activeTitles: 2 }) +
+        "\n",
     );
     process.exitCode = 0;
   } else {
     const profile = await admin.query<{ profile_id: string; titles: number }>(
       `SELECT profile_id::text, count(DISTINCT title_id)::int AS titles
-      FROM engagement.progress WHERE status='IN_PROGRESS'
-      GROUP BY profile_id HAVING count(DISTINCT title_id)=2
-      ORDER BY profile_id LIMIT 1`,
+      FROM engagement.progress WHERE status='IN_PROGRESS' AND profile_id=$1
+      GROUP BY profile_id HAVING count(DISTINCT title_id)=2`,
+      [measuredProfileId],
     );
     assert.equal(profile.rowCount, 1);
     const selectedProfile = profile.rows[0];

@@ -303,6 +303,7 @@ try {
     "utf8",
   );
   assert.ok(Buffer.byteLength(queryCountWorker) < 24576);
+  let queryCountProfileId = "";
   const queryCountWorkerArgs = (mode) => [
     "exec",
     "--env",
@@ -313,13 +314,28 @@ try {
     "ASTER_QUERY_COUNT_OPERATION=" + encodedContinueWatchingOperation,
     "--env",
     "ASTER_QUERY_COUNT_SQL=" + encodedQueryCountSql,
+    ...(mode === "measure" ? ["--env", "ASTER_QUERY_COUNT_PROFILE_ID=" + queryCountProfileId] : []),
     engagement.Id,
     "node",
     "--input-type=module",
     "--eval",
     queryCountWorker,
   ];
-  process.stdout.write((await docker(queryCountWorkerArgs("setup"), 45000)) + "\n");
+  const queryCountSetup = await docker(queryCountWorkerArgs("setup"), 45000);
+  for (const line of queryCountSetup.split("\n").filter(Boolean)) {
+    const record = JSON.parse(line);
+    if (record.event === "phase13_query_count_control") {
+      assert.match(
+        record.profileId ?? "",
+        /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u,
+      );
+      assert.equal(queryCountProfileId, "");
+      queryCountProfileId = record.profileId;
+    } else {
+      process.stdout.write(line + "\n");
+    }
+  }
+  assert.notEqual(queryCountProfileId, "");
   await compose(["stop", "--timeout", "5", "playback"], 15000);
   const [stoppedPlayback] = JSON.parse(await docker(["inspect", project + "-playback-1"]));
   assert.equal(stoppedPlayback.State.Running, false);

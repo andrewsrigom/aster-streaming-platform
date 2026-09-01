@@ -97,11 +97,16 @@ test("query-count overlay enables only bounded statement instrumentation", async
   assert.ok(engagementWorker.includes('operation.name, "ContinueWatching"'));
   assert.ok(engagementWorker.includes('admin.query("SELECT pg_stat_statements_reset()")'));
   assert.ok(engagementWorker.includes('event: "phase13_federated_query_count"'));
+  assert.ok(engagementWorker.includes('process.env["ASTER_QUERY_COUNT_PROFILE_ID"]'));
+  assert.ok(engagementWorker.includes("AND profile_id=$1"));
+  assert.doesNotMatch(engagementWorker, /ORDER BY profile_id LIMIT 1/u);
   const engagementRunner = await readFile(
     new URL("tools/run-engagement-runtime.mjs", root),
     "utf8",
   );
   assert.ok(engagementRunner.includes('["stop", "--timeout", "5", "playback"]'));
   assert.ok(engagementRunner.includes("ASTER_QUERY_COUNT_SQL="));
+  assert.ok(engagementRunner.includes("ASTER_QUERY_COUNT_PROFILE_ID="));
+  assert.ok(engagementRunner.includes('record.event === "phase13_query_count_control"'));
   assert.ok(engagementRunner.includes("aster:local:catalog:*"));
 });
