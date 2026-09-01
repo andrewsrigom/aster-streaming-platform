@@ -209,10 +209,16 @@ full snapshot through the archival checkpoint remains in
   contracts pass45/45, documentation tests pass29/29, documentation validation
   covers1,643 links and the affected gate passes15/15. No product runtime or
   deployment behavior changed.
+- Checkpoint `68718da` passed exact-head run `33565305721`. Its exact-head review
+  opened finding `3908922118` for a same-line HTML-comment suffix that could
+  expose a hidden table header.
+- Correction source `c7534eb`, tree `994e72a`, closes the parser gap. Focused
+  contracts pass46/46, documentation tests pass30/30 and the affected gate
+  passes15/15. No product runtime or deployment behavior changed.
 
 ### Next action
 
-- Publish the exact correction checkpoint, resolve its two threads and request
+- Publish the exact correction checkpoint, resolve its thread and request
   confirmation only after the PR exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.
 

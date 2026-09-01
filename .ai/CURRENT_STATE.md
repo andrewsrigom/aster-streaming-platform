@@ -247,6 +247,15 @@ contracts pass45/45, documentation tests pass29/29, documentation validation
 covers1,643 links and the affected gate passes15/15. Publication remains
 pending.
 
+Checkpoint `68718dae39f2142d3f526bdcf8aca9a429fbcaec` passed exact-head run
+`33565305721`. Its exact-head review completed at `2026-09-01T22:18:25Z` and
+opened finding `3908922118`: a same-line CommonMark HTML comment could hide the
+matrix header while exposing its suffix to the verifier. Correction source
+`c7534eb2d01dd3cc2998e51dd738a9e15f8f2d72`, tree
+`994e72a5fe2d6851c17aaa32c68f60a1b97c23d4`, discards the complete block-comment
+source line. Focused contracts pass46/46, documentation tests pass30/30 and the
+affected gate passes15/15. Publication remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;

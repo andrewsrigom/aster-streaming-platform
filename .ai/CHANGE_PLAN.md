@@ -238,9 +238,11 @@ file and anchor exists.
   documentation tests pass29/29, documentation validation covers1,643 links and
   the affected gate passes15/15. Exact-head run `33565305721` passed on
   checkpoint `68718da`; its exact-head review opened finding `3908922118` for a
-  same-line HTML-comment suffix that could expose a hidden table header. The
-  working correction closes that parser gap. Publication, protected acceptance,
-  merge and exact-main acceptance remain pending
+  same-line HTML-comment suffix that could expose a hidden table header.
+  Correction source `c7534eb`, tree `994e72a`, closes that parser gap. Focused
+  contracts pass46/46, documentation tests pass30/30 and the affected gate
+  passes15/15. Publication, protected acceptance, merge and exact-main
+  acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

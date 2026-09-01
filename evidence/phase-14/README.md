@@ -591,6 +591,21 @@ status claims and eleven rows with zero violations. The affected gate passes
 15/15, including101 platform-policy,39 CI-policy and13 repository-memory tests.
 No product runtime or deployment behavior changed. Publication remains pending.
 
+Checkpoint `68718dae39f2142d3f526bdcf8aca9a429fbcaec` passed exact-head workflow
+`33565305721`, including source quality, Local platform, governance and the
+aggregate gate. Exact-head review completed at `2026-09-01T22:18:25Z` and
+opened finding `3908922118`: a same-line CommonMark HTML-comment block could
+hide the matrix header while the verifier parsed its suffix.
+
+Correction source `c7534eb2d01dd3cc2998e51dd738a9e15f8f2d72`, tree
+`994e72a5fe2d6851c17aaa32c68f60a1b97c23d4`, discards the complete source line
+when it participates in a block comment. Focused capability/CI-policy tests
+pass46/46. Documentation tests pass30/30 and validation covers250 documents,
+2,880 headings, 1,643 links, four status claims and eleven rows with zero
+violations. The affected gate passes15/15, including101 platform-policy,39
+CI-policy and13 repository-memory tests. No product runtime or deployment
+behavior changed. Publication remains pending.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and

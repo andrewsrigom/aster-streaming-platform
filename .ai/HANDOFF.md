@@ -219,10 +219,17 @@ path/anchor validity to the existing documentation validator.
   destinations. Focused contracts pass45/45, documentation tests pass29/29,
   documentation validation covers1,643 links and the affected gate passes15/15.
   No product runtime or deployment behavior changed.
+- Checkpoint `68718da` passed exact-head run `33565305721`. Its exact-head review
+  opened finding `3908922118` for a same-line HTML-comment suffix that could
+  expose a hidden table header.
+- Correction source `c7534eb`, tree `994e72a`, discards the complete CommonMark
+  block-comment source line. Focused contracts pass46/46, documentation tests
+  pass30/30 and the affected gate passes15/15. No product runtime or deployment
+  behavior changed.
 
 ## Exact next actions
 
-1. Publish the exact correction checkpoint, resolve the two review threads
+1. Publish the exact correction checkpoint, resolve the review thread
    and request confirmation only after GitHub exposes the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating
