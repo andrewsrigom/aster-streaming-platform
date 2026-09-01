@@ -53,20 +53,20 @@ destination sequence for every capability/role pair; existing documentation
 validation proves the concrete paths, anchors, root-escape policy and
 symbolic-target policy.
 
-Focused documentation tests pass20/20. Documentation validation passes for250
-documents, 2,880 headings, 1,623 links, four supported status claims and the
+Focused documentation tests pass22/22. Documentation validation passes for250
+documents, 2,880 headings, 1,625 links, four supported status claims and the
 eleven exact capability rows. The always-run protected governance job now
 executes the capability verifier and its adverse tests even for a
 documentation-only change; CI policy fails if either command moves outside that
 job. The corrected changed-scope gate passes15/15 tasks, including101
 platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
 behavior changed, so heavyweight PostgreSQL, browser, media and Docker journey
-evidence remains applicable. Prior protected acceptance passes; correction of
-the current public/governance/repository-memory findings, merge and exact-main
-acceptance remain pending.
+evidence remains applicable. Prior protected acceptance passes; protected
+acceptance of the current public-rendering/traceability correction, merge and
+exact-main acceptance remain pending.
 
-Correction source `c7c9c50fe65a011438c533c8ff3434c3b3e7eb09`, tree
-`e65dbc0b3cda2c24ad7a1bf974082a026a9afc9d`, is the latest frozen correction
+Correction source `51f49bc845a99ce23c65a12c436c02390ca92083`, tree
+`510a0da0fd67879bb397d22356da34d57ad936b6`, is the latest frozen correction
 recorded in [Phase14 evidence](../evidence/phase-14/README.md).
 
 Evidence head `136def8`, tree `58e640d`, passed protected run
@@ -133,7 +133,8 @@ accepted working correction tracks arbitrary standalone HTML tags through the
 blank-line boundary and adds the Catalog DataLoader plus federated query-count
 test to the exact Router destination sequence. Focused boundary tests pass38/38;
 documentation tests pass22/22 and the affected gate passes15/15, including101
-platform tests. Source freeze and protected publication remain pending.
+platform tests. Correction source `51f49bc`, tree `510a0da`, is frozen;
+protected publication remains pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

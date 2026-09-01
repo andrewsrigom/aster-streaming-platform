@@ -126,16 +126,16 @@ path/anchor validity to the existing documentation validator.
   blank-line boundary and adds the Catalog request DataLoader plus federated
   query-count test to the exact Router destination sequence. Focused boundary
   tests pass38/38, documentation tests pass22/22 and the affected gate
-  passes15/15, including101 platform tests. Source freeze remains pending.
+  passes15/15, including101 platform tests. Correction source `51f49bc`, tree
+  `510a0da`, is frozen without product runtime or deployment changes.
 
 ## Exact next actions
 
-1. Freeze the correction source for discussions
-   `3904407727`/`3904407741` and record its exact hash without amending it.
-2. Publish the existing evidence checkpoint, resolve both discussions and
+1. Publish the exact correction evidence checkpoint, resolve discussions
+   `3904407727`/`3904407741` and
    require protected CI plus one blocker-boundary confirmation because the
    findings alter the public/traceability contract.
-3. Merge, verify exact-main CI and close item69 before activating
+2. Merge, verify exact-main CI and close item69 before activating
    item70/P14-R15.
 
 ## Execution boundary

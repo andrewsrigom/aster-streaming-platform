@@ -98,7 +98,8 @@ full snapshot through the archival checkpoint remains in
   adds the Catalog request DataLoader plus federated query-count test to the
   Router destination sequence. Focused boundary tests pass38/38; the affected
   documentation tests pass22/22 and the affected gate passes15/15, including101
-  platform tests. Source freeze remains pending.
+  platform tests. Correction source `51f49bc`, tree `510a0da`, is frozen without
+  product runtime or deployment changes.
 
 ### Evidence
 
@@ -107,15 +108,18 @@ full snapshot through the archival checkpoint remains in
 - The final local candidate gate includes101 platform-policy and13
   repository-memory tests. No product behavior changed, so heavyweight runtime
   evidence was not repeated.
+- Correction source `51f49bc845a99ce23c65a12c436c02390ca92083`, tree
+  `510a0da0fd67879bb397d22356da34d57ad936b6`, freezes the latest public-rendering
+  and traceability correction.
 - Source `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
   `78742f48c2f939b9073f419aaded775be1e58876`, is recorded in the Phase14
   evidence index.
 
 ### Next action
 
-- Freeze and publish the two-finding correction, resolve both discussions and
-  require one blocker-boundary confirmation. Then merge and complete exact-main
-  verification before activating P14-R15.
+- Publish the exact two-finding correction evidence, resolve both discussions
+  and require one blocker-boundary confirmation. Then merge and complete
+  exact-main verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

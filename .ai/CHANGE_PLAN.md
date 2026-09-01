@@ -159,8 +159,9 @@ file and anchor exists.
 - Raw artifact path: `evidence/phase-14/README.md`
 - Acceptance result: prior protected full gates pass; the latest
   public-rendering and traceability correction passes focused tests38/38,
-  documentation tests22/22 and the affected gate15/15. Source freeze,
-  protected acceptance, merge and exact-main acceptance remain pending
+  documentation tests22/22 and the affected gate15/15. Source `51f49bc`, tree
+  `510a0da`, is frozen; protected acceptance, merge and exact-main acceptance
+  remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

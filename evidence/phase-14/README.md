@@ -385,7 +385,10 @@ DataLoader and the federated query-count proof alongside demand controls.
 Focused boundary tests pass38/38; documentation validation covers1,625 links
 with zero violations, and documentation tests pass22/22. The affected gate
 passes15/15, including101 platform tests; TypeScript, focused lint and diff
-validation also pass. Correction freeze and protected publication remain
+validation also pass. Correction source
+`51f49bc845a99ce23c65a12c436c02390ca92083`, tree
+`510a0da0fd67879bb397d22356da34d57ad936b6`, freezes the two-finding batch
+without product runtime or deployment changes. Protected publication remains
 pending.
 
 ## Planned evidence
