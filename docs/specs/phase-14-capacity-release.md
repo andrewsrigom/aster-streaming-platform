@@ -91,8 +91,9 @@ rather than restating code.
 
 From a fresh checkout, prove that a reader can install the pinned toolchain,
 locate a capability, run its focused test, start the documented Docker reference
-checkpoint and follow its evidence and cleanup path. Publish reference-release
-notes with verified capabilities, limitations and deferred hosted work.
+checkpoint and follow its evidence and cleanup path. Publish reference
+verification notes with verified capabilities, limitations and deferred hosted
+work.
 
 ### Hosted capacity and release track — planned and deferred
 
@@ -155,7 +156,7 @@ Publish release notes that state verified capabilities, known limits, capacity a
 4. Refactor small owner-scoped slices with characterization tests.
 5. Align rationale comments, examples and handbook guidance.
 6. Run fresh-checkout and Docker reference acceptance.
-7. Publish reference-release evidence and limitations.
+7. Publish reference-verification evidence and limitations.
 
 ### Deferred hosted sequence
 
@@ -232,7 +233,7 @@ Every measured result must identify commit, environment, exact command, workload
 ## Exit gates
 
 The reference track is `VERIFIED` only when P14-R13–R18 and their linked local
-evidence pass. This may be reported as **reference track released** while the
+evidence pass. This may be reported as **reference track verified** while the
 hosted track remains planned.
 
 The hosted track, and therefore the complete hosted product release, is

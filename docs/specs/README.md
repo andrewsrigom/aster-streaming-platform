@@ -81,7 +81,7 @@ These checkpoints communicate useful progress without weakening phase gates:
 | Playable product | 07 | One rights-approved film processed to HLS and played through the accessible player |
 | Core VOD product | 09 | Profiles, browse, playback, progress, watchlist, continue-watching, home rails, and search |
 | Hardened release candidate | 13 | Measured cache, resilience, observability, and GraphQL abuse controls |
-| Reference release | 14 reference track | Navigable, fresh-checkout reproducible and locally verified implementation |
+| Verified reference | 14 reference track | Navigable, fresh-checkout reproducible and locally verified implementation |
 | Hosted product | 14 hosted track | Hosted, capacity-tested, recoverable, and operationally verified system |
 
 The authoritative mapping from engineering subjects to implementation, adverse tests, measurements, operations, and Docker-based demonstrations is in [`docs/00-start-here/ENGINEERING_DEMONSTRATION.md`](../00-start-here/ENGINEERING_DEMONSTRATION.md). A checkpoint is not accepted when it is visually demonstrable but lacks its phase-owned engineering evidence.

@@ -44,10 +44,10 @@ authorizes credentials and resource creation. Its security, capacity, backup,
 licensing, storage-lifecycle and rollback obligations are not waived or
 relabelled as complete.
 
-A reference release means the source can be navigated, reproduced and verified
-locally from public documentation and recorded evidence. It does not mean Aster
-is deployed, production capacity is known, an on-call service exists, or media
-rights extend beyond their recorded sources.
+A verified reference checkpoint means the source can be navigated, reproduced
+and verified locally from public documentation and recorded evidence. It does
+not mean Aster is deployed, production capacity is known, an on-call service
+exists, or media rights extend beyond their recorded sources.
 
 Readability work follows these constraints:
 
@@ -74,7 +74,7 @@ Readability work follows these constraints:
 
 ### Negative
 
-- Phase14 can have a released reference track while the overall hosted track
+- Phase14 can have a verified reference track while the overall hosted track
   remains planned, so status language must always name the track.
 - Small behavior-preserving slices take longer than a single bulk cleanup.
 - The capability index and reading guides become maintained public contracts.

@@ -103,8 +103,8 @@ Run stable load, observe growth and post-load stabilization, capture heap eviden
 - request concurrency saturation;
 - partial subgraph failure.
 
-The corrected Phase13 closing candidate establishes constant-count exact Router
-baselines before Phase14 load calibration: TitleDetail2 PostgreSQL queries
+The released Phase13 proof establishes constant-count exact Router baselines
+before deferred Phase14 hosted load calibration: TitleDetail2 PostgreSQL queries
 (Catalog2), SearchTitles5 (Catalog2/Discovery3), HomePublic7
 (Catalog2/Discovery5) and ContinueWatching7
 (Catalog3/Engagement1/Identity3). Each check compares the complete observed
@@ -115,6 +115,8 @@ a newly participating owner. The
 [raw events](../../evidence/phase-13/query-count-measurements.jsonl) and
 [interpretation](../../evidence/phase-13/query-count-authorization.txt) retain
 single-host limitations; they are regression evidence, not production SLOs.
+The [release record](../../evidence/phase-13/release.md) links protected,
+review, merge and exact-main acceptance.
 
 ## Redis experiments
 

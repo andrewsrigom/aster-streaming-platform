@@ -16,7 +16,7 @@ records the final protected review, merge and exact-main acceptance.
 Phase14 now starts with a reference-quality track: make capabilities easier to
 locate, read, discuss and verify without changing their behavior. Hosted
 capacity and deployment remain planned but are not the immediate objective and
-are not implied by the local reference release. See [ADR-0048](docs/adr/0048-reference-first-phase-14-runway.md),
+are not implied by the verified local reference checkpoint. See [ADR-0048](docs/adr/0048-reference-first-phase-14-runway.md),
 the [roadmap](ROADMAP.md), [current state](.ai/CURRENT_STATE.md), [Web guide](apps/web/README.md)
 and [playback guide](apps/web/PLAYBACK.md).
 

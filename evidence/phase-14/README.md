@@ -68,4 +68,4 @@ evidence commit. The repeated local changed-scope gate passes9/9 tasks.
 - P14-R15 readability guardrails and findings inventory
 - P14-R16 owner-scoped refactoring characterization
 - P14-R17 examples and reading-path verification
-- P14-R18 fresh-checkout and Docker reference release
+- P14-R18 fresh-checkout and Docker reference verification

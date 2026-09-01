@@ -95,7 +95,7 @@ The latest release is Phase13:
 | 72 | Refactor representative Identity, Engagement and Discovery reading slices | P14-R16 | READY |
 | 73 | Refactor representative Router, Web and repository-tooling reading slices | P14-R16 | READY |
 | 74 | Align rationale comments, executable examples and core-journey reading paths | P14-R17 | READY |
-| 75 | Run fresh-checkout/Docker reference acceptance and release the reference track | P14-R18 | READY |
+| 75 | Run fresh-checkout/Docker acceptance and verify the reference track | P14-R18 | READY |
 
 ## Item68 — active
 
@@ -169,12 +169,12 @@ Each item starts only after its predecessor releases. Every slice:
 - runs focused checks during iteration and the affected-scope candidate gate;
 - updates the capability index and reading guidance with the same change.
 
-## Item75 — reference-track release
+## Item75 — reference-track verification
 
 From a fresh checkout, prove installation, capability navigation, a focused
 test, the documented Docker reference journey, evidence lookup and exact
-project-scoped cleanup. Release notes must state verified local capabilities,
-known limitations and all deferred hosted work.
+project-scoped cleanup. Verification notes must state verified local
+capabilities, known limitations and all deferred hosted work.
 
 ## Deferred hosted queue
 

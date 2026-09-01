@@ -45,7 +45,8 @@ memory; do not change product behavior in this item.
 
 - Existing P14-R01–R12 identifiers and hosted safety obligations remain intact.
 - No hosted environment, provider, credential, paid resource or public endpoint is created.
-- A reference release is locally reproducible source and evidence, not a hosted production claim.
+- A verified reference checkpoint is locally reproducible source and evidence,
+  not a hosted production claim.
 - Readability work must preserve domain boundaries, behavior and public contracts.
 - Comments explain rationale, invariants, failure behavior or external constraints; they do not restate code.
 - Refactoring proceeds in small slices backed by characterization and affected-scope gates.

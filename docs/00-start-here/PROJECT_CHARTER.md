@@ -25,7 +25,7 @@ The engineering problem is broader than rendering a catalog. A useful service mu
 
 ## Success criteria
 
-The local reference release is successful when:
+The local reference checkpoint is verified when:
 
 - a viewer can browse, search, open, and play published films;
 - playback adapts between multiple HLS renditions;

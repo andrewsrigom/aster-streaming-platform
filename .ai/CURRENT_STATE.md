@@ -84,7 +84,7 @@ Only one item may be active at a time:
 5. item74 — add rationale comments, examples and bounded reading paths
    (P14-R17);
 6. item75 — run fresh-checkout and Docker-based reference acceptance and
-   release the reference track (P14-R18).
+   verify the reference track (P14-R18).
 
 The detailed queue and activation conditions live in
 [WORK_QUEUE.md](WORK_QUEUE.md).
@@ -114,7 +114,7 @@ of public availability, production capacity or licensed commercial catalog.
 - P14-R15 readability standard and repository inventory;
 - P14-R16 representative readability refactors;
 - P14-R17 reading guides and focused examples;
-- P14-R18 fresh-reference acceptance and reference-track release;
+- P14-R18 fresh-reference acceptance and reference-track verification;
 - every hosted P14-R01–R12 outcome, including provider selection, production
   credentials, representative hosted load, backups/restores, edge controls,
   public endpoints, deployment rollback and production operations.
