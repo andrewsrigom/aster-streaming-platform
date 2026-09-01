@@ -78,8 +78,14 @@ export const CAPABILITY_INDEX_ROWS = [
         "../specs/phase-07-playback.md#p07-r01",
         "../specs/phase-07-playback.md#p07-r10",
       ],
-      Implementation: ["../../services/playback/src/application/create-session.ts"],
-      "Adverse test": ["../../services/playback/test/create-session.test.ts"],
+      Implementation: [
+        "../../services/playback/src/application/create-session.ts",
+        "../../apps/web/features/playback/player.tsx",
+      ],
+      "Adverse test": [
+        "../../services/playback/test/create-session.test.ts",
+        "../../apps/web/test/browser/playback.spec.ts",
+      ],
       Evidence: ["../../evidence/phase-07/release.md"],
       Operations: ["../../services/playback/README.md"],
     },
@@ -179,8 +185,11 @@ export const CAPABILITY_INDEX_ROWS = [
         "../specs/phase-11-resilience.md#p11-r03",
         "../specs/phase-11-resilience.md#p11-r08",
       ],
-      Implementation: ["../../packages/runtime/src/safe-read.ts"],
-      "Adverse test": ["../../packages/runtime/test/safe-read.test.ts"],
+      Implementation: ["../../packages/runtime/src/safe-read.ts", "../../tools/failure-lab.ts"],
+      "Adverse test": [
+        "../../packages/runtime/test/safe-read.test.ts",
+        "../../tools/failure-lab.test.ts",
+      ],
       Evidence: ["../../evidence/phase-11/game-days.md"],
       Operations: ["../operations/RUNBOOKS.md"],
     },
@@ -486,6 +495,13 @@ function withoutHtmlComments(line: string, state: MarkdownVisibilityState): stri
   return visible;
 }
 
+function isCompleteHtmlTag(line: string): boolean {
+  const opening =
+    /^ {0,3}<[A-Za-z][A-Za-z0-9-]*(?:\s+[A-Za-z_:][A-Za-z0-9_.:-]*(?:\s*=\s*(?:[^ "'=<>`]+|'[^']*'|"[^"]*"))?)*\s*\/?>\s*$/u;
+  const closing = /^ {0,3}<\/[A-Za-z][A-Za-z0-9-]*\s*>\s*$/u;
+  return opening.test(line) || closing.test(line);
+}
+
 function visibleMarkdownLines(lines: readonly string[]): string[] {
   const state: MarkdownVisibilityState = {
     fence: undefined,
@@ -555,7 +571,7 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
       return "";
     }
 
-    if (/^ {0,3}<\/?[A-Za-z][A-Za-z0-9-]*(?:\s+[^<>]*)?\/?>\s*$/u.test(uncommented)) {
+    if (isCompleteHtmlTag(uncommented)) {
       state.htmlUntilBlank = true;
       return "";
     }

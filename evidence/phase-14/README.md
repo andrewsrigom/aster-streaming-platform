@@ -493,6 +493,34 @@ zero violations. The affected gate passes15/15, including101 platform-policy,
 `0bdbd6a422f47f1850749fb973533cedb847ca44`, freezes the batch without product
 runtime or deployment changes. Protected publication remains pending.
 
+Evidence head `1abb4572f4a0bd2b508641332906b001bc37a2ba` ran protected
+workflow `33522645385`. Classification, dependency review, governance and
+source quality passed. Local platform failed when the unchanged PostgreSQL
+diagnostic timed out waiting for TraceQL trace
+`02e787ef3e14c73080732d5b67acf087`; scoped cleanup reported clean. The run is
+not acceptance evidence.
+
+Exact-head review completed at `2026-09-01T15:03:24Z` and opened four findings:
+
+- `3905459958` found that Playback P07-R10 lacked the web player and browser
+  adverse-state destinations;
+- `3905459969` found that resilience P11-R08 lacked the failure laboratory and
+  injection-test destinations;
+- `3905459981` found that a quoted `>` inside a complete CommonMark type-7 HTML
+  tag could hide the public matrix;
+- `3905459992` found that quoted YAML keys could retain a conditional
+  governance command while evading CI policy.
+
+The findings are accepted for one batch. The working correction adds both
+requirement-specific proof routes, parses complete HTML tags with quoted
+attribute values and gives quoted unsafe YAML keys the same suppressing
+semantics as plain keys. Focused capability/CI-policy tests pass44/44,
+documentation tests pass28/28 and documentation validation covers250 documents,
+2,880 headings, 1,628 links, four status claims and eleven rows with zero
+violations. The affected gate passes15/15, including101 platform-policy,39
+CI-policy and13 repository-memory tests. No product runtime or deployment
+behavior changed. Publication remains pending.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory

@@ -173,12 +173,23 @@ path/anchor validity to the existing documentation validator.
   tests pass27/27 and the affected gate passes15/15, including101 platform
   tests. Correction source `00270fd`, tree `0bdbd6a`, is frozen without product
   runtime or deployment changes.
+- Exact-head run `33522645385` on `1abb457` passed source quality but failed the
+  unchanged PostgreSQL diagnostic on a TraceQL timeout; scoped cleanup passed,
+  so the run is not acceptance evidence. Exact-head review opened findings
+  `3905459958`/`3905459969`/`3905459981`/`3905459992` for incomplete P07-R10
+  and P11-R08 proof routes, quoted-attribute HTML visibility and quoted unsafe
+  YAML keys.
+- The accepted working correction adds the web player/browser proof, failure
+  laboratory/injection proof, complete quoted HTML attribute parsing and quoted
+  YAML key handling. Focused contracts pass44/44, documentation tests pass28/28,
+  documentation validation covers1,628 links and the affected gate passes15/15,
+  including101 platform tests. No product runtime or deployment behavior changed.
 
 ## Exact next actions
 
-1. Freeze and publish the exact correction for discussions
-   `3905297905`/`3905297914`, resolve them and request confirmation only after
-   GitHub exposes the new exact PR head.
+1. Freeze and publish the exact four-finding correction, resolve its review
+   threads and request confirmation only after GitHub exposes the new exact PR
+   head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating
    item70/P14-R15.

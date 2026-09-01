@@ -165,13 +165,23 @@ full snapshot through the archival checkpoint remains in
   pass27/27 and the affected gate passes15/15, including101 platform tests.
   Correction source `00270fd`, tree `0bdbd6a`, is frozen without product runtime
   or deployment changes.
+- Exact-head run `33522645385` on `1abb457` passed source quality but failed the
+  unchanged PostgreSQL diagnostic on a TraceQL timeout; scoped cleanup passed,
+  so the run is not acceptance evidence. Exact-head review opened findings
+  `3905459958`/`3905459969`/`3905459981`/`3905459992` for incomplete P07-R10
+  and P11-R08 proof routes, quoted-attribute HTML visibility and quoted unsafe
+  YAML keys.
+- The accepted working correction adds the web player/browser proof, failure
+  laboratory/injection proof, quoted-attribute-aware CommonMark visibility and
+  quoted unsafe YAML-key recognition. Focused contracts pass44/44,
+  documentation tests pass28/28, documentation validation covers1,628 links and
+  the affected gate passes15/15, including101 platform tests.
 
 ### Next action
 
-- Freeze and publish the exact two-finding correction, resolve discussions
-  `3905297905`/`3905297914` and request confirmation only after the PR exposes
-  the new exact head. Then merge and complete exact-main verification before
-  activating P14-R15.
+- Freeze and publish the exact four-finding correction, resolve its threads and
+  request confirmation only after the PR exposes the new exact head. Then merge
+  and complete exact-main verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

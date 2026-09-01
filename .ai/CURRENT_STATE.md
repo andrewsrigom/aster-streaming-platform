@@ -53,12 +53,12 @@ destination sequence for every capability/role pair; existing documentation
 validation proves the concrete paths, anchors, root-escape policy and
 symbolic-target policy.
 
-Focused documentation tests pass27/27. Documentation validation passes for250
-documents, 2,880 headings, 1,625 links, four supported status claims and the
+Focused documentation tests pass28/28. Documentation validation passes for250
+documents, 2,880 headings, 1,628 links, four supported status claims and the
 eleven exact capability rows. The always-run protected governance job now
 executes the capability verifier and its adverse tests even for a
 documentation-only change; CI policy fails if either command moves outside that
-job. Combined capability/CI-policy tests pass43/43. The corrected changed-scope
+job. Combined capability/CI-policy tests pass44/44. The corrected changed-scope
 gate passes15/15 tasks, including101
 platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
 behavior changed, so heavyweight PostgreSQL, browser, media and Docker journey
@@ -66,9 +66,10 @@ evidence remains applicable. Prior protected acceptance passes; protected
 acceptance of the current public-rendering/traceability correction, merge and
 exact-main acceptance remain pending.
 
-Correction source `00270fd6a7bd1f658d4662db3b68e9e82118ccb0`, tree
-`0bdbd6a422f47f1850749fb973533cedb847ca44`, is the latest frozen correction
-recorded in [Phase14 evidence](../evidence/phase-14/README.md).
+The current working correction adds the web player/browser proof for P07-R10,
+the failure laboratory/injection proof for P11-R08, quoted-attribute-aware
+CommonMark type-7 visibility and quoted unsafe YAML-key recognition. It passes
+the complete local candidate gate and remains to be frozen and published.
 
 Evidence head `136def8`, tree `58e640d`, passed protected run
 `33498081610`. Initial review discussions `3903242620`/`3903242629` found an
@@ -183,6 +184,18 @@ actual rights-gate integration proof and rejects escaped/image prefixes. Focused
 contracts pass43/43, documentation tests pass27/27 and the affected gate
 passes15/15, including101 platform tests. Protected publication remains
 pending.
+
+Exact-head run `33522645385` on `1abb457` passed classification, dependency
+review, governance and source quality but failed Local platform when the
+unchanged PostgreSQL diagnostic timed out waiting for its TraceQL search; exact
+scoped cleanup completed. It is not acceptance evidence. Exact-head review at
+`2026-09-01T15:03:24Z` opened findings `3905459958`/`3905459969`/
+`3905459981`/`3905459992`: Playback and resilience lacked requirement-specific
+proof destinations, a quoted `>` HTML attribute could hide the matrix and a
+quoted YAML `if` key could bypass CI policy. The accepted working correction
+closes all four boundaries. Focused contracts pass44/44, documentation tests
+pass28/28, documentation validation covers1,628 links and the affected gate
+passes15/15, including101 platform tests. Publication remains pending.
 
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 

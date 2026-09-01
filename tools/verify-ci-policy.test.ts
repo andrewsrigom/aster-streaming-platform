@@ -313,6 +313,12 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
         "      - name: Validate repository memory\n",
         `      - name: Non-blocking capability command\n        continue-on-error: true\n        run: ${requiredInvocation}\n      - name: Validate repository memory\n`,
       );
+    const retainedOnlyInQuotedConditionalGovernanceStep = source
+      .replace(requiredCommand, "true")
+      .replace(
+        "      - name: Validate repository memory\n",
+        `      - name: Quoted conditional capability command\n        "if": false\n        run: ${requiredInvocation}\n      - name: Validate repository memory\n`,
+      );
     const retainedOnlyInConditionalGovernanceJob = source.replace(
       "  governance:\n",
       "  governance:\n    if: github.event_name == 'push'\n",
@@ -320,6 +326,10 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
     const retainedOnlyInTrailingConditionalGovernanceJob = source.replace(
       "  quality:\n",
       "    if: false\n\n  quality:\n",
+    );
+    const retainedOnlyInQuotedTrailingConditionalGovernanceJob = source.replace(
+      "  quality:\n",
+      "    'if': false\n\n  quality:\n",
     );
     const retainedOnlyAsPrintedText = source.replace(requiredCommand, `echo '${requiredCommand}'`);
     const retainedOnlyInHereDocument = source
@@ -336,8 +346,10 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       retainedOnlyInSuppressedGovernanceStep,
       retainedOnlyInConditionalGovernanceStep,
       retainedOnlyInNonBlockingGovernanceStep,
+      retainedOnlyInQuotedConditionalGovernanceStep,
       retainedOnlyInConditionalGovernanceJob,
       retainedOnlyInTrailingConditionalGovernanceJob,
+      retainedOnlyInQuotedTrailingConditionalGovernanceJob,
       retainedOnlyAsPrintedText,
       retainedOnlyInHereDocument,
     ]) {

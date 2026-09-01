@@ -300,6 +300,20 @@ test("rejects a capability table inside an arbitrary CommonMark HTML block", () 
   assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
 });
 
+test("rejects a capability table after a complete HTML tag with quoted greater-than text", () => {
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  for (const opening of [`<span title=">">`, `<span title='>'>`]) {
+    const hidden = source.replace(header, `${opening}\n${header}`);
+    const report = analyzeCapabilityIndex(hidden);
+    assert.equal(report.rows, 0, opening);
+    assert.ok(
+      report.violations.some(({ rule }) => rule === "missing-table"),
+      opening,
+    );
+  }
+});
+
 test("rejects a capability table inside every marker-terminated CommonMark HTML block", () => {
   for (const [opening, closing] of [
     ["<?hide", "?>"],

@@ -79,13 +79,23 @@ function uncommentedYamlValue(value: string): string {
   return value.replace(/\s+#.*$/u, "").trim();
 }
 
+function yamlKey(value: string): string | undefined {
+  const normalized = uncommentedYamlValue(value).replace(/^-\s+/u, "");
+  const match =
+    /^(?:"(?<double>[A-Za-z0-9_-]+)"|'(?<single>[A-Za-z0-9_-]+)'|(?<plain>[A-Za-z0-9_-]+))\s*:/u.exec(
+      normalized,
+    );
+  return match?.groups?.["double"] ?? match?.groups?.["single"] ?? match?.groups?.["plain"];
+}
+
 function executableWorkflowSteps(jobSource: string): string[] {
   const lines = jobSource.replace(/\r\n?/gu, "\n").split("\n");
   const stepsStart = lines.findIndex((line) => line === "    steps:");
   if (stepsStart < 0) {
     return [];
   }
-  if (lines.some((line) => /^ {4}(?:if|defaults|env):/u.test(line.replace(/\s+#.*$/u, "")))) {
+  const unsafeJobKeys = new Set(["defaults", "env", "if"]);
+  if (lines.some((line) => /^ {4}\S/u.test(line) && unsafeJobKeys.has(yamlKey(line) ?? ""))) {
     return [];
   }
 
@@ -97,13 +107,14 @@ function executableWorkflowSteps(jobSource: string): string[] {
   for (const [stepIndex, start] of stepStarts.entries()) {
     const end = stepStarts[stepIndex + 1] ?? lines.length;
     const step = lines.slice(start, end);
-    if (
-      step.some((line) =>
-        /^(?:if|continue-on-error|env|shell|working-directory):/u.test(
-          uncommentedYamlValue(line).replace(/^-\s+/u, ""),
-        ),
-      )
-    ) {
+    const unsafeStepKeys = new Set([
+      "continue-on-error",
+      "env",
+      "if",
+      "shell",
+      "working-directory",
+    ]);
+    if (step.some((line) => unsafeStepKeys.has(yamlKey(line) ?? ""))) {
       continue;
     }
 

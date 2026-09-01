@@ -61,6 +61,8 @@ file and anchor exists.
 - Representative links are concrete and maintained, not exhaustive file lists.
 - The media adverse-test destination reaches the PostgreSQL processing path and
   proves current rights are rechecked before claim, check and completion.
+- Playback P07-R10 reaches the web player and its browser adverse-state proof;
+  resilience P11-R08 reaches the failure laboratory and its injection tests.
 - Status follows the repository's planned/implemented/verified/released
   vocabulary and does not promote hosted P14-R01–R12 work.
 - Missing, duplicate, extra or malformed capability rows fail closed with
@@ -78,12 +80,14 @@ file and anchor exists.
 - Only a visible Markdown table satisfies capability coverage; rows inside
   fenced code, HTML comments, named raw containers, arbitrary CommonMark type-7
   HTML blocks, complete CommonMark type-6 block tags or four-column indented
-  code are ignored.
+  code are ignored. Complete type-7 tags recognize quoted attribute values that
+  contain `>`.
 - Documentation-only changes cannot bypass the capability-index verifier or
   its adverse tests in protected CI; the policy parser bounds `governance` at
   the next top-level job rather than a later named job and recognizes only
   unconditional, blocking step-level `run` invocations in an unconditional job.
-  Job-level conditions are recognized independently of YAML key order.
+  Job-level conditions are recognized independently of YAML key order. Quoted
+  YAML keys have the same suppressing semantics as plain keys.
   The required check is a standalone simple Node.js command and the required
   test is one finite `node --test` invocation, not comments, here-documents,
   environment values, printed command text or suppressed steps.
@@ -112,6 +116,7 @@ file and anchor exists.
 | Reviewed link syntax is escaped or converted to an image | Treat the interactive link as missing | Link-prefix diagnostic |
 | A listed requirement lacks a representative implementation or adverse proof | Require the reviewed additional destinations in that row | Per-role destination diagnostic |
 | A required command is conditional, non-blocking or belongs to a conditional job | Treat the command as absent | Executable-step diagnostic |
+| An unsafe workflow key is quoted | Treat it like the equivalent plain YAML key | YAML-key diagnostic |
 | A job-level condition appears after `steps` | Treat every command in the job as absent | Order-independent job diagnostic |
 | Required command text exists only inside a here-document or shell structure | Treat the command as absent | Standalone-command diagnostic |
 | Table size or input encoding is invalid | Stop within fixed byte/row limits | Bounded input diagnostic |
@@ -160,7 +165,8 @@ file and anchor exists.
   escaped/image destinations, incomplete multi-requirement
   proof, fenced/commented/raw-HTML/indented tables, conditional/
   non-blocking/commented/printed/environment/here-document-only or isolated
-  governance commands, malformed UTF-8 and bounds
+  governance commands, quoted HTML delimiters, quoted unsafe YAML keys,
+  malformed UTF-8 and bounds
 - Browser: not applicable
 - Performance/failure: dependency-free bounded parser completes within the
   existing documentation gate
@@ -180,8 +186,14 @@ file and anchor exists.
   mismatch plus escaped/image link prefixes. Source `00270fd`, tree `0bdbd6a`, passes
   focused contract tests43/43, documentation tests27/27 and the affected
   gate15/15. Runs `33519414100`/`33520880432` were cancelled when their sources
-  became superseded. Publication, protected acceptance, merge and exact-main
-  acceptance remain pending
+  became superseded. Exact-head run `33522645385` on `1abb457` passed source
+  quality but failed the unchanged PostgreSQL diagnostic on a TraceQL timeout;
+  cleanup passed and the run is not acceptance evidence. Exact-head review
+  opened findings `3905459958`/`3905459969`/`3905459981`/`3905459992`. The
+  working correction completes P07-R10/P11-R08 proof routes and closes quoted
+  HTML/YAML parser gaps. Focused contracts pass44/44, documentation tests
+  pass28/28 and the affected gate passes15/15. Publication, protected
+  acceptance, merge and exact-main acceptance remain pending
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff
