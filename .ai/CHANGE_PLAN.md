@@ -31,6 +31,13 @@ Exact persisted documents through Router now measure TitleDetail2,
 SearchTitles5, HomePublic7 and ContinueWatching7 across every participating
 owner. Router26/26, query proof15/15, strict Engagement build and both full
 disposable runtimes pass with cleanup0. The 12-case matrix remains unchanged.
+Protected run `33456003304` then exposed a repeatable Docker restart boundary:
+Discovery became healthy with the preserved generation, but the still-running
+Router's first post-restart fetch used the stopped container endpoint and
+returned `SUBREQUEST_HTTP_ERROR`. The recovery proof will therefore use a
+finite end-to-end probe deadline, retry only that explicit transient fetch
+classification, and fail immediately on any HTTP, GraphQL or generation
+semantic mismatch.
 
 ## Proposed behavior
 
@@ -90,6 +97,7 @@ matrix.
 | Role or private-credential escalation | Public/foreign caller cannot invoke operator/private path | matrix case/outcome |
 | PostgreSQL fixture or measurement fails | No acceptance claim; exact fixture cleans up | command failure/remaining resources |
 | Background readiness or non-participant traffic enters the count | Exclude only declared probe fingerprints, stop the named non-participant and retain the isolation event | per-owner count/isolation event |
+| Discovery is healthy but Router still holds the stopped endpoint | Retry only `SUBREQUEST_HTTP_ERROR` inside one finite end-to-end recovery deadline; any other response fails immediately | attempt count, duration, preserved generation and cleanup |
 | Predecessor PR changes | Rebase this dependent branch and repeat affected gates/evidence | exact base/head |
 
 ## Data and contracts
@@ -127,6 +135,10 @@ matrix.
    evidence and close Phase13 documentation.
 6. Publish item67 once from released item66 main and complete protected review,
    merge and exact-main gates.
+7. If protected restart recovery returns the explicit transient subrequest
+   classification, prove bounded end-to-end recovery without weakening logical
+   response or generation assertions, then repeat only the affected heavyweight
+   Discovery runtime and candidate gate.
 
 ## Tests
 

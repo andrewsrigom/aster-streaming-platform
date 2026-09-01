@@ -94,7 +94,7 @@ const knownOperation = (name) => {
 };
 const homePersonalizedOperation = knownOperation("HomePersonalized");
 
-async function executeGraphql(port, payload) {
+async function executeGraphql(port, payload, timeoutMs = 5_000) {
   const body = Buffer.from(JSON.stringify(payload));
   assert.ok(body.byteLength < 16_384);
   return new Promise((resolve, reject) => {
@@ -104,7 +104,7 @@ async function executeGraphql(port, payload) {
         port,
         path: "/graphql",
         method: "POST",
-        signal: globalThis.AbortSignal.timeout(5_000),
+        signal: globalThis.AbortSignal.timeout(timeoutMs),
         headers: {
           host: "127.0.0.1:4000",
           origin: "http://127.0.0.1:4000",
@@ -142,12 +142,70 @@ async function executeGraphql(port, payload) {
   });
 }
 
-const graphql = (port, query) =>
-  executeGraphql(port, {
-    query: searchOperation.body,
-    operationName: "SearchTitles",
-    variables: { query, locale: "en", first: 5 },
-  });
+const graphql = (port, query, timeoutMs) =>
+  executeGraphql(
+    port,
+    {
+      query: searchOperation.body,
+      operationName: "SearchTitles",
+      variables: { query, locale: "en", first: 5 },
+    },
+    timeoutMs,
+  );
+
+const isTransientSubrequestFailure = (response) => {
+  const errors = response.body?.errors;
+  return (
+    response.status === 200 &&
+    Array.isArray(errors) &&
+    errors.length > 0 &&
+    errors.every(
+      (error) =>
+        typeof error === "object" &&
+        error !== null &&
+        typeof error.extensions === "object" &&
+        error.extensions !== null &&
+        error.extensions.code === "SUBREQUEST_HTTP_ERROR",
+    )
+  );
+};
+
+async function waitForDiscoveryRecovery(port, query, expectedGeneration) {
+  const startedAt = performance.now();
+  const deadlineAt = startedAt + 10_000;
+  let attempts = 0;
+
+  while (performance.now() < deadlineAt) {
+    attempts += 1;
+    const remainingMs = Math.max(1, Math.ceil(deadlineAt - performance.now()));
+    const response = await graphql(port, query, Math.min(1_000, remainingMs));
+    const errors = response.body?.errors;
+    const generation = response.body?.data?.searchTitles?.connection?.generation;
+
+    if (response.status === 200 && errors === undefined && generation === expectedGeneration) {
+      return {
+        attempts,
+        durationMs: Number((performance.now() - startedAt).toFixed(3)),
+      };
+    }
+    if (response.status !== 200) {
+      throw new Error("Discovery recovery returned a non-success HTTP status.");
+    }
+    if (errors === undefined) {
+      throw new Error("Discovery recovery returned an unexpected projection generation.");
+    }
+    if (!isTransientSubrequestFailure(response)) {
+      throw new Error("Discovery recovery returned an unexpected GraphQL error.");
+    }
+
+    const delayMs = Math.min(250, Math.max(0, deadlineAt - performance.now()));
+    if (delayMs > 0) {
+      await new Promise((resolve) => globalThis.setTimeout(resolve, delayMs));
+    }
+  }
+
+  throw new Error("Discovery recovery exceeded its 10-second end-to-end deadline.");
+}
 
 const postgres = (sql) =>
   compose([
@@ -482,13 +540,13 @@ try {
     ["up", "--no-build", "--wait", "--wait-timeout", "90", "discovery", "router"],
     120_000,
   );
-  const recovered = await graphql(port, "Signal");
-  assert.equal(recovered.status, 200);
-  assert.equal(
-    recovered.body.data?.searchTitles?.connection?.generation,
-    projection.activeGeneration,
-  );
-  emit("discovery_restart_recovery", { generationPreserved: true, searchRecovered: true });
+  const recovery = await waitForDiscoveryRecovery(port, "Signal", projection.activeGeneration);
+  emit("discovery_restart_recovery", {
+    generationPreserved: true,
+    searchRecovered: true,
+    attempts: recovery.attempts,
+    durationMs: recovery.durationMs,
+  });
 
   const logs = await compose(["logs", "--no-color", "--tail", "200", "discovery", "router"]);
   for (const required of [
