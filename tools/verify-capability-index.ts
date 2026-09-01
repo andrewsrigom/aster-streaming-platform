@@ -26,20 +26,20 @@ export const CAPABILITY_INDEX_COLUMNS = [
 ] as const;
 
 export const CAPABILITY_INDEX_ROWS = [
-  { id: "identity-profiles", owner: "Identity and Profiles", status: "released locally" },
-  { id: "catalog", owner: "Catalog", status: "released locally" },
-  { id: "playback", owner: "Playback", status: "released locally" },
-  { id: "engagement", owner: "Engagement", status: "released locally" },
-  { id: "discovery", owner: "Discovery", status: "released locally" },
-  { id: "router-graphql", owner: "Router", status: "released locally" },
-  { id: "web-accessibility", owner: "Web", status: "released locally" },
-  { id: "media", owner: "Catalog", status: "released locally" },
-  { id: "resilience", owner: "Runtime", status: "released locally" },
-  { id: "observability", owner: "Telemetry", status: "released locally" },
+  { id: "identity-profiles", owner: "Identity and Profiles", status: "released" },
+  { id: "catalog", owner: "Catalog", status: "released" },
+  { id: "playback", owner: "Playback", status: "released" },
+  { id: "engagement", owner: "Engagement", status: "released" },
+  { id: "discovery", owner: "Discovery", status: "released" },
+  { id: "router-graphql", owner: "Router", status: "released" },
+  { id: "web-accessibility", owner: "Web", status: "released" },
+  { id: "media", owner: "Catalog", status: "released" },
+  { id: "resilience", owner: "Runtime", status: "released" },
+  { id: "observability", owner: "Telemetry", status: "released" },
   {
     id: "repository-workflows",
     owner: "Repository governance",
-    status: "released locally",
+    status: "released",
   },
 ] as const;
 

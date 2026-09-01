@@ -39,8 +39,9 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Commit the source candidate, record exact evidence, publish it for protected
-  CI and review, then merge and verify exact-main before activating P14-R15.
+- Publish the current evidence checkpoint and wait for protected CI; do not
+  create an empty or duplicate evidence commit. Then complete review, merge and
+  exact-main verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

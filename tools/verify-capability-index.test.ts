@@ -41,7 +41,7 @@ test("rejects missing links and non-authoritative owner or status vocabulary", (
       "| catalog | Capability | Search team | [Requirement]",
     )
     .replace(
-      "| released locally | [Source](../../source.ts)",
+      "| released | [Source](../../source.ts)",
       "| deployed | [Source](https://example.com/source.ts)",
     );
   const report = analyzeCapabilityIndex(source);
