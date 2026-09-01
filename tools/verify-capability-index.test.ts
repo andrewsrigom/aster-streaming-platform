@@ -287,6 +287,15 @@ test("rejects a capability table after every CommonMark type-6 block tag", () =>
   }
 });
 
+test("keeps a type-6 raw HTML block open across a comment-only line", () => {
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  const hidden = source.replace(header, `<div>\n<!-- still inside raw HTML -->\n${header}`);
+  const report = analyzeCapabilityIndex(hidden);
+  assert.equal(report.rows, 0);
+  assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
 test("rejects a capability table inside an arbitrary CommonMark HTML block", () => {
   const source = validIndex();
   const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;

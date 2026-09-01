@@ -549,7 +549,7 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
 
     const uncommented = withoutHtmlComments(line, state);
     if (state.htmlUntilBlank) {
-      if (!uncommented.trim()) {
+      if (!line.trim()) {
         state.htmlUntilBlank = false;
       }
       return "";

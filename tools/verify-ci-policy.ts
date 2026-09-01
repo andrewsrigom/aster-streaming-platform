@@ -153,6 +153,19 @@ function executableWorkflowSteps(jobSource: string): string[] {
   return commands;
 }
 
+function hasExactJobDependency(jobSource: string, dependency: string): boolean {
+  const dependencyLines = jobSource
+    .replace(/\r\n?/gu, "\n")
+    .split("\n")
+    .filter((line) => /^ {4}\S/u.test(line) && yamlKey(line) === "needs");
+  if (dependencyLines.length !== 1) {
+    return false;
+  }
+  const normalized = uncommentedYamlValue(dependencyLines[0] ?? "");
+  const separator = normalized.indexOf(":");
+  return separator >= 0 && normalized.slice(separator + 1).trim() === dependency;
+}
+
 function hasStandaloneCapabilityCheck(steps: readonly string[]): boolean {
   const required = "node ./tools/verify-capability-index.ts";
   return steps.some((step) => {
@@ -338,7 +351,16 @@ export function validateWorkflowPolicy(
     /package-manager-cache:\s*false/u,
     "implicit setup-node caching must be disabled",
   );
-  const governanceSteps = executableWorkflowSteps(workflowJobSource(source, "governance"));
+  const governanceSource = workflowJobSource(source, "governance");
+  const governanceSteps = executableWorkflowSteps(governanceSource);
+  if (!hasExactJobDependency(governanceSource, "classify")) {
+    violations.push({
+      detail: "capability-index governance job must depend only on classify",
+      file,
+      line: 1,
+      rule: "commands",
+    });
+  }
   for (const [present, detail] of [
     [
       hasStandaloneCapabilityCheck(governanceSteps),
