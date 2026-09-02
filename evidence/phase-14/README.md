@@ -1201,6 +1201,17 @@ links and commands. The added Web test passes 10/10; the expanded GraphQL checks
 pass 26/26 beyond the existing eight demand tests. No executable source changed.
 The corrected exact-source gate passes 16/16.
 
+Evidence head `0e10a85ef8d8b1f1d00771f98afff4a0b7471bd1`, tree
+`1bf3362fa0a482a8619c9a7654270e1167f0fdc4`, passes protected workflow
+`33631634720`, including dependency review, documentation/security, source
+quality and real integrations, the Docker-only playable demo, Local platform,
+and the aggregate gate. Both initial discussions are resolved. Confirmation
+review `5089816369` found only that the raw transcript placed the corrected gate
+before the retained initial gate. The transcript is reordered chronologically;
+no executable source or public boundary changes, so the recorded stopping rule
+does not require another review round. Final exact-head protected acceptance,
+merge, and exact-main verification remain.
+
 ## Planned evidence
 
 - P14-R17 examples and reading-path verification

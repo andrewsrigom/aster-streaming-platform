@@ -49,12 +49,17 @@ Close only `journey-comments-examples`:
   omitted its client-disposal check and GraphQL admission omitted runtime,
   limiter, batching, and query-count proofs. Both reading paths and commands are
   corrected, and the added checks pass 10/10 Web and 26/26 GraphQL tests.
+- Evidence head `0e10a85`, tree `1bf3362`, passes protected workflow
+  `33631634720`; both initial discussions are resolved. Confirmation review
+  `5089816369` found only a non-chronological transcript. The transcript is now
+  chronological; the correction changes no executable or public boundary.
 
 ## Exact next actions
 
-1. Publish corrected source `a43247b` and resolve both discussions.
-2. Complete protected acceptance and one confirmation, merge, and verify exact
-   main.
+1. Commit and publish the transcript-order correction, then resolve discussion
+   `3914251790`.
+2. Require final exact-head protected acceptance, merge, and verify exact main;
+   do not request another review round.
 
 ## Execution boundary
 

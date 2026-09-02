@@ -132,8 +132,12 @@ browser-storage comments. Do not change executable behavior.
   cached tasks in 1.949 seconds.
   Initial review discussions `3914109519` and `3914109534` identified omitted
   client-disposal and GraphQL execution/limiter/batching/query-count checks. The
-  corrected examples and corrected-source gate pass; protected acceptance
-  remains.
+  corrected examples and corrected-source gate pass. Evidence head `0e10a85`,
+  tree `1bf3362`, passes protected workflow `33631634720`; both discussions are
+  resolved. Confirmation review `5089816369` found one evidence-order defect,
+  now corrected. Final exact-head protected acceptance remains; another review
+  is outside the stopping rule because the correction changes no executable or
+  public boundary.
 - Iteration gate: `pnpm docs:test`, `pnpm docs:check`, `pnpm ai:check`, the Web
   source suite, and each documented focused example
 - Candidate gate: `pnpm check:changed`

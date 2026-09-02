@@ -279,7 +279,11 @@ Initial review discussions `3914109519` and `3914109534` found two proof-path
 gaps. Playback now runs its client-disposal source test, and GraphQL admission
 now links and executes runtime policy, identity-aware limiting, request-scoped
 batching, and query-count proofs. The corrected-source gate passes; protected
-acceptance remains.
+workflow `33631634720` passes on evidence head `0e10a85`, tree `1bf3362`, and
+both discussions are resolved. Confirmation review `5089816369` found only a
+non-chronological raw transcript. The transcript is reordered without changing
+an executable or public boundary. Final exact-head protected acceptance, merge,
+and exact-main verification remain; the recorded review stopping rule is met.
 
 ## Items72–74 — scoped implementation work
 

@@ -67,9 +67,13 @@ with six cached tasks in 37.612 seconds. Corrected exact source `a43247b`, tree
 discussions `3914109519` and
 `3914109534` found that the playback check omitted its client-disposal test and
 the GraphQL check omitted runtime, limiter, batching, and query-count proofs.
-Both commands and paths now cover those boundaries. This is documentation and
-comment alignment only; publication, protected acceptance, confirmation,
-merge, and exact-main verification remain.
+Both commands and paths now cover those boundaries. Evidence head `0e10a85`,
+tree `1bf3362`, passed protected workflow `33631634720`; both initial
+discussions are resolved. Confirmation review `5089816369` found only that the
+raw transcript placed the corrected gate before the retained initial gate. The
+transcript is now chronological. This is documentation and comment alignment
+only; final exact-head protected acceptance, merge, and exact-main verification
+remain. No additional review round is required by the recorded stopping rule.
 
 ## Ordered reference-quality runway
 

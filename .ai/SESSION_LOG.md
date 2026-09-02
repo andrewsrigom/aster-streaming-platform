@@ -35,6 +35,11 @@ full snapshot through the archival checkpoint remains in
   omitted its client-disposal check and GraphQL admission omitted runtime,
   limiter, batching, and query-count proofs. Both paths and commands are
   corrected; the added checks pass 10/10 Web and 26/26 GraphQL tests.
+- Evidence head `0e10a85`, tree `1bf3362`, passes protected workflow
+  `33631634720`; both initial discussions are resolved. Confirmation review
+  `5089816369` found only that the raw transcript placed the corrected gate
+  before the retained initial gate. The transcript is reordered
+  chronologically without changing an executable or public boundary.
 
 ### Evidence
 
@@ -47,8 +52,9 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-Publish corrected source `a43247b`, resolve both discussions, then require
-protected acceptance and one confirmation.
+Commit and publish the transcript-order correction, resolve discussion
+`3914251790`, require final exact-head protected acceptance, then merge and
+verify exact main. Do not request another review round under the stopping rule.
 
 ## 2026-09-02 — Identity/Engagement/Discovery readability verified and item73 activated
 
