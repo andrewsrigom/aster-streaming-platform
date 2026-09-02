@@ -4,6 +4,47 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-02 — Identity/Engagement/Discovery readability verified and item73 activated
+
+### Completed
+
+- Item72 correction head `7d573a6`, tree `18c0931`, passed protected workflow
+  `33619298315`; discussion `3913089979` is resolved and corrected-head
+  confirmation is clean.
+- PR63 squash main `f7b0aad` retains the exact tree; exact-main workflow
+  `33620771727` passed every applicable job. Item72/P14-R16 is `DONE`.
+- Activated item73/P14-R16 on `refactor/router-web-tooling-readability` from
+  exact main.
+- Scoped the work to `router-demand-analysis`, `web-player-session-flow`, and
+  `quality-gate-lifecycle`, preserving public contracts, GraphQL demand math,
+  player session/accessibility/recovery behavior, telemetry, timeout, signal,
+  exit-status, and process-tree cleanup behavior.
+- Restored the required phase, linked requirements, ADR, skills, source, and
+  characterization-test context.
+- Router demand characterization passes 8/8 before and after; complete Router
+  passes 26/26 with deterministic five-subgraph validation.
+- Quality-gate lifecycle characterization passes 8/8 before and after.
+- Web source tests pass 119/119 before and after; strict typecheck passes.
+- Implemented the three private naming/control-flow slices without changing
+  public contracts, policies, status values, telemetry, or time bounds.
+- Changed-file lint/format and architecture validation pass. The affected-scope
+  candidate gate passes 46/46 with zero cached tasks in 1m22.659s.
+- Docker Desktop started, but its daemon/WSL integration did not become ready;
+  no local browser pass is claimed and protected acceptance remains required.
+
+### Evidence
+
+- Protected PR63 run: `33619298315`.
+- Merge: `f7b0aad892a76fafe3f5da5c90c1480b8a6cab1d`, tree
+  `18c0931eca792996922b81d302884db9677eacd2`.
+- Exact-main run: `33620771727`.
+
+### Next action
+
+Finalize repository memory/evidence, commit the coherent source, repeat the
+exact-source candidate gate, then publish for protected browser/Docker-capable
+acceptance and the bounded review cycle.
+
 ## 2026-09-02 — Catalog/Playback readability verified and item72 activated
 
 ### Completed

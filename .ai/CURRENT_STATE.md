@@ -11,10 +11,11 @@ reference track P14-R13–R18 is active under ADR-0048. Hosted P14-R01–R12 rem
 planned and requires explicit owner authorization for providers, credentials,
 paid resources, and public endpoints.
 
-Items69/P14-R14,70/P14-R15, and71/P14-R16 are verified. Item72/P14-R16 is the
-sole `IN_PROGRESS` item on `refactor/identity-engagement-discovery-readability`,
-worktree `/tmp/aster-readability-identity-engagement-discovery`, from exact
-PR62 squash main `34a32c4`.
+Items69/P14-R14,70/P14-R15,71/P14-R16, and72/P14-R16 are verified. Item73/
+P14-R16 is the sole `IN_PROGRESS` item on
+`refactor/router-web-tooling-readability`, worktree
+`/tmp/aster-readability-router-web-tooling`, from exact PR63 squash main
+`f7b0aad`.
 
 ## Verified
 
@@ -34,6 +35,10 @@ PR62 squash main `34a32c4`.
   `33609186840` on attempt 2; all three discussions are resolved. PR62 squash
   main `34a32c4` retains the exact tree, and exact-main workflow `33612201728`
   passed every applicable job.
+- Item72 final head `7d573a6`, tree `18c0931`, passed protected workflow
+  `33619298315`; its sole review discussion is resolved and the corrected-head
+  confirmation is clean. PR63 squash main `f7b0aad` retains the exact tree, and
+  exact-main workflow `33620771727` passed every applicable job.
 
 The authoritative Phase14 chronology is in
 [`evidence/phase-14/README.md`](../evidence/phase-14/README.md). No hosted
@@ -41,31 +46,23 @@ deployment, production capacity, or broader media rights are claimed.
 
 ## Current work
 
-Item72 closes only the three inventory findings owned by Identity and Profiles,
-Engagement, and Discovery. The selected slices are the profile transaction,
-progress write, and home-rail assembly. Identity now names its authorized
-transaction, owned-profile lookup, mutation input, replay, capacity, state,
-event, and receipt phases. Engagement names dependency-snapshot freshness,
-late settlement, receipt replay, admission, Playback context, transaction
-result, and the `progressWriteStarted` uncertain-commit boundary. Discovery
-names each fixed/genre selection, rail assembly, recent-content fallback,
-per-rail observation, usable-result count, and aggregate failure precedence;
-numeric selection indexes are removed.
+Item73 closes only the Router demand-analysis, Web player-session, and
+repository quality-gate lifecycle findings. Router now names policy validation,
+demand rejection, list detection/sizing, bounded metric accounting, recursive
+selection cost, and intermediate expansion/cost phases. Web names playback
+controls, adapter/progress ownership, one-request session admission, GraphQL
+result translation, local telemetry, recovery, and client disposal. Tooling
+names child-process spawning, one-time settlement, hard timeout, graceful
+termination, forced termination, and final-exit timers.
 
-The work is behavior-preserving. Identity remains the owner of sessions and
-profiles; Engagement remains the owner of progress, receipts, and its outbox;
-Discovery remains the owner of its home projection and response assembly.
-Public contracts, schemas, events, persistence, cache, media, telemetry,
-dependencies, and deployment remain unchanged. Linked characterization runs
-pass 47/47 before and after implementation. Complete Identity tests pass
-163/163, Engagement passes 129/129, and Discovery passes 110/110. All three
-affected builds and typechecks, changed-file lint, and architecture validation
-pass. The affected-scope candidate gate passes 44/44 tasks with 12 cached tasks
-in 1m4.03s. Exact source `6239362`, tree `217aaf6`, repeats it with 33 cached
-tasks in 39.287 seconds. Evidence head `1e45071` passed protected workflow
-`33616377473`. Initial review found one stale repository-memory resume action;
-the correction changes documentation only. Corrected exact-head checks,
-discussion resolution, confirmation, merge, and exact-main acceptance remain.
+The work is behavior-preserving. Router demand characterization passes 8/8
+before and after implementation; complete Router tests pass 26/26. Quality-gate
+lifecycle characterization passes 8/8 before and after. Web source tests pass
+119/119 before and after, and strict typecheck passes. Changed-file lint,
+Prettier, and architecture validation pass. The affected-scope candidate gate
+passes 46/46 tasks with zero cached tasks in 1m22.659s. The local Docker daemon
+did not become available, so no local browser pass is claimed; protected
+candidate acceptance remains required before verification.
 
 ## Ordered reference-quality runway
 
@@ -73,8 +70,9 @@ discussion resolution, confirmation, merge, and exact-main acceptance remain.
 2. item69 — P14-R14 capability index: verified;
 3. item70 — P14-R15 readability guardrails and inventory: verified;
 4. item71 — P14-R16 Catalog and Playback reading slices: verified;
-5. item72 — P14-R16 Identity, Engagement, and Discovery reading slices: active;
-6. item73 — P14-R16 Router, Web, and tooling reading slices;
+5. item72 — P14-R16 Identity, Engagement, and Discovery reading slices:
+   verified;
+6. item73 — P14-R16 Router, Web, and tooling reading slices: active;
 7. item74 — P14-R17 rationale comments, executable examples, and reading paths;
 8. item75 — P14-R18 fresh-checkout and Docker reference acceptance.
 
@@ -113,12 +111,13 @@ Use WSL Git and Node.js24.19.0/pnpm11.24.0 from
 `/mnt/c/Users/andre/.cache/aster-node-24.19.0`. Never use a branch beginning
 with `codex/`.
 
-Item72 changes private application names and local control-flow structure only.
-Existing PostgreSQL, Redis, broker, browser, media, and Docker evidence remains
-applicable unless the refactor changes transaction order, dependency work,
-deadlines, contracts, telemetry shape, fallback policy, or other behavior that
-evidence measured. Preserve retained data, media, unrelated Docker projects,
-credentials, and host processes.
+Item73 changes private names and local control-flow structure only. Repeat the
+linked Router, Web player, and quality-gate characterization. Existing broader
+PostgreSQL, Redis, broker, media, and Docker evidence remains applicable unless
+the refactor changes GraphQL demand math, session creation or cancellation,
+player recovery/accessibility, process-tree termination, telemetry shape, or
+other measured behavior. Preserve retained data, media, unrelated Docker
+projects, credentials, and host processes.
 
 ## Current risks
 
@@ -133,6 +132,6 @@ owned whitespace, and explicit preserved behavior.
 
 ## Next outcome
 
-Complete item72/P14-R16: characterize and refactor the three selected owner
-slices, pass focused and affected-scope gates, complete one review and one
-confirmation, merge, and verify exact main.
+Complete item73/P14-R16: characterize and refactor the selected Router, Web, and
+repository-tooling slices, pass focused and affected-scope gates, complete one
+review and one confirmation, merge, and verify exact main.

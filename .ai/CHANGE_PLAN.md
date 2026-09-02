@@ -1,120 +1,114 @@
-# Work Item: Clarify Identity, Engagement, and Discovery application flows
+# Work Item: Clarify Router, Web, and quality-gate flows
 
 - Status: IN_PROGRESS
-- Owner: Identity and Profiles, Engagement, and Discovery
+- Owner: Router, Web, and repository governance
 - Phase: 14
-- Requirement IDs: P14-R16, P02-R03, P02-R05, P02-R10, P08-R01, P08-R03, P08-R04, P08-R09, P09-R03, P09-R05, P09-R08, P09-R09
+- Requirement IDs: P14-R16, P13-R03, P13-R04, P13-R05, P07-R05, P07-R07, P07-R10, P00-R06
 - Created: 2026-09-02
 - Updated: 2026-09-02
 
 ## Outcome
 
-A reader can follow the Identity profile transaction, Engagement progress
-write, and Discovery home-rail assembly through explicit domain names and
-visible phases without changing observable behavior, contracts, ownership, or
-failure results.
+A reader can follow GraphQL demand analysis, playback-session creation and
+recovery, and quality-gate child-process termination through explicit names and
+visible phases without changing observable behavior or public contracts.
 
 ## Current behavior
 
-Item71/P14-R16 is verified through PR62 squash main `34a32c4`, exact tree
-`07641d9`, and exact-main workflow `33612201728`. Its successor inventory
-selects three reader problems for item72:
+Item72/P14-R16 is verified through PR63 squash main `f7b0aad`, exact tree
+`18c0931`, and exact-main workflow `33620771727`. Its successor inventory
+selects three reader problems for item73:
 
-- Identity's `run`, `owned`, and `mutate` names compress credential/session
-  validation, owner checks, replay, capacity, versioning, audit, and outbox.
-- Engagement's `timestamp`, `fresh`, `guarded`, `replay`, and `writing` names
-  obscure owner snapshots, late dependency settlement, receipt replay, and the
-  uncertain-commit boundary.
-- Discovery's `rail`, `code`, `fixedResult`, `fallback`, `select`, and numeric
-  selection indexes obscure independent rail outcomes, permitted fallback, and
-  per-rail telemetry.
+- Router helpers such as `reject`, `positivePolicy`, `listType`, `count`, and
+  `selectionCost` hide validation, list detection, bounded metric accounting,
+  and recursive demand pricing.
+- Web names such as `Controls`, `begin`, `runtime`, and `inFlight` hide player
+  ownership and session-request state; nested expressions mix GraphQL result
+  translation with telemetry and UI recovery.
+- The quality-gate runner uses `start`, `finish`, and `fallback` around child
+  process ownership, one-time settlement, and graceful-to-forced termination.
 
-The linked profile, progress, and home-rail tests characterize these behaviors
-before refactoring.
+The linked Router demand, browser playback, and quality-gate tests characterize
+these behaviors before refactoring.
 
 ## Proposed behavior
 
-Rename private helpers and local state with owner-specific domain vocabulary,
-extract only concrete phases that reduce simultaneous state tracking, and name
-each Discovery selection before assembly. Public methods, result statuses,
-persistence order, authorization, deadlines, cancellation, replay, events,
-fallbacks, and telemetry remain unchanged.
+Rename private helpers and local state with demand, playback, and child-process
+vocabulary. Extract only concrete translation or lifecycle phases that reduce
+simultaneous state tracking. Public exports, GraphQL policies, player behavior,
+telemetry fields, command selection, timeout values, signals, exit statuses,
+and process-tree cleanup remain unchanged.
 
 ## Boundaries
 
-- Owning context: Identity owns account sessions and viewer profiles;
-  Engagement owns progress, receipts, and progress outbox facts; Discovery owns
-  its home read model and response assembly
-- Affected services/packages: `@aster/identity`, `@aster/engagement`, and
-  `@aster/discovery`
-- Authoritative data: existing PostgreSQL owners remain unchanged
-- Read models/caches: Discovery continues to read its existing projection;
-  Engagement continues to use owner-authoritative Identity and Playback reads
-- Trust boundaries: untrusted credentials/profile mutation input at Identity;
-  untrusted progress requests and owner snapshots at Engagement; untrusted home
-  input and repository rows at Discovery
-- External dependencies: existing Identity and Playback owner ports plus the
-  existing transaction/repository ports; no new dependency
+- Owning context: Router owns public GraphQL admission; Web owns browser player
+  interaction; repository governance owns the local quality-gate wrapper
+- Affected services/packages: `@aster/router`, `@aster/web`, and root tooling
+- Authoritative data: none changed
+- Read models/caches: none changed
+- Trust boundaries: untrusted GraphQL documents and metadata at Router;
+  untrusted GraphQL/media outcomes and browser storage availability at Web;
+  command-line arguments, signals, child exits, and timeouts at tooling
+- External dependencies: existing GraphQL library, Apollo Client, browser media
+  APIs, Redux store, Media Chrome, HLS adapter, and operating-system process API
 
 ## Invariants
 
-- Identity verifies the credential, locks the matching account and session,
-  checks ownership and absolute expiry, and atomically records profile state,
-  audit, outbox, and receipt.
-- Profile count, journal capacity, optimistic version, replay, wrong-account,
-  deletion, and active-profile behavior remains unchanged.
-- Engagement performs owner authorization and receipt replay before Playback
-  admission, keeps network work outside the transaction, and atomically saves
-  progress, receipt, and outbox.
-- Progress never moves backward; duplicate requests replay; failure after the
-  durable write may start remains `indeterminate`.
-- Discovery selects each rail independently, permits recent-content fallback
-  only for empty or unavailable featured/trending rails, and preserves bounded
-  per-rail telemetry and partial-result status.
-- GraphQL, events, persistence, cache, media, authorization, telemetry, and
-  error-status contracts do not change.
+- Router validates request bytes, hash, parser tokens, public schema, operation
+  identity, policy bounds, metadata, depth, aliases, roots, selections, list
+  expansion, and cost with the same fail-closed outcomes.
+- Web creates at most one session request at a time, records the same local
+  telemetry, cancels through Apollo disposal on navigation, and never attaches
+  a failed or stale player.
+- Player controls, focus, captions, quality, progress reporting, preferences,
+  accessible status, and recovery actions remain unchanged.
+- The quality gate selects the same task list and arguments, settles once,
+  removes listeners/timers, preserves child exit status, propagates SIGINT or
+  SIGTERM, and force-kills the isolated process tree only at the same bounds.
+- Public contracts, schemas, events, persistence, cache, media, authorization,
+  telemetry shape, and deployment do not change.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Invalid, expired, revoked, or substituted Identity session | Fail closed before durable profile intent | Existing Identity request status |
-| Profile replay conflict, capacity, or optimistic version conflict | Preserve the existing typed result and atomic rollback | Existing Identity result/status telemetry |
-| Engagement owner or Playback snapshot is invalid or expires | Return the existing `unavailable`, `not_found`, or `not_playable` result | Existing dependency and progress telemetry |
-| Engagement write may have started before failure | Return `indeterminate`; same idempotency key remains replayable | Existing progress result/status telemetry |
-| One Discovery rail fails or is empty | Preserve safe recent-content fallback or an explicit partial rail result | Existing bounded rail outcome/duration observation |
-| Every Discovery rail is unusable | Preserve cancelled, indeterminate, or unavailable aggregate precedence | Existing bounded rail observations |
+| Invalid GraphQL body, metadata, shape, expansion, or cost | Reject with the existing sanitized demand reason before manifest publication | Existing Router rejection metrics consume the unchanged reason category |
+| Playback session is unavailable, not playable, rejected, or late after navigation | Preserve the explicit retry UI and never attach stale media | Existing bounded local playback measurement records the same session outcome |
+| Caption, manifest, network, decode, unsupported-media, or expiry failure | Preserve the same accessible message and recovery action | Existing local playback event policy and redaction remain unchanged |
+| Quality-gate spawn or process-tree termination fails | Return the existing nonzero status and sanitized error reason | Existing JSON error record remains unchanged |
+| Quality gate times out or receives SIGINT/SIGTERM | Preserve hard timeout, graceful signal window, forced fallback, and exit status | Existing sanitized `timeout` or `interrupted` result remains unchanged |
 
 ## Data and contracts
 
 - Schema/migration: none
-- GraphQL: no schema, operation, resolver, or status change
-- Events: no type, version, payload, trace, ordering, or atomicity change
+- GraphQL: no schema, manifest format, policy value, hash, cost, or runtime scope
+  change
+- Events: none
 - Cache: none
-- Compatibility: private names and local structure only; public exports remain
-  compatible
+- Compatibility: public exports and observable statuses remain compatible
 - Retention/deletion: no data or evidence deletion
 
 ## Security and privacy
 
-- Authorization: Identity and Engagement retain owner-side fail-closed checks
-- Input limits: normalization, identifier, credential, capacity, pagination,
-  clock, and deadline bounds remain unchanged
-- Sensitive data: no new logging or telemetry; credentials, account/profile
-  identifiers, and playback context stay out of events and rail metrics
-- Abuse cases: credential substitution, cross-account access, replay conflict,
-  stale progress, cancellation, ambiguous commit, corrupt projection rows, and
-  unsafe fallback retain characterization
+- Authorization: Router authorization-scope derivation and Web owner requests
+  remain unchanged
+- Input limits: every Router byte, token, definition, fragment, selection,
+  alias, depth, root, list, and cost bound remains unchanged
+- Sensitive data: no new logs or telemetry; operation bodies, identifiers,
+  signed media URLs, credentials, and browser storage values remain excluded
+- Abuse cases: malformed documents, amplification, repeated metadata, numeric
+  overflow, duplicate session requests, stale responses, and stuck process
+  trees retain characterization
 
 ## Implementation steps
 
-1. Run the linked Identity, Engagement, and Discovery characterization tests
-   before editing.
-2. Rename Identity transaction/authentication, ownership, and mutation phases.
-3. Rename Engagement time validation, owner-snapshot, dependency-settlement,
-   replay, admission, context, and durable-write phases.
-4. Rename Discovery rail construction, outcome translation, fallback, selection,
-   telemetry, and aggregate-result phases; remove numeric result indexing.
+1. Run the linked Router, Web, and tooling characterization tests before editing.
+2. Rename Router demand rejection, policy validation, list detection, bounded
+   metric accounting, and recursive selection-cost phases.
+3. Rename Web playback-control ownership, session-request state, result
+   translation, telemetry, and recovery phases; remove nested status expressions.
+4. Rename quality-gate spawn, settlement, timeout, graceful termination, and
+   forced-fallback state.
 5. Run focused build/type/lint/tests during iteration and `pnpm check:changed`
    on the coherent candidate.
 6. Update the readability inventory, evidence, and repository memory; publish
@@ -122,38 +116,36 @@ fallbacks, and telemetry remain unchanged.
 
 ## Tests
 
-- Domain: existing profile, progress, and home-rail domain policies remain
-  covered by their package suites
-- Application: `profiles.test.ts`, `record-progress.test.ts`, and
-  `home-rails.test.ts` before and after refactoring
-- Integration: existing package tests selected by the affected gate
-- Contract: existing subgraph, event, and architecture checks
-- Browser: not repeated because Web code and public behavior do not change
-- Performance/failure: no benchmark claim; authorization, replay, expiry,
-  cancellation, capacity, indeterminate write, independent failure, fallback,
-  and telemetry outcomes remain covered by focused tests
+- Domain: not applicable; domain rules do not change
+- Application: Router demand and quality-gate runner tests before and after
+- Integration: existing package and affected-scope tests
+- Contract: Router schema/demand manifest and public Web operations remain
+  covered by existing package and platform checks
+- Browser: `playback.spec.ts` before and after for controls, failures,
+  cancellation, stale-player prevention, telemetry redaction, and accessibility
+- Performance/failure: no benchmark claim; overflow, amplification, timeout,
+  signal, process-tree cleanup, session failure, and media recovery remain
+  covered by linked tests
 
 ## Evidence
 
 - Commands: exact pinned-environment commands and raw output will be retained in
-  `evidence/phase-14/p14-r16-identity-engagement-discovery-readability.txt`
-- Raw artifact path: `evidence/phase-14/p14-r16-identity-engagement-discovery-readability.txt`
-- Acceptance result: pre-edit and post-edit linked characterization passes
-  47/47; complete Identity passes 163 tests, Engagement passes 129, and
-  Discovery passes 110. All three affected builds/typechecks, changed-file
-  lint, and architecture validation pass. The affected-scope candidate gate
-  passes 44/44 tasks with 12 cached tasks in 1m4.03s. Exact source `6239362`,
-  tree `217aaf6`, repeats it with 33 cached tasks in 39.287 seconds. Evidence
-  head `1e45071` passes protected workflow `33616377473`; initial review found
-  one stale repository-memory resume instruction, corrected without product
-  source changes.
-- Iteration gate: affected package build/typecheck plus the three linked
-  characterization files
+  `evidence/phase-14/p14-r16-router-web-tooling-readability.txt`
+- Raw artifact path: `evidence/phase-14/p14-r16-router-web-tooling-readability.txt`
+- Acceptance result: Router demand characterization passes 8/8 before and
+  after; complete Router passes 26/26. Quality-gate characterization passes 8/8
+  before and after. Web source tests pass 119/119 before and after, and strict
+  typecheck passes. Changed-file lint/format and architecture checks pass. The
+  affected-scope candidate gate passes 46/46 with zero cached tasks in
+  1m22.659s. Local browser acceptance is pending because the Docker daemon did
+  not become available; protected candidate acceptance remains required.
+- Iteration gate: Router build/demand test, Web typecheck/browser playback test,
+  and root quality-gate runner test
 - Candidate gate: `pnpm check:changed`
-- Heavyweight repeat triggers: a public contract, persistence/event shape,
-  transaction/locking order, owner dependency call, deadline/cancellation rule,
-  GraphQL/adapter wiring, cache policy, telemetry shape, or runtime configuration
-  change
+- Heavyweight repeat triggers: GraphQL demand math or metadata, public operation
+  policy, Web session request/cancellation, player adapter lifecycle,
+  accessibility or telemetry behavior, command selection, timeout/signal
+  ordering, process-tree cleanup, runtime configuration, or media behavior
 - Review stopping rule: one complete initial review and one confirmation; an
   additional round requires a new blocker in requirements, ownership, security,
   availability, data, or a public contract
@@ -161,7 +153,7 @@ fallbacks, and telemetry remain unchanged.
 ## Rollback or recovery
 
 Revert the private renames and local extractions. No schema, data, cache, media,
-provider, credential, or hosted state needs recovery.
+provider, credential, process, or hosted state needs recovery.
 
 ## Documentation updates
 
@@ -175,7 +167,7 @@ provider, credential, or hosted state needs recovery.
 
 - [ ] Requirements satisfied
 - [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
-- [ ] Remaining risks recorded
+- [x] Evidence captured
+- [x] Documentation current
+- [x] `.ai/` state updated
+- [x] Remaining risks recorded

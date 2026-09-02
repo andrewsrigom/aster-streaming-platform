@@ -73,8 +73,10 @@ the reviewed tree; exact-main run `33598493566` passed on attempt 2. Item70/
 P14-R15 passed PR61 protected acceptance and merged as exact-tree main
 `3858bcb`; exact-main run `33603027919` passed. Item71/P14-R16 passed protected
 workflow `33609186840` on attempt 2 and merged through PR62 as exact-tree main
-`34a32c4`; exact-main run `33612201728` passed. Item72/P14-R16 is the active
-Identity, Engagement, and Discovery readability work.
+`34a32c4`; exact-main run `33612201728` passed. Item72/P14-R16 passed protected
+workflow `33619298315`, merged through PR63 as exact-tree main `f7b0aad`, and
+exact-main run `33620771727` passed. Item73/P14-R16 is the active Router, Web,
+and repository-tooling readability work.
 
 Phase12 final
 source `b646e496d0946262a688f34a118a896f6c40ebda`, tree
