@@ -1,6 +1,6 @@
 P14-R18 fresh-reader reference acceptance
 Date: 2026-09-02
-Status: LOCAL ACCEPTANCE PASSED — protected release pending
+Status: VERIFIED — local reference track complete
 
 Source
 ------
@@ -674,8 +674,42 @@ Tasks: 9 successful, 9 total
 Cached: 2 cached, 9 total
 Time: 36.892s
 
-Remaining acceptance
---------------------
-- publish the correction and pass protected CI;
-- resolve discussion 3916199051;
-- squash merge and exact-main acceptance.
+Protected acceptance completed
+------------------------------
+Final candidate: 662c597986d0edf0885896b1ff42d78f9b59b457
+Candidate tree: 70ef84a88f06dd2b16f5633f2285d9a610b12809
+Protected workflow: 33654220663 — passed
+PR66: every discussion resolved
+Squash main: 85658dffdf827ce5eaa08f4a43ee82c24a586565
+Main tree: 70ef84a88f06dd2b16f5633f2285d9a610b12809 — exact candidate tree
+Exact-main workflow: 33654343586 — passed
+
+Item75/P14-R18 and the local reference track P14-R13–R18 are verified. The final
+prose correction changes no executable or blocking boundary, so no additional
+review round or heavyweight repeat is required. The fresh-source and exact-
+runner Docker evidence remains supporting evidence for the unchanged product.
+Hosted P14-R01–R12 remains planned and inactive; no public deployment or capacity
+claim is made.
+
+Documentation-only closeout gate
+--------------------------------
+$ pnpm docs:check
+documents: 253
+headings: 2966
+links: 1811
+statusClaims: 5
+violations: 0
+capability rows: 11
+
+$ pnpm ai:check
+files: 10
+queueItems: 75
+sessionEntries: 73
+activeRequirement: null
+targetRequirement: null
+violations: 0
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 0 cached, 9 total
+Time: 26.203s

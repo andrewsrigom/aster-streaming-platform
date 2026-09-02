@@ -1221,7 +1221,7 @@ P14-R17 are verified.
 
 ## P14-R18 — Fresh-reader reference acceptance
 
-Status: **in progress**
+Status: **verified**
 
 Fresh clone `/tmp/aster-reference-reader-boundary-20260902` checks out exact
 PR65 squash main `2b6054a` from the public remote without inherited repository
@@ -1259,8 +1259,8 @@ exact removed volumes, retained broker resources, and accepted isolated repeat
 are recorded without concealment in the raw transcript. No replacement volumes
 were created.
 
-The local source and Docker acceptance now pass. Protected review, merge, and
-exact-main acceptance remain. The current boundary is published in the
+The local source, Docker, protected review, merge, and exact-main acceptance
+pass. The verified boundary is published in the
 [local reference verification](../../docs/00-start-here/REFERENCE_VERIFICATION.md),
 and the initial-review correction gate passes 9/9 tasks with no cached tasks in
 `14.519s`. The exact transcript and byte-identical executed runner are retained
@@ -1339,7 +1339,23 @@ or heavyweight repeat for this text-only correction.
 The final prose-only candidate passes 9/9 tasks with two cached tasks in
 `36.892s`.
 
-## Planned evidence
+Final candidate `662c597986d0edf0885896b1ff42d78f9b59b457`, tree
+`70ef84a88f06dd2b16f5633f2285d9a610b12809`, passed protected workflow
+`33654220663`. Every PR66 discussion is resolved. PR66 squash main
+`85658dffdf827ce5eaa08f4a43ee82c24a586565` retains the exact candidate tree,
+and exact-main workflow `33654343586` passed. Item75/P14-R18 and the complete
+local reference track P14-R13–R18 are verified.
 
-- P14-R18 final text candidate, protected CI, discussion resolution, merge, and
-  exact-main acceptance
+The final text correction changes no executable, product, Docker, dependency,
+media, or public-command boundary. The accepted fresh-source and exact-runner
+Docker evidence remains valid; final protected checks cover the later prose.
+
+The documentation-only closeout aligns README, roadmap, phase activation,
+verification notes, and idle repository memory. Its local candidate gate passes
+9/9 tasks with no cached tasks in `26.203s`; documentation has zero violations,
+and repository memory reports no active or target requirement.
+
+## Deferred evidence
+
+No local reference-track evidence remains pending. Hosted P14-R01–R12 remains
+planned and inactive and requires separate owner authorization.

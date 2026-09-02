@@ -13,7 +13,7 @@ event recovery, Discovery search/home, SSR/private enhancement and advanced
 Redis/concurrency, bounded resilience and failure game days pass their recorded
 acceptance. Traces, golden signals, executable SLIs/SLOs, alerts, Grafana and
 three telemetry-led failure diagnoses also pass. Phase13 GraphQL performance
-and security is released. Phase14's local reference-quality track is active;
+and security is released. Phase14's local reference-quality track is verified;
 the hosted capacity/release track remains planned and deferred. Exact progress lives in
 `.ai/CURRENT_STATE.md`.
 
@@ -60,7 +60,8 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 ## Delivery state
 
 Active phase: **Phase 14 — Reference Quality, Capacity Validation, and Hosted
-Release**, with only the credential-free P14-R13–R18 reference track active.
+Release**, with the credential-free P14-R13–R18 reference track verified and no
+active or ready work item.
 ADR-0048 keeps hosted P14-R01–R12 planned until explicit owner authorization.
 Phase13 final candidate `db17bca`, tree `41650b4`, passed protected run
 `33486901296` and a clean final review. PR57 squash main `83cb510` retained that
@@ -78,8 +79,10 @@ workflow `33619298315`, merged through PR63 as exact-tree main `f7b0aad`, and
 exact-main run `33620771727` passed. Item73/P14-R16 is verified through PR64
 squash main `5be75bd` and exact-main workflow `33626869266`. Item74/P14-R17 is
 verified through PR65 squash main `2b6054a` and exact-main workflow
-`33636042474`. Item75/P14-R18 is the active fresh-checkout and Docker reference
-acceptance.
+`33636042474`. Item75/P14-R18 is verified through PR66 squash main
+`85658df`, exact candidate tree `70ef84a`, protected run `33654220663`, and
+exact-main workflow `33654343586`. All 75 queue items are done. The source is a
+local reference for study; hosted work remains inactive.
 
 Phase12 final
 source `b646e496d0946262a688f34a118a896f6c40ebda`, tree
