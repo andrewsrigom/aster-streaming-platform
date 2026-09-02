@@ -1139,6 +1139,11 @@ The local Docker daemon did not become available, so no local browser pass is
 claimed; protected candidate acceptance must supply the browser/Docker-capable
 check before verification.
 
+PR64 initial review discussion `3913611638` found only stale repository-memory
+resume prose that still asked the next agent to commit the already-completed
+evidence checkpoint. The correction updates repository memory and this evidence
+only; product source and local acceptance remain unchanged.
+
 ## Planned evidence
 
 - P14-R16 remaining owner-scoped refactoring characterization

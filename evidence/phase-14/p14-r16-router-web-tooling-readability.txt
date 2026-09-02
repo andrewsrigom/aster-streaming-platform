@@ -143,3 +143,10 @@ contract behavior. Local browser evidence is pending because the host Docker
 daemon did not become available; this limitation does not become a passing
 claim. Protected candidate acceptance, review, merge, and exact-main acceptance
 remain required.
+
+Initial protected review
+------------------------
+PR64 discussion 3913611638 found only stale resume prose that still asked the
+next agent to commit the already-completed evidence checkpoint. The correction
+changes repository memory and evidence only. Product source and the focused and
+affected local results remain unchanged.

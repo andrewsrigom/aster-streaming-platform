@@ -63,8 +63,11 @@ Prettier, and architecture validation pass. The affected-scope candidate gate
 passes 46/46 tasks with zero cached tasks in 1m22.659s. The local Docker daemon
 did not become available, so no local browser pass is claimed. Exact source
 `4013545`, tree `f8398bb`, repeats the candidate gate 46/46 with 34 cached tasks
-in 38.962 seconds. Evidence commit, protected candidate acceptance, review,
-merge, and exact-main verification remain.
+in 38.962 seconds. PR64 initial review discussion `3913611638` found only stale
+resume prose that still asked the next agent to commit the already-completed
+evidence checkpoint. This correction changes repository memory and evidence
+only. Corrected exact-head protected acceptance, confirmation, merge, and
+exact-main verification remain.
 
 ## Ordered reference-quality runway
 

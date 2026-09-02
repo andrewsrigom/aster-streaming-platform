@@ -33,6 +33,9 @@ full snapshot through the archival checkpoint remains in
   34 cached tasks in 38.962 seconds.
 - Docker Desktop started, but its daemon/WSL integration did not become ready;
   no local browser pass is claimed and protected acceptance remains required.
+- PR64 initial review discussion `3913611638` found stale resume prose that
+  still asked the next agent to commit the already-completed evidence
+  checkpoint. The correction changes repository memory and evidence only.
 
 ### Evidence
 
@@ -43,8 +46,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-Commit the evidence/repository-memory checkpoint, then publish for protected
-browser/Docker-capable acceptance and the bounded review cycle.
+Require corrected exact-head protected acceptance and one confirmation, resolve
+discussion `3913611638`, then merge and verify exact main.
 
 ## 2026-09-02 — Catalog/Playback readability verified and item72 activated
 

@@ -45,12 +45,16 @@ Close only the `router-demand-analysis`, `web-player-session-flow`, and
   34 cached tasks in 38.962 seconds.
 - Local Docker Desktop started but its daemon/WSL integration did not become
   ready. No local browser pass is claimed; protected acceptance must provide it.
+- PR64 initial review discussion `3913611638` found that the handoff, current
+  state, and session log still asked the next agent to commit the
+  already-completed evidence checkpoint. This correction changes only resume
+  prose and evidence.
 
 ## Exact next actions
 
-1. Commit the evidence and repository-memory checkpoint.
-2. Publish one PR; require browser/Docker-capable protected acceptance, one
-   initial review, one confirmation, merge, and exact-main acceptance.
+1. Require corrected exact-head browser/Docker-capable protected acceptance and
+   one confirmation.
+2. Resolve discussion `3913611638`, merge, and verify exact main.
 
 ## Execution boundary
 
