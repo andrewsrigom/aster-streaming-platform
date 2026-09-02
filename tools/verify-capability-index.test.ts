@@ -374,6 +374,32 @@ test("rejects a capability table inside an HTML container after a raw-block boun
   }
 });
 
+test("ignores apparent HTML closers that Markdown renders as text", () => {
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  const lastRow = source.split("\n").find((line) => line.startsWith("| repository-workflows |"));
+  assert.ok(lastRow);
+  for (const apparentCloser of [
+    "`</div>`",
+    "`\n</div>\n`",
+    "```\n</div>\n```",
+    "~~~\n</div>\n~~~",
+    "\\</div>",
+    "    </div>",
+    "[close](</div>)",
+  ] as const) {
+    const hidden = source
+      .replace(header, `<div hidden>\n\n${apparentCloser}\n\n${header}`)
+      .replace(lastRow, `${lastRow}\n</div>`);
+    const report = analyzeCapabilityIndex(hidden);
+    assert.equal(report.rows, 0, apparentCloser);
+    assert.ok(
+      report.violations.some(({ rule }) => rule === "missing-table"),
+      apparentCloser,
+    );
+  }
+});
+
 test("accepts the root capability table after an HTML container closes", () => {
   const source = validIndex();
   const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;

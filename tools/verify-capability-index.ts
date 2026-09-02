@@ -337,6 +337,7 @@ interface MarkdownVisibilityState {
   htmlEndMarker: ">" | "?>" | "]]>" | undefined;
   htmlTag: string | undefined;
   htmlUntilBlank: boolean;
+  inlineCodeDelimiter: number | undefined;
 }
 
 const RAW_HTML_END_TAGS = new Set(["pre", "script", "style", "textarea"]);
@@ -543,8 +544,16 @@ function isCompleteHtmlTag(line: string): boolean {
   return opening.test(line) || closing.test(line);
 }
 
-function htmlTags(line: string): { closing: boolean; selfClosing: boolean; tag: string }[] {
-  const tags: { closing: boolean; selfClosing: boolean; tag: string }[] = [];
+interface HtmlTagToken {
+  closing: boolean;
+  end: number;
+  selfClosing: boolean;
+  start: number;
+  tag: string;
+}
+
+function htmlTags(line: string): HtmlTagToken[] {
+  const tags: HtmlTagToken[] = [];
   let cursor = 0;
   while (cursor < line.length) {
     const opening = line.indexOf("<", cursor);
@@ -582,7 +591,9 @@ function htmlTags(line: string): { closing: boolean; selfClosing: boolean; tag: 
     const raw = line.slice(opening, end + 1);
     tags.push({
       closing,
+      end: end + 1,
       selfClosing: /\/\s*>$/u.test(raw),
+      start: opening,
       tag: name.toLowerCase(),
     });
     cursor = end + 1;
@@ -590,8 +601,11 @@ function htmlTags(line: string): { closing: boolean; selfClosing: boolean; tag: 
   return tags;
 }
 
-function updateHtmlContainers(line: string, state: MarkdownVisibilityState): void {
-  for (const { closing, selfClosing, tag } of htmlTags(line)) {
+function updateHtmlContainerStack(
+  tags: readonly HtmlTagToken[],
+  state: MarkdownVisibilityState,
+): void {
+  for (const { closing, selfClosing, tag } of tags) {
     if (RAW_HTML_END_TAGS.has(tag) || HTML_VOID_TAGS.has(tag) || selfClosing) {
       continue;
     }
@@ -606,6 +620,67 @@ function updateHtmlContainers(line: string, state: MarkdownVisibilityState): voi
   }
 }
 
+function updateHtmlContainers(line: string, state: MarkdownVisibilityState): void {
+  updateHtmlContainerStack(htmlTags(line), state);
+}
+
+function updateStandaloneHtmlContainers(line: string, state: MarkdownVisibilityState): void {
+  if (/^(?: {4}|\t)/u.test(line)) {
+    return;
+  }
+  const tags = htmlTags(line);
+  if (tags.length === 0) {
+    return;
+  }
+  let cursor = 0;
+  for (const tag of tags) {
+    if (line.slice(cursor, tag.start).trim()) {
+      return;
+    }
+    cursor = tag.end;
+  }
+  if (line.slice(cursor).trim()) {
+    return;
+  }
+  updateHtmlContainerStack(tags, state);
+}
+
+function markdownOutsideInlineCode(line: string, state: MarkdownVisibilityState): string {
+  let cursor = 0;
+  let visible = "";
+  while (cursor < line.length) {
+    if (state.inlineCodeDelimiter) {
+      const delimiter = state.inlineCodeDelimiter;
+      const next = line.indexOf("`", cursor);
+      if (next < 0) {
+        return visible;
+      }
+      let length = 1;
+      while (line[next + length] === "`") {
+        length += 1;
+      }
+      cursor = next + length;
+      if (length === delimiter) {
+        state.inlineCodeDelimiter = undefined;
+      }
+      continue;
+    }
+
+    const next = line.indexOf("`", cursor);
+    if (next < 0) {
+      return `${visible}${line.slice(cursor)}`;
+    }
+    visible += line.slice(cursor, next);
+    let length = 1;
+    while (line[next + length] === "`") {
+      length += 1;
+    }
+    state.inlineCodeDelimiter = length;
+    cursor = next + length;
+  }
+  return visible;
+}
+
 function visibleMarkdownLines(lines: readonly string[]): string[] {
   const state: MarkdownVisibilityState = {
     fence: undefined,
@@ -614,6 +689,7 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
     htmlEndMarker: undefined,
     htmlTag: undefined,
     htmlUntilBlank: false,
+    inlineCodeDelimiter: undefined,
   };
   return lines.map((line) => {
     if (state.fence) {
@@ -647,7 +723,19 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
       return "";
     }
     if (state.htmlContainers.length > 0) {
-      updateHtmlContainers(uncommented, state);
+      if (!state.inlineCodeDelimiter) {
+        const opening = /^ {0,3}(?<delimiter>`{3,}|~{3,})/u.exec(uncommented)?.groups?.[
+          "delimiter"
+        ];
+        if (opening) {
+          state.fence = {
+            character: opening[0] as "`" | "~",
+            length: opening.length,
+          };
+          return "";
+        }
+      }
+      updateStandaloneHtmlContainers(markdownOutsideInlineCode(uncommented, state), state);
       return "";
     }
     if (state.htmlTag) {

@@ -222,8 +222,40 @@ function hasExactJobDependency(jobSource: string, dependency: string): boolean {
   return separator >= 0 && normalized.slice(separator + 1).trim() === dependency;
 }
 
-function hasUnconditionalBlockingClassifier(jobSource: string): boolean {
-  return hasExactJobKeys(jobSource, ["name", "runs-on", "outputs", "steps"]);
+function hasProtectedClassifier(jobSource: string): boolean {
+  if (!hasExactJobKeys(jobSource, ["name", "runs-on", "outputs", "steps"])) {
+    return false;
+  }
+  return (
+    jobSource ===
+    [
+      "    name: Classify change",
+      "    runs-on: ubuntu-24.04",
+      "    outputs:",
+      "      full: ${{ steps.change.outputs.full }}",
+      "      platform: ${{ steps.change.outputs.platform }}",
+      "      diagnostics: ${{ steps.change.outputs.diagnostics }}",
+      "      classification: ${{ steps.change.outputs.classification }}",
+      "    steps:",
+      "      - name: Check out repository history",
+      "        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1",
+      "        with:",
+      "          fetch-depth: 0",
+      "          persist-credentials: false",
+      "      - name: Set up exact Node.js",
+      "        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0",
+      "        with:",
+      "          node-version: 24.19.0",
+      "          package-manager-cache: false",
+      "      - name: Classify changed paths",
+      "        id: change",
+      "        env:",
+      "          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}",
+      "          HEAD_SHA: ${{ github.sha }}",
+      '        run: node ./tools/classify-ci-change.ts --base "$BASE_SHA" --head "$HEAD_SHA"',
+      "",
+    ].join("\n")
+  );
 }
 
 function hasStandaloneCapabilityCheck(steps: readonly string[]): boolean {
@@ -411,9 +443,9 @@ export function validateWorkflowPolicy(
   const classifySource = workflowJobSource(source, "classify");
   const governanceSource = workflowJobSource(source, "governance");
   const governanceSteps = executableWorkflowSteps(governanceSource);
-  if (!hasUnconditionalBlockingClassifier(classifySource)) {
+  if (!hasProtectedClassifier(classifySource)) {
     violations.push({
-      detail: "capability-index classifier must be unconditional, blocking, and dependency-free",
+      detail: "capability-index classifier must match the protected job and step contract",
       file,
       line: 1,
       rule: "commands",

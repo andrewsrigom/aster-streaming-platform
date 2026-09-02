@@ -379,6 +379,15 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       "  classify:\n",
       "  classify:\n    strategy:\n      matrix: []\n",
     );
+    const classifierPoisonedByPriorRun = source.replace(
+      "      - name: Classify changed paths\n",
+      `      - name: Poison classifier command lookup
+        run: |
+          mkdir -p .fake-bin
+          echo .fake-bin >> "$GITHUB_PATH"
+      - name: Classify changed paths
+`,
+    );
     const workflowRunDefaults = source.replace(
       "permissions:\n",
       `defaults:\n  run:\n    shell: node -e "process.exit(0)" {0}\n\npermissions:\n`,
@@ -427,6 +436,7 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       nonBlockingClassifier,
       dependentClassifier,
       emptyMatrixClassifier,
+      classifierPoisonedByPriorRun,
       workflowRunDefaults,
       quotedWorkflowRunDefaults,
       workflowShellEnvironment,
