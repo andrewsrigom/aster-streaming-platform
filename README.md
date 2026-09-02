@@ -27,6 +27,9 @@ Do not describe planned behavior as implemented behavior. The source of truth fo
 Start with the [capability index](docs/00-start-here/CAPABILITY_INDEX.md) when you want to find
 how a behavior is implemented. It connects each major capability to its owning requirement,
 representative source, focused adverse test, checked-in evidence and operational guide. The
+[core-journey reading paths](docs/00-start-here/CORE_JOURNEY_READING_PATHS.md) connect public
+browse, publication, playback, progress, degradation, admission, recovery and diagnosis to
+bounded executable checks. The
 [documentation map](docs/00-start-here/DOCUMENTATION_MAP.md) provides broader reading paths for
 product, architecture, implementation, operations and quality.
 

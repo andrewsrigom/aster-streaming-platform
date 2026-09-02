@@ -127,6 +127,7 @@ This index lists repository governance artifacts and every Markdown source in th
 
 - [`docs/00-start-here/BASELINE_VALIDATION.md`](BASELINE_VALIDATION.md) — Baseline Validation
 - [`docs/00-start-here/CAPABILITY_INDEX.md`](CAPABILITY_INDEX.md) — Capability-to-Proof Navigation Index
+- [`docs/00-start-here/CORE_JOURNEY_READING_PATHS.md`](CORE_JOURNEY_READING_PATHS.md) — Core Journey Reading Paths
 - [`docs/00-start-here/DELIVERY_MODEL.md`](DELIVERY_MODEL.md) — Delivery Model
 - [`docs/00-start-here/DOCUMENTATION_MAP.md`](DOCUMENTATION_MAP.md) — Documentation Map
 - [`docs/00-start-here/ENGINEERING_DEMONSTRATION.md`](ENGINEERING_DEMONSTRATION.md) — Engineering Demonstration Contract

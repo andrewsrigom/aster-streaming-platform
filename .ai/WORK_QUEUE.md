@@ -93,8 +93,8 @@ The latest release is Phase13:
 | 70 | Define readability guardrails and a bounded prioritized findings inventory | P14-R15 | DONE |
 | 71 | Refactor representative Catalog and Playback reading slices | P14-R16 | DONE |
 | 72 | Refactor representative Identity, Engagement and Discovery reading slices | P14-R16 | DONE |
-| 73 | Refactor representative Router, Web and repository-tooling reading slices | P14-R16 | IN_PROGRESS |
-| 74 | Align rationale comments, executable examples and core-journey reading paths | P14-R17 | READY |
+| 73 | Refactor representative Router, Web and repository-tooling reading slices | P14-R16 | DONE |
+| 74 | Align rationale comments, executable examples and core-journey reading paths | P14-R17 | IN_PROGRESS |
 | 75 | Run fresh-checkout/Docker acceptance and verify the reference track | P14-R18 | READY |
 
 ## Item68 — verified
@@ -218,7 +218,7 @@ PR63 final head `7d573a6`, tree `18c0931`, passed protected workflow
 confirmation is clean. PR63 squash main `f7b0aad` retains the exact tree, and
 exact-main workflow `33620771727` passed every applicable job.
 
-## Item73 — active
+## Item73 — verified
 
 ### Outcome
 
@@ -237,6 +237,40 @@ names and visible phases while preserving all public behavior.
 - Linked characterization tests and the affected-scope candidate gate pass.
 - No public contract, schema, event, persistence, cache, media, telemetry, or
   deployment change is introduced.
+
+PR64 final head `90efa2b`, tree `455857a`, passed protected workflow
+`33625208487`; its sole review discussion is resolved and corrected-head
+confirmation is clean. PR64 squash main `5be75bd` retains the exact tree, and
+exact-main workflow `33626869266` passed every applicable job.
+
+## Item74 — active
+
+### Outcome
+
+Give a reader one compact route through the eight core journeys and one bounded
+executable check for each while keeping source comments rare and rationale-led.
+
+### Acceptance
+
+- Public browse, rights-safe publication, playback, profile progress, Discovery
+  degradation, GraphQL admission, dependency recovery, and telemetry-led
+  diagnosis each link requirement, representative source, adverse test,
+  evidence, and operations.
+- Every documented example is credential-free, bounded, synthetic, and run
+  successfully from the repository root.
+- Rights-dependent or historical Catalog examples are explicitly distinguished
+  from safe checks and are not presented as replayable publication commands.
+- Representative source comments explain rationale, invariants, unusual failure
+  behavior, or external constraints instead of narrating syntax.
+- Documentation, focused source, repository-memory, formatting, and
+  affected-scope gates pass without a runtime or public-contract change.
+
+The eight executable examples pass 142 focused tests in total. Web source
+tests pass 119/119 before and after comment alignment. Documentation validation
+covers 252 documents and 1,789 links with zero violations; documentation and
+repository-memory tests pass 37/37 and 13/13. The affected-scope candidate gate
+passes 16/16 tasks with one cached task in 47.823 seconds. Protected review,
+merge, and exact-main verification remain.
 
 ## Items72–74 — scoped implementation work
 

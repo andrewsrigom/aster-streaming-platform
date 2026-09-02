@@ -8,6 +8,10 @@ The index is intentionally selective. It points to the smallest useful entry poi
 listing every supporting file. Follow imports and adjacent tests from that entry point when a
 deeper investigation is needed.
 
+When a question crosses several rows, use the
+[core-journey reading paths](CORE_JOURNEY_READING_PATHS.md) to follow the
+end-to-end behavior and run its bounded synthetic check.
+
 ## Status vocabulary
 
 `released` is the canonical maturity label for rows whose owning phase completed its documented

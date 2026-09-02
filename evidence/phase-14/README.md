@@ -1144,8 +1144,50 @@ resume prose that still asked the next agent to commit the already-completed
 evidence checkpoint. The correction updates repository memory and this evidence
 only; product source and local acceptance remain unchanged.
 
+Corrected PR64 head `90efa2b0a94a5ce6c07e0724ab462ff47dbe3d5f`, tree
+`455857aac0b2b48978dbb2931b890cd5413914e3`, passed protected workflow
+`33625208487`. Discussion `3913611638` is resolved and corrected-head
+confirmation is clean. PR64 squash main
+`5be75bd1e974131a143278f16aa432208f6014c9` retains the exact reviewed tree;
+exact-main workflow `33626869266` passed every applicable job. Item73 is
+verified.
+
+### P14-R17 core-journey reading-path activation
+
+Item74 is active on `docs/core-journey-reading-paths` from exact PR64 squash
+main `5be75bd`. Its bounded scope is one guide covering the eight required
+journeys, credential-free executable checks, entry-point links, and rationale-
+comment alignment. No product behavior, public contract, rights, data,
+telemetry, dependency, runtime, or deployment change is authorized.
+
+### P14-R17 core-journey iteration evidence
+
+Environment: WSL Ubuntu 20.04 with pinned Node.js 24.19.0 and pnpm 11.24.0. The
+offline frozen install reused all 480 packages and downloaded zero packages.
+
+The guide connects public browse, rights-safe publication, playback, profile
+progress, Discovery degradation, GraphQL admission, dependency recovery, and
+telemetry-led diagnosis to requirement, representative source, adverse test,
+evidence, operations, and a bounded command. All eight commands pass 142
+focused tests in total. They use synthetic fixtures and require no credentials,
+Docker, external media, or hosted state. The guide explicitly keeps the
+unresolved draft non-publishable and historical media/publication payloads
+non-replayable.
+
+Web source tests pass 119/119 before and after the two comment clarifications.
+Documentation tests pass 37/37. Documentation validation covers 252 documents,
+2,955 headings, 1,789 links, four status claims, and eleven capability rows with
+zero violations. Repository-memory tests pass 13/13. Changed-file ESLint,
+Prettier, architecture validation, and the affected-scope candidate gate pass.
+The gate completes 16/16 tasks with one cached task in 47.823 seconds.
+
+Exact commands and results are retained in
+[`p14-r17-core-journey-reading-paths.txt`](./p14-r17-core-journey-reading-paths.txt).
+No heavyweight evidence is repeated because no executable statement, public
+contract, rights workflow, adapter, runtime, media, browser interaction,
+telemetry shape, dependency, or deployment behavior changed.
+
 ## Planned evidence
 
-- P14-R16 remaining owner-scoped refactoring characterization
 - P14-R17 examples and reading-path verification
 - P14-R18 fresh-checkout and Docker reference verification

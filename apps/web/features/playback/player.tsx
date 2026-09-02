@@ -432,7 +432,7 @@ export default function Player({ titleId }: { titleId: string }) {
     try {
       preferences = readPlayerPreferences(window.localStorage);
     } catch {
-      /* Storage access may be disabled. */
+      /* Storage denial only disables persisted preferences; playback uses safe defaults. */
     }
     playerStore.dispatch(playerActions.restore(preferences));
 
@@ -440,7 +440,7 @@ export default function Player({ titleId }: { titleId: string }) {
       try {
         writePlayerPreferences(window.localStorage, playerStore.getState().player.preferences);
       } catch {
-        /* Playback does not require storage. */
+        /* Preference persistence is optional and must not interrupt playback. */
       }
     });
     const initializedPlaybackClient = createPlaybackClient();
