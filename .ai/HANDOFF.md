@@ -2,53 +2,56 @@
 
 ## Resume point
 
-Phases00–13 and items68–70 are verified. PR61 final head `6de5a1d`, tree
-`448be36`, passed protected workflow `33602958653`; all three discussions were
-resolved. PR61 squash main `3858bcb` retains the exact tree, and exact-main
-workflow `33603027919` passed.
+Phases00–13 and items68–71 are verified. PR62 final head `c03745d`, tree
+`07641d9`, passed protected workflow `33609186840` on attempt 2; all three
+review discussions are resolved. PR62 squash main `34a32c4` retains the exact
+tree, and exact-main workflow `33612201728` passed every applicable job.
 
-Item71/P14-R16 is active on `refactor/catalog-playback-readability`, worktree
-`/tmp/aster-readability-catalog-playback`, from that exact main commit.
+Item72/P14-R16 is active on
+`refactor/identity-engagement-discovery-readability`, worktree
+`/tmp/aster-readability-identity-engagement-discovery`, from that exact main
+commit.
 
 ## Active outcome
 
-Close only the `catalog-command-flow` and `playback-session-outcome` findings:
+Close only the `identity-profile-transaction`, `engagement-progress-write`, and
+`discovery-home-assembly` findings:
 
-- name Catalog command decisions, lifecycle conversion, transaction execution,
-  and publication/takedown predicates explicitly;
-- expose Catalog validation, replay, capacity, decision, persistence, event,
-  receipt, and publication-revalidation phases;
-- name Playback dependency settlement and the session-write-started boundary;
-- preserve every public status, authorization, rights, event, transaction,
-  deadline, cancellation, and indeterminate-write behavior.
+- name Identity credential/session validation, owner lookup, replay, capacity,
+  mutation, audit, outbox, and receipt phases;
+- name Engagement owner/playback snapshots, dependency settlement, replay,
+  admission, durable-write, and indeterminate-write phases;
+- name Discovery fixed and genre rail assembly, safe fallback, independent
+  selection, per-rail telemetry, and aggregate-result phases;
+- preserve every public status, authorization, expiry, replay, transaction,
+  event, deadline, cancellation, fallback, telemetry, and indeterminate-write
+  behavior.
 
 ## Work completed locally
 
-- Installed the pinned workspace with zero downloads.
-- Ran the linked characterization suite before editing: 15/15 pass.
-- Catalog now uses explicit command-change, draft-content, rights-withdrawal,
-  rights-review, publication-change, transaction, takedown, and activation
-  names with visible phases.
-- Playback now uses `awaitDependencyOrAbort`, `deadlineSignal`,
-  `sessionWriteStarted`, and explicit failure-result branches.
-- The post-edit characterization suite passes 15/15; complete Catalog tests pass
-  249/249 and Playback tests pass 42/42. Builds, typechecks, changed-file lint,
-  and architecture validation pass.
-- Source `ef9e866`, tree `2c48e62`, passes the affected-scope candidate gate
-  43/43 with 10 cached tasks in 62.095 seconds.
-- PR62 protected workflow `33605355037` passes every applicable job.
-- Initial review findings `3911927401` and `3911927407` concern evidence only.
-  The stale P14-R15 planned entry is removed and exact commands plus raw output
-  now live in `evidence/phase-14/p14-r16-readability.txt`.
-- The post-remediation affected gate passes 43/43 with 32 cached in 40 seconds.
-- No public contract, data, event, cache, media, telemetry, dependency, or
-  deployment behavior changed.
+- Restored the required Phase14, owner-specification, ADR, skill, source, and
+  characterization-test context.
+- Activated item72 from exact verified main and recorded its boundaries,
+  failure modes, gates, repeat triggers, and review stopping rule.
+- The linked pre-edit characterization passes 47/47.
+- Identity now names the authorized transaction, owned-profile lookup,
+  mutation, replay, capacity, durable state, event, and receipt phases.
+- Engagement now names dependency-snapshot freshness, late settlement, replay,
+  admission, Playback context, transaction result, and the uncertain-write
+  boundary.
+- Discovery now names each selection, rail assembly, safe fallback, telemetry,
+  usable result, and aggregate failure phase without numeric indexes.
+- The post-edit characterization passes 47/47. Complete Identity tests pass
+  163/163, Engagement 129/129, and Discovery 110/110. Builds, typechecks,
+  changed-file lint, and architecture validation pass.
+- The affected-scope candidate gate passes 44/44 tasks with 12 cached tasks in
+  1m4.03s.
 
 ## Exact next actions
 
-1. Wait for the final exact-head protected checks.
-2. Merge when they pass, then verify exact main.
-3. Activate item72 only after item71 is verified.
+1. Commit the coherent evidenced candidate.
+2. Publish it and complete one review plus one confirmation.
+3. Merge only after exact-head protected acceptance, then verify exact main.
 
 ## Execution boundary
 
@@ -64,6 +67,6 @@ change is private naming and local structure only.
 
 ## Do not do yet
 
-Do not touch item72 owners, Router, Web, tooling, or P14-R17 examples. Newly
-noticed non-blocking readability issues return to the bounded inventory instead
-of widening item71.
+Do not touch Router, Web, tooling, or P14-R17 examples. Newly noticed
+non-blocking readability issues return to the bounded inventory instead of
+widening item72.

@@ -1,0 +1,119 @@
+P14-R16 Identity, Engagement, and Discovery readability evidence
+Date: 2026-09-02
+Environment: WSL Ubuntu 20.04; Node.js 24.19.0; pnpm 11.24.0
+Base commit: 34a32c488a2730a05c8d79390c66f6fe63e75b08
+Base tree: 07641d9b807ef4333b4d431ff1280a51e057f47f
+
+INSTALL
+
+Command:
+pnpm install --frozen-lockfile --offline
+
+Raw result:
+Scope: all 18 workspace projects
+Lockfile passes supply-chain policies.
+Packages: +480
+Progress: resolved 480, reused 480, downloaded 0, added 480, done
+Done in 1.8s using pnpm v11.24.0
+
+PRE-EDIT CHARACTERIZATION
+
+Command:
+pnpm exec turbo run build --filter=@aster/identity --filter=@aster/engagement --filter=@aster/discovery && node --test services/identity/dist/test/profiles.test.js services/engagement/dist/test/record-progress.test.js services/discovery/dist/test/home-rails.test.js
+
+Raw result:
+Tasks: 12 successful, 12 total
+Cached: 0 cached, 12 total
+Time: 16.482s
+tests 47
+suites 0
+pass 47
+fail 0
+cancelled 0
+skipped 0
+todo 0
+duration_ms 118.286807
+
+Interpretation:
+The linked profile, progress, and home-rail application tests pass before any
+product-source edit. They characterize owner authorization, session expiry,
+replay, capacity, optimistic writes, atomic audit/outbox/receipt behavior,
+progress ordering, dependency settlement, cancellation, ambiguous commit,
+independent rail failure, safe fallback, partial status, and bounded telemetry.
+
+Limitations:
+This is application-layer characterization. Existing PostgreSQL, Redis, broker,
+browser, media, and Docker evidence remains supporting because this item does
+not change adapters, contracts, transaction order, runtime configuration, or
+the behavior those experiments measured.
+
+POST-EDIT CHARACTERIZATION
+
+Command:
+pnpm exec prettier --write services/identity/src/application/profiles.ts services/engagement/src/application/record-progress.ts services/discovery/src/application/home-rails.ts && pnpm exec turbo run build --filter=@aster/identity --filter=@aster/engagement --filter=@aster/discovery && node --test services/identity/dist/test/profiles.test.js services/engagement/dist/test/record-progress.test.js services/discovery/dist/test/home-rails.test.js
+
+Raw result:
+Tasks: 12 successful, 12 total
+Cached: 9 cached, 12 total
+Time: 3.437s
+tests 47
+suites 0
+pass 47
+fail 0
+cancelled 0
+skipped 0
+todo 0
+duration_ms 114.524021
+
+COMPLETE AFFECTED PACKAGE TESTS
+
+Commands:
+pnpm --filter @aster/identity test
+pnpm --filter @aster/engagement test
+pnpm --filter @aster/discovery test
+
+Raw results:
+Identity: tests 163; pass 163; fail 0; duration_ms 7140.293873
+Engagement: tests 129; pass 129; fail 0; duration_ms 3108.410531
+Discovery: tests 110; pass 110; fail 0; duration_ms 2622.529859
+
+STATIC ITERATION CHECKS
+
+Command:
+pnpm --filter @aster/identity typecheck && pnpm --filter @aster/engagement typecheck && pnpm --filter @aster/discovery typecheck && pnpm exec eslint services/identity/src/application/profiles.ts services/engagement/src/application/record-progress.ts services/discovery/src/application/home-rails.ts && pnpm architecture:check && git diff --check
+
+Raw result:
+Identity typecheck: PASS
+Engagement typecheck: PASS
+Discovery typecheck: PASS
+Changed-file ESLint: PASS
+{"check":"architecture","status":"ok","violations":0}
+git diff --check: PASS
+
+Interpretation:
+Private names and layout now expose the three owner flows while the same linked
+behavior and every complete affected package remain green. No contract,
+persistence, event, cache, telemetry, dependency, or runtime file changed.
+
+AFFECTED-SCOPE CANDIDATE GATE
+
+Command:
+pnpm check:changed
+
+Raw result:
+Packages in scope: root, @aster/discovery, @aster/engagement, @aster/identity,
+@aster/router
+Tasks: 44 successful, 44 total
+Cached: 12 cached, 44 total
+Time: 1m4.03s
+
+Selected acceptance included complete affected service tests, affected builds
+and typechecks, Router composition/contracts, workspace lint and formatting,
+unused-code and architecture checks, documentation, repository memory,
+security, toolchain, CI policy, community policy, staged-file policy, and
+commit-message policy.
+
+Interpretation:
+The coherent local candidate passes its complete affected-scope gate. Existing
+heavyweight evidence is not repeated because this change does not alter the
+trigger boundaries named in the work plan.

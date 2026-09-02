@@ -11,10 +11,10 @@ reference track P14-R13–R18 is active under ADR-0048. Hosted P14-R01–R12 rem
 planned and requires explicit owner authorization for providers, credentials,
 paid resources, and public endpoints.
 
-Items69/P14-R14 and70/P14-R15 are verified. Item71/P14-R16 is the sole
-`IN_PROGRESS` item on `refactor/catalog-playback-readability`, worktree
-`/tmp/aster-readability-catalog-playback`, from exact PR61 squash main
-`3858bcb`.
+Items69/P14-R14,70/P14-R15, and71/P14-R16 are verified. Item72/P14-R16 is the
+sole `IN_PROGRESS` item on `refactor/identity-engagement-discovery-readability`,
+worktree `/tmp/aster-readability-identity-engagement-discovery`, from exact
+PR62 squash main `34a32c4`.
 
 ## Verified
 
@@ -30,6 +30,10 @@ Items69/P14-R14 and70/P14-R15 are verified. Item71/P14-R16 is the sole
 - Item70 final head `6de5a1d`, tree `448be36`, passed protected workflow
   `33602958653`; all three discussions are resolved. PR61 squash main `3858bcb`
   retains the exact tree, and exact-main workflow `33603027919` passed.
+- Item71 final head `c03745d`, tree `07641d9`, passed protected workflow
+  `33609186840` on attempt 2; all three discussions are resolved. PR62 squash
+  main `34a32c4` retains the exact tree, and exact-main workflow `33612201728`
+  passed every applicable job.
 
 The authoritative Phase14 chronology is in
 [`evidence/phase-14/README.md`](../evidence/phase-14/README.md). No hosted
@@ -37,41 +41,36 @@ deployment, production capacity, or broader media rights are claimed.
 
 ## Current work
 
-Item71 closes only the two P0 inventory findings owned by Catalog and Playback.
-The Catalog slice now names command decisions, lifecycle conversion, transaction
-execution, takedown-capacity predicates, and publication effects. Concrete
-helpers separate draft content, rights withdrawal, rights review, and
-publication changes; the transaction exposes validation, replay, capacity,
-decision, durable-write, event, receipt, and publication-revalidation phases.
-The Playback slice now names dependency settlement and the point after which a
-failed session write is indeterminate, with explicit failure-result branches.
+Item72 closes only the three inventory findings owned by Identity and Profiles,
+Engagement, and Discovery. The selected slices are the profile transaction,
+progress write, and home-rail assembly. Identity now names its authorized
+transaction, owned-profile lookup, mutation input, replay, capacity, state,
+event, and receipt phases. Engagement names dependency-snapshot freshness,
+late settlement, receipt replay, admission, Playback context, transaction
+result, and the `progressWriteStarted` uncertain-commit boundary. Discovery
+names each fixed/genre selection, rail assembly, recent-content fallback,
+per-rail observation, usable-result count, and aggregate failure precedence;
+numeric selection indexes are removed.
 
-The work is behavior-preserving. Catalog remains the owner of titles, rights,
-publication, audits, receipts, and outbox events. Playback remains the owner of
-sessions and performs the same one bounded Catalog lookup before one durable
-write. Public contracts, schemas, events, persistence, cache, media, telemetry,
-dependencies, and deployment remain unchanged.
-
-The pre-edit and post-edit linked characterization suite passes 15/15. The
-complete Catalog package passes 249 tests, Playback passes 42 tests, both
-affected builds and typechecks pass, changed-file lint passes, and architecture
-validation reports zero violations. Source `ef9e866`, tree `2c48e62`, passes
-the affected-scope candidate gate 43/43 with 10 cached tasks in 62.095 seconds.
-Protected PR62 workflow `33605355037` passes every applicable job. Initial
-review found two evidence defects, both corrected together: the planned-evidence
-list no longer includes completed P14-R15, and exact commands plus raw output are
-retained in `evidence/phase-14/p14-r16-readability.txt`. The remediation gate
-passes 43/43 with 32 cached in 40 seconds. Confirmation found one stale handoff
-instruction, which is corrected without changing product source. Final
-exact-head checks, merge, and exact-main acceptance remain.
+The work is behavior-preserving. Identity remains the owner of sessions and
+profiles; Engagement remains the owner of progress, receipts, and its outbox;
+Discovery remains the owner of its home projection and response assembly.
+Public contracts, schemas, events, persistence, cache, media, telemetry,
+dependencies, and deployment remain unchanged. Linked characterization runs
+pass 47/47 before and after implementation. Complete Identity tests pass
+163/163, Engagement passes 129/129, and Discovery passes 110/110. All three
+affected builds and typechecks, changed-file lint, and architecture validation
+pass. The affected-scope candidate gate passes 44/44 tasks with 12 cached tasks
+in 1m4.03s. Exact candidate commit, publication, review, merge, and exact-main
+acceptance remain.
 
 ## Ordered reference-quality runway
 
 1. item68 — P14-R13 reference-first runway: verified;
 2. item69 — P14-R14 capability index: verified;
 3. item70 — P14-R15 readability guardrails and inventory: verified;
-4. item71 — P14-R16 Catalog and Playback reading slices: active;
-5. item72 — P14-R16 Identity, Engagement, and Discovery reading slices;
+4. item71 — P14-R16 Catalog and Playback reading slices: verified;
+5. item72 — P14-R16 Identity, Engagement, and Discovery reading slices: active;
 6. item73 — P14-R16 Router, Web, and tooling reading slices;
 7. item74 — P14-R17 rationale comments, executable examples, and reading paths;
 8. item75 — P14-R18 fresh-checkout and Docker reference acceptance.
@@ -111,11 +110,12 @@ Use WSL Git and Node.js24.19.0/pnpm11.24.0 from
 `/mnt/c/Users/andre/.cache/aster-node-24.19.0`. Never use a branch beginning
 with `codex/`.
 
-Item71 changes private application names and local control-flow structure only.
+Item72 changes private application names and local control-flow structure only.
 Existing PostgreSQL, Redis, broker, browser, media, and Docker evidence remains
 applicable unless the refactor changes transaction order, dependency work,
-deadlines, contracts, or other behavior that evidence measured. Preserve
-retained data, media, unrelated Docker projects, credentials, and host processes.
+deadlines, contracts, telemetry shape, fallback policy, or other behavior that
+evidence measured. Preserve retained data, media, unrelated Docker projects,
+credentials, and host processes.
 
 ## Current risks
 
@@ -130,5 +130,6 @@ owned whitespace, and explicit preserved behavior.
 
 ## Next outcome
 
-Complete item71/P14-R16: publish the exact evidenced candidate, complete one
-review and one confirmation, merge, and verify exact main.
+Complete item72/P14-R16: characterize and refactor the three selected owner
+slices, pass focused and affected-scope gates, complete one review and one
+confirmation, merge, and verify exact main.

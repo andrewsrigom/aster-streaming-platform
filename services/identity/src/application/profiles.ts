@@ -36,22 +36,32 @@ export type ProfileMutationReplayProbe =
       result: ProfileMutationResult;
     }>;
 
+function profileEventType(kind: ProfileMutationKind) {
+  if (kind === "create") {
+    return "identity.profile-created" as const;
+  }
+  if (kind === "update") {
+    return "identity.profile-updated" as const;
+  }
+  return "identity.profile-deleted" as const;
+}
+
 export function createIdentityProfiles(ports: IdentityProfilePorts) {
-  const now = (): number => {
+  const currentIdentityTime = (): number => {
     const value = ports.now();
     if (!Number.isSafeInteger(value) || value < 0 || value > 253_402_300_799 - RECEIPT_LIFETIME) {
       throw new Error("Identity clock unavailable.");
     }
     return value;
   };
-  const nextId = (): string => {
+  const nextIdentityIdentifier = (): string => {
     const value = ports.nextId();
     if (!profileIdentifier(value)) {
       throw new Error("Identity identifier unavailable.");
     }
     return value;
   };
-  const digest = (value: string): string => {
+  const digestIdentityValue = (value: string): string => {
     const hashed = ports.digest(value);
     if (!/^[a-f0-9]{64}$/.test(hashed)) {
       throw new Error("Identity digest unavailable.");
@@ -59,7 +69,7 @@ export function createIdentityProfiles(ports: IdentityProfilePorts) {
     return hashed;
   };
 
-  const mutationInput = (kind: ProfileMutationKind, value: unknown) => {
+  const normalizeProfileMutationInput = (kind: ProfileMutationKind, value: unknown) => {
     const input = profileInput(
       value,
       kind === "create"
@@ -85,7 +95,7 @@ export function createIdentityProfiles(ports: IdentityProfilePorts) {
     if (kind !== "delete" && !preferences) {
       return undefined;
     }
-    const requestDigest = digest(
+    const requestDigest = digestIdentityValue(
       JSON.stringify([kind, requestedId, expectedVersion, preferences ?? null]),
     );
     return Object.freeze({
@@ -98,17 +108,18 @@ export function createIdentityProfiles(ports: IdentityProfilePorts) {
     });
   };
 
-  const run = async <T>(
+  const runAuthorizedProfileTransaction = async <T>(
     request: ProfileRequest,
-    operation: (
+    authorizedOperation: (
       tx: IdentityProfileTransaction,
       session: ProfileSession,
     ) => Promise<ProfileResult<T>>,
   ): Promise<ProfileResult<T>> => {
-    const cancelled = (): boolean => request.signal.aborted;
-    if (cancelled()) {
+    const requestIsCancelled = (): boolean => request.signal.aborted;
+    if (requestIsCancelled()) {
       return { status: "cancelled" };
     }
+
     try {
       if (!validProfileEventContext(request.context)) {
         return { status: "invalid_input" };
@@ -116,36 +127,51 @@ export function createIdentityProfiles(ports: IdentityProfilePorts) {
       if (typeof request.credential !== "string") {
         return { status: "unauthenticated" };
       }
-      const verified = await ports.identity.verify(request.credential, request.signal);
-      if (verified.status !== "completed") {
+
+      const identityVerification = await ports.identity.verify(request.credential, request.signal);
+      if (identityVerification.status !== "completed") {
         return {
-          status: verified.status === "invalid_input" ? "unauthenticated" : verified.status,
+          status:
+            identityVerification.status === "invalid_input"
+              ? "unauthenticated"
+              : identityVerification.status,
         };
       }
-      const credentialDigest = digest(request.credential);
+
+      const credentialDigest = digestIdentityValue(request.credential);
       return await ports.transactions.run(async (tx) => {
-        const account = await tx.lockAccount(verified.value);
-        if (!account) {
+        const lockedAccount = await tx.lockAccount(identityVerification.value);
+        if (!lockedAccount) {
           return { status: "unauthenticated" };
         }
-        const session = await tx.lockSession(verified.value.sessionId);
+
+        const lockedSession = await tx.lockSession(identityVerification.value.sessionId);
         if (
-          !session ||
-          session.account.id !== account.id ||
-          !sessionMatchesAssertion(session, verified.value, credentialDigest, ports.signerId, now())
+          !lockedSession ||
+          lockedSession.account.id !== lockedAccount.id ||
+          !sessionMatchesAssertion(
+            lockedSession,
+            identityVerification.value,
+            credentialDigest,
+            ports.signerId,
+            currentIdentityTime(),
+          )
         ) {
           return { status: "unauthenticated" };
         }
-        const result = await operation(tx, session);
+
+        const operationResult = await authorizedOperation(tx, lockedSession);
         // Crossing absolute expiry while queued or writing must not commit an authorized mutation.
-        return now() < session.expiresAt ? result : { status: "unauthenticated" };
+        return currentIdentityTime() < lockedSession.expiresAt
+          ? operationResult
+          : { status: "unauthenticated" };
       }, request.signal);
     } catch {
-      return { status: cancelled() ? "cancelled" : "unavailable" };
+      return { status: requestIsCancelled() ? "cancelled" : "unavailable" };
     }
   };
 
-  const owned = async (
+  const findOwnedProfile = async (
     tx: IdentityProfileTransaction,
     accountId: string,
     id: string,
@@ -154,119 +180,133 @@ export function createIdentityProfiles(ports: IdentityProfilePorts) {
     return profile?.accountId === accountId && profile.id === id ? profile : undefined;
   };
 
-  const mutate = (
+  const applyProfileMutation = (
     kind: ProfileMutationKind,
     request: ProfileRequest,
     value: unknown,
   ): Promise<ProfileResult<ProfileMutationResult>> =>
-    run(request, async (tx, session) => {
-      const input = mutationInput(kind, value);
-      if (!input) {
+    runAuthorizedProfileTransaction(request, async (tx, session) => {
+      const mutation = normalizeProfileMutationInput(kind, value);
+      if (!mutation) {
         return { status: "invalid_input" };
       }
-      const { mutationId, requestedId, expectedVersion, preferences, requestDigest } = input;
+      const { mutationId, requestedId, expectedVersion, preferences, requestDigest } = mutation;
       const accountId = session.account.id;
-      const timestamp = now();
-      await tx.pruneReceiptsAndAudit(accountId, timestamp);
-      const receipt = await tx.findReceipt(accountId, mutationId, timestamp);
-      if (receipt) {
+      const mutationTime = currentIdentityTime();
+
+      await tx.pruneReceiptsAndAudit(accountId, mutationTime);
+      const existingReceipt = await tx.findReceipt(accountId, mutationId, mutationTime);
+      if (existingReceipt) {
         if (
-          receipt.accountId !== accountId ||
-          receipt.mutationId !== mutationId ||
-          receipt.requestDigest !== requestDigest
+          existingReceipt.accountId !== accountId ||
+          existingReceipt.mutationId !== mutationId ||
+          existingReceipt.requestDigest !== requestDigest
         ) {
           return { status: "conflict" };
         }
-        return { status: "completed", value: receipt.result };
+        return { status: "completed", value: existingReceipt.result };
       }
-      const counts = await tx.retainedCounts(accountId);
+
+      const retainedCounts = await tx.retainedCounts(accountId);
       if (
-        [counts.receipts, counts.audit, counts.outbox].some(
+        [retainedCounts.receipts, retainedCounts.audit, retainedCounts.outbox].some(
           (count) => !Number.isSafeInteger(count) || count < 0,
         )
       ) {
         return { status: "unavailable" };
       }
-      if (counts.receipts >= RECEIPT_LIMIT) {
+      if (retainedCounts.receipts >= RECEIPT_LIMIT) {
         return { status: "backpressure" };
       }
 
-      let profile: ViewerProfile;
-      let changed = true;
+      let nextProfileState: ViewerProfile;
+      let profileChanged = true;
       if (kind === "create") {
-        const current = await tx.listProfiles(accountId);
-        if (current.some((item) => item.accountId !== accountId)) {
+        const currentProfiles = await tx.listProfiles(accountId);
+        if (currentProfiles.some((profile) => profile.accountId !== accountId)) {
           return { status: "unavailable" };
         }
-        if (current.length >= ports.policy.maximumProfiles) {
+        if (currentProfiles.length >= ports.policy.maximumProfiles) {
           return { status: "limit_exceeded" };
         }
         if (!preferences) {
           return { status: "invalid_input" };
         }
-        profile = Object.freeze({ ...preferences, id: nextId(), accountId, version: 1 });
+        nextProfileState = Object.freeze({
+          ...preferences,
+          id: nextIdentityIdentifier(),
+          accountId,
+          version: 1,
+        });
       } else {
         // The branches above validated these primitive inputs before persistence receives them.
-        const current = await owned(tx, accountId, requestedId as string);
-        if (!current) {
+        const ownedProfile = await findOwnedProfile(tx, accountId, requestedId as string);
+        if (!ownedProfile) {
           return { status: "not_found" };
         }
-        if (current.version !== expectedVersion) {
+        if (ownedProfile.version !== expectedVersion) {
           return { status: "conflict" };
         }
-        changed =
-          kind === "delete" || !preferences || !sameProfilePreferences(current, preferences);
-        if (changed && current.version === 2_147_483_647) {
+        profileChanged =
+          kind === "delete" || !preferences || !sameProfilePreferences(ownedProfile, preferences);
+        if (profileChanged && ownedProfile.version === 2_147_483_647) {
           return { status: "conflict" };
         }
-        profile = Object.freeze({
-          ...current,
+        nextProfileState = Object.freeze({
+          ...ownedProfile,
           ...preferences,
-          version: current.version + (changed ? 1 : 0),
+          version: ownedProfile.version + (profileChanged ? 1 : 0),
         });
       }
-      if (changed && (counts.audit >= JOURNAL_LIMIT || counts.outbox >= JOURNAL_LIMIT)) {
+
+      if (
+        profileChanged &&
+        (retainedCounts.audit >= JOURNAL_LIMIT || retainedCounts.outbox >= JOURNAL_LIMIT)
+      ) {
         return { status: "backpressure" };
       }
-      if (changed) {
+
+      if (profileChanged) {
         if (kind === "create") {
-          await tx.insertProfile(profile);
+          await tx.insertProfile(nextProfileState);
         } else if (kind === "update") {
-          if (!(await tx.updateProfile(profile, expectedVersion as number))) {
+          if (!(await tx.updateProfile(nextProfileState, expectedVersion as number))) {
             return { status: "conflict" };
           }
         } else {
-          if (!(await tx.deleteProfile(accountId, profile.id, expectedVersion as number))) {
+          if (
+            !(await tx.deleteProfile(accountId, nextProfileState.id, expectedVersion as number))
+          ) {
             return { status: "conflict" };
           }
-          await tx.clearSelectedProfile(accountId, profile.id);
+          await tx.clearSelectedProfile(accountId, nextProfileState.id);
         }
-        const event = createProfileEvent({
-          eventId: nextId(),
-          eventType:
-            kind === "create"
-              ? "identity.profile-created"
-              : kind === "update"
-                ? "identity.profile-updated"
-                : "identity.profile-deleted",
+
+        const profileEvent = createProfileEvent({
+          eventId: nextIdentityIdentifier(),
+          eventType: profileEventType(kind),
           accountId,
-          profileId: profile.id,
-          version: profile.version,
-          now: timestamp,
+          profileId: nextProfileState.id,
+          version: nextProfileState.version,
+          now: mutationTime,
           context: request.context,
         });
-        await tx.appendAudit(event);
-        await tx.appendOutbox(event);
+        await tx.appendAudit(profileEvent);
+        await tx.appendOutbox(profileEvent);
       }
-      const result = Object.freeze({ profileId: profile.id, version: profile.version });
+
+      const mutationResult = Object.freeze({
+        profileId: nextProfileState.id,
+        version: nextProfileState.version,
+      });
       await tx.writeReceipt({
         accountId,
         mutationId,
         requestDigest,
-        result,
-        expiresAt: timestamp + RECEIPT_LIFETIME,
+        result: mutationResult,
+        expiresAt: mutationTime + RECEIPT_LIFETIME,
       });
-      return { status: "completed", value: result };
+      return { status: "completed", value: mutationResult };
     });
 
   return Object.freeze({
@@ -275,58 +315,65 @@ export function createIdentityProfiles(ports: IdentityProfilePorts) {
       request: ProfileRequest,
       value: unknown,
     ): Promise<ProfileResult<ProfileMutationReplayProbe>> =>
-      run<ProfileMutationReplayProbe>(request, async (tx, session) => {
-        const input = mutationInput(kind, value);
-        if (!input) {
+      runAuthorizedProfileTransaction<ProfileMutationReplayProbe>(request, async (tx, session) => {
+        const mutation = normalizeProfileMutationInput(kind, value);
+        if (!mutation) {
           return { status: "invalid_input" };
         }
-        const timestamp = now();
-        const receipt = await tx.findReceipt(session.account.id, input.mutationId, timestamp);
-        if (!receipt) {
+        const probeTime = currentIdentityTime();
+        const existingReceipt = await tx.findReceipt(
+          session.account.id,
+          mutation.mutationId,
+          probeTime,
+        );
+        if (!existingReceipt) {
           return {
             status: "completed",
             value: Object.freeze({
               kind: "missing",
               accountId: session.account.id,
-              admissionIdentity: input.admissionIdentity,
+              admissionIdentity: mutation.admissionIdentity,
             }),
           };
         }
         if (
-          receipt.accountId !== session.account.id ||
-          receipt.mutationId !== input.mutationId ||
-          receipt.requestDigest !== input.requestDigest
+          existingReceipt.accountId !== session.account.id ||
+          existingReceipt.mutationId !== mutation.mutationId ||
+          existingReceipt.requestDigest !== mutation.requestDigest
         ) {
           return { status: "conflict" };
         }
         return {
           status: "completed",
-          value: Object.freeze({ kind: "replay", result: receipt.result }),
+          value: Object.freeze({ kind: "replay", result: existingReceipt.result }),
         };
       }),
     authorize: (request: ProfileRequest, profileId: unknown) =>
-      run(request, async (tx, session) => {
+      runAuthorizedProfileTransaction(request, async (tx, session) => {
         if (!profileIdentifier(profileId)) {
           return { status: "invalid_input" };
         }
-        const profile = await owned(tx, session.account.id, profileId);
-        return profile
+        const ownedProfile = await findOwnedProfile(tx, session.account.id, profileId);
+        return ownedProfile
           ? {
               status: "completed",
               value: Object.freeze({
                 accountId: session.account.id,
-                profileId: profile.id,
-                checkedAt: now(),
+                profileId: ownedProfile.id,
+                checkedAt: currentIdentityTime(),
                 expiresAt: session.expiresAt,
               }),
             }
           : { status: "not_found" };
       }),
-    create: (request: ProfileRequest, input: unknown) => mutate("create", request, input),
-    update: (request: ProfileRequest, input: unknown) => mutate("update", request, input),
-    delete: (request: ProfileRequest, input: unknown) => mutate("delete", request, input),
+    create: (request: ProfileRequest, input: unknown) =>
+      applyProfileMutation("create", request, input),
+    update: (request: ProfileRequest, input: unknown) =>
+      applyProfileMutation("update", request, input),
+    delete: (request: ProfileRequest, input: unknown) =>
+      applyProfileMutation("delete", request, input),
     list: (request: ProfileRequest) =>
-      run(request, async (tx, session) => {
+      runAuthorizedProfileTransaction(request, async (tx, session) => {
         const profiles = await tx.listProfiles(session.account.id);
         if (
           profiles.length > MAX_ACCOUNT_PROFILES ||
@@ -340,37 +387,41 @@ export function createIdentityProfiles(ports: IdentityProfilePorts) {
         };
       }),
     get: (request: ProfileRequest, profileId: unknown) =>
-      run(request, async (tx, session) => {
+      runAuthorizedProfileTransaction(request, async (tx, session) => {
         if (!profileIdentifier(profileId)) {
           return { status: "invalid_input" };
         }
-        const profile = await owned(tx, session.account.id, profileId);
-        return profile ? { status: "completed", value: profile } : { status: "not_found" };
+        const ownedProfile = await findOwnedProfile(tx, session.account.id, profileId);
+        return ownedProfile
+          ? { status: "completed", value: ownedProfile }
+          : { status: "not_found" };
       }),
     select: (request: ProfileRequest, profileId: unknown) =>
-      run(request, async (tx, session) => {
+      runAuthorizedProfileTransaction(request, async (tx, session) => {
         if (!profileIdentifier(profileId)) {
           return { status: "invalid_input" };
         }
-        const profile = await owned(tx, session.account.id, profileId);
-        if (!profile) {
+        const ownedProfile = await findOwnedProfile(tx, session.account.id, profileId);
+        if (!ownedProfile) {
           return { status: "not_found" };
         }
-        if (session.activeProfileId !== profile.id) {
-          await tx.selectProfile(session.account.id, session.id, profile.id);
+        if (session.activeProfileId !== ownedProfile.id) {
+          await tx.selectProfile(session.account.id, session.id, ownedProfile.id);
         }
-        return { status: "completed", value: profile };
+        return { status: "completed", value: ownedProfile };
       }),
     active: (request: ProfileRequest, profileId: unknown) =>
-      run(request, async (tx, session) => {
+      runAuthorizedProfileTransaction(request, async (tx, session) => {
         if (!profileIdentifier(profileId)) {
           return { status: "invalid_input" };
         }
         if (session.activeProfileId !== profileId) {
           return { status: "not_found" };
         }
-        const profile = await owned(tx, session.account.id, profileId);
-        return profile ? { status: "completed", value: profile } : { status: "not_found" };
+        const ownedProfile = await findOwnedProfile(tx, session.account.id, profileId);
+        return ownedProfile
+          ? { status: "completed", value: ownedProfile }
+          : { status: "not_found" };
       }),
   });
 }
