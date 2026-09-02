@@ -57,13 +57,20 @@ path from a new exact-main checkout: pinned install, capability navigation,
 focused adverse test, evidence and operations lookup, anonymous playable Docker
 journey, replay-safe initialization, and exact project-scoped cleanup. The
 fresh-clone bootstrap, navigation, 16 focused tests, complete 73-task gate, and
-high-severity audit pass. Docker Desktop failed before Compose startup because
-its local analytics socket could not be removed; the owner closed Docker. No
-Compose project was started. Browser, replay, scoped cleanup, publication, and
-protected release remain. The local reference-verification note now records the
-passing source path, pending Docker leg, verified local scope, and excluded
-hosted/commercial claims without presenting P14-R18 as complete. Its changed-
-scope gate passes 9/9 tasks in `13.792s`.
+high-severity audit pass. After Docker Desktop recovered, accepted project
+`aster-reference-final-20260902` passed healthy startup, the real browser
+journey 1/1 in `5.0s`, unchanged seed and generated-HLS replay, inspected exact
+cleanup, and zero owned residue. The local verification note records the full
+result, verified scope, and excluded hosted/commercial claims. Its existing
+changed-scope gate passes 9/9 tasks with two cached tasks in `15.406s`.
+Protected review, merge, and exact-main acceptance remain.
+
+A rejected cleanup attempt expanded a nested-shell project variable to empty
+and removed 13 unused volumes from the existing `aster` project. Their Docker
+data cannot be recovered without an external backup. The stopped broker
+container plus `aster_broker-data` and `aster_identity-event-trust` remain; no
+replacement volume was created. The accepted repeat preserved those remaining
+resources and used a new literal project name throughout.
 
 ## Ordered reference-quality runway
 
@@ -107,9 +114,10 @@ commercial-catalog claims.
 
 ## Runtime and recovery
 
-Use WSL Git and Node.js24.19.0/pnpm11.24.0 from
-`/mnt/c/Users/andre/.cache/aster-node-24.19.0`. Never use a branch beginning
-with `codex/`.
+Use WSL Git and the complete Node.js24.19.0 distribution at
+`/home/andrews/.local/share/node-v24.19.0-linux-x64/bin`, which includes
+Corepack and provisions pnpm11.24.0. Never use a branch beginning with
+`codex/`.
 
 Item75 changes verification notes and repository memory only. Run its source
 and Docker acceptance from one new temporary clone with a unique explicit
@@ -125,9 +133,8 @@ processes.
   not exact.
 - The generated sample can be mistaken for licensed third-party content.
 - Reference-track status can be mistaken for hosted release status.
-- Docker Desktop currently exits during startup while removing
-  `C:\Users\andre\AppData\Local\Docker\run\userAnalyticsOtlpHttp.sock`; do not
-  reset Docker or remove the socket without owner authorization.
+- The rejected cleanup incident removed 13 local `aster` volumes. Recreating
+  empty names would hide rather than recover their former data.
 
 The guardrails require exact commit/tool versions, synthetic bounded checks,
 unique Docker ownership, zero owned residue, explicit media limitations, and no
@@ -135,8 +142,8 @@ hosted claim.
 
 ## Next outcome
 
-Resume item75/P14-R18 after Docker Desktop is healthy: reuse the exact clean
-clone, run only the anonymous playable journey, prove replay and exact cleanup,
-publish reference-verification notes, pass one review and one confirmation,
-merge, and verify exact main. Do not repeat the already passing install, focused
-tests, complete quality gate, or audit unless a relevant source changes.
+Finish item75/P14-R18: commit the complete local evidence, repeat the changed-
+scope candidate gate, publish for one review and one confirmation, merge, and
+verify exact main. Do not repeat the accepted source or Docker experiments
+unless a relevant executable, Docker, browser, media, cleanup, dependency, or
+public-command change invalidates them.

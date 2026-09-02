@@ -308,9 +308,12 @@ capabilities, known limitations and all deferred hosted work.
 
 Exact-main clone `2b6054a` passes the public bootstrap, proof navigation, 16
 focused Playback checks, the complete 73-task gate, and high-severity audit.
-Docker Desktop failed before Compose startup on its stale local analytics
-socket and was closed by the owner. No Compose project started. Docker journey,
-replay, scoped cleanup, publication, review, and release remain.
+Accepted project `aster-reference-final-20260902` passes healthy Docker startup,
+the real browser journey 1/1 in `5.0s`, replay-safe seed/generated-media reuse,
+exact cleanup, and zero owned residue. A rejected nested-shell cleanup removed
+13 unused existing `aster` volumes; the loss and retained broker resources are
+recorded, and empty replacements are forbidden. Local acceptance passes;
+protected review, merge, and exact-main acceptance remain.
 
 ## Deferred hosted queue
 

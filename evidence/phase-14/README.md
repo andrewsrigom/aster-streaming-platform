@@ -1234,16 +1234,28 @@ Playback application and Web-state checks pass 16/16. The complete source gate
 passes 73/73 tasks in `1m47.705s`; the high-severity dependency audit exits zero
 with one moderate finding.
 
-Docker Desktop fails before Compose startup while removing its stale local
-analytics socket. The owner closed Docker; no reset or socket removal was
-attempted, and no disposable Compose project started. The browser journey,
-replay, exact cleanup, verification-note finalization, protected review, merge,
-and exact-main acceptance remain. The current boundary is published in the
+After the owner reopened Docker Desktop, Engine `26.0.0` and Compose
+`2.26.1-desktop.1` became healthy without reset or socket mutation. The accepted
+repeat uses the unique literal project `aster-reference-final-20260902`. The
+anonymous stack becomes healthy, the real browser journey passes 1/1 in `5.0s`,
+replay records an unchanged Catalog seed and reused 1,948,485-byte generated HLS
+fixture, and inspected project-scoped cleanup proves zero owned containers,
+networks, and volumes.
+
+A non-accepted cleanup attempt expanded a nested-shell project variable to
+empty and removed 13 unused volumes from the existing local `aster` project.
+Their Docker data is not recoverable without an external backup. The incident,
+exact removed volumes, retained broker resources, and accepted isolated repeat
+are recorded without concealment in the raw transcript. No replacement volumes
+were created.
+
+The local source and Docker acceptance now pass. Protected review, merge, and
+exact-main acceptance remain. The current boundary is published in the
 [local reference verification](../../docs/00-start-here/REFERENCE_VERIFICATION.md),
-whose changed-scope gate passes 9/9 tasks with zero cached tasks in `13.792s`.
-The exact partial transcript is retained in
+and the final changed-scope gate passes 9/9 tasks with two cached tasks in
+`15.406s`. The exact transcript is retained in
 [`p14-r18-reference-acceptance.txt`](./p14-r18-reference-acceptance.txt).
 
 ## Planned evidence
 
-- P14-R18 Docker/browser/replay/cleanup acceptance and protected release
+- P14-R18 protected review, merge, and exact-main acceptance

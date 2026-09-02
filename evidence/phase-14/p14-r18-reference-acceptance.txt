@@ -1,6 +1,6 @@
 P14-R18 fresh-reader reference acceptance
 Date: 2026-09-02
-Status: PARTIAL — source path passes; Docker journey has not started
+Status: LOCAL ACCEPTANCE PASSED — protected release pending
 
 Source
 ------
@@ -113,12 +113,94 @@ the zero-byte socket still present with timestamp 2026-08-31 11:34:28. No
 factory reset, socket removal, Compose startup, container, network, volume, or
 project cleanup command was attempted.
 
+First healthy-engine attempt and rejected cleanup
+-------------------------------------------------
+After the owner reopened Docker Desktop:
+
+docker_server=26.0.0
+Docker Compose version v2.26.1-desktop.1
+docker_preflight=ok project=aster-reference-p14r18-20260902
+
+The project started healthy. Playwright's --with-deps installation then invoked
+sudo, which required interactive administrator credentials. The process was
+cancelled. The already available Chromium was used in the resumed attempt:
+
+Running 1 test using 1 worker
+1 passed (3.6s)
+catalog_playable_seed ... "changed":false
+generated_hls_reused ... "totalBytes":1948485
+docker_browser_replay=ok project=aster-reference-p14r18-20260902
+
+The project-owned script then removed the exact reference project and proved
+zero owned containers, networks, and volumes.
+
+Before that safe script ran, a manual cleanup command passed its project
+variable through a nested shell. The outer shell expanded the variable to an
+empty value, and Compose fell back to the existing local project name `aster`.
+It removed these 13 unused volumes:
+
+aster_catalog-router-trust
+aster_discovery-catalog-trust
+aster_discovery-router-trust
+aster_engagement-catalog-trust
+aster_engagement-identity-trust
+aster_engagement-playback-trust
+aster_engagement-router-trust
+aster_identity-router-trust
+aster_playable-fixture
+aster_playback-catalog-trust
+aster_playback-router-trust
+aster_postgres-data
+aster_storage-data
+
+Docker volume data is not recoverable without an external backup. Read-only
+inspection showed these existing resources remained:
+
+aster-broker-1 Exited (255)
+aster_broker-data
+aster_identity-event-trust
+
+No replacement volume was created. Because this attempt changed an unrelated
+project, it is explicitly rejected as acceptance evidence.
+
+Accepted isolated Docker/browser/replay/cleanup attempt
+-------------------------------------------------------
+The required repeat used a new literal project name in one script-owned scope.
+The remaining `aster` resources above were identical before and after it.
+
+docker_server=26.0.0
+Docker Compose version v2.26.1-desktop.1
+{"check":"docker-context","included":24,"excluded":18,"status":"ok"}
+docker_preflight=ok project=aster-reference-final-20260902 ports=3000,4000,9001
+
+The anonymous Web, Router, Catalog, Playback, PostgreSQL, object-storage, and
+generated-media services became healthy.
+
+$ pnpm --filter @aster/web exec playwright test demo.spec.ts
+Running 1 test using 1 worker
+Docker-only generated demo plays real HLS with captions, direct delivery and
+bounded diagnostics
+1 passed (5.0s)
+
+$ playable_compose up --no-build --wait --wait-timeout 90 web
+catalog_playable_seed ... "changed":false
+generated_hls_reused ... "totalBytes":1948485
+docker_browser_replay=ok project=aster-reference-final-20260902
+
+Before cleanup, Compose listed the exact 13 owned containers. Project-scoped
+down removed those containers, two networks, and 13 volumes.
+
+docker_cleanup=ok project=aster-reference-final-20260902 containers=0 networks=0 volumes=0
+
+Final local candidate gate
+--------------------------
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 2 cached, 9 total
+Time: 15.406s
+
 Remaining acceptance
 --------------------
-- healthy local Docker context verification;
-- anonymous playable Compose startup under a unique project name;
-- existing real browser journey;
-- replay-safe seed and generated-media reuse;
-- inspected project-scoped cleanup and zero owned residue;
-- verification-note finalization, protected review, merge, and exact-main
-  acceptance.
+- protected initial review and CI;
+- one confirmation review;
+- squash merge and exact-main acceptance.

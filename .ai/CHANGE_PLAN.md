@@ -130,13 +130,14 @@ verification notes. Do not change executable product behavior.
 ## Evidence
 
 - Commands: exact fresh clone, bootstrap, capability navigation, 16 focused
-  tests, 73-task complete quality gate, high-severity audit, and Docker
-  preflight diagnostic with measured results
+  tests, 73-task complete quality gate, high-severity audit, accepted Docker
+  startup/browser/replay/cleanup, and rejected-attempt incident with measured
+  results
 - Raw artifact path: `evidence/phase-14/p14-r18-reference-acceptance.txt`
-- Acceptance result: partial; Docker startup, browser journey, replay, cleanup,
-  publication, and protected release remain
+- Acceptance result: fresh local source and Docker path pass; protected review,
+  merge, and exact-main acceptance remain
 - Current documentation candidate: `pnpm check:changed` passes 9/9 tasks with
-  zero cached tasks in `13.792s`
+  two cached tasks in `15.406s`
 - Iteration gate: public bootstrap/version checks, selected focused tests,
   Docker startup/journey/replay/cleanup, `pnpm docs:check`, and `pnpm ai:check`
 - Candidate gate: `pnpm check:changed`
@@ -151,7 +152,10 @@ verification notes. Do not change executable product behavior.
 Delete only the verified temporary clone after evidence capture and revert the
 verification notes/memory updates. If Docker cleanup cannot prove ownership,
 retain the project and its exact identifiers for manual diagnosis rather than
-using a broad deletion command. No production or hosted state exists.
+using a broad deletion command. A rejected nested-shell cleanup expanded its
+project variable to empty and removed 13 unused `aster` volumes. Their Docker
+data is not recoverable without an external backup; do not create replacements
+that could hide the loss. No production or hosted state exists.
 
 ## Documentation updates
 
@@ -167,8 +171,8 @@ using a broad deletion command. No production or hosted state exists.
 ## Completion checklist
 
 - [ ] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
-- [ ] Remaining risks recorded
+- [x] Tests pass
+- [x] Evidence captured
+- [x] Documentation current
+- [x] `.ai/` state updated
+- [x] Remaining risks recorded

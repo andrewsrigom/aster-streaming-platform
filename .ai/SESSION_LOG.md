@@ -4,6 +4,35 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-02 — Fresh Docker path passed; cleanup incident recorded
+
+### Completed
+
+- Docker Desktop recovered after the owner reopened it. Engine `26.0.0` and
+  Compose `2.26.1-desktop.1` became healthy without reset or socket mutation.
+- Accepted project `aster-reference-final-20260902` passed context preflight,
+  healthy anonymous startup, the real browser journey 1/1 in `5.0s`, unchanged
+  seed and generated-HLS replay, inspected cleanup, and zero owned residue.
+- Updated the local reference note and raw evidence with the full measured
+  result and unchanged hosted, capacity, rights, and commercial exclusions.
+- The final changed-scope gate passes 9/9 tasks with two cached tasks in
+  `15.406s`.
+
+### Evidence
+
+- A non-accepted cleanup command passed a project variable through a nested
+  shell. It expanded to empty, so Compose removed 13 unused volumes from the
+  existing `aster` project. Their Docker data is not recoverable without an
+  external backup.
+- `aster-broker-1`, `aster_broker-data`, and `aster_identity-event-trust`
+  remain. No empty replacement volumes were created. The accepted repeat used
+  a new literal project and preserved those remaining resources.
+
+### Next action
+
+Commit the complete evidence, repeat the changed-scope gate, then complete one
+initial review, one confirmation, merge, and exact-main acceptance.
+
 ## 2026-09-02 — Fresh-reader source path passed; Docker startup blocked
 
 ### Completed

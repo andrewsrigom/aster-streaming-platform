@@ -37,20 +37,24 @@ Close only `reference-fresh-acceptance`:
 - Capability navigation reached every Playback proof destination. Playback
   application and Web-state checks passed 16/16; `pnpm check` passed 73/73 in
   `1m47.705s`; the high-severity audit gate passed with one moderate finding.
-- Docker Desktop failed before Compose startup because it could not remove the
-  stale local analytics socket. The owner closed Docker. No disposable Compose
-  project was started and no project cleanup is due.
 - Drafted and linked the local reference-verification note with the exact
-  passing source proof, pending Docker leg, verified local capabilities, and
+  passing source proof, Docker leg, verified local capabilities, and
   explicit hosted, capacity, rights, and commercial exclusions. Its changed-
-  scope candidate gate passes 9/9 tasks in `13.792s`.
+  scope candidate gate passes 9/9 tasks with two cached tasks in `15.406s`.
+- Accepted project `aster-reference-final-20260902` passes healthy Docker
+  startup, browser playback 1/1 in `5.0s`, replay-safe seed/media reuse, exact
+  cleanup, and zero owned residue.
+- A rejected nested-shell cleanup expanded its project variable to empty and
+  removed 13 unused volumes from the existing `aster` project. Their Docker
+  data is not recoverable without an external backup. The stopped broker,
+  `aster_broker-data`, and `aster_identity-event-trust` remain. No empty
+  replacements were created; the accepted repeat preserved those resources.
 
 ## Exact next actions
 
-1. After Docker Desktop is healthy, reuse the existing exact-main clone and run
-   the playable journey, replay, inspected scoped cleanup, and residue checks.
-2. Publish the complete raw evidence and verification notes, pass the changed-
-   scope gate, then complete protected review, merge, and exact-main verification.
+1. Commit the complete local evidence and repeat `pnpm check:changed`.
+2. Publish the candidate, complete one initial review and one confirmation,
+   merge, and verify exact main.
 
 ## Execution boundary
 
@@ -61,16 +65,12 @@ the inspected unique disposable Docker project.
 
 ## Heavyweight evidence
 
-The fresh-checkout and anonymous playable Docker journey are required once for
-P14-R18. Repeat them only if a later change touches executable source, Docker,
+The fresh-checkout source path and accepted anonymous playable Docker journey
+pass. Repeat them only if a later change touches executable source, Docker,
 browser, media, migration, dependency, cleanup, or a public command.
-
-The fresh-checkout bootstrap, navigation, focused tests, complete source gate,
-and audit already pass on exact main and need no unchanged repetition. The
-Docker journey has not begun.
 
 ## Do not do yet
 
 Do not activate hosted P14-R01–R12. Newly noticed unrelated readability issues
-return to the bounded inventory. Do not reset Docker or remove its stale socket
-without owner authorization.
+return to the bounded inventory. Do not recreate the 13 removed `aster` volume
+names as empty volumes; recovery requires an actual external backup.

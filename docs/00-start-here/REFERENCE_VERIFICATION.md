@@ -1,6 +1,6 @@
 # Local Reference Verification
 
-Status: **in progress — source path verified, fresh Docker journey pending**
+Status: **in progress — fresh local acceptance passes; protected release pending**
 
 This checkpoint answers one bounded question: can a reader clone Aster, find a
 capability, inspect how it is implemented, run its focused proof, and exercise
@@ -27,27 +27,72 @@ Fresh clone `/tmp/aster-reference-reader-20260902` uses public main commit
   finding.
 
 The [raw acceptance transcript](../../evidence/phase-14/p14-r18-reference-acceptance.txt)
-records the exact source results and the current Docker diagnostic.
+records the exact source and Docker results.
 
-## Remaining verification
+## Verified Docker reference journey
 
-Docker Desktop failed before Compose startup because its local analytics socket
-could not be removed. The owner closed Docker. No Compose project started, no
-factory reset or socket removal was attempted, and no Docker result is claimed
-from that attempt.
+The accepted Docker attempt uses Engine `26.0.0`, Compose
+`2.26.1-desktop.1`, and the unique literal project
+`aster-reference-final-20260902`.
 
-P14-R18 remains in progress until a healthy local Docker engine proves:
+- Docker context verification includes 24 reviewed paths and excludes 18
+  private or generated canaries.
+- Ports `3000`, `4000`, and `9001` and the exact project namespace are free
+  before startup.
+- The anonymous Web, Router, Catalog, Playback, PostgreSQL, object-storage, and
+  generated-media path becomes healthy.
+- The existing real browser journey passes 1/1 in `5.0s`, playing HLS with
+  captions and direct media delivery.
+- Repeated startup records `changed:false` for the Catalog seed and
+  `generated_hls_reused` for the exact 1,948,485-byte technical fixture.
+- Cleanup first inspects the exact project, then removes its containers, two
+  networks, and 13 volumes. Label queries prove zero owned residue.
 
-1. the anonymous playable demo starts under a unique explicit project name;
-2. the existing browser journey reaches real playback;
-3. repeated startup reuses the seed and generated media safely;
-4. inspected project-scoped cleanup removes every owned container, network, and
-   volume while leaving unrelated resources untouched;
-5. protected review, merge, and exact-main acceptance pass.
+The accepted attempt uses generated technical media, no credentials, no
+external film, and no hosted resource.
+
+## Non-accepted attempts and host impact
+
+The initial Docker preflight failed before Compose because Docker Desktop could
+not remove a stale local analytics socket. The owner reopened Docker, and the
+engine then became healthy without a factory reset or socket mutation.
+
+A later non-accepted cleanup command passed a project variable through a nested
+shell. The outer shell expanded it to an empty value, so Compose fell back to
+the existing local `aster` project and removed these 13 unused volumes:
+
+- `aster_catalog-router-trust`;
+- `aster_discovery-catalog-trust`;
+- `aster_discovery-router-trust`;
+- `aster_engagement-catalog-trust`;
+- `aster_engagement-identity-trust`;
+- `aster_engagement-playback-trust`;
+- `aster_engagement-router-trust`;
+- `aster_identity-router-trust`;
+- `aster_playable-fixture`;
+- `aster_playback-catalog-trust`;
+- `aster_playback-router-trust`;
+- `aster_postgres-data`;
+- `aster_storage-data`.
+
+Docker volume data is not recoverable without an external backup. The stopped
+`aster-broker-1` container, `aster_broker-data`, and
+`aster_identity-event-trust` remain. No replacement volumes were created to
+hide the loss.
+
+This command was not part of the documented reader path, whose cleanup uses a
+literal project name. The attempt is rejected. The accepted repeat uses a
+script-owned literal project from preflight through postcondition checks; the
+remaining `aster` resources are unchanged before and after that repeat.
+
+## Remaining release work
+
+The fresh local path passes. P14-R18 remains in progress until the documentation
+candidate completes protected review, merge, and exact-main acceptance.
 
 Earlier protected and exact-main workflows prove the same checked-in playable
 path on CI infrastructure. They support the implementation claim but do not
-replace this fresh-reader local checkpoint.
+replace the recorded fresh-reader checkpoint.
 
 ## Verified local scope
 
