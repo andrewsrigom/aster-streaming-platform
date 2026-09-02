@@ -28,8 +28,9 @@ full snapshot through the archival checkpoint remains in
 - ESLint, Prettier, architecture validation, and the affected-scope candidate
   gate pass. The gate completes 16/16 tasks with one cached task in 47.823
   seconds.
-- Exact source `1402157`, tree `176c757`, repeats the gate 16/16 with six
-  cached tasks in 37.612 seconds.
+- Initial exact source `1402157`, tree `176c757`, repeats the gate 16/16 with
+  six cached tasks in 37.612 seconds. Corrected exact source `a43247b`, tree
+  `561ff0e`, passes 16/16 with twelve cached tasks in 1.949 seconds.
 - Initial review discussions `3914109519` and `3914109534` found that playback
   omitted its client-disposal check and GraphQL admission omitted runtime,
   limiter, batching, and query-count proofs. Both paths and commands are
@@ -46,8 +47,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-Run the corrected affected gate, commit and publish the remediation batch,
-resolve both discussions, then require one confirmation.
+Publish corrected source `a43247b`, resolve both discussions, then require
+protected acceptance and one confirmation.
 
 ## 2026-09-02 — Identity/Engagement/Discovery readability verified and item73 activated
 

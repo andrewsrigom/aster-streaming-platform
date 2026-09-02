@@ -1180,10 +1180,12 @@ Documentation tests pass 37/37. Documentation validation covers 252 documents,
 zero violations. Repository-memory tests pass 13/13. Changed-file ESLint,
 Prettier, architecture validation, and the affected-scope candidate gate pass.
 The gate completes 16/16 tasks with one cached task in 47.823 seconds.
-Exact source `140215764afdf88d11ceb05f92dcd6b0d7c218d5`, tree
+Initial exact source `140215764afdf88d11ceb05f92dcd6b0d7c218d5`, tree
 `176c757133fe7c63a5d682770259e05a61474dae`, repeats the gate 16/16 with six
-cached tasks in 37.612 seconds. The next commit records this exact result and
-repository memory only.
+cached tasks in 37.612 seconds. Corrected exact source
+`a43247b72dea5e8328b614d8420da06905283c33`, tree
+`561ff0ee911ed5552823ff96934dfdc14a780b99`, passes 16/16 with twelve cached
+tasks in 1.949 seconds.
 
 Exact commands and results are retained in
 [`p14-r17-core-journey-reading-paths.txt`](./p14-r17-core-journey-reading-paths.txt).
@@ -1197,6 +1199,7 @@ and GraphQL admission linked P13-R06/R07 without navigating or running their
 runtime, limiter, batching, and query-count proofs. The remediation adds those
 links and commands. The added Web test passes 10/10; the expanded GraphQL checks
 pass 26/26 beyond the existing eight demand tests. No executable source changed.
+The corrected exact-source gate passes 16/16.
 
 ## Planned evidence
 

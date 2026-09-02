@@ -113,6 +113,17 @@ $ pnpm ai:check
 {"check":"ai-state","status":"ok","files":10,"queueItems":75,"sessionEntries":68,"activeRequirement":"P14-R17","targetRequirement":"P14-R17","violations":[]}
 EXIT 0
 
+REVIEW REMEDIATION EXACT-SOURCE GATE
+
+Source: a43247b72dea5e8328b614d8420da06905283c33
+Tree: 561ff0ee911ed5552823ff96934dfdc14a780b99
+
+$ pnpm check:changed
+Tasks: 16 successful, 16 total
+Cached: 12 cached, 16 total
+Time: 1.949s
+EXIT 0
+
 INITIAL REVIEW REMEDIATION
 
 Discussion 3914109519: the playback path cited client disposal but did not run

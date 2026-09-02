@@ -42,8 +42,9 @@ Close only `journey-comments-examples`:
 - ESLint, Prettier, architecture validation, and the affected-scope candidate
   gate pass. The gate completes 16/16 tasks with one cached task in 47.823
   seconds.
-- Exact source `1402157`, tree `176c757`, repeats the gate 16/16 with six
-  cached tasks in 37.612 seconds.
+- Initial exact source `1402157`, tree `176c757`, repeats the gate 16/16 with
+  six cached tasks in 37.612 seconds. Corrected exact source `a43247b`, tree
+  `561ff0e`, passes 16/16 with twelve cached tasks in 1.949 seconds.
 - Initial review discussions `3914109519` and `3914109534` found that playback
   omitted its client-disposal check and GraphQL admission omitted runtime,
   limiter, batching, and query-count proofs. Both reading paths and commands are
@@ -51,8 +52,8 @@ Close only `journey-comments-examples`:
 
 ## Exact next actions
 
-1. Run the corrected affected gate, commit, and publish the remediation batch.
-2. Resolve both discussions, complete one confirmation, merge, and verify exact
+1. Publish corrected source `a43247b` and resolve both discussions.
+2. Complete protected acceptance and one confirmation, merge, and verify exact
    main.
 
 ## Execution boundary

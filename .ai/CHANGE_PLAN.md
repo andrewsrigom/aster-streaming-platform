@@ -126,11 +126,14 @@ browser-storage comments. Do not change executable behavior.
   four status claims, and eleven capability rows with zero violations;
   repository-memory tests pass 13/13; ESLint, Prettier, architecture validation,
   and the affected-scope candidate gate pass. The gate completes 16/16 tasks
-  with one cached task in 47.823 seconds. Exact source `1402157`, tree
+  with one cached task in 47.823 seconds. Initial exact source `1402157`, tree
   `176c757`, repeats the gate 16/16 with six cached tasks in 37.612 seconds.
+  Corrected exact source `a43247b`, tree `561ff0e`, passes 16/16 with twelve
+  cached tasks in 1.949 seconds.
   Initial review discussions `3914109519` and `3914109534` identified omitted
   client-disposal and GraphQL execution/limiter/batching/query-count checks. The
-  corrected examples pass; corrected-source and protected acceptance remain.
+  corrected examples and corrected-source gate pass; protected acceptance
+  remains.
 - Iteration gate: `pnpm docs:test`, `pnpm docs:check`, `pnpm ai:check`, the Web
   source suite, and each documented focused example
 - Candidate gate: `pnpm check:changed`
