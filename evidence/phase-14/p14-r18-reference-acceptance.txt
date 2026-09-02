@@ -1,0 +1,113 @@
+P14-R18 fresh-reader reference acceptance
+Date: 2026-09-02
+Status: PARTIAL — source path passes; Docker journey has not started
+
+Source
+------
+Remote: https://github.com/andrewsrigom/aster-streaming-platform.git
+Fresh clone: /tmp/aster-reference-reader-20260902
+Commit: 2b6054a6ff30b24e635b2aae830850455cdcc8b6
+Tree: 3e905ea5d3c18de426918125fbc6dbb0de310bd7
+
+$ git status --short --branch
+## main...origin/main
+
+Toolchain and frozen install
+----------------------------
+The first environment-selection attempt used a cache-only Node shim that did
+not include the README-required Corepack executable. It stopped before install
+and is not accepted as the reader path. The repeated command used the complete
+pinned Node.js distribution required by the README.
+
+$ node --version
+v24.19.0
+
+$ corepack enable
+$ corepack install
+Adding pnpm@11.24.0 to the cache...
+
+$ pnpm --version
+11.24.0
+
+$ pnpm install --frozen-lockfile
+Scope: all 18 workspace projects
+Lockfile is up to date, resolution step is skipped
+Packages: +480
+Progress: resolved 480, reused 480, downloaded 0, added 480, done
+Done in 1.5s using pnpm v11.24.0
+
+$ pnpm toolchain:check
+{"check":"toolchain","status":"ok","node":"24.19.0","pnpm":"11.24.0"}
+
+Capability navigation and focused proof
+---------------------------------------
+The public capability index Playback row reached:
+
+- docs/specs/phase-07-playback.md
+- services/playback/src/application/create-session.ts
+- apps/web/features/playback/player.tsx
+- services/playback/test/create-session.test.ts
+- apps/web/test/browser/playback.spec.ts
+- evidence/phase-07/release.md
+- services/playback/README.md
+
+Every destination exists.
+
+$ pnpm exec turbo run build --filter=@aster/playback
+Tasks: 5 successful, 5 total
+Cached: 0 cached, 5 total
+Time: 7.208s
+
+$ node --test ./services/playback/dist/test/create-session.test.js
+tests 6
+pass 6
+fail 0
+duration_ms 2080.607448
+
+$ node --test ./apps/web/test/playback-state.test.ts
+tests 10
+pass 10
+fail 0
+duration_ms 411.013767
+
+Authoritative source gate and audit
+-----------------------------------
+$ pnpm check
+Tasks: 73 successful, 73 total
+Cached: 5 cached, 73 total
+Time: 1m47.705s
+
+$ pnpm audit --audit-level=high
+1 vulnerabilities found
+Severity: 1 moderate
+Exit: 0
+
+Docker preflight diagnostic
+---------------------------
+Docker Desktop was initially stopped. Starting it did not yield a healthy
+engine. Docker context verification stopped at the daemon ping before Compose:
+
+ERROR: request returned Internal Server Error for API route and version
+http://%2Fvar%2Frun%2Fdocker.sock/_ping, check if the server supports the
+requested API version
+
+Docker Desktop displayed:
+
+running services: running services: running OTel manager: removing stale
+socket: remove
+C:\Users\andre\AppData\Local\Docker\run\userAnalyticsOtlpHttp.sock: The file
+cannot be accessed by the system.
+
+The owner selected Exit. Read-only follow-up found Docker Desktop stopped and
+the zero-byte socket still present with timestamp 2026-08-31 11:34:28. No
+factory reset, socket removal, Compose startup, container, network, volume, or
+project cleanup command was attempted.
+
+Remaining acceptance
+--------------------
+- healthy local Docker context verification;
+- anonymous playable Compose startup under a unique project name;
+- existing real browser journey;
+- replay-safe seed and generated-media reuse;
+- inspected project-scoped cleanup and zero owned residue;
+- verification note, protected review, merge, and exact-main acceptance.

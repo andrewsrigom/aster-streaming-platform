@@ -1209,10 +1209,38 @@ and the aggregate gate. Both initial discussions are resolved. Confirmation
 review `5089816369` found only that the raw transcript placed the corrected gate
 before the retained initial gate. The transcript is reordered chronologically;
 no executable source or public boundary changes, so the recorded stopping rule
-does not require another review round. Final exact-head protected acceptance,
-merge, and exact-main verification remain.
+does not require another review round.
+
+Final head `903f50ea5ab50f1600fbfb2b143a838774ad3235`, tree
+`3e905ea5d3c18de426918125fbc6dbb0de310bd7`, passed protected workflow
+`33633680649` on attempt 2 after attempt 1's isolated Docker-information
+timeout. Every review discussion is resolved. PR65 squash main
+`2b6054a6ff30b24e635b2aae830850455cdcc8b6` retains the exact reviewed tree,
+and exact-main workflow `33636042474` passed every applicable job. Item74 and
+P14-R17 are verified.
+
+## P14-R18 — Fresh-reader reference acceptance
+
+Status: **in progress**
+
+Fresh clone `/tmp/aster-reference-reader-20260902` checks out exact PR65 squash
+main `2b6054a` from the public remote without inherited repository output. The
+README bootstrap passes with Node.js `24.19.0`, pnpm `11.24.0`, a frozen install
+that reuses all 480 packages, and the exact toolchain check.
+
+The public capability index reaches the Playback requirement, representative
+service and Web source, adverse tests, release evidence, and operations guide.
+Playback application and Web-state checks pass 16/16. The complete source gate
+passes 73/73 tasks in `1m47.705s`; the high-severity dependency audit exits zero
+with one moderate finding.
+
+Docker Desktop fails before Compose startup while removing its stale local
+analytics socket. The owner closed Docker; no reset or socket removal was
+attempted, and no disposable Compose project started. The browser journey,
+replay, exact cleanup, verification note, protected review, merge, and exact-
+main acceptance remain. The exact partial transcript is retained in
+[`p14-r18-reference-acceptance.txt`](./p14-r18-reference-acceptance.txt).
 
 ## Planned evidence
 
-- P14-R17 examples and reading-path verification
-- P14-R18 fresh-checkout and Docker reference verification
+- P14-R18 Docker/browser/replay/cleanup acceptance and protected release
