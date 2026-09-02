@@ -11,11 +11,9 @@ reference track P14-R13–R18 is active under ADR-0048. Hosted P14-R01–R12 rem
 planned and requires explicit owner authorization for providers, credentials,
 paid resources, and public endpoints.
 
-Items69/P14-R14,70/P14-R15,71/P14-R16, and72/P14-R16 are verified. Item73/
-P14-R16 is the sole `IN_PROGRESS` item on
-`refactor/router-web-tooling-readability`, worktree
-`/tmp/aster-readability-router-web-tooling`, from exact PR63 squash main
-`f7b0aad`.
+Items69/P14-R14,70/P14-R15, and71–73/P14-R16 are verified. Item74/P14-R17
+is the sole `IN_PROGRESS` item on `docs/core-journey-reading-paths`, worktree
+`/tmp/aster-core-journey-reading-paths`, from exact PR64 squash main `5be75bd`.
 
 ## Verified
 
@@ -39,6 +37,10 @@ P14-R16 is the sole `IN_PROGRESS` item on
   `33619298315`; its sole review discussion is resolved and the corrected-head
   confirmation is clean. PR63 squash main `f7b0aad` retains the exact tree, and
   exact-main workflow `33620771727` passed every applicable job.
+- Item73 final head `90efa2b`, tree `455857a`, passed protected workflow
+  `33625208487`; its sole review discussion is resolved and corrected-head
+  confirmation is clean. PR64 squash main `5be75bd` retains the exact tree, and
+  exact-main workflow `33626869266` passed every applicable job.
 
 The authoritative Phase14 chronology is in
 [`evidence/phase-14/README.md`](../evidence/phase-14/README.md). No hosted
@@ -46,28 +48,32 @@ deployment, production capacity, or broader media rights are claimed.
 
 ## Current work
 
-Item73 closes only the Router demand-analysis, Web player-session, and
-repository quality-gate lifecycle findings. Router now names policy validation,
-demand rejection, list detection/sizing, bounded metric accounting, recursive
-selection cost, and intermediate expansion/cost phases. Web names playback
-controls, adapter/progress ownership, one-request session admission, GraphQL
-result translation, local telemetry, recovery, and client disposal. Tooling
-names child-process spawning, one-time settlement, hard timeout, graceful
-termination, forced termination, and final-exit timers.
+Item74 closes only `journey-comments-examples`. The new core-journey guide
+connects all eight required journeys to their requirement, representative
+source, adverse test, evidence, operations, and a bounded executable check.
+Repository entry points link the guide. The two ambiguous Web storage comments
+now state the safe-default and non-authoritative persistence rationale; the
+other representative comments already state invariants or observer boundaries.
 
-The work is behavior-preserving. Router demand characterization passes 8/8
-before and after implementation; complete Router tests pass 26/26. Quality-gate
-lifecycle characterization passes 8/8 before and after. Web source tests pass
-119/119 before and after, and strict typecheck passes. Changed-file lint,
-Prettier, and architecture validation pass. The affected-scope candidate gate
-passes 46/46 tasks with zero cached tasks in 1m22.659s. The local Docker daemon
-did not become available, so no local browser pass is claimed. Exact source
-`4013545`, tree `f8398bb`, repeats the candidate gate 46/46 with 34 cached tasks
-in 38.962 seconds. PR64 initial review discussion `3913611638` found only stale
-resume prose that still asked the next agent to commit the already-completed
-evidence checkpoint. This correction changes repository memory and evidence
-only. Corrected exact-head protected acceptance, confirmation, merge, and
-exact-main verification remain.
+All eight documented examples pass 178 focused tests in total. Documentation
+tests pass 37/37 and validation covers 252 documents, 2,955 headings, 1,796
+links, four status claims, and eleven capability rows with zero violations. Web
+source tests pass 119/119 before and after. Repository-memory tests pass 13/13;
+ESLint, Prettier, architecture validation, and the affected-scope candidate
+gate pass. The gate completes 16/16 tasks with one cached task in 47.823
+seconds. Initial exact source `1402157`, tree `176c757`, repeats the gate 16/16
+with six cached tasks in 37.612 seconds. Corrected exact source `a43247b`, tree
+`561ff0e`, passes 16/16 with twelve cached tasks in 1.949 seconds. Initial review
+discussions `3914109519` and
+`3914109534` found that the playback check omitted its client-disposal test and
+the GraphQL check omitted runtime, limiter, batching, and query-count proofs.
+Both commands and paths now cover those boundaries. Evidence head `0e10a85`,
+tree `1bf3362`, passed protected workflow `33631634720`; both initial
+discussions are resolved. Confirmation review `5089816369` found only that the
+raw transcript placed the corrected gate before the retained initial gate. The
+transcript is now chronological. This is documentation and comment alignment
+only; final exact-head protected acceptance, merge, and exact-main verification
+remain. No additional review round is required by the recorded stopping rule.
 
 ## Ordered reference-quality runway
 
@@ -77,8 +83,9 @@ exact-main verification remain.
 4. item71 — P14-R16 Catalog and Playback reading slices: verified;
 5. item72 — P14-R16 Identity, Engagement, and Discovery reading slices:
    verified;
-6. item73 — P14-R16 Router, Web, and tooling reading slices: active;
-7. item74 — P14-R17 rationale comments, executable examples, and reading paths;
+6. item73 — P14-R16 Router, Web, and tooling reading slices: verified;
+7. item74 — P14-R17 rationale comments, executable examples, and reading paths:
+   active;
 8. item75 — P14-R18 fresh-checkout and Docker reference acceptance.
 
 The exact queue and activation states live in
@@ -104,9 +111,8 @@ commercial-catalog claims.
 
 ## Not implemented
 
-- P14-R16 is not verified until all owner and cross-cutting slices in items71–73
-  pass their protected and exact-main gates.
-- P14-R17 journey examples and final rationale-comment alignment are planned.
+- P14-R17 is not verified until the eight journey paths, executable examples,
+  rationale-comment audit, protected review, and exact-main gate pass.
 - P14-R18 fresh-reference acceptance is planned.
 - Hosted P14-R01–R12 remains planned and inactive.
 
@@ -116,27 +122,28 @@ Use WSL Git and Node.js24.19.0/pnpm11.24.0 from
 `/mnt/c/Users/andre/.cache/aster-node-24.19.0`. Never use a branch beginning
 with `codex/`.
 
-Item73 changes private names and local control-flow structure only. Repeat the
-linked Router, Web player, and quality-gate characterization. Existing broader
-PostgreSQL, Redis, broker, media, and Docker evidence remains applicable unless
-the refactor changes GraphQL demand math, session creation or cancellation,
-player recovery/accessibility, process-tree termination, telemetry shape, or
-other measured behavior. Preserve retained data, media, unrelated Docker
-projects, credentials, and host processes.
+Item74 changes documentation and, when needed, comment text only. Run the eight
+documented bounded checks, documentation/repository-memory checks, formatting,
+and the affected-scope gate. Existing PostgreSQL, Redis, broker, media, browser,
+and Docker evidence remains applicable because executable behavior is not
+changing. Preserve retained data, media, unrelated Docker projects,
+credentials, and host processes.
 
 ## Current risks
 
-- Generic renames can accidentally hide or change authorization, rights,
-  cancellation, idempotency, retry, or uncertain-commit behavior.
-- A broad cleanup can invalidate useful evidence and make review harder.
-- Formatting churn can obscure the actual naming or flow improvement.
+- A reading path can imply behavior or rights that its linked evidence does not
+  prove.
+- An example can look safe to replay when it is historical or rights-dependent.
+- Excess comments can narrate syntax and make the important invariants harder
+  to find.
 - Reference-track status can be mistaken for hosted release status.
 
-The guardrails require owner-scoped slices, characterization first, formatter-
-owned whitespace, and explicit preserved behavior.
+The guardrails require current links, synthetic bounded checks, explicit rights
+warnings, rationale-only comments, and no runtime change.
 
 ## Next outcome
 
-Complete item73/P14-R16: characterize and refactor the selected Router, Web, and
-repository-tooling slices, pass focused and affected-scope gates, complete one
-review and one confirmation, merge, and verify exact main.
+Complete item74/P14-R17: publish the eight core-journey reading paths, execute
+their bounded examples, align the selected rationale comments, pass focused and
+affected-scope gates, complete one review and one confirmation, merge, and
+verify exact main.

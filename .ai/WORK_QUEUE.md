@@ -93,8 +93,8 @@ The latest release is Phase13:
 | 70 | Define readability guardrails and a bounded prioritized findings inventory | P14-R15 | DONE |
 | 71 | Refactor representative Catalog and Playback reading slices | P14-R16 | DONE |
 | 72 | Refactor representative Identity, Engagement and Discovery reading slices | P14-R16 | DONE |
-| 73 | Refactor representative Router, Web and repository-tooling reading slices | P14-R16 | IN_PROGRESS |
-| 74 | Align rationale comments, executable examples and core-journey reading paths | P14-R17 | READY |
+| 73 | Refactor representative Router, Web and repository-tooling reading slices | P14-R16 | DONE |
+| 74 | Align rationale comments, executable examples and core-journey reading paths | P14-R17 | IN_PROGRESS |
 | 75 | Run fresh-checkout/Docker acceptance and verify the reference track | P14-R18 | READY |
 
 ## Item68 — verified
@@ -218,7 +218,7 @@ PR63 final head `7d573a6`, tree `18c0931`, passed protected workflow
 confirmation is clean. PR63 squash main `f7b0aad` retains the exact tree, and
 exact-main workflow `33620771727` passed every applicable job.
 
-## Item73 — active
+## Item73 — verified
 
 ### Outcome
 
@@ -237,6 +237,53 @@ names and visible phases while preserving all public behavior.
 - Linked characterization tests and the affected-scope candidate gate pass.
 - No public contract, schema, event, persistence, cache, media, telemetry, or
   deployment change is introduced.
+
+PR64 final head `90efa2b`, tree `455857a`, passed protected workflow
+`33625208487`; its sole review discussion is resolved and corrected-head
+confirmation is clean. PR64 squash main `5be75bd` retains the exact tree, and
+exact-main workflow `33626869266` passed every applicable job.
+
+## Item74 — active
+
+### Outcome
+
+Give a reader one compact route through the eight core journeys and one bounded
+executable check for each while keeping source comments rare and rationale-led.
+
+### Acceptance
+
+- Public browse, rights-safe publication, playback, profile progress, Discovery
+  degradation, GraphQL admission, dependency recovery, and telemetry-led
+  diagnosis each link requirement, representative source, adverse test,
+  evidence, and operations.
+- Every documented example is credential-free, bounded, synthetic, and run
+  successfully from the repository root.
+- Rights-dependent or historical Catalog examples are explicitly distinguished
+  from safe checks and are not presented as replayable publication commands.
+- Representative source comments explain rationale, invariants, unusual failure
+  behavior, or external constraints instead of narrating syntax.
+- Documentation, focused source, repository-memory, formatting, and
+  affected-scope gates pass without a runtime or public-contract change.
+
+The eight executable examples pass 178 focused tests in total. Web source
+tests pass 119/119 before and after comment alignment. Documentation validation
+covers 252 documents and 1,796 links with zero violations; documentation and
+repository-memory tests pass 37/37 and 13/13. The affected-scope candidate gate
+passes 16/16 tasks with one cached task in 47.823 seconds. Initial exact source
+`1402157`, tree `176c757`, repeats the gate 16/16 with six cached tasks in
+37.612 seconds. Corrected exact source `a43247b`, tree `561ff0e`, passes 16/16
+with twelve cached tasks in 1.949 seconds. Protected review, merge, and
+exact-main verification remain.
+
+Initial review discussions `3914109519` and `3914109534` found two proof-path
+gaps. Playback now runs its client-disposal source test, and GraphQL admission
+now links and executes runtime policy, identity-aware limiting, request-scoped
+batching, and query-count proofs. The corrected-source gate passes; protected
+workflow `33631634720` passes on evidence head `0e10a85`, tree `1bf3362`, and
+both discussions are resolved. Confirmation review `5089816369` found only a
+non-chronological raw transcript. The transcript is reordered without changing
+an executable or public boundary. Final exact-head protected acceptance, merge,
+and exact-main verification remain; the recorded review stopping rule is met.
 
 ## Items72–74 — scoped implementation work
 

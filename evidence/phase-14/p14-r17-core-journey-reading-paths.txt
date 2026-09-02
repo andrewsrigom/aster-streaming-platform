@@ -1,0 +1,205 @@
+P14-R17 core-journey reading-path evidence
+Date: 2026-09-02
+Environment: WSL Ubuntu 20.04; Node.js 24.19.0; pnpm 11.24.0
+Base: 5be75bd1e974131a143278f16aa432208f6014c9
+
+INSTALL
+
+$ pnpm install --offline --frozen-lockfile
+Scope: all 18 workspace projects
+Lockfile is up to date, resolution step is skipped
+Packages: +480
+Progress: resolved 480, reused 480, downloaded 0, added 480, done
+Done in 1.8s using pnpm v11.24.0
+EXIT 0
+
+An initial invocation accidentally ran in the Windows shell with Node.js
+20.11.1 and failed before touching repository state. The command was repeated
+inside the required WSL/pinned environment above.
+
+PRE-EDIT CHARACTERIZATION
+
+$ pnpm docs:test
+tests 37; pass 37; fail 0
+EXIT 0
+
+$ pnpm docs:check
+{"check":"documentation","status":"ok","documents":251,"headings":2943,"links":1706,"statusClaims":4,"violations":0}
+{"check":"capability-index","status":"ok","rows":11,"violations":0}
+EXIT 0
+
+$ pnpm --filter @aster/web test
+tests 119; pass 119; fail 0
+EXIT 0
+
+DOCUMENTED EXAMPLES
+
+$ node --test ./apps/web/test/public-data.test.ts ./apps/web/test/discovery-data.test.ts
+tests 17; pass 17; fail 0
+EXIT 0
+
+$ pnpm exec turbo run build --filter=@aster/catalog
+Tasks: 9 successful, 9 total
+$ node --test ./services/catalog/dist/test/catalog-workflow.test.js ./services/catalog/dist/test/publication-rollback.test.js
+tests 14; pass 14; fail 0
+EXIT 0
+
+$ pnpm exec turbo run build --filter=@aster/playback
+Tasks: 5 successful, 5 total
+$ node --test ./services/playback/dist/test/create-session.test.js
+tests 6; pass 6; fail 0
+$ node --test ./apps/web/test/playback-state.test.ts
+tests 10; pass 10; fail 0
+EXIT 0
+
+$ pnpm exec turbo run build --filter=@aster/engagement
+Tasks: 8 successful, 8 total
+$ node --test ./services/engagement/dist/test/record-progress.test.js
+tests 18; pass 18; fail 0
+EXIT 0
+
+$ pnpm exec turbo run build --filter=@aster/discovery
+Tasks: 8 successful, 8 total; 7 cached
+$ node --test ./services/discovery/dist/test/home-rails.test.js ./services/discovery/dist/test/home-cache.test.js
+tests 18; pass 18; fail 0
+EXIT 0
+
+$ pnpm exec turbo run build --filter=@aster/router
+Tasks: 15 successful, 15 total; 11 cached
+$ node --test ./apps/router/dist/test/demand.test.js ./services/identity/dist/test/profile-operation-limiter.test.js ./services/catalog/dist/test/catalog-subgraph.test.js
+tests 23; pass 23; fail 0
+$ node --test ./tools/verify-router-runtime.test.mjs ./tools/graphql-query-count-proof.test.mjs
+tests 11; pass 11; fail 0
+EXIT 0
+
+$ pnpm exec turbo run build --filter=@aster/runtime
+Tasks: 1 successful, 1 total; 1 cached
+$ node --test ./packages/runtime/dist/test/safe-read.test.js ./packages/runtime/dist/test/circuit-breaker.test.js
+tests 17; pass 17; fail 0
+$ pnpm failure-lab:test
+tests 11; pass 11; fail 0
+EXIT 0
+
+$ pnpm exec turbo run build --filter=@aster/telemetry
+Tasks: 1 successful, 1 total; 1 cached
+$ node --test ./packages/telemetry/dist/test/telemetry-contract.test.js
+tests 19; pass 19; fail 0
+$ pnpm diagnostics:test
+tests 14; pass 14; fail 0
+EXIT 0
+
+All eight journey examples: 178 focused tests; pass 178; fail 0.
+
+POST-EDIT FOCUSED AND STATIC CHECKS
+
+The first documentation validation exposed five incorrect generated anchors for
+USER_JOURNEYS headings. No source or runtime check failed. The anchors were
+corrected and the complete validation was repeated:
+
+$ pnpm docs:check
+{"check":"documentation","status":"ok","documents":252,"headings":2954,"links":1788,"statusClaims":4,"violations":0}
+{"check":"capability-index","status":"ok","rows":11,"violations":0}
+EXIT 0
+
+$ pnpm docs:test
+tests 37; pass 37; fail 0
+EXIT 0
+
+$ pnpm --filter @aster/web test
+tests 119; pass 119; fail 0
+EXIT 0
+
+$ pnpm ai:check
+{"check":"ai-state","status":"ok","files":10,"queueItems":75,"sessionEntries":68,"activeRequirement":"P14-R17","targetRequirement":"P14-R17","violations":[]}
+EXIT 0
+
+INITIAL EXACT COMMITTED-SOURCE GATE
+
+Source: 140215764afdf88d11ceb05f92dcd6b0d7c218d5
+Tree: 176c757133fe7c63a5d682770259e05a61474dae
+
+$ pnpm check:changed
+Tasks: 16 successful, 16 total
+Cached: 6 cached, 16 total
+Time: 37.612s
+EXIT 0
+
+$ pnpm ai:test
+tests 13; pass 13; fail 0
+EXIT 0
+
+$ pnpm exec eslint apps/web/features/playback/player.tsx
+EXIT 0
+
+$ pnpm exec prettier --check <all changed files>
+All matched files use Prettier code style!
+EXIT 0
+
+$ pnpm architecture:check
+{"check":"architecture","status":"ok","violations":0}
+EXIT 0
+
+CANDIDATE GATE
+
+$ pnpm check:changed
+Tasks: 16 successful, 16 total
+Cached: 1 cached, 16 total
+Time: 47.823s
+EXIT 0
+
+No executable statement, public contract, rights workflow, adapter, runtime,
+media, browser interaction, telemetry shape, dependency, or deployment behavior
+changed. No heavyweight experiment was repeated.
+
+FINAL DOCUMENT/MEMORY CHECK AFTER EVIDENCE UPDATE
+
+$ pnpm docs:check
+{"check":"documentation","status":"ok","documents":252,"headings":2955,"links":1789,"statusClaims":4,"violations":0}
+{"check":"capability-index","status":"ok","rows":11,"violations":0}
+EXIT 0
+
+$ pnpm ai:check
+{"check":"ai-state","status":"ok","files":10,"queueItems":75,"sessionEntries":68,"activeRequirement":"P14-R17","targetRequirement":"P14-R17","violations":[]}
+EXIT 0
+
+INITIAL REVIEW REMEDIATION
+
+Discussion 3914109519: the playback path cited client disposal but did not run
+its credential-free source test. The command now runs playback-state.test.ts;
+its 10 tests pass.
+
+Discussion 3914109534: P13-R06/R07 were linked without their runtime,
+identity-aware limiter, request-scoped batching, and query-count proofs. The
+path now links those sources/tests and executes 23 compiled owner/Router tests
+plus 11 tooling policy/query-count tests; all 34 pass.
+
+$ pnpm docs:check
+{"check":"documentation","status":"ok","documents":252,"headings":2955,"links":1796,"statusClaims":4,"violations":0}
+{"check":"capability-index","status":"ok","rows":11,"violations":0}
+EXIT 0
+
+REVIEW REMEDIATION EXACT-SOURCE GATE
+
+Source: a43247b72dea5e8328b614d8420da06905283c33
+Tree: 561ff0ee911ed5552823ff96934dfdc14a780b99
+
+$ pnpm check:changed
+Tasks: 16 successful, 16 total
+Cached: 12 cached, 16 total
+Time: 1.949s
+EXIT 0
+
+EVIDENCE CHECKPOINT AND PROTECTED ACCEPTANCE
+
+Head: 0e10a85ef8d8b1f1d00771f98afff4a0b7471bd1
+Tree: 1bf3362fa0a482a8619c9a7654270e1167f0fdc4
+Protected workflow: 33631634720
+Result: all applicable jobs passed, including source quality and integrations,
+Docker-only playable demo, documentation/security, Local platform, dependency
+review, and the aggregate gate.
+
+Both initial review discussions are resolved. Confirmation review 5089816369
+found only that this transcript placed the corrected-source gate before the
+retained initial-source gate. The blocks are now chronological. No executable
+source or public boundary changed, so no additional review round is required by
+the recorded stopping rule.

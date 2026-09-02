@@ -4,6 +4,58 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-02 — Router/Web/tooling readability verified and item74 activated
+
+### Completed
+
+- Item73 correction head `90efa2b`, tree `455857a`, passed protected workflow
+  `33625208487`; discussion `3913611638` is resolved and corrected-head
+  confirmation is clean.
+- PR64 squash main `5be75bd` retains the exact tree; exact-main workflow
+  `33626869266` passed every applicable job. Item73/P14-R16 is `DONE`.
+- Activated item74/P14-R17 on `docs/core-journey-reading-paths` from exact main.
+- Scoped the work to eight core-journey paths, bounded executable checks, and
+  rationale-comment alignment without executable or public-contract changes.
+- Restored the required phase, linked documentation, examples, representative
+  comments, and test-command context.
+- Added the eight journey paths and linked repository entry points. Clarified
+  the two Web storage comments; no executable statement changed.
+- All eight examples pass 178 focused tests. Web source tests pass 119/119
+  before and after.
+- Documentation tests pass 37/37; validation covers 252 documents, 2,955
+  headings, 1,796 links, four status claims, and eleven capability rows with
+  zero violations. Repository-memory tests pass 13/13.
+- ESLint, Prettier, architecture validation, and the affected-scope candidate
+  gate pass. The gate completes 16/16 tasks with one cached task in 47.823
+  seconds.
+- Initial exact source `1402157`, tree `176c757`, repeats the gate 16/16 with
+  six cached tasks in 37.612 seconds. Corrected exact source `a43247b`, tree
+  `561ff0e`, passes 16/16 with twelve cached tasks in 1.949 seconds.
+- Initial review discussions `3914109519` and `3914109534` found that playback
+  omitted its client-disposal check and GraphQL admission omitted runtime,
+  limiter, batching, and query-count proofs. Both paths and commands are
+  corrected; the added checks pass 10/10 Web and 26/26 GraphQL tests.
+- Evidence head `0e10a85`, tree `1bf3362`, passes protected workflow
+  `33631634720`; both initial discussions are resolved. Confirmation review
+  `5089816369` found only that the raw transcript placed the corrected gate
+  before the retained initial gate. The transcript is reordered
+  chronologically without changing an executable or public boundary.
+
+### Evidence
+
+- Protected PR64 run: `33625208487`.
+- Merge: `5be75bd1e974131a143278f16aa432208f6014c9`, tree
+  `455857aac0b2b48978dbb2931b890cd5413914e3`.
+- Exact-main run: `33626869266`.
+- Item74 command transcript:
+  `evidence/phase-14/p14-r17-core-journey-reading-paths.txt`.
+
+### Next action
+
+Commit and publish the transcript-order correction, resolve discussion
+`3914251790`, require final exact-head protected acceptance, then merge and
+verify exact main. Do not request another review round under the stopping rule.
+
 ## 2026-09-02 — Identity/Engagement/Discovery readability verified and item73 activated
 
 ### Completed

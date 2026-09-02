@@ -1144,8 +1144,75 @@ resume prose that still asked the next agent to commit the already-completed
 evidence checkpoint. The correction updates repository memory and this evidence
 only; product source and local acceptance remain unchanged.
 
+Corrected PR64 head `90efa2b0a94a5ce6c07e0724ab462ff47dbe3d5f`, tree
+`455857aac0b2b48978dbb2931b890cd5413914e3`, passed protected workflow
+`33625208487`. Discussion `3913611638` is resolved and corrected-head
+confirmation is clean. PR64 squash main
+`5be75bd1e974131a143278f16aa432208f6014c9` retains the exact reviewed tree;
+exact-main workflow `33626869266` passed every applicable job. Item73 is
+verified.
+
+### P14-R17 core-journey reading-path activation
+
+Item74 is active on `docs/core-journey-reading-paths` from exact PR64 squash
+main `5be75bd`. Its bounded scope is one guide covering the eight required
+journeys, credential-free executable checks, entry-point links, and rationale-
+comment alignment. No product behavior, public contract, rights, data,
+telemetry, dependency, runtime, or deployment change is authorized.
+
+### P14-R17 core-journey iteration evidence
+
+Environment: WSL Ubuntu 20.04 with pinned Node.js 24.19.0 and pnpm 11.24.0. The
+offline frozen install reused all 480 packages and downloaded zero packages.
+
+The guide connects public browse, rights-safe publication, playback, profile
+progress, Discovery degradation, GraphQL admission, dependency recovery, and
+telemetry-led diagnosis to requirement, representative source, adverse test,
+evidence, operations, and a bounded command. All eight commands pass 178
+focused tests in total. They use synthetic fixtures and require no credentials,
+Docker, external media, or hosted state. The guide explicitly keeps the
+unresolved draft non-publishable and historical media/publication payloads
+non-replayable.
+
+Web source tests pass 119/119 before and after the two comment clarifications.
+Documentation tests pass 37/37. Documentation validation covers 252 documents,
+2,955 headings, 1,796 links, four status claims, and eleven capability rows with
+zero violations. Repository-memory tests pass 13/13. Changed-file ESLint,
+Prettier, architecture validation, and the affected-scope candidate gate pass.
+The gate completes 16/16 tasks with one cached task in 47.823 seconds.
+Initial exact source `140215764afdf88d11ceb05f92dcd6b0d7c218d5`, tree
+`176c757133fe7c63a5d682770259e05a61474dae`, repeats the gate 16/16 with six
+cached tasks in 37.612 seconds. Corrected exact source
+`a43247b72dea5e8328b614d8420da06905283c33`, tree
+`561ff0ee911ed5552823ff96934dfdc14a780b99`, passes 16/16 with twelve cached
+tasks in 1.949 seconds.
+
+Exact commands and results are retained in
+[`p14-r17-core-journey-reading-paths.txt`](./p14-r17-core-journey-reading-paths.txt).
+No heavyweight evidence is repeated because no executable statement, public
+contract, rights workflow, adapter, runtime, media, browser interaction,
+telemetry shape, dependency, or deployment behavior changed.
+
+Initial review discussions `3914109519` and `3914109534` found two real proof-
+path gaps: playback cited client disposal but did not execute its source test,
+and GraphQL admission linked P13-R06/R07 without navigating or running their
+runtime, limiter, batching, and query-count proofs. The remediation adds those
+links and commands. The added Web test passes 10/10; the expanded GraphQL checks
+pass 26/26 beyond the existing eight demand tests. No executable source changed.
+The corrected exact-source gate passes 16/16.
+
+Evidence head `0e10a85ef8d8b1f1d00771f98afff4a0b7471bd1`, tree
+`1bf3362fa0a482a8619c9a7654270e1167f0fdc4`, passes protected workflow
+`33631634720`, including dependency review, documentation/security, source
+quality and real integrations, the Docker-only playable demo, Local platform,
+and the aggregate gate. Both initial discussions are resolved. Confirmation
+review `5089816369` found only that the raw transcript placed the corrected gate
+before the retained initial gate. The transcript is reordered chronologically;
+no executable source or public boundary changes, so the recorded stopping rule
+does not require another review round. Final exact-head protected acceptance,
+merge, and exact-main verification remain.
+
 ## Planned evidence
 
-- P14-R16 remaining owner-scoped refactoring characterization
 - P14-R17 examples and reading-path verification
 - P14-R18 fresh-checkout and Docker reference verification

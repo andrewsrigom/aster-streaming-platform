@@ -2,73 +2,78 @@
 
 ## Resume point
 
-Phases00–13 and items68–72 are verified. PR63 final head `7d573a6`, tree
-`18c0931`, passed protected workflow `33619298315`; its sole review discussion
-is resolved and corrected-head confirmation is clean. PR63 squash main
-`f7b0aad` retains the exact tree, and exact-main workflow `33620771727` passed.
+Phases00–13 and items68–73 are verified. PR64 final head `90efa2b`, tree
+`455857a`, passed protected workflow `33625208487`; its sole review discussion
+is resolved and corrected-head confirmation is clean. PR64 squash main
+`5be75bd` retains the exact tree, and exact-main workflow `33626869266` passed.
 
-Item73/P14-R16 is active on `refactor/router-web-tooling-readability`, worktree
-`/tmp/aster-readability-router-web-tooling`, from that exact main commit.
+Item74/P14-R17 is active on `docs/core-journey-reading-paths`, worktree
+`/tmp/aster-core-journey-reading-paths`, from that exact main commit.
 
 ## Active outcome
 
-Close only the `router-demand-analysis`, `web-player-session-flow`, and
-`quality-gate-lifecycle` findings:
+Close only `journey-comments-examples`:
 
-- name Router demand rejection, policy validation, list detection, bounded
-  metric accounting, and recursive selection-cost phases;
-- name Web player-control ownership, session-request state, GraphQL result
-  translation, telemetry, recovery, and stale-player prevention;
-- name quality-gate child-process spawning, one-time settlement, timeout,
-  graceful signal propagation, and forced termination;
-- preserve every public contract, limit, policy, session, accessibility,
-  telemetry, timeout, signal, exit-status, and cleanup behavior.
+- connect the eight P14-R17 journeys to requirement, source, adverse test,
+  evidence, operations, and a bounded executable check;
+- keep examples synthetic, credential-free, and safe from the repository root;
+- distinguish the unresolved Catalog draft and historical media/publication
+  payloads from replayable checks;
+- clarify only comments whose rationale or unusual failure behavior is hidden;
+- preserve every product, contract, rights, data, telemetry, dependency,
+  runtime, and deployment behavior.
 
 ## Work completed locally
 
-- Verified item72 through protected PR, clean confirmation, exact-tree squash,
+- Verified item73 through protected PR, clean confirmation, exact-tree squash,
   and successful exact-main acceptance.
-- Restored the required Phase14, linked requirement, ADR, skill, source, and
-  characterization-test context.
-- Activated item73 and recorded its boundaries, failure modes, gates, repeat
+- Restored the required Phase14, documentation, source-comment, example, and
+  test context.
+- Activated item74 and recorded its boundaries, failure modes, gates, repeat
   triggers, and review stopping rule.
-- The pre-edit and post-edit Router demand tests pass 8/8, quality-gate tests
-  pass 8/8, Web source tests pass 119/119, and Web strict typecheck passes.
-- Router now names demand admission phases; Web names player/session ownership
-  and explicit result/recovery phases; tooling names process settlement and the
-  graceful-to-forced termination lifecycle.
-- Complete Router tests pass 26/26. Changed-file lint/format and architecture
-  validation pass.
-- The affected-scope candidate gate passes 46/46 tasks with zero cached tasks
-  in 1m22.659s.
-- Exact source `4013545`, tree `f8398bb`, repeats the candidate gate 46/46 with
-  34 cached tasks in 38.962 seconds.
-- Local Docker Desktop started but its daemon/WSL integration did not become
-  ready. No local browser pass is claimed; protected acceptance must provide it.
-- PR64 initial review discussion `3913611638` found that the handoff, current
-  state, and session log still asked the next agent to commit the
-  already-completed evidence checkpoint. This correction changes only resume
-  prose and evidence.
+- Added the eight core-journey paths and linked them from the README,
+  documentation map, capability index, and complete file inventory.
+- Clarified the two Web storage comments; no executable statement changed.
+- All eight documented examples pass 178 focused tests in total. Web source
+  tests pass 119/119 before and after.
+- Documentation tests pass 37/37; documentation validation covers 252
+  documents, 2,955 headings, 1,796 links, four status claims, and eleven
+  capability rows with zero violations. Repository-memory tests pass 13/13.
+- ESLint, Prettier, architecture validation, and the affected-scope candidate
+  gate pass. The gate completes 16/16 tasks with one cached task in 47.823
+  seconds.
+- Initial exact source `1402157`, tree `176c757`, repeats the gate 16/16 with
+  six cached tasks in 37.612 seconds. Corrected exact source `a43247b`, tree
+  `561ff0e`, passes 16/16 with twelve cached tasks in 1.949 seconds.
+- Initial review discussions `3914109519` and `3914109534` found that playback
+  omitted its client-disposal check and GraphQL admission omitted runtime,
+  limiter, batching, and query-count proofs. Both reading paths and commands are
+  corrected, and the added checks pass 10/10 Web and 26/26 GraphQL tests.
+- Evidence head `0e10a85`, tree `1bf3362`, passes protected workflow
+  `33631634720`; both initial discussions are resolved. Confirmation review
+  `5089816369` found only a non-chronological transcript. The transcript is now
+  chronological; the correction changes no executable or public boundary.
 
 ## Exact next actions
 
-1. Require corrected exact-head browser/Docker-capable protected acceptance and
-   one confirmation.
-2. Resolve discussion `3913611638`, merge, and verify exact main.
+1. Commit and publish the transcript-order correction, then resolve discussion
+   `3914251790`.
+2. Require final exact-head protected acceptance, merge, and verify exact main;
+   do not request another review round.
 
 ## Execution boundary
 
 Use WSL Git and pinned Node.js24.19.0/pnpm11.24.0. Never use a `codex/` branch.
-Do not create providers, credentials, paid resources, public endpoints, new
-media-rights claims, public contracts, schemas, events, or abstractions.
+Do not create providers, credentials, paid resources, public endpoints, media-
+rights claims, public contracts, schemas, events, or abstractions.
 
 ## Heavyweight evidence
 
-Repeat the linked browser playback characterization because the selected Web
-source changes. Do not repeat unrelated PostgreSQL, Redis, broker, media, or
-Docker evidence unless the refactor changes the behavior it measured.
+No heavyweight repeat is required for documentation and comment text. Repeat
+Docker, browser, PostgreSQL, Redis, broker, media, or telemetry experiments only
+if executable behavior or a measured boundary changes.
 
 ## Do not do yet
 
-Do not touch P14-R17 examples or reading paths. Newly noticed non-blocking
-readability issues return to the bounded inventory instead of widening item73.
+Do not start P14-R18 fresh-reference acceptance until item74 releases. Newly
+noticed unrelated readability issues return to the bounded inventory.
