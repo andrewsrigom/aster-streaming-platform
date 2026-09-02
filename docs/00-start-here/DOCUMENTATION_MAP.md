@@ -76,6 +76,8 @@
 
 ### Evaluate quality
 
+- [`docs/quality/CODE_READABILITY.md`](../quality/CODE_READABILITY.md) — reviewable naming,
+  control-flow, layout, comment, test, and example rules with the bounded Phase 14 inventory
 - `docs/quality/TESTING_STRATEGY.md`
 - `docs/quality/PERFORMANCE_AND_CAPACITY.md`
 - `docs/quality/SECURITY_AND_ACCESSIBILITY.md`
@@ -110,6 +112,7 @@
 | Measured performance | `evidence/` and experiment records |
 | Operational response | `docs/operations/` |
 | Capability-to-code navigation | `docs/00-start-here/CAPABILITY_INDEX.md` |
+| Code readability rules and active findings | `docs/quality/CODE_READABILITY.md` |
 | Engineering demonstration coverage | `docs/00-start-here/ENGINEERING_DEMONSTRATION.md` |
 | Remaining Phase 01 runtime design | `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` |
 | Branch, commit, CI, and GitHub controls | `docs/operations/REPOSITORY_GOVERNANCE.md` |

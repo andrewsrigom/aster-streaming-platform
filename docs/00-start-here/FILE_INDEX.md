@@ -232,6 +232,7 @@ This index lists repository governance artifacts and every Markdown source in th
 
 ## docs/quality
 
+- [`docs/quality/CODE_READABILITY.md`](../quality/CODE_READABILITY.md) — Code Readability Guardrails and Findings
 - [`docs/quality/EXPERIMENT_CATALOG.md`](../quality/EXPERIMENT_CATALOG.md) — Experiment Catalog
 - [`docs/quality/PERFORMANCE_AND_CAPACITY.md`](../quality/PERFORMANCE_AND_CAPACITY.md) — Performance and Capacity Validation
 - [`docs/quality/SECURITY_AND_ACCESSIBILITY.md`](../quality/SECURITY_AND_ACCESSIBILITY.md) — Security and Accessibility Verification

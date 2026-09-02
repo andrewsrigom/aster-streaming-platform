@@ -128,7 +128,7 @@ a new finding. All four PR58 review threads are resolved.
 
 ## P14-R14 — Capability-to-proof index
 
-Status: **implemented — protected acceptance pending**
+Status: **verified**
 
 Source commit `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
 `78742f48c2f939b9073f419aaded775be1e58876`, records:
@@ -882,6 +882,90 @@ pass29/29 and validation covers250 documents, 2,880 headings, 1,643 links, four
 status claims and eleven rows with zero violations. The affected gate passes
 15/15, including101 platform-policy,39 CI-policy and13 repository-memory tests.
 No product runtime or deployment behavior changed. Publication remains pending.
+
+## P14-R15 — Readability guardrails and inventory
+
+Status: **implemented**. Protected acceptance and confirmation review remain
+pending.
+
+Item70 starts on branch `docs/readability-guardrails` from PR60 squash main
+`b3f409b15ce9da2889850b693b033f69fbd312cd`, tree
+`f57a2e5d1f827498b9b96f039ce41517b49e20f4`.
+
+The draft `docs/quality/CODE_READABILITY.md` records:
+
+- the existing executable formatting, lint, type, unused-code, architecture,
+  and test baseline;
+- reviewable rules for domain names, visible control-flow phases, layout,
+  rationale comments, tests, examples, and bounded refactoring;
+- priority based on obscured ownership or failure behavior rather than file
+  length or personal style;
+- nine concrete findings across the five bounded contexts, Router, Web,
+  repository tooling, and reading guidance;
+- the exact characterization proof and follow-up item for every finding.
+
+Item70 changes documentation and repository memory only. No heavyweight runtime
+evidence is repeated because no executable source or CI classification changes.
+
+### Focused local evidence
+
+| Command | Result |
+|---|---|
+| `pnpm docs:check` | PASS — 251 documents, 2,901 headings, 1,703 links, four supported status claims, and eleven capability rows |
+| `pnpm docs:test` | PASS — 37/37 tests |
+| `pnpm ai:check` | PASS — 10 files, 75 queue items, 63 session entries, active/target P14-R15 |
+| `pnpm ai:test` | PASS — 13/13 tests |
+| Changed-file Prettier check | PASS |
+| `git diff --check` | PASS |
+| `pnpm check:changed` | PASS — 7/7 tasks, 0 cached |
+
+Source checkpoint `66db1ce173375e205e4fc74a0e28a04b23f430c8`, tree
+`754cc391bab7b3a850b95e4f0adc0ea904203427`, is the coherent local candidate.
+The changed-scope gate selected documentation, repository-memory, community,
+security, formatting, and pinned-toolchain checks. It did not select executable
+owner or platform runtime tasks because no executable source or CI
+classification changed.
+
+### Initial protected review
+
+Published checkpoint `1e40ce313ecfb0a8a6b9985b94398f7f52d09281` passed
+protected workflow `33601388742`. The initial review completed with two
+repository-memory findings:
+
+- `3911583429` identified an already-completed commit step in the handoff;
+- `3911583432` identified a composite maturity phrase outside the canonical
+  `planned`, `implemented`, `verified`, and `released` vocabulary.
+
+The correction makes the handoff resume from publication and records P14-R15
+as `implemented`, with protected acceptance and confirmation stated separately.
+Focused diff, formatting, repository-memory, and documentation checks pass. No
+executable behavior or heavyweight evidence changed.
+
+Confirmation review on corrected head `9fa6668bdba3182b8b59bdbe79e626e260cafde1`
+found one remaining truthfulness defect, `3911645670`: current-state prose still
+grouped implemented P14-R15 under `Not implemented`. The final correction gives
+implemented-but-not-verified work its own section. Protected workflow
+`33602069611` passed on that reviewed head; no executable behavior changed.
+
+Final correction source `6668421cca1ea8d7ffdcf260419c295b384befa8`
+passed protected workflow `33602708481`. All three PR61 discussions are
+resolved. The result checkpoint changes only this evidence and repository
+memory, so it does not invalidate the reviewed readability standard or require
+another review round under the recorded stopping rule.
+
+### P14-R14 merge boundary
+
+Final PR60 head `aef6c8d32ec77f867cb204247093079475292af3`, tree
+`f57a2e5d1f827498b9b96f039ce41517b49e20f4`, passed protected workflow
+`33596017500` on attempt 3. Every review discussion is resolved. PR60
+squash-merged as main `b3f409b15ce9da2889850b693b033f69fbd312cd`
+with the same tree.
+
+Exact-main workflow `33598493566` attempt 1 passed the completed source,
+documentation, and Local-platform setup/journey boundaries but timed out during
+the unchanged TraceQL diagnostic search. Its project-scoped cleanup step passed.
+Attempt 2 reran the failed path and passed Local platform plus the required
+aggregate. Item69/P14-R14 is verified.
 
 ## Planned evidence
 
