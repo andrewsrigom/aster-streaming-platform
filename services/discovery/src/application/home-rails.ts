@@ -61,7 +61,7 @@ export type HomeRailsResult = ProjectionStoreResult<
   | Readonly<{ status: "invalid_input" | "stale" }>
 >;
 
-function rail(
+function assembleHomeRail(
   kind: HomeRailKind,
   source: HomeRailSource,
   rows: readonly HomeRailRow[],
@@ -88,18 +88,20 @@ function rail(
   });
 }
 
-function code(result: ProjectionStoreResult<unknown>): Exclude<HomeRailCode, "fallback"> {
+function railSelectionFailureCode(
+  result: ProjectionStoreResult<unknown>,
+): Exclude<HomeRailCode, "fallback"> {
   return result.status === "completed" ? "unavailable" : result.status;
 }
 
-function fixedResult(
+function assembleFixedRailResult(
   result: ProjectionStoreResult<readonly HomeRailRow[]>,
   source: Exclude<HomeRailSource, "genre">,
   now: number,
   first: number,
 ): HomeRailResult {
   if (result.status !== "completed") {
-    return Object.freeze({ code: code(result), rail: null });
+    return Object.freeze({ code: railSelectionFailureCode(result), rail: null });
   }
   const rows = normalizeHomeRailRows(result.value, now, first);
   if (!rows) {
@@ -107,17 +109,20 @@ function fixedResult(
   }
   return Object.freeze({
     code: rows.length === 0 ? "empty" : "completed",
-    rail: rail(source, source, rows),
+    rail: assembleHomeRail(source, source, rows),
   });
 }
 
-function genreResult(
+function assembleGenreRailResult(
   result: ProjectionStoreResult<unknown>,
   now: number,
   first: number,
 ): HomeGenreRailResult {
   if (result.status !== "completed") {
-    return Object.freeze({ code: code(result), rails: Object.freeze([]) });
+    return Object.freeze({
+      code: railSelectionFailureCode(result),
+      rails: Object.freeze([]),
+    });
   }
   const groups = normalizeHomeGenreRows(result.value, now, first);
   if (!groups) {
@@ -125,35 +130,49 @@ function genreResult(
   }
   return Object.freeze({
     code: groups.length === 0 ? "empty" : "completed",
-    rails: Object.freeze(groups.map((group) => rail("genre", "genre", group.rows, group.genre))),
+    rails: Object.freeze(
+      groups.map((group) => assembleHomeRail("genre", "genre", group.rows, group.genre)),
+    ),
   });
 }
 
-function fallback(primary: HomeRailResult, recent: HomeRailResult, kind: "featured" | "trending") {
+function applyRecentRailFallback(
+  primaryResult: HomeRailResult,
+  recentlyAddedResult: HomeRailResult,
+  fallbackKind: "featured" | "trending",
+) {
   if (
-    (primary.code !== "empty" && primary.code !== "unavailable") ||
-    recent.code !== "completed" ||
-    !recent.rail ||
-    recent.rail.edges.length === 0
+    (primaryResult.code !== "empty" && primaryResult.code !== "unavailable") ||
+    recentlyAddedResult.code !== "completed" ||
+    !recentlyAddedResult.rail ||
+    recentlyAddedResult.rail.edges.length === 0
   ) {
-    return primary;
+    return primaryResult;
   }
   return Object.freeze({
     code: "fallback" as const,
-    rail: Object.freeze({ ...recent.rail, key: kind, kind, source: "recently_added" as const }),
+    rail: Object.freeze({
+      ...recentlyAddedResult.rail,
+      key: fallbackKind,
+      kind: fallbackKind,
+      source: "recently_added" as const,
+    }),
   });
 }
 
-function emptyPage(state: HomeProjectionState, now: number): HomeRailsPage {
-  const empty = (kind: "featured" | "recently_added" | "trending") =>
-    Object.freeze({ code: "empty" as const, rail: rail(kind, kind, Object.freeze([])) });
+function emptyHomeRailsPage(state: HomeProjectionState, now: number): HomeRailsPage {
+  const emptyFixedRail = (kind: "featured" | "recently_added" | "trending") =>
+    Object.freeze({
+      code: "empty" as const,
+      rail: assembleHomeRail(kind, kind, Object.freeze([])),
+    });
   return Object.freeze({
     status: "completed",
     generation: state.generation,
     generatedAt: now,
-    featured: empty("featured"),
-    recentlyAdded: empty("recently_added"),
-    trending: empty("trending"),
+    featured: emptyFixedRail("featured"),
+    recentlyAdded: emptyFixedRail("recently_added"),
+    trending: emptyFixedRail("trending"),
     genres: Object.freeze({ code: "empty" as const, rails: Object.freeze([]) }),
   });
 }
@@ -164,7 +183,7 @@ interface HomeRailPorts {
   readonly observe?: (observation: HomeRailMetricObservation) => void;
 }
 
-function safeTime(clock: () => number): number {
+function readMonotonicTime(clock: () => number): number {
   try {
     const value = clock();
     return Number.isFinite(value) && value >= 0 ? value : 0;
@@ -173,11 +192,14 @@ function safeTime(clock: () => number): number {
   }
 }
 
-function elapsed(startedAt: number, clock: () => number): number {
-  return Math.max(0, safeTime(clock) - startedAt);
+function elapsedMilliseconds(startedAt: number, clock: () => number): number {
+  return Math.max(0, readMonotonicTime(clock) - startedAt);
 }
 
-function freshness(result: HomeRailResult | HomeGenreRailResult, now: number): number | undefined {
+function railFreshnessSeconds(
+  result: HomeRailResult | HomeGenreRailResult,
+  now: number,
+): number | undefined {
   const timestamps =
     "rail" in result
       ? result.rail?.oldestIndexedAt === null || result.rail?.oldestIndexedAt === undefined
@@ -195,7 +217,7 @@ function freshness(result: HomeRailResult | HomeGenreRailResult, now: number): n
 
 export function createHomeRails(ports: Readonly<HomeRailPorts>) {
   const clock = ports.monotonicNow ?? (() => 0);
-  const observe = (
+  const observeRail = (
     kind: HomeRailKind,
     outcome: HomeRailMetricObservation["outcome"],
     durationMs: number,
@@ -214,107 +236,152 @@ export function createHomeRails(ports: Readonly<HomeRailPorts>) {
       // Telemetry is non-authoritative and cannot change a home response.
     }
   };
-  const observeAll = (outcome: HomeRailMetricObservation["outcome"], durationMs: number): void => {
+  const observeAllRails = (
+    outcome: HomeRailMetricObservation["outcome"],
+    durationMs: number,
+  ): void => {
     for (const kind of ["featured", "recently_added", "trending", "genre"] as const) {
-      observe(kind, outcome, durationMs);
+      observeRail(kind, outcome, durationMs);
     }
   };
-  const select = async <T>(
+  const selectRail = async <T>(
     work: (repository: HomeRailRepository) => Promise<T>,
     signal: AbortSignal,
   ): Promise<Readonly<{ result: ProjectionStoreResult<T>; durationMs: number }>> => {
-    const startedAt = safeTime(clock);
+    const startedAt = readMonotonicTime(clock);
     const result = await ports.transactions.run(work, signal);
-    return Object.freeze({ result, durationMs: elapsed(startedAt, clock) });
+    return Object.freeze({ result, durationMs: elapsedMilliseconds(startedAt, clock) });
   };
 
   return Object.freeze({
     async execute(input: unknown, now: number, signal: AbortSignal): Promise<HomeRailsResult> {
-      const request = normalizeHomeRailInput(input);
-      if (!request || !Number.isSafeInteger(now) || now < 0 || now > 253_402_300_799) {
+      const railRequest = normalizeHomeRailInput(input);
+      if (!railRequest || !Number.isSafeInteger(now) || now < 0 || now > 253_402_300_799) {
         return { status: "completed", value: { status: "invalid_input" } };
       }
       if (signal.aborted) {
         return { status: "cancelled" };
       }
-      const stateStartedAt = safeTime(clock);
-      const state = await ports.transactions.run((repository) => repository.state(now), signal);
-      const stateDurationMs = elapsed(stateStartedAt, clock);
-      if (state.status !== "completed") {
-        observeAll(state.status, stateDurationMs);
-        return state;
+
+      const projectionStateStartedAt = readMonotonicTime(clock);
+      const projectionState = await ports.transactions.run(
+        (repository) => repository.state(now),
+        signal,
+      );
+      const projectionStateDurationMs = elapsedMilliseconds(projectionStateStartedAt, clock);
+      if (projectionState.status !== "completed") {
+        observeAllRails(projectionState.status, projectionStateDurationMs);
+        return projectionState;
       }
-      if (state.value.status === "stale") {
-        observeAll("stale", stateDurationMs);
+      if (projectionState.value.status === "stale") {
+        observeAllRails("stale", projectionStateDurationMs);
         return { status: "completed", value: { status: "stale" } };
       }
-      if (state.value.status === "empty") {
-        observeAll("empty", stateDurationMs);
+      if (projectionState.value.status === "empty") {
+        observeAllRails("empty", projectionStateDurationMs);
         return {
           status: "completed",
-          value: { status: "completed", value: emptyPage(state.value, now) },
+          value: {
+            status: "completed",
+            value: emptyHomeRailsPage(projectionState.value, now),
+          },
         };
       }
-      const generation = state.value.generation;
-      const selections = [
-        await select<readonly HomeRailRow[]>(
-          (repository) => repository.fixed(generation, "featured", request.first, now),
-          signal,
-        ),
-        await select<readonly HomeRailRow[]>(
-          (repository) => repository.fixed(generation, "recently_added", request.first, now),
-          signal,
-        ),
-        await select<readonly HomeRailRow[]>(
-          (repository) => repository.fixed(generation, "trending", request.first, now),
-          signal,
-        ),
-        await select<unknown>(
-          (repository) => repository.genres(generation, request.first, now),
-          signal,
-        ),
-      ] as const;
-      const recent = fixedResult(selections[1].result, "recently_added", now, request.first);
-      const featured = fallback(
-        fixedResult(selections[0].result, "featured", now, request.first),
-        recent,
+
+      const generation = projectionState.value.generation;
+      const featuredSelection = await selectRail<readonly HomeRailRow[]>(
+        (repository) => repository.fixed(generation, "featured", railRequest.first, now),
+        signal,
+      );
+      const recentlyAddedSelection = await selectRail<readonly HomeRailRow[]>(
+        (repository) => repository.fixed(generation, "recently_added", railRequest.first, now),
+        signal,
+      );
+      const trendingSelection = await selectRail<readonly HomeRailRow[]>(
+        (repository) => repository.fixed(generation, "trending", railRequest.first, now),
+        signal,
+      );
+      const genreSelection = await selectRail<unknown>(
+        (repository) => repository.genres(generation, railRequest.first, now),
+        signal,
+      );
+
+      const recentlyAddedResult = assembleFixedRailResult(
+        recentlyAddedSelection.result,
+        "recently_added",
+        now,
+        railRequest.first,
+      );
+      const featuredResult = applyRecentRailFallback(
+        assembleFixedRailResult(featuredSelection.result, "featured", now, railRequest.first),
+        recentlyAddedResult,
         "featured",
       );
-      const trending = fallback(
-        fixedResult(selections[2].result, "trending", now, request.first),
-        recent,
+      const trendingResult = applyRecentRailFallback(
+        assembleFixedRailResult(trendingSelection.result, "trending", now, railRequest.first),
+        recentlyAddedResult,
         "trending",
       );
-      const genres = genreResult(selections[3].result, now, request.first);
-      const results = [featured, recent, trending, genres] as const;
-      observe("featured", featured.code, selections[0].durationMs, freshness(featured, now));
-      observe("recently_added", recent.code, selections[1].durationMs, freshness(recent, now));
-      observe("trending", trending.code, selections[2].durationMs, freshness(trending, now));
-      observe("genre", genres.code, selections[3].durationMs, freshness(genres, now));
-      const usable = results.filter((result) =>
+      const genreResult = assembleGenreRailResult(genreSelection.result, now, railRequest.first);
+
+      observeRail(
+        "featured",
+        featuredResult.code,
+        featuredSelection.durationMs,
+        railFreshnessSeconds(featuredResult, now),
+      );
+      observeRail(
+        "recently_added",
+        recentlyAddedResult.code,
+        recentlyAddedSelection.durationMs,
+        railFreshnessSeconds(recentlyAddedResult, now),
+      );
+      observeRail(
+        "trending",
+        trendingResult.code,
+        trendingSelection.durationMs,
+        railFreshnessSeconds(trendingResult, now),
+      );
+      observeRail(
+        "genre",
+        genreResult.code,
+        genreSelection.durationMs,
+        railFreshnessSeconds(genreResult, now),
+      );
+
+      const railResults = [
+        featuredResult,
+        recentlyAddedResult,
+        trendingResult,
+        genreResult,
+      ] as const;
+      const usableRailCount = railResults.filter((result) =>
         ["completed", "empty", "fallback"].includes(result.code),
       ).length;
-      if (usable === 0) {
-        const statuses = results.map((result) => result.code);
-        return {
-          status: statuses.every((value) => value === "cancelled")
-            ? "cancelled"
-            : statuses.some((value) => value === "indeterminate")
-              ? "indeterminate"
-              : "unavailable",
-        };
+      if (usableRailCount === 0) {
+        const railOutcomes = railResults.map((result) => result.code);
+        if (railOutcomes.every((outcome) => outcome === "cancelled")) {
+          return { status: "cancelled" };
+        }
+        if (railOutcomes.some((outcome) => outcome === "indeterminate")) {
+          return { status: "indeterminate" };
+        }
+        return { status: "unavailable" };
       }
+
+      const pageStatus =
+        usableRailCount === railResults.length &&
+        railResults.every((result) => result.code !== "fallback")
+          ? "completed"
+          : "partial";
       const page: HomeRailsPage = Object.freeze({
-        status:
-          usable === results.length && results.every((result) => result.code !== "fallback")
-            ? "completed"
-            : "partial",
+        status: pageStatus,
         generation,
         generatedAt: now,
-        featured,
-        recentlyAdded: recent,
-        trending,
-        genres,
+        featured: featuredResult,
+        recentlyAdded: recentlyAddedResult,
+        trending: trendingResult,
+        genres: genreResult,
       });
       return { status: "completed", value: { status: "completed", value: page } };
     },

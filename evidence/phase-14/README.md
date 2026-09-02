@@ -1027,8 +1027,71 @@ required aggregate. The initial review found two evidence-index defects only:
 completed P14-R15 still appeared under planned evidence, and item71 lacked an
 exact reproducible command transcript. Both are corrected together. The
 post-remediation affected gate passes 43/43 tasks with 32 cached in 40 seconds;
-confirmation review found one stale handoff action, which is corrected without
-changing product source. Final exact-head protected checks remain.
+confirmation review found one stale handoff action, which was corrected without
+changing product source before the final exact-head acceptance below.
+
+### P14-R16 Catalog and Playback release boundary
+
+PR62 final head `c03745d369a63e4c465fc44cdeb7b602bb7d8386`, tree
+`07641d9b807ef4333b4d431ff1280a51e057f47f`, passed protected workflow
+`33609186840` on attempt 2. Attempt 1's unchanged Local-platform TraceQL
+diagnostic timeout and Discovery query-count fluctuation both passed on the
+same exact-head rerun. All three review discussions are resolved.
+
+PR62 squash main `34a32c488a2730a05c8d79390c66f6fe63e75b08` retains the
+exact reviewed tree. Exact-main workflow `33612201728` passed every applicable
+job. Item71 is verified, and item72 starts from that exact main commit.
+
+### P14-R16 Identity, Engagement, and Discovery activation
+
+Item72 is active on `refactor/identity-engagement-discovery-readability`. Its
+bounded scope is the Identity profile transaction, Engagement progress write,
+and Discovery home-rail assembly findings. It changes private naming and local
+application structure only; no public contract, schema, event, persistence,
+cache, media, telemetry, dependency, or deployment change is authorized.
+
+### P14-R16 Identity, Engagement, and Discovery iteration evidence
+
+Environment: WSL Ubuntu20.04 with pinned Node.js24.19.0 and pnpm11.24.0. The
+workspace install reused all 480 packages and downloaded zero packages.
+
+The exact linked characterization passes 47/47 before and after the private
+naming and control-flow refactor. Complete Identity tests pass 163/163,
+Engagement passes 129/129, and Discovery passes 110/110. All three affected
+builds and typechecks pass, changed-file ESLint passes, and architecture
+validation reports zero violations.
+
+Identity preserves credential verification, account/session locks, absolute
+expiry, owner checks, replay, capacity, optimistic mutation, audit, outbox, and
+receipt order. Engagement preserves owner and Playback reads outside the
+transaction, idempotency admission, replay, ordering, atomic state/receipt/
+outbox writes, cancellation, and indeterminate post-write failure. Discovery
+preserves sequential independent selection, safe recent-content fallback,
+aggregate failure precedence, partial status, and bounded per-rail telemetry.
+
+Exact commands and raw results are retained in
+[`p14-r16-identity-engagement-discovery-readability.txt`](./p14-r16-identity-engagement-discovery-readability.txt).
+The affected-scope candidate gate passes 44/44 tasks with 12 cached tasks in
+1m4.03s. It includes complete affected service tests, affected builds and
+typechecks, Router composition/contracts, workspace static checks,
+documentation, repository memory, security, toolchain, CI policy, and
+governance. No heavyweight experiment is repeated because no adapter,
+transaction order, public contract, cache, telemetry shape, runtime, or media
+behavior changed.
+
+Exact source checkpoint `62393627960ab473488e9232e345a0af9bf90c58`, tree
+`217aaf6adf6822c7095f6de3258e4f036628beca`, repeats the same candidate gate:
+44/44 tasks pass with 33 cached tasks in 39.287 seconds. The next commit records
+this evidence and repository memory only.
+
+Evidence head `1e45071819534e717ad3aeb56afd40bfa52b19f6` opened PR63.
+Protected workflow `33616377473` passed every applicable job: dependency review,
+documentation/security, source quality, owner integrations, Docker-only demo,
+Local platform, and the aggregate gate. Initial review discussion `3913089979`
+found only stale resume instructions that still asked the next agent to create
+and publish the already-completed evidence checkpoint. The correction updates
+repository memory and this evidence only; product source and the heavyweight
+acceptance remain unchanged.
 
 ## Planned evidence
 

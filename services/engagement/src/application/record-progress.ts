@@ -17,17 +17,17 @@ import type {
 } from "./progress-ports.js";
 import { createIdempotencyAdmissionQueue } from "./idempotency-admission.js";
 
-const timestamp = (value: number) =>
+const validProgressTimestamp = (value: number) =>
   Number.isSafeInteger(value) && value >= 0 && value <= 253_402_300_799;
-const fresh = (checkedAt: number, expiresAt: number, now: number) =>
-  timestamp(checkedAt) &&
-  timestamp(expiresAt) &&
-  timestamp(now) &&
+const dependencySnapshotIsFresh = (checkedAt: number, expiresAt: number, now: number) =>
+  validProgressTimestamp(checkedAt) &&
+  validProgressTimestamp(expiresAt) &&
+  validProgressTimestamp(now) &&
   checkedAt <= now &&
   now - checkedAt <= 2 &&
   expiresAt > now;
 
-function guarded<T>(operation: () => Promise<T>, signal: AbortSignal): Promise<T> {
+function awaitDependencyOrAbort<T>(operation: () => Promise<T>, signal: AbortSignal): Promise<T> {
   return new Promise((resolve, reject) => {
     const cancel = () => {
       signal.removeEventListener("abort", cancel);
@@ -55,40 +55,40 @@ function guarded<T>(operation: () => Promise<T>, signal: AbortSignal): Promise<T
   });
 }
 
-function replay(
+function replayProgressReceipt(
   receipt: ProgressReceipt | null,
-  key: ProgressKey,
+  progressKey: ProgressKey,
   input: ProgressInput,
-  digest: string,
+  requestDigest: string,
   now: number,
 ): ProgressResult<ProgressState> | null {
   if (!receipt) {
     return null;
   }
-  if (!timestamp(receipt.expiresAt)) {
+  if (!validProgressTimestamp(receipt.expiresAt)) {
     return { status: "unavailable" };
   }
   if (receipt.expiresAt <= now) {
     return null;
   }
   if (
-    receipt.accountId !== key.accountId ||
-    receipt.profileId !== key.profileId ||
+    receipt.accountId !== progressKey.accountId ||
+    receipt.profileId !== progressKey.profileId ||
     !progressIdentifier(receipt.titleId) ||
     receipt.idempotencyKey !== input.idempotencyKey
   ) {
     return { status: "unavailable" };
   }
-  if (receipt.requestDigest !== digest) {
+  if (receipt.requestDigest !== requestDigest) {
     return { status: "conflict" };
   }
   const saved = normalizeProgressState(receipt.result);
   if (
     !saved ||
-    receipt.titleId !== key.titleId ||
-    saved.accountId !== key.accountId ||
-    saved.profileId !== key.profileId ||
-    saved.titleId !== key.titleId ||
+    receipt.titleId !== progressKey.titleId ||
+    saved.accountId !== progressKey.accountId ||
+    saved.profileId !== progressKey.profileId ||
+    saved.titleId !== progressKey.titleId ||
     saved.sequence !== input.sequence ||
     saved.playbackSessionId !== input.playbackSessionId ||
     saved.occurredAt !== input.occurredAt ||
@@ -141,173 +141,227 @@ export function createProgressRecorder(ports: ProgressPorts) {
         correlationId: request.correlationId,
         ...(request.traceparent === undefined ? {} : { traceparent: request.traceparent }),
       };
-      let writing = false;
-      let releaseIdempotency: (() => void) | undefined;
+      let progressWriteStarted = false;
+      let releaseIdempotencyAdmission: (() => void) | undefined;
       try {
         const credential = request.credential;
-        const owner = await guarded(
+        const profileAuthorization = await awaitDependencyOrAbort(
           () => ports.identity.authorizeProfile(credential, input.profileId, ownerRequest),
           signal,
         );
         signal.throwIfAborted();
-        if (owner.status !== "completed") {
-          return { status: owner.status };
+        if (profileAuthorization.status !== "completed") {
+          return { status: profileAuthorization.status };
         }
-        const authorized = () => fresh(owner.value.checkedAt, owner.value.expiresAt, ports.now());
+
+        const profileAuthorizationIsCurrent = () =>
+          dependencySnapshotIsFresh(
+            profileAuthorization.value.checkedAt,
+            profileAuthorization.value.expiresAt,
+            ports.now(),
+          );
         if (
-          !progressIdentifier(owner.value.accountId) ||
-          owner.value.profileId !== input.profileId ||
-          !authorized()
+          !progressIdentifier(profileAuthorization.value.accountId) ||
+          profileAuthorization.value.profileId !== input.profileId ||
+          !profileAuthorizationIsCurrent()
         ) {
           return { status: "unavailable" };
         }
-        const key = {
-          accountId: owner.value.accountId,
+
+        const progressKey = {
+          accountId: profileAuthorization.value.accountId,
           profileId: input.profileId,
           titleId: input.titleId,
         };
-        const digest = ports.digest(progressRequestPayload(input));
-        if (!/^[a-f0-9]{64}$/u.test(digest)) {
+        const requestDigest = ports.digest(progressRequestPayload(input));
+        if (!/^[a-f0-9]{64}$/u.test(requestDigest)) {
           return { status: "unavailable" };
         }
-        const admissionKey = ports.digest(
-          `record_progress\0${owner.value.accountId}\0${input.profileId}\0${input.idempotencyKey}`,
+
+        const idempotencyAdmissionKey = ports.digest(
+          `record_progress\0${profileAuthorization.value.accountId}\0${input.profileId}\0${input.idempotencyKey}`,
         );
-        const ordering = await idempotencyAdmissions.acquire(admissionKey, signal);
-        if (ordering.status === "cancelled") {
+        const idempotencyAdmission = await idempotencyAdmissions.acquire(
+          idempotencyAdmissionKey,
+          signal,
+        );
+        if (idempotencyAdmission.status === "cancelled") {
           return { status: "cancelled" };
         }
-        if (ordering.status === "capacity") {
+        if (idempotencyAdmission.status === "capacity") {
           return { status: "backpressure" };
         }
-        releaseIdempotency = ordering.release;
-        const existing = await guarded(
-          () => ports.receipts.read(key, input.idempotencyKey, signal),
+        releaseIdempotencyAdmission = idempotencyAdmission.release;
+
+        const receiptLookup = await awaitDependencyOrAbort(
+          () => ports.receipts.read(progressKey, input.idempotencyKey, signal),
           signal,
         );
         signal.throwIfAborted();
-        if (!authorized()) {
+        if (!profileAuthorizationIsCurrent()) {
           return { status: "unavailable" };
         }
-        if (existing.status !== "completed") {
-          return { status: existing.status };
+        if (receiptLookup.status !== "completed") {
+          return { status: receiptLookup.status };
         }
-        const accepted = replay(existing.value, key, input, digest, ports.now());
-        if (accepted) {
-          return accepted;
+
+        const replayedProgress = replayProgressReceipt(
+          receiptLookup.value,
+          progressKey,
+          input,
+          requestDigest,
+          ports.now(),
+        );
+        if (replayedProgress) {
+          return replayedProgress;
         }
-        const admission = await ports.limiter?.admit(
+
+        const operationAdmission = await ports.limiter?.admit(
           "record_progress",
-          owner.value.accountId,
-          ports.digest(`${admissionKey}\0${digest}`),
+          profileAuthorization.value.accountId,
+          ports.digest(`${idempotencyAdmissionKey}\0${requestDigest}`),
           signal,
         );
         signal.throwIfAborted();
-        if (admission?.status === "rejected") {
-          return { status: "limit_exceeded", retryAfterMs: admission.retryAfterMs };
+        if (operationAdmission?.status === "rejected") {
+          return { status: "limit_exceeded", retryAfterMs: operationAdmission.retryAfterMs };
         }
-        if (admission?.status === "cancelled" || admission?.status === "unavailable") {
-          return { status: admission.status };
+        if (
+          operationAdmission?.status === "cancelled" ||
+          operationAdmission?.status === "unavailable"
+        ) {
+          return { status: operationAdmission.status };
         }
-        const playback = await guarded(
+
+        const playbackInspection = await awaitDependencyOrAbort(
           () => ports.playback.inspect(input.playbackSessionId, input.titleId, ownerRequest),
           signal,
         );
         signal.throwIfAborted();
-        if (playback.status !== "completed") {
-          return { status: playback.status };
+        if (playbackInspection.status !== "completed") {
+          return { status: playbackInspection.status };
         }
-        const validContext = () =>
-          authorized() &&
-          fresh(playback.value.checkedAt, playback.value.expiresAt, ports.now()) &&
-          timestamp(playback.value.createdAt) &&
-          playback.value.createdAt <= ports.now() &&
-          playback.value.expiresAt > playback.value.createdAt &&
-          playback.value.sessionId === input.playbackSessionId &&
-          playback.value.titleId === input.titleId;
-        if (!validContext()) {
+
+        const playbackContextIsCurrent = () =>
+          profileAuthorizationIsCurrent() &&
+          dependencySnapshotIsFresh(
+            playbackInspection.value.checkedAt,
+            playbackInspection.value.expiresAt,
+            ports.now(),
+          ) &&
+          validProgressTimestamp(playbackInspection.value.createdAt) &&
+          playbackInspection.value.createdAt <= ports.now() &&
+          playbackInspection.value.expiresAt > playbackInspection.value.createdAt &&
+          playbackInspection.value.sessionId === input.playbackSessionId &&
+          playbackInspection.value.titleId === input.titleId;
+        if (!playbackContextIsCurrent()) {
           return { status: "not_playable" };
         }
-        writing = true;
-        const result = await guarded(
+
+        progressWriteStarted = true;
+        const transactionResult = await awaitDependencyOrAbort(
           () =>
             ports.transactions.run(async (tx) => {
               signal.throwIfAborted();
-              const locked = await tx.lock(key);
-              if (!authorized() || locked.deleted) {
+              const lockedProgress = await tx.lock(progressKey);
+              if (!profileAuthorizationIsCurrent() || lockedProgress.deleted) {
                 return { status: "not_found" };
               }
-              const timestamp = ports.now();
-              if (timestamp > 253_402_300_799 - limits.receiptSeconds) {
+
+              const writeTime = ports.now();
+              if (writeTime > 253_402_300_799 - limits.receiptSeconds) {
                 return { status: "unavailable" };
               }
-              await tx.pruneReceipts(key, timestamp, 64);
-              const repeated = replay(
-                await tx.findReceipt(key, input.idempotencyKey),
-                key,
+
+              await tx.pruneReceipts(progressKey, writeTime, 64);
+              const lockedReceiptReplay = replayProgressReceipt(
+                await tx.findReceipt(progressKey, input.idempotencyKey),
+                progressKey,
                 input,
-                digest,
-                timestamp,
+                requestDigest,
+                writeTime,
               );
-              if (repeated) {
-                return authorized() ? repeated : { status: "not_found" };
+              if (lockedReceiptReplay) {
+                return profileAuthorizationIsCurrent()
+                  ? lockedReceiptReplay
+                  : { status: "not_found" };
               }
-              if (!validContext()) {
+              if (!playbackContextIsCurrent()) {
                 return { status: "not_playable" };
               }
-              const changed = advanceProgress(locked.current, input, {
-                accountId: key.accountId,
-                aggregateId: locked.current?.id ?? ports.nextId(),
-                now: timestamp,
+
+              const progressChange = advanceProgress(lockedProgress.current, input, {
+                accountId: progressKey.accountId,
+                aggregateId: lockedProgress.current?.id ?? ports.nextId(),
+                now: writeTime,
                 policy: ports.policy,
               });
-              if (changed.status !== "accepted") {
+              if (progressChange.status !== "accepted") {
                 return {
-                  status: changed.status === "invalid_state" ? "unavailable" : changed.status,
+                  status:
+                    progressChange.status === "invalid_state"
+                      ? "unavailable"
+                      : progressChange.status,
                 };
               }
-              const counts = await tx.retainedCounts(key);
+
+              const retainedCounts = await tx.retainedCounts(progressKey);
               if (
-                [counts.receipts, counts.outbox].some(
+                [retainedCounts.receipts, retainedCounts.outbox].some(
                   (count) => !Number.isSafeInteger(count) || count < 0,
                 )
               ) {
                 return { status: "unavailable" };
               }
               if (
-                counts.receipts >= limits.maximumReceipts ||
-                counts.outbox >= limits.maximumOutbox
+                retainedCounts.receipts >= limits.maximumReceipts ||
+                retainedCounts.outbox >= limits.maximumOutbox
               ) {
                 return { status: "backpressure" };
               }
-              const event = createProgressEvent(ports.nextId(), changed.value, eventContext);
-              await tx.save(changed.value, {
-                checkedAt: Math.min(owner.value.checkedAt, playback.value.checkedAt),
-                expiresAt: Math.min(owner.value.expiresAt, playback.value.expiresAt),
+
+              const progressEvent = createProgressEvent(
+                ports.nextId(),
+                progressChange.value,
+                eventContext,
+              );
+              await tx.save(progressChange.value, {
+                checkedAt: Math.min(
+                  profileAuthorization.value.checkedAt,
+                  playbackInspection.value.checkedAt,
+                ),
+                expiresAt: Math.min(
+                  profileAuthorization.value.expiresAt,
+                  playbackInspection.value.expiresAt,
+                ),
               });
               await tx.writeReceipt({
-                ...key,
+                ...progressKey,
                 idempotencyKey: input.idempotencyKey,
-                requestDigest: digest,
-                result: changed.value,
-                expiresAt: timestamp + limits.receiptSeconds,
+                requestDigest,
+                result: progressChange.value,
+                expiresAt: writeTime + limits.receiptSeconds,
               });
-              await tx.appendOutbox(event);
+              await tx.appendOutbox(progressEvent);
               signal.throwIfAborted();
-              return validContext()
-                ? { status: "completed", value: changed.value }
+              return playbackContextIsCurrent()
+                ? { status: "completed", value: progressChange.value }
                 : { status: "not_playable" };
             }, signal),
           signal,
         );
         signal.throwIfAborted();
-        return result;
+        return transactionResult;
       } catch {
-        return {
-          status: writing ? "indeterminate" : request.signal.aborted ? "cancelled" : "unavailable",
-        };
+        if (progressWriteStarted) {
+          return { status: "indeterminate" };
+        }
+        if (request.signal.aborted) {
+          return { status: "cancelled" };
+        }
+        return { status: "unavailable" };
       } finally {
-        releaseIdempotency?.();
+        releaseIdempotencyAdmission?.();
       }
     },
   });
