@@ -1329,7 +1329,17 @@ refusal-fixture evidence remain supporting evidence.
 The nested-context/checksum candidate passes 9/9 tasks with five cached tasks in
 `7.123s`.
 
+Head `7a3279aea65f2ef2efd93d5369d3a97bbbb07a73`, tree
+`1e16cf8d4f55e500d44f870eac82dce84706773c`, passes protected run
+`33653251535`; prior discussions are resolved. Review `5092157759` found only
+stale Docker-pending prose in the change plan (`3916199051`). The correction
+records the already passing Docker result without changing an executable or
+blocking boundary. The review stopping rule requires no additional review round
+or heavyweight repeat for this text-only correction.
+The final prose-only candidate passes 9/9 tasks with two cached tasks in
+`36.892s`.
+
 ## Planned evidence
 
-- P14-R18 nested-context/checksum candidate, publication, blocker-permitted
-  protected confirmation, merge, and exact-main acceptance
+- P14-R18 final text candidate, protected CI, discussion resolution, merge, and
+  exact-main acceptance

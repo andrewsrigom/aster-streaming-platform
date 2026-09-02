@@ -656,9 +656,26 @@ Tasks: 9 successful, 9 total
 Cached: 5 cached, 9 total
 Time: 7.123s
 
+Final prose-only review correction
+----------------------------------
+Reviewed head: 7a3279aea65f2ef2efd93d5369d3a97bbbb07a73
+Tree: 1e16cf8d4f55e500d44f870eac82dce84706773c
+Protected workflow: 33653251535 — passed
+Review: 5092157759 at 2026-09-02T16:14:38Z
+
+Discussion 3916199051 found stale Docker-pending prose in the change-plan
+Current behavior section. That text now records the accepted fresh source and
+context-pinned Docker results. The runner and all executable or blocking
+boundaries are unchanged. No additional review round or heavyweight repeat is
+required by the recorded stopping rule.
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 2 cached, 9 total
+Time: 36.892s
+
 Remaining acceptance
 --------------------
 - publish the correction and pass protected CI;
-- resolve discussions 3916063357 and 3916063367;
-- complete another blocker-permitted exact-head confirmation;
+- resolve discussion 3916199051;
 - squash merge and exact-main acceptance.

@@ -108,13 +108,19 @@ Close only `reference-fresh-acceptance`:
   residue, and retained-resource comparison. Source/refusal evidence is unchanged.
 - Nested-context/checksum candidate checks pass 9/9 tasks with five cached tasks
   in `7.123s`.
+- Head `7a3279a`, tree `1e16cf8`, passes protected run `33653251535`; prior
+  discussions are resolved. Review `5092157759` found only stale Docker-pending
+  prose in the change plan (`3916199051`). The text is corrected without any
+  executable or blocking-boundary change. The stopping rule requires no further
+  review round or heavyweight experiment.
+- Final prose-only candidate checks pass 9/9 tasks with two cached tasks in
+  `36.892s`.
 
 ## Exact next actions
 
-1. Publish the nested-context/checksum correction and resolve discussions
-   `3916063357` and `3916063367`.
-2. Complete another blocker-permitted exact-head review, merge, and verify exact
-   main.
+1. Publish the stale-status correction and resolve discussion `3916199051`.
+2. Require final protected CI, merge, and verify exact main. Do not request
+   another review round for this prose-only correction.
 
 ## Execution boundary
 

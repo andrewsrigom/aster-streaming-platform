@@ -21,14 +21,16 @@ P14-R13–R17 are verified. Item74 final head `903f50e`, tree `3e905e`, passed
 protected workflow `33633680649` on attempt 2 after attempt 1's isolated
 `docker info` timeout. Every discussion is resolved. PR65 squash main
 `2b6054a` retains the exact tree, and exact-main workflow `33636042474` passed.
-Fresh clone `/tmp/aster-reference-reader-20260902` is at exact main `2b6054a`
-with no inherited repository output. The public bootstrap passed with
-Node.js `24.19.0`, pnpm `11.24.0`, a frozen install, and the toolchain check.
-The public capability index reached Playback requirements, source, adverse
-tests, evidence, and operations; 16 focused tests and the complete 73-task
-quality gate passed. The high-severity audit gate passed with one known
-moderate finding. The Docker leg has not started: Docker Desktop failed during
-startup on its stale `userAnalyticsOtlpHttp.sock`, and the owner closed it.
+Fresh clone `/tmp/aster-reference-reader-boundary-20260902` is at exact main
+`2b6054a`, with its absent target and empty pre-install state proved. The full
+README bootstrap passes with Node.js `24.19.0`, pnpm `11.24.0`, `.githooks`, a
+frozen install, and toolchain verification. Playback navigation, 16 focused
+tests, the accepted complete 73-task gate, and the high-severity audit pass.
+Docker's initial stale-socket startup failure is historical: after the owner
+reopened Desktop, the latest context-pinned project
+`aster-reference-pinned-20260902` passed startup, browser playback 1/1 in
+`10.5s`, replay, checked cleanup, and independent zero label-and-prefix residue.
+Only protected publication, merge, and exact-main closeout remain.
 
 ## Proposed behavior
 
@@ -42,7 +44,8 @@ verification notes. Do not change executable product behavior.
 
 - Owning context: repository verification; product owners retain all existing
   data and behavior
-- Affected services/packages: documentation and repository memory only
+- Affected services/packages: documentation, the verification evidence runner,
+  and repository memory; no executable product behavior changes
 - Authoritative data: disposable `aster-reference-*` Docker project data only
 - Read models/caches: disposable Docker volumes only
 - Trust boundaries: public repository clone, package registry, local Docker
@@ -203,6 +206,13 @@ verification notes. Do not change executable product behavior.
 - Nested-context/checksum candidate passes 9/9 tasks with five cached tasks in
   `7.123s`; documentation, repository-memory, formatting, syntax, checksum,
   and diff checks pass.
+- Review `5092157759` on `7a3279a` found only stale Docker-pending prose in
+  Current behavior (`3916199051`). The correction records the already passing
+  result without changing the runner or any blocking boundary. Resolve this
+  discussion after publication; no additional review round or heavyweight
+  experiment is required under the stopping rule.
+- Final prose-only candidate passes 9/9 tasks with two cached tasks in
+  `36.892s`; documentation, repository-memory, formatting, and diff checks pass.
 - Iteration gate: public bootstrap/version checks, selected focused tests,
   Docker startup/journey/replay/cleanup, `pnpm docs:check`, and `pnpm ai:check`
 - Candidate gate: `pnpm check:changed`

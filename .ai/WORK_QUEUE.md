@@ -332,8 +332,11 @@ on `5c8724a` then opened nested-context/checksum blockers `3916063357` and
 `3916063367`. The corrected runner pins the verifier child to the inspected
 context and passes project `aster-reference-pinned-20260902` with browser 1/1,
 replay, cleanup, and independent zero residue. Candidate checks pass 9/9 tasks
-in `7.123s`. Publication, exact-head review, merge, and exact-main acceptance
-remain.
+in `7.123s`. Head `7a3279a` passes protected run `33653251535`; prior discussions
+are resolved. Review `5092157759` found only stale Docker-pending prose
+(`3916199051`), now corrected. Publish the text correction, resolve that
+discussion, pass final protected CI, merge, and verify exact main. No further
+review round or heavyweight repeat is required for this text-only correction.
 
 ## Deferred hosted queue
 

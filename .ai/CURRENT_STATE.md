@@ -83,12 +83,13 @@ is preserved and then removed by its exact synthetic name. Literal project
 in `10.5s`, replay, checked teardown, independent zero label-and-prefix residue,
 and retained-resource comparison. The current runner SHA-256 is `cba64582`.
 
-Head `5c8724a` passes protected run `33651421780`. Its review `5092002215`
-opened discussions `3916063357` and `3916063367` for the nested Docker-context
-pin and stale primary checksum. Both corrections and the invalidated Docker
-repeat are complete locally. Candidate checks pass 9/9 tasks with five cached
-tasks in `7.123s`. Publication, discussion resolution, blocker-permitted exact-
-head review, merge, and exact-main acceptance remain.
+Head `7a3279a`, tree `1e16cf8`, passes protected run `33653251535`; prior
+discussions are resolved. Review `5092157759` found only stale Docker-pending
+prose in the change plan (`3916199051`). That text now records the passing
+result. No executable or blocking boundary changed, so the review stopping rule
+requires no further round or heavyweight repeat. Final text checks pass 9/9
+tasks in `36.892s`. Publication, discussion resolution, merge, and exact-main
+acceptance remain.
 
 A rejected cleanup attempt expanded a nested-shell project variable to empty
 and removed 13 unused volumes from the existing `aster` project. Their Docker
@@ -167,8 +168,7 @@ hosted claim.
 
 ## Next outcome
 
-Finish item75/P14-R18: publish the nested-context and checksum correction,
-resolve discussions `3916063357` and `3916063367`, complete
-the blocker-permitted exact-head review, merge, and verify exact main. Do not
-repeat accepted heavyweight evidence unless a relevant executable, Docker,
-browser, media, cleanup, dependency, or public-command change invalidates it.
+Finish item75/P14-R18: publish the stale-status text correction, resolve
+discussion `3916199051`, require final protected CI, merge, and verify exact
+main. Do not request another review round or repeat unaffected heavyweight
+evidence for this prose-only correction.

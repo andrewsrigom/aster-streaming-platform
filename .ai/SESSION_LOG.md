@@ -45,6 +45,12 @@ full snapshot through the archival checkpoint remains in
   residue, and retained-resource comparison. Runner SHA-256 is `cba64582`.
 - Nested-context/checksum candidate checks pass 9/9 tasks with five cached tasks
   in `7.123s`.
+- Head `7a3279a`, tree `1e16cf8`, passes protected run `33653251535`. Review
+  `5092157759` found only stale Docker-pending prose (`3916199051`), corrected
+  without changing an executable or blocking boundary. Prior discussions are
+  resolved; the stopping rule requires no further review round.
+- Final prose-only candidate checks pass 9/9 tasks with two cached tasks in
+  `36.892s`.
 
 ### Evidence
 
@@ -53,8 +59,9 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-Publish the nested-context/checksum correction, resolve its two discussions,
-complete blocker-permitted exact-head review, merge, and verify exact main.
+Publish the stale-status correction, resolve its discussion, pass final
+protected CI, merge, and verify exact main. No new review
+round or unaffected heavyweight repeat.
 
 ## 2026-09-02 — Fresh Docker path passed; cleanup incident recorded
 
