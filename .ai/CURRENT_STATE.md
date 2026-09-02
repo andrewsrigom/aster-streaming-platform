@@ -61,8 +61,9 @@ pass 47/47 before and after implementation. Complete Identity tests pass
 163/163, Engagement passes 129/129, and Discovery passes 110/110. All three
 affected builds and typechecks, changed-file lint, and architecture validation
 pass. The affected-scope candidate gate passes 44/44 tasks with 12 cached tasks
-in 1m4.03s. Exact candidate commit, publication, review, merge, and exact-main
-acceptance remain.
+in 1m4.03s. Exact source `6239362`, tree `217aaf6`, repeats it with 33 cached
+tasks in 39.287 seconds. Evidence commit, publication, review, merge, and
+exact-main acceptance remain.
 
 ## Ordered reference-quality runway
 

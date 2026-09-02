@@ -142,7 +142,8 @@ fallbacks, and telemetry remain unchanged.
   47/47; complete Identity passes 163 tests, Engagement passes 129, and
   Discovery passes 110. All three affected builds/typechecks, changed-file
   lint, and architecture validation pass. The affected-scope candidate gate
-  passes 44/44 tasks with 12 cached tasks in 1m4.03s.
+  passes 44/44 tasks with 12 cached tasks in 1m4.03s. Exact source `6239362`,
+  tree `217aaf6`, repeats it with 33 cached tasks in 39.287 seconds.
 - Iteration gate: affected package build/typecheck plus the three linked
   characterization files
 - Candidate gate: `pnpm check:changed`

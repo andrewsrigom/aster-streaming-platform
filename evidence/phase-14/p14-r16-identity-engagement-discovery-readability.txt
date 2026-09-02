@@ -117,3 +117,23 @@ Interpretation:
 The coherent local candidate passes its complete affected-scope gate. Existing
 heavyweight evidence is not repeated because this change does not alter the
 trigger boundaries named in the work plan.
+
+EXACT COMMITTED SOURCE CHECKPOINT
+
+Source commit: 62393627960ab473488e9232e345a0af9bf90c58
+Source tree: 217aaf6adf6822c7095f6de3258e4f036628beca
+
+Command:
+pnpm check:changed
+
+Raw result:
+Packages in scope: root, @aster/discovery, @aster/engagement, @aster/identity,
+@aster/router
+Tasks: 44 successful, 44 total
+Cached: 33 cached, 44 total
+Time: 39.287s
+
+Interpretation:
+The exact committed source checkpoint passes the same complete affected-scope
+gate. This is the source candidate to publish for protected acceptance and
+review; the following evidence-only commit does not change product source.

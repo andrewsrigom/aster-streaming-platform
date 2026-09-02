@@ -1079,6 +1079,11 @@ governance. No heavyweight experiment is repeated because no adapter,
 transaction order, public contract, cache, telemetry shape, runtime, or media
 behavior changed.
 
+Exact source checkpoint `62393627960ab473488e9232e345a0af9bf90c58`, tree
+`217aaf6adf6822c7095f6de3258e4f036628beca`, repeats the same candidate gate:
+44/44 tasks pass with 33 cached tasks in 39.287 seconds. The next commit records
+this evidence and repository memory only.
+
 ## Planned evidence
 
 - P14-R16 remaining owner-scoped refactoring characterization

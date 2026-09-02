@@ -32,6 +32,8 @@ full snapshot through the archival checkpoint remains in
   pass.
 - The affected-scope candidate gate passes 44/44 tasks with 12 cached tasks in
   1m4.03s.
+- Exact source `6239362`, tree `217aaf6`, repeats the candidate gate 44/44 with
+  33 cached tasks in 39.287 seconds.
 
 ### Evidence
 
@@ -44,10 +46,11 @@ full snapshot through the archival checkpoint remains in
   110/110.
 - Architecture validation: zero violations.
 - Affected-scope candidate gate: 44/44 pass, 12 cached, 1m4.03s.
+- Exact committed-source gate: 44/44 pass, 33 cached, 39.287s.
 
 ### Next action
 
-Commit and publish the exact evidenced candidate for one review and one
+Commit the exact evidence checkpoint, then publish it for one review and one
 confirmation.
 
 ## 2026-09-02 — Readability guardrails verified and item71 activated

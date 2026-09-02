@@ -46,10 +46,12 @@ Close only the `identity-profile-transaction`, `engagement-progress-write`, and
   changed-file lint, and architecture validation pass.
 - The affected-scope candidate gate passes 44/44 tasks with 12 cached tasks in
   1m4.03s.
+- Exact source `6239362`, tree `217aaf6`, repeats the candidate gate 44/44 with
+  33 cached tasks in 39.287 seconds.
 
 ## Exact next actions
 
-1. Commit the coherent evidenced candidate.
+1. Commit the exact source evidence and repository-memory checkpoint.
 2. Publish it and complete one review plus one confirmation.
 3. Merge only after exact-head protected acceptance, then verify exact main.
 
