@@ -1209,10 +1209,137 @@ and the aggregate gate. Both initial discussions are resolved. Confirmation
 review `5089816369` found only that the raw transcript placed the corrected gate
 before the retained initial gate. The transcript is reordered chronologically;
 no executable source or public boundary changes, so the recorded stopping rule
-does not require another review round. Final exact-head protected acceptance,
-merge, and exact-main verification remain.
+does not require another review round.
+
+Final head `903f50ea5ab50f1600fbfb2b143a838774ad3235`, tree
+`3e905ea5d3c18de426918125fbc6dbb0de310bd7`, passed protected workflow
+`33633680649` on attempt 2 after attempt 1's isolated Docker-information
+timeout. Every review discussion is resolved. PR65 squash main
+`2b6054a6ff30b24e635b2aae830850455cdcc8b6` retains the exact reviewed tree,
+and exact-main workflow `33636042474` passed every applicable job. Item74 and
+P14-R17 are verified.
+
+## P14-R18 — Fresh-reader reference acceptance
+
+Status: **in progress**
+
+Fresh clone `/tmp/aster-reference-reader-boundary-20260902` checks out exact
+PR65 squash main `2b6054a` from the public remote without inherited repository
+output. The README bootstrap passes with Node.js `24.19.0`, pnpm `11.24.0`,
+tracked hooks at `.githooks`, a frozen install that reuses all 480 packages, and
+the exact toolchain check.
+
+The target is proved absent before clone, and ignored, untracked, dependency,
+Turbo, build, and coverage state are absent before installation. The public
+capability index reaches the Playback requirement, representative
+service and Web source, adverse tests, release evidence, and operations guide.
+Playback application and Web-state checks pass 16/16. One complete-gate attempt
+hit the media process-group timing assertion; its focused 2/2 rerun passed. One
+overlapping invocation was rejected by the Next.js build lock. After all prior
+processes ended, the clean source gate passed 73/73 tasks in `52.379s`; the
+high-severity dependency audit exits zero with one moderate finding.
+
+After the owner reopened Docker Desktop, Engine `26.0.0` and Compose
+`2.26.1-desktop.1` became healthy without reset or socket mutation. The accepted
+context-pinned repeat uses the unique literal project
+`aster-reference-pinned-20260902`. Every direct and nested Docker operation is
+pinned to inspected local Linux context `default`. Namespace label and physical-
+prefix inventories must succeed and be empty before cleanup is armed. The
+anonymous stack becomes healthy, the real browser journey passes 1/1 in `10.5s`,
+replay records an unchanged Catalog seed and reused 1,948,485-byte generated HLS
+fixture. Project-scoped cleanup checks Compose teardown and every inventory
+query before proving zero owned containers, networks, and volumes. Independent
+post-run queries confirm zero project resources and unchanged retained `aster`
+resources.
+
+A non-accepted cleanup attempt expanded a nested-shell project variable to
+empty and removed 13 unused volumes from the existing local `aster` project.
+Their Docker data is not recoverable without an external backup. The incident,
+exact removed volumes, retained broker resources, and accepted isolated repeat
+are recorded without concealment in the raw transcript. No replacement volumes
+were created.
+
+The local source and Docker acceptance now pass. Protected review, merge, and
+exact-main acceptance remain. The current boundary is published in the
+[local reference verification](../../docs/00-start-here/REFERENCE_VERIFICATION.md),
+and the initial-review correction gate passes 9/9 tasks with no cached tasks in
+`14.519s`. The exact transcript and byte-identical executed runner are retained
+in [`p14-r18-reference-acceptance.txt`](./p14-r18-reference-acceptance.txt) and
+[`p14-r18-reference-acceptance.sh`](./p14-r18-reference-acceptance.sh).
+
+Initial review discussions `3915333547` and `3915333560` requested the complete
+accepted runner and current README/map navigation. Those corrections pass shell
+syntax, byte identity, checksum, documentation, repository-memory, and changed-
+scope checks without modifying an executable product path.
+
+Correction head `9669a7366687d7f627ca4fa7e2051b239dc55805`, tree
+`0dca0a47f648721726cdbc5362efe031fb61a05e`, passed protected workflow
+`33644727686`; both initial discussions are resolved. Confirmation review
+`5091322369` opened discussions `3915467273` and `3915467277` for fail-open
+cleanup inspection and missing absent-target/pre-install proof.
+
+The confirmation remediation repeated the source and Docker boundaries.
+Corrected head `894fef9e71dd3fb8fc0072f5ea03bfa4396fc579`, tree `02e30d0`,
+passed protected workflow `33646820741`; both discussions are resolved.
+Blocker-boundary review `5091554514` then opened discussions `3915666140` and
+`3915666152`: namespace inspection failures could look empty before teardown
+was armed, and the exact reader bootstrap omitted tracked Git-hook setup.
+
+The boundary remediation repeats only those invalidated paths. Source proves a
+new absent/empty target, configures `.githooks`, and passes the accepted clean
+73/73 gate. Docker checks every preflight inventory status before arming cleanup
+and passes browser playback 1/1, replay, teardown, independent zero-residue
+queries, and retained-resource comparison. That boundary-correction runner has
+the superseded SHA-256
+`9d0889718aec0fbfe10f64b5f1afddf190286fba07f779e4f60a71621a52c561`.
+The boundary-remediation candidate passes 9/9 tasks with two cached tasks in
+`12.826s`.
+
+Final review `5091785850` on `68dda8c` opened discussions `3915872033` and
+`3915872044`: the runner did not refuse remote Docker endpoints and its
+label-only preflight could miss an unlabeled physical-name collision. The
+endpoint remediation refuses Docker endpoint/configuration overrides, accepts
+only an inspected local socket and Linux daemon, pins every command to context
+`default`, and checks physical project prefixes alongside labels before arming
+teardown. A hostile `DOCKER_HOST` is refused. An unlabeled prefixed fixture
+volume is refused and preserved, then removed by its exact fixture name.
+
+New project `aster-reference-endpoint-20260902` passes healthy startup, browser
+playback 1/1 in `3.9s`, replay, label-and-prefix cleanup, independent zero
+residue, and retained-resource comparison. That endpoint-correction runner,
+executed via Bash, has the superseded SHA-256
+`d0d4564b8c5ac9b126cbc9a4fc4dfbdaec65d6f9fb03013dc3db0ca46b373d59`.
+The endpoint-remediation candidate passes 9/9 tasks with two cached tasks in
+`10.727s`.
+
+Exact-head review `5092002215` on `5c8724a` opened discussions `3916063357`
+and `3916063367`: the context verifier's nested Docker command still followed
+the active context, and the primary change-plan checksum still identified a
+superseded runner. The child now receives the inspected context through a
+process-local `DOCKER_CONTEXT` value; direct commands remain explicitly pinned.
+The primary evidence entry names the current full digest and labels old digests
+as superseded snapshots.
+
+The exact corrected runner, executed via Bash, has SHA-256
+`cba6458212b4937015e41c45530e0c71395f1221398bae84a0fe7edcbe92604e`.
+Project `aster-reference-pinned-20260902` passes the 24/18 context verifier,
+browser playback 1/1 in `10.5s`, replay, checked teardown, independent zero
+label-and-prefix residue, and retained-resource comparison. Source and unchanged
+refusal-fixture evidence remain supporting evidence.
+The nested-context/checksum candidate passes 9/9 tasks with five cached tasks in
+`7.123s`.
+
+Head `7a3279aea65f2ef2efd93d5369d3a97bbbb07a73`, tree
+`1e16cf8d4f55e500d44f870eac82dce84706773c`, passes protected run
+`33653251535`; prior discussions are resolved. Review `5092157759` found only
+stale Docker-pending prose in the change plan (`3916199051`). The correction
+records the already passing Docker result without changing an executable or
+blocking boundary. The review stopping rule requires no additional review round
+or heavyweight repeat for this text-only correction.
+The final prose-only candidate passes 9/9 tasks with two cached tasks in
+`36.892s`.
 
 ## Planned evidence
 
-- P14-R17 examples and reading-path verification
-- P14-R18 fresh-checkout and Docker reference verification
+- P14-R18 final text candidate, protected CI, discussion resolution, merge, and
+  exact-main acceptance

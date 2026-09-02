@@ -29,7 +29,10 @@ how a behavior is implemented. It connects each major capability to its owning r
 representative source, focused adverse test, checked-in evidence and operational guide. The
 [core-journey reading paths](docs/00-start-here/CORE_JOURNEY_READING_PATHS.md) connect public
 browse, publication, playback, progress, degradation, admission, recovery and diagnosis to
-bounded executable checks. The
+bounded executable checks. The current
+[local reference verification](docs/00-start-here/REFERENCE_VERIFICATION.md) records the
+completed fresh-checkout source and Docker proof, its pending protected release, and every
+deferred hosted claim. The
 [documentation map](docs/00-start-here/DOCUMENTATION_MAP.md) provides broader reading paths for
 product, architecture, implementation, operations and quality.
 

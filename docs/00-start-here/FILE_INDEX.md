@@ -133,6 +133,7 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`docs/00-start-here/ENGINEERING_DEMONSTRATION.md`](ENGINEERING_DEMONSTRATION.md) — Engineering Demonstration Contract
 - [`docs/00-start-here/ENGINEERING_PRINCIPLES.md`](ENGINEERING_PRINCIPLES.md) — Engineering Principles
 - [`docs/00-start-here/PROJECT_CHARTER.md`](PROJECT_CHARTER.md) — Project Charter
+- [`docs/00-start-here/REFERENCE_VERIFICATION.md`](REFERENCE_VERIFICATION.md) — Local Reference Verification
 
 ## docs/product
 

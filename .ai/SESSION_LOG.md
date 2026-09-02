@@ -4,6 +4,175 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-02 — Final reader and cleanup boundaries passed
+
+### Completed
+
+- Corrected head `894fef9`, tree `02e30d0`, passed protected workflow
+  `33646820741`; discussions `3915467273` and `3915467277` are resolved.
+- Blocker-boundary review `5091554514` opened discussions `3915666140` and
+  `3915666152` for fail-open namespace preflight and the omitted tracked-hook
+  bootstrap step.
+- New clone `/tmp/aster-reference-reader-boundary-20260902` is proved absent and
+  empty, configures `.githooks`, and passes frozen install, navigation, 16
+  focused tests, a clean 73/73 gate in `52.379s`, and the high-severity audit.
+- The record retains one media timing failure, its focused 2/2 passing rerun,
+  and one overlapping Next.js build-lock rejection; only the later clean gate
+  is accepted.
+- Project `aster-reference-boundary-20260902` checks all namespace-query
+  statuses before arming teardown, then passes healthy startup, browser playback
+  1/1 in `5.2s`, replay, checked cleanup, and zero residue. Independent queries
+  confirm the stopped broker and two retained `aster` volumes are unchanged.
+- The directly executed runner SHA-256 is `9d088971`.
+- Boundary-remediation candidate checks pass 9/9 tasks with two cached tasks in
+  `12.826s`.
+- Final review `5091785850` on `68dda8c` opened remote-Docker and unlabeled-name
+  blockers `3915872033` and `3915872044`.
+- Endpoint remediation refuses Docker overrides and non-local endpoints, pins
+  context `default`, and checks physical project prefixes. A hostile
+  `DOCKER_HOST` is refused. An unlabeled prefixed fixture volume is refused and
+  preserved before its exact cleanup.
+- Project `aster-reference-endpoint-20260902` passes browser playback 1/1 in
+  `3.9s`, replay, label-and-prefix cleanup, independent zero residue, and
+  retained-resource comparison. Runner SHA-256 is `d0d4564b`.
+- Endpoint-remediation candidate checks pass 9/9 tasks with two cached tasks in
+  `10.727s`.
+- Review `5092002215` on `5c8724a` opened nested-context and checksum findings
+  `3916063357` and `3916063367`. The runner now pins the context-verifier child
+  through process-local `DOCKER_CONTEXT`, and the primary checksum is current.
+- Project `aster-reference-pinned-20260902` passes the context verifier,
+  browser 1/1 in `10.5s`, replay, teardown, independent zero label-and-prefix
+  residue, and retained-resource comparison. Runner SHA-256 is `cba64582`.
+- Nested-context/checksum candidate checks pass 9/9 tasks with five cached tasks
+  in `7.123s`.
+- Head `7a3279a`, tree `1e16cf8`, passes protected run `33653251535`. Review
+  `5092157759` found only stale Docker-pending prose (`3916199051`), corrected
+  without changing an executable or blocking boundary. Prior discussions are
+  resolved; the stopping rule requires no further review round.
+- Final prose-only candidate checks pass 9/9 tasks with two cached tasks in
+  `36.892s`.
+
+### Evidence
+
+- Updated raw transcript, verification note, Phase14 chronology, and repository
+  memory retain exact source, Docker, failure, cleanup, and incident facts.
+
+### Next action
+
+Publish the stale-status correction, resolve its discussion, pass final
+protected CI, merge, and verify exact main. No new review
+round or unaffected heavyweight repeat.
+
+## 2026-09-02 — Fresh Docker path passed; cleanup incident recorded
+
+### Completed
+
+- Docker Desktop recovered after the owner reopened it. Engine `26.0.0` and
+  Compose `2.26.1-desktop.1` became healthy without reset or socket mutation.
+- Accepted project `aster-reference-final-20260902` passed context preflight,
+  healthy anonymous startup, the real browser journey 1/1 in `5.0s`, unchanged
+  seed and generated-HLS replay, inspected cleanup, and zero owned residue.
+- Updated the local reference note and raw evidence with the full measured
+  result and unchanged hosted, capacity, rights, and commercial exclusions.
+- The final changed-scope gate passes 9/9 tasks with two cached tasks in
+  `15.406s`.
+- Initial protected run `33643437047` passes. Review discussions `3915333547`
+  and `3915333560` require the complete accepted Docker command sequence and
+  current README/map status.
+- The accepted runner is now retained byte-identically with SHA-256 `35da14d`,
+  and both public entry points describe completed local source/Docker proof.
+- The correction passes shell syntax, byte identity, checksum, documentation and
+  repository-memory checks. `pnpm check:changed` passes 9/9 tasks with no cached
+  tasks in `14.519s`.
+- Correction head `9669a73` passes protected run `33644727686`; both initial
+  discussions are resolved. Confirmation review `5091322369` opened
+  discussions `3915467273` and `3915467277` for fail-open cleanup inspection
+  and missing absent-target/pre-install proof.
+- The confirmation remediation proves new clone target
+  `/tmp/aster-reference-reader-confirm-20260902` absent and empty before
+  installation, then passes the frozen install, navigation, 16 focused tests,
+  73/73 complete source tasks in `2m5.432s`, and the high-severity audit.
+- Corrected project `aster-reference-confirm-20260902` passes healthy startup,
+  browser playback 1/1 in `6.0s`, unchanged seed/generated-media replay, checked
+  teardown, and zero residue. The directly executed runner has SHA-256
+  `97e64678`.
+- Shell syntax, documentation, repository-memory, and changed-scope checks pass;
+  the confirmation-remediation gate is 9/9 tasks with two cached tasks in
+  `10.912s`.
+
+### Evidence
+
+- A non-accepted cleanup command passed a project variable through a nested
+  shell. It expanded to empty, so Compose removed 13 unused volumes from the
+  existing `aster` project. Their Docker data is not recoverable without an
+  external backup.
+- `aster-broker-1`, `aster_broker-data`, and `aster_identity-event-trust`
+  remain. No empty replacement volumes were created. The accepted repeat used
+  a new literal project and preserved those remaining resources.
+
+### Next action
+
+Run the changed-scope gate, publish and resolve both confirmation discussions,
+then complete the permitted blocker-boundary confirmation, merge, and exact-
+main acceptance.
+
+## 2026-09-02 — Fresh-reader source path passed; Docker startup blocked
+
+### Completed
+
+- Created `/tmp/aster-reference-reader-20260902` from the public remote at exact
+  main `2b6054a`; the checkout began clean and without generated repository
+  state.
+- Followed the public bootstrap with Node.js `24.19.0`, Corepack, pnpm `11.24.0`,
+  frozen install, and toolchain verification.
+- Followed the capability index to all Playback proof destinations. Playback
+  application and Web-state checks passed 16/16.
+- The exact-main complete gate passed 73/73 in `1m47.705s`. The high-severity
+  audit gate passed and reported one moderate finding.
+- Published the in-progress local reference-verification note in repository
+  navigation. It separates passing source proof from the pending Docker leg and
+  explicitly excludes hosted, capacity, broader-rights, and commercial claims.
+- The documentation candidate gate passes 9/9 tasks with zero cached tasks in
+  `13.792s`.
+
+### Evidence
+
+- Docker context verification stopped before creating a Compose project because
+  Docker Desktop failed during startup while removing its stale local analytics
+  socket. The owner closed Docker. No reset or socket removal was attempted.
+
+### Next action
+
+When Docker Desktop is healthy, run only the remaining playable browser,
+replay, scoped-cleanup, and residue proof. Then publish complete evidence and
+verification notes and finish protected release.
+
+## 2026-09-02 — Core journeys verified and item75 activated
+
+### Completed
+
+- Item74 final head `903f50e`, tree `3e905e`, passed protected workflow
+  `33633680649` on attempt 2 after attempt 1's isolated `docker info` timeout.
+  Every discussion is resolved.
+- PR65 squash main `2b6054a` retains the exact tree; exact-main workflow
+  `33636042474` passed every applicable job. Item74/P14-R17 is `DONE`.
+- Activated item75/P14-R18 on `docs/reference-acceptance` from exact main.
+- Restored the required Phase14, ADR-0048, reader-path, Docker, testing,
+  release, documentation, and cleanup context.
+- Scoped the work to one fresh exact-main clone, public installation and
+  navigation, one focused adverse test, the anonymous playable journey,
+  evidence lookup, replay-safe initialization, and zero owned Docker residue.
+
+### Evidence
+
+- Item74 protected run `33633680649`, PR65 main `2b6054a`, tree `3e905e`, and
+  exact-main workflow `33636042474` establish the accepted P14-R18 base.
+
+### Next action
+
+Run the fresh-reader acceptance once, publish raw evidence and verification
+notes, then complete protected review, merge, and exact-main verification.
+
 ## 2026-09-02 — Router/Web/tooling readability verified and item74 activated
 
 ### Completed

@@ -1,0 +1,681 @@
+P14-R18 fresh-reader reference acceptance
+Date: 2026-09-02
+Status: LOCAL ACCEPTANCE PASSED — protected release pending
+
+Source
+------
+Remote: https://github.com/andrewsrigom/aster-streaming-platform.git
+Fresh clone: /tmp/aster-reference-reader-boundary-20260902
+Commit: 2b6054a6ff30b24e635b2aae830850455cdcc8b6
+Tree: 3e905ea5d3c18de426918125fbc6dbb0de310bd7
+
+$ test ! -e /tmp/aster-reference-reader-boundary-20260902
+fresh_target_absent=ok path=/tmp/aster-reference-reader-boundary-20260902
+
+$ git clone --branch main --single-branch https://github.com/andrewsrigom/aster-streaming-platform.git /tmp/aster-reference-reader-boundary-20260902
+Cloning into '/tmp/aster-reference-reader-boundary-20260902'...
+
+$ git status --short --branch
+## main...origin/main
+
+$ git ls-files --others --ignored --exclude-standard
+ignored_state_before_install=empty
+
+$ git ls-files --others --exclude-standard
+untracked_state_before_install=empty
+
+$ find . -path ./.git -prune -o -type d \( -name node_modules -o -name .turbo -o -name dist -o -name coverage \) -print
+generated_directories_before_install=empty
+
+$ git config --local core.hooksPath .githooks
+$ git config --local --get core.hooksPath
+.githooks
+
+Toolchain and frozen install
+----------------------------
+The first environment-selection attempt used a cache-only Node shim that did
+not include the README-required Corepack executable. It stopped before install
+and is not accepted as the reader path. The repeated command used the complete
+pinned Node.js distribution required by the README.
+
+$ node --version
+v24.19.0
+
+$ corepack enable
+$ corepack install
+Adding pnpm@11.24.0 to the cache...
+
+$ pnpm --version
+11.24.0
+
+$ pnpm install --frozen-lockfile
+Scope: all 18 workspace projects
+Lockfile is up to date, resolution step is skipped
+Packages: +480
+Progress: resolved 480, reused 480, downloaded 0, added 480, done
+Done in 1.5s using pnpm v11.24.0
+
+$ pnpm toolchain:check
+{"check":"toolchain","status":"ok","node":"24.19.0","pnpm":"11.24.0"}
+
+Capability navigation and focused proof
+---------------------------------------
+The public capability index Playback row reached:
+
+- docs/specs/phase-07-playback.md
+- services/playback/src/application/create-session.ts
+- apps/web/features/playback/player.tsx
+- services/playback/test/create-session.test.ts
+- apps/web/test/browser/playback.spec.ts
+- evidence/phase-07/release.md
+- services/playback/README.md
+
+Every destination exists.
+
+$ pnpm exec turbo run build --filter=@aster/playback
+Tasks: 5 successful, 5 total
+Cached: 0 cached, 5 total
+Time: 7.351s
+
+$ node --test ./services/playback/dist/test/create-session.test.js
+tests 6
+pass 6
+fail 0
+duration_ms 2076.475479
+
+$ node --test ./apps/web/test/playback-state.test.ts
+tests 10
+pass 10
+fail 0
+duration_ms 304.706754
+
+Authoritative source gate and audit
+-----------------------------------
+The first full-gate attempt reached 42/55 tasks with five cached tasks in
+35.34s, then the media process-group deadline test failed its `ENOENT`
+assertion. It is a recorded temporal failure, not accepted complete evidence.
+
+$ node --test ./services/media/dist/test/process-group-deadline.test.js
+tests 2
+pass 2
+fail 0
+duration_ms 2207
+
+A second complete-gate invocation overlapped the still-running first process and
+was rejected because another Next.js build held its build lock. It is not
+accepted evidence. After every prior gate process ended, a clean invocation
+passed:
+
+$ pnpm check
+Tasks: 73 successful, 73 total
+Cached: 63 cached, 73 total
+Time: 52.379s
+
+$ pnpm audit --audit-level=high
+1 vulnerabilities found
+Severity: 1 moderate
+Exit: 0
+
+$ git status --short --branch
+## main...origin/main
+
+$ git config --local --get core.hooksPath
+.githooks
+
+Documentation candidate gate
+----------------------------
+The in-progress verification note and repository navigation add no executable
+behavior or completion claim.
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 0 cached, 9 total
+Time: 13.792s
+
+Docker preflight diagnostic
+---------------------------
+Docker Desktop was initially stopped. Starting it did not yield a healthy
+engine. Docker context verification stopped at the daemon ping before Compose:
+
+ERROR: request returned Internal Server Error for API route and version
+http://%2Fvar%2Frun%2Fdocker.sock/_ping, check if the server supports the
+requested API version
+
+Docker Desktop displayed:
+
+running services: running services: running OTel manager: removing stale
+socket: remove
+C:\Users\andre\AppData\Local\Docker\run\userAnalyticsOtlpHttp.sock: The file
+cannot be accessed by the system.
+
+The owner selected Exit. Read-only follow-up found Docker Desktop stopped and
+the zero-byte socket still present with timestamp 2026-08-31 11:34:28. No
+factory reset, socket removal, Compose startup, container, network, volume, or
+project cleanup command was attempted.
+
+First healthy-engine attempt and rejected cleanup
+-------------------------------------------------
+After the owner reopened Docker Desktop:
+
+docker_server=26.0.0
+Docker Compose version v2.26.1-desktop.1
+docker_preflight=ok project=aster-reference-p14r18-20260902
+
+The project started healthy. Playwright's --with-deps installation then invoked
+sudo, which required interactive administrator credentials. The process was
+cancelled. The already available Chromium was used in the resumed attempt:
+
+Running 1 test using 1 worker
+1 passed (3.6s)
+catalog_playable_seed ... "changed":false
+generated_hls_reused ... "totalBytes":1948485
+docker_browser_replay=ok project=aster-reference-p14r18-20260902
+
+The project-owned script then removed the exact reference project and proved
+zero owned containers, networks, and volumes.
+
+Before that safe script ran, a manual cleanup command passed its project
+variable through a nested shell. The outer shell expanded the variable to an
+empty value, and Compose fell back to the existing local project name `aster`.
+It removed these 13 unused volumes:
+
+aster_catalog-router-trust
+aster_discovery-catalog-trust
+aster_discovery-router-trust
+aster_engagement-catalog-trust
+aster_engagement-identity-trust
+aster_engagement-playback-trust
+aster_engagement-router-trust
+aster_identity-router-trust
+aster_playable-fixture
+aster_playback-catalog-trust
+aster_playback-router-trust
+aster_postgres-data
+aster_storage-data
+
+Docker volume data is not recoverable without an external backup. Read-only
+inspection showed these existing resources remained:
+
+aster-broker-1 Exited (255)
+aster_broker-data
+aster_identity-event-trust
+
+No replacement volume was created. Because this attempt changed an unrelated
+project, it is explicitly rejected as acceptance evidence.
+
+Accepted isolated Docker/browser/replay/cleanup attempt
+-------------------------------------------------------
+The required repeat used a new literal project name in one script-owned scope.
+The remaining `aster` resources above were identical before and after it.
+
+Exact runner at initial-review correction head `9669a73`:
+evidence/phase-14/p14-r18-reference-acceptance.sh
+SHA-256: 35da14d54dcc7c75eba1a8ba4aea378576fde55488efaff0ea68b7464956b526
+
+That committed runner was byte-identical to the executed temporary script. It
+defined `playable_compose`, the literal project, preflight resource filters,
+startup, browser, replay, inspected teardown, and post-cleanup label queries.
+
+docker_server=26.0.0
+Docker Compose version v2.26.1-desktop.1
+{"check":"docker-context","included":24,"excluded":18,"status":"ok"}
+docker_preflight=ok project=aster-reference-final-20260902 ports=3000,4000,9001
+
+The anonymous Web, Router, Catalog, Playback, PostgreSQL, object-storage, and
+generated-media services became healthy.
+
+$ pnpm --filter @aster/web exec playwright test demo.spec.ts
+Running 1 test using 1 worker
+Docker-only generated demo plays real HLS with captions, direct delivery and
+bounded diagnostics
+1 passed (5.0s)
+
+$ playable_compose up --no-build --wait --wait-timeout 90 web
+catalog_playable_seed ... "changed":false
+generated_hls_reused ... "totalBytes":1948485
+docker_browser_replay=ok project=aster-reference-final-20260902
+
+Before cleanup, Compose listed the exact 13 owned containers. Project-scoped
+down removed those containers, two networks, and 13 volumes.
+
+docker_cleanup=ok project=aster-reference-final-20260902 containers=0 networks=0 volumes=0
+
+Final local candidate gate
+--------------------------
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 2 cached, 9 total
+Time: 15.406s
+
+Initial-review correction gate
+------------------------------
+$ bash -n evidence/phase-14/p14-r18-reference-acceptance.sh
+Exit: 0
+
+$ cmp /tmp/aster-reference-playable-final.sh evidence/phase-14/p14-r18-reference-acceptance.sh
+Exit: 0
+
+$ sha256sum /tmp/aster-reference-playable-final.sh evidence/phase-14/p14-r18-reference-acceptance.sh
+35da14d54dcc7c75eba1a8ba4aea378576fde55488efaff0ea68b7464956b526  /tmp/aster-reference-playable-final.sh
+35da14d54dcc7c75eba1a8ba4aea378576fde55488efaff0ea68b7464956b526  evidence/phase-14/p14-r18-reference-acceptance.sh
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 0 cached, 9 total
+Time: 14.519s
+
+Protected initial-review correction
+-----------------------------------
+Head: 9669a7366687d7f627ca4fa7e2051b239dc55805
+Tree: 0dca0a47f648721726cdbc5362efe031fb61a05e
+Protected workflow: 33644727686 — passed
+Initial discussions 3915333547 and 3915333560 — resolved
+
+Confirmation review 5091322369 completed at 2026-09-02T14:56:55Z and found
+two acceptance-proof blockers:
+
+- discussion 3915467273: cleanup could report success when Compose teardown or
+  inventory queries failed;
+- discussion 3915467277: the source transcript did not prove that the clone
+  target was absent and free of ignored/generated state before installation.
+
+Confirmation remediation: fresh source
+--------------------------------------
+The explicit absent-target clone and pre-install checks at the top of this
+artifact pass. The repeated public path then passes:
+
+- frozen install: 480 reused, zero downloaded;
+- toolchain: Node.js 24.19.0 and pnpm 11.24.0;
+- Playback navigation: 7/7 destinations;
+- Playback build: 5/5 tasks in 7.918s;
+- focused tests: 6/6 and 10/10;
+- complete source gate: 73/73 tasks, 5 cached, in 2m5.432s;
+- high-severity audit: exit 0 with one moderate finding;
+- final Git status: `main...origin/main` with no tracked change.
+
+Confirmation remediation: fail-closed Docker cleanup
+-----------------------------------------------------
+Exact executed runner:
+evidence/phase-14/p14-r18-reference-acceptance.sh
+SHA-256: 97e6467864a27f670a7c4a62e7131511ef533f9cfcc97b9ac56bb17d0b9381ca
+
+The checked-in runner was executed directly. Its cleanup records and checks
+the status of Compose inspection, logs, teardown, and each container, network,
+and volume inventory query. Any command failure or residue changes the final
+status to failure.
+
+docker_server=26.0.0
+Docker Compose version v2.26.1-desktop.1
+{"check":"docker-context","included":24,"excluded":18,"status":"ok"}
+docker_preflight=ok project=aster-reference-confirm-20260902 ports=3000,4000,9001
+
+$ pnpm --filter @aster/web exec playwright test demo.spec.ts
+Running 1 test using 1 worker
+Docker-only generated demo plays real HLS with captions, direct delivery and
+bounded diagnostics
+1 passed (6.0s)
+
+catalog_playable_seed ... "changed":false
+generated_hls_reused ... "totalBytes":1948485
+docker_browser_replay=ok project=aster-reference-confirm-20260902
+
+Compose listed the exact 13 owned containers before teardown. Project-scoped
+down removed those containers, two networks, and 13 volumes. All six checked
+cleanup command statuses were zero.
+
+docker_cleanup=ok project=aster-reference-confirm-20260902 containers=0 networks=0 volumes=0
+
+Independent post-run label queries returned no project-owned resource. The
+retained unrelated resources remained exactly:
+
+aster-broker-1 Exited (255)
+aster_broker-data
+aster_identity-event-trust
+
+Confirmation-remediation candidate gate
+---------------------------------------
+$ bash -n evidence/phase-14/p14-r18-reference-acceptance.sh
+Exit: 0
+
+$ sha256sum evidence/phase-14/p14-r18-reference-acceptance.sh
+97e6467864a27f670a7c4a62e7131511ef533f9cfcc97b9ac56bb17d0b9381ca  evidence/phase-14/p14-r18-reference-acceptance.sh
+
+$ pnpm docs:check
+documents: 253
+headings: 2975
+links: 1806
+statusClaims: 4
+violations: 0
+capability rows: 11
+
+$ pnpm ai:check
+files: 10
+queueItems: 75
+sessionEntries: 71
+activeRequirement: P14-R18
+targetRequirement: P14-R18
+violations: 0
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 2 cached, 9 total
+Time: 10.912s
+
+Protected confirmation remediation
+----------------------------------
+Head: 894fef9e71dd3fb8fc0072f5ea03bfa4396fc579
+Tree: 02e30d0b55975818a2c398089f7412cba63c2603
+Protected workflow: 33646820741 — passed
+Discussions 3915467273 and 3915467277 — resolved
+
+Blocker-boundary review 5091554514 found two acceptance blockers:
+
+- discussion 3915666140: command substitution could hide a failing namespace
+  inventory query, treat the result as empty, and arm project teardown without
+  proving the namespace safe;
+- discussion 3915666152: the exact reader transcript omitted the README step
+  that configures tracked local Git hooks.
+
+Blocker-boundary remediation: fresh source
+------------------------------------------
+The source section at the top of this artifact is the repeated boundary proof.
+It uses the new literal clone target
+`/tmp/aster-reference-reader-boundary-20260902`, proves it absent and empty,
+then configures `core.hooksPath=.githooks` before install. Frozen install,
+toolchain, seven Playback destinations, 5/5 build tasks, focused tests 6/6 and
+10/10, clean 73/73 complete gate, audit, final clean Git state, and hook-path
+check pass.
+
+The first full-gate media timing failure, focused 2/2 passing rerun, and one
+overlapping Next.js build-lock rejection are retained above. Only the final
+clean 73/73 invocation is accepted as the complete source gate.
+
+Blocker-boundary remediation: preflight before teardown
+-------------------------------------------------------
+Exact executed runner:
+evidence/phase-14/p14-r18-reference-acceptance.sh
+SHA-256: 9d0889718aec0fbfe10f64b5f1afddf190286fba07f779e4f60a71621a52c561
+
+The runner captures the status and output of container, network, and volume
+inventory queries with `errexit` temporarily disabled. Any query failure exits
+before the cleanup trap is installed. Any existing exact-project resource also
+exits before cleanup is armed. Only successful empty-namespace proof installs
+the exact-project teardown trap.
+
+docker_server=26.0.0
+Docker Compose version v2.26.1-desktop.1
+{"check":"docker-context","included":24,"excluded":18,"status":"ok"}
+docker_preflight=ok project=aster-reference-boundary-20260902 ports=3000,4000,9001
+
+$ pnpm --filter @aster/web exec playwright test demo.spec.ts
+Running 1 test using 1 worker
+Docker-only generated demo plays real HLS with captions, direct delivery and
+bounded diagnostics
+1 passed (5.2s)
+
+catalog_playable_seed ... "changed":false
+generated_hls_reused ... "totalBytes":1948485
+docker_browser_replay=ok project=aster-reference-boundary-20260902
+
+Compose listed the exact 13 owned containers before teardown. Project-scoped
+down removed those containers, two networks, and 13 volumes. All checked
+cleanup statuses were zero.
+
+docker_cleanup=ok project=aster-reference-boundary-20260902 containers=0 networks=0 volumes=0
+
+Independent post-run label queries confirmed:
+
+reference_containers=0
+reference_networks=0
+reference_volumes=0
+aster-broker-1 Exited (255)
+aster_broker-data
+aster_identity-event-trust
+
+Blocker-boundary candidate gate
+-------------------------------
+$ bash -n evidence/phase-14/p14-r18-reference-acceptance.sh
+Exit: 0
+
+$ sha256sum evidence/phase-14/p14-r18-reference-acceptance.sh
+9d0889718aec0fbfe10f64b5f1afddf190286fba07f779e4f60a71621a52c561  evidence/phase-14/p14-r18-reference-acceptance.sh
+
+$ pnpm docs:check
+documents: 253
+headings: 2979
+links: 1806
+statusClaims: 4
+violations: 0
+capability rows: 11
+
+$ pnpm ai:check
+files: 10
+queueItems: 75
+sessionEntries: 72
+activeRequirement: P14-R18
+targetRequirement: P14-R18
+violations: 0
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 2 cached, 9 total
+Time: 12.826s
+
+Final exact-head review 5091785850
+----------------------------------
+Reviewed head: 68dda8ca16197bdedf63cebf45986a313ccf8454
+Completed: 2026-09-02T15:38:55Z
+
+- discussion 3915872033: the runner must reject Docker endpoint and
+  configuration overrides, refuse a non-local active endpoint, and pin every
+  Docker/Compose operation to the inspected local context;
+- discussion 3915872044: label-only preflight can miss an unlabeled resource
+  with a Compose-generated physical name, so physical project prefixes must be
+  checked before teardown is armed.
+
+Endpoint and physical-name refusal proof
+----------------------------------------
+The corrected runner checks endpoint overrides before its first Docker command.
+
+$ DOCKER_HOST=tcp://example.invalid:2375 bash evidence/phase-14/p14-r18-reference-acceptance.sh
+docker_acceptance_refused=docker_endpoint_override
+remote_refusal=ok
+
+A synthetic empty volume was created with exact name
+`aster-reference-endpoint-20260902_unowned-probe`, fixture label
+`com.aster.fixture=reference-boundary`, and no Compose project label. The runner
+reported:
+
+docker_preflight_occupied containers= networks= volumes= prefixed_containers= prefixed_networks= prefixed_volumes=aster-reference-endpoint-20260902_unowned-probe
+physical_name_refusal=ok
+preserved=aster-reference-endpoint-20260902_unowned-probe
+
+The trap had not been armed and the fixture remained. Its exact name and labels
+were re-inspected before targeted removal. The removal succeeded and a final
+inspect reported the fixture absent.
+
+Endpoint-corrected Docker acceptance
+------------------------------------
+Exact executed runner:
+evidence/phase-14/p14-r18-reference-acceptance.sh
+SHA-256: d0d4564b8c5ac9b126cbc9a4fc4dfbdaec65d6f9fb03013dc3db0ca46b373d59
+
+The runner rejects `DOCKER_HOST`, `DOCKER_CONTEXT`, TLS/certificate, and Docker
+configuration overrides. It inspects the active endpoint, accepts only a Unix
+or named-pipe socket, pins every Docker and Compose command to that context,
+requires Linux containers, and checks both Compose labels and physical project
+prefixes before and after the run.
+
+docker_server=26.0.0
+Docker Compose version v2.26.1-desktop.1
+docker_endpoint=local context=default type=linux
+docker_preflight=ok project=aster-reference-endpoint-20260902 ports=3000,4000,9001
+
+$ pnpm --filter @aster/web exec playwright test demo.spec.ts
+Running 1 test using 1 worker
+Docker-only generated demo plays real HLS with captions, direct delivery and
+bounded diagnostics
+1 passed (3.9s)
+
+catalog_playable_seed ... "changed":false
+generated_hls_reused ... "totalBytes":1948485
+docker_browser_replay=ok project=aster-reference-endpoint-20260902
+
+Compose listed the exact 13 owned containers before teardown. Project-scoped
+down removed those containers, two networks, and 13 volumes. Checked label and
+physical-prefix inventory statuses were zero.
+
+docker_cleanup=ok project=aster-reference-endpoint-20260902 containers=0 networks=0 volumes=0
+
+Independent post-run queries confirmed:
+
+label_containers=0
+label_networks=0
+label_volumes=0
+prefix_containers=0
+prefix_networks=0
+prefix_volumes=0
+aster-broker-1 Exited (255)
+aster_broker-data
+aster_identity-event-trust
+
+Endpoint-remediation candidate gate
+-----------------------------------
+$ bash -n evidence/phase-14/p14-r18-reference-acceptance.sh
+Exit: 0
+
+$ sha256sum evidence/phase-14/p14-r18-reference-acceptance.sh
+d0d4564b8c5ac9b126cbc9a4fc4dfbdaec65d6f9fb03013dc3db0ca46b373d59  evidence/phase-14/p14-r18-reference-acceptance.sh
+
+$ pnpm docs:check
+documents: 253
+headings: 2979
+links: 1806
+statusClaims: 4
+violations: 0
+capability rows: 11
+
+$ pnpm ai:check
+files: 10
+queueItems: 75
+sessionEntries: 72
+activeRequirement: P14-R18
+targetRequirement: P14-R18
+violations: 0
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 2 cached, 9 total
+Time: 10.727s
+
+Exact-head review 5092002215
+----------------------------
+Reviewed head: 5c8724aca2aed937632a9d0c3333fe529ff941ae
+Protected workflow: 33651421780 — passed
+Completed: 2026-09-02T15:59:16Z
+
+- discussion 3916063357: the build-context verifier's nested bare Docker
+  command could follow a concurrently changed active context;
+- discussion 3916063367: the primary change-plan checksum still identified a
+  superseded runner even though the current digest appeared later.
+
+Context-pinned corrected acceptance
+------------------------------------
+The verifier child now receives `DOCKER_CONTEXT` equal to the already inspected
+context. Direct Docker and Compose commands keep their explicit context flag.
+The primary change-plan entry names this current full digest; older digests are
+explicitly superseded evidence snapshots.
+
+Exact runner executed via Bash:
+evidence/phase-14/p14-r18-reference-acceptance.sh
+SHA-256: cba6458212b4937015e41c45530e0c71395f1221398bae84a0fe7edcbe92604e
+
+{"check":"docker-context","included":24,"excluded":18,"status":"ok"}
+docker_server=26.0.0
+Docker Compose version v2.26.1-desktop.1
+docker_endpoint=local context=default type=linux
+docker_preflight=ok project=aster-reference-pinned-20260902 ports=3000,4000,9001
+
+$ pnpm --filter @aster/web exec playwright test demo.spec.ts
+Running 1 test using 1 worker
+Docker-only generated demo plays real HLS with captions, direct delivery and
+bounded diagnostics
+1 passed (10.5s)
+
+catalog_playable_seed ... "changed":false
+generated_hls_reused ... "totalBytes":1948485
+docker_browser_replay=ok project=aster-reference-pinned-20260902
+
+Compose listed the exact 13 owned containers before teardown. Project-scoped
+down removed those containers, two networks, and 13 volumes. Checked label and
+physical-prefix inventory statuses were zero.
+
+docker_cleanup=ok project=aster-reference-pinned-20260902 containers=0 networks=0 volumes=0
+
+Independent post-run queries pinned to context `default` confirmed:
+
+label_containers=0
+label_networks=0
+label_volumes=0
+prefix_containers=0
+prefix_networks=0
+prefix_volumes=0
+aster-broker-1 Exited (255)
+aster_broker-data
+aster_identity-event-trust
+
+Source acceptance and the earlier override/unlabeled-fixture refusal results
+remain supporting evidence because those paths were not changed.
+
+Nested-context/checksum candidate gate
+--------------------------------------
+$ bash -n evidence/phase-14/p14-r18-reference-acceptance.sh
+Exit: 0
+
+$ sha256sum evidence/phase-14/p14-r18-reference-acceptance.sh
+cba6458212b4937015e41c45530e0c71395f1221398bae84a0fe7edcbe92604e  evidence/phase-14/p14-r18-reference-acceptance.sh
+
+$ pnpm docs:check
+documents: 253
+headings: 2979
+links: 1806
+statusClaims: 4
+violations: 0
+capability rows: 11
+
+$ pnpm ai:check
+files: 10
+queueItems: 75
+sessionEntries: 72
+activeRequirement: P14-R18
+targetRequirement: P14-R18
+violations: 0
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 5 cached, 9 total
+Time: 7.123s
+
+Final prose-only review correction
+----------------------------------
+Reviewed head: 7a3279aea65f2ef2efd93d5369d3a97bbbb07a73
+Tree: 1e16cf8d4f55e500d44f870eac82dce84706773c
+Protected workflow: 33653251535 — passed
+Review: 5092157759 at 2026-09-02T16:14:38Z
+
+Discussion 3916199051 found stale Docker-pending prose in the change-plan
+Current behavior section. That text now records the accepted fresh source and
+context-pinned Docker results. The runner and all executable or blocking
+boundaries are unchanged. No additional review round or heavyweight repeat is
+required by the recorded stopping rule.
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 2 cached, 9 total
+Time: 36.892s
+
+Remaining acceptance
+--------------------
+- publish the correction and pass protected CI;
+- resolve discussion 3916199051;
+- squash merge and exact-main acceptance.

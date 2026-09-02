@@ -94,8 +94,8 @@ The latest release is Phase13:
 | 71 | Refactor representative Catalog and Playback reading slices | P14-R16 | DONE |
 | 72 | Refactor representative Identity, Engagement and Discovery reading slices | P14-R16 | DONE |
 | 73 | Refactor representative Router, Web and repository-tooling reading slices | P14-R16 | DONE |
-| 74 | Align rationale comments, executable examples and core-journey reading paths | P14-R17 | IN_PROGRESS |
-| 75 | Run fresh-checkout/Docker acceptance and verify the reference track | P14-R18 | READY |
+| 74 | Align rationale comments, executable examples and core-journey reading paths | P14-R17 | DONE |
+| 75 | Run fresh-checkout/Docker acceptance and verify the reference track | P14-R18 | IN_PROGRESS |
 
 ## Item68 — verified
 
@@ -243,7 +243,7 @@ PR64 final head `90efa2b`, tree `455857a`, passed protected workflow
 confirmation is clean. PR64 squash main `5be75bd` retains the exact tree, and
 exact-main workflow `33626869266` passed every applicable job.
 
-## Item74 — active
+## Item74 — verified
 
 ### Outcome
 
@@ -282,8 +282,11 @@ batching, and query-count proofs. The corrected-source gate passes; protected
 workflow `33631634720` passes on evidence head `0e10a85`, tree `1bf3362`, and
 both discussions are resolved. Confirmation review `5089816369` found only a
 non-chronological raw transcript. The transcript is reordered without changing
-an executable or public boundary. Final exact-head protected acceptance, merge,
-and exact-main verification remain; the recorded review stopping rule is met.
+an executable or public boundary. Final head `903f50e`, tree `3e905e`, passed
+protected workflow `33633680649` on attempt 2 after attempt 1's isolated
+`docker info` timeout. Every discussion is resolved. PR65 squash main `2b6054a`
+retains the exact tree, and exact-main workflow `33636042474` passed every
+applicable job. The recorded review stopping rule is met.
 
 ## Items72–74 — scoped implementation work
 
@@ -296,12 +299,44 @@ Each item starts only after its predecessor releases. Every slice:
 - runs focused checks during iteration and the affected-scope candidate gate;
 - updates the capability index and reading guidance with the same change.
 
-## Item75 — reference-track verification
+## Item75 — active reference-track verification
 
 From a fresh checkout, prove installation, capability navigation, a focused
 test, the documented Docker reference journey, evidence lookup and exact
 project-scoped cleanup. Verification notes must state verified local
 capabilities, known limitations and all deferred hosted work.
+
+Exact-main clone `2b6054a` passes the public bootstrap, proof navigation, 16
+focused Playback checks, the complete 73-task gate, and high-severity audit. A
+rejected nested-shell cleanup removed 13 unused existing `aster` volumes; the
+loss and retained broker resources are recorded, and empty replacements are
+forbidden. Protected runs `33643437047` and `33644727686` pass, and initial
+review discussions `3915333547` and `3915333560` are resolved.
+
+Confirmation review `5091322369` opened discussions `3915467273` and
+`3915467277` for fail-open cleanup inspection and missing fresh-target proof.
+Corrected head `894fef9` passes protected run `33646820741`, and both discussions
+are resolved. Blocker-boundary review `5091554514` opened discussions
+`3915666140` and `3915666152`. The remediation configures tracked hooks in a new
+absent/empty clone, passes the clean 73-task source gate, checks namespace-query
+statuses before arming cleanup, and passes isolated browser/replay/cleanup with
+zero residue. Candidate checks pass 9/9 tasks in `12.826s`. Publication, final
+review, merge, and exact-main acceptance remained. Review `5091785850` then
+opened remote-Docker and unlabeled-name blockers `3915872033` and `3915872044`.
+The remediation rejects endpoint overrides, pins inspected local Linux context
+`default`, refuses and preserves an unlabeled prefixed fixture before teardown,
+and passes the new literal Docker journey with independent zero label-and-prefix
+residue. Updated candidate checks pass 9/9 tasks in `10.727s`. Publication,
+exact-head review, merge, and exact-main acceptance remained. Review `5092002215`
+on `5c8724a` then opened nested-context/checksum blockers `3916063357` and
+`3916063367`. The corrected runner pins the verifier child to the inspected
+context and passes project `aster-reference-pinned-20260902` with browser 1/1,
+replay, cleanup, and independent zero residue. Candidate checks pass 9/9 tasks
+in `7.123s`. Head `7a3279a` passes protected run `33653251535`; prior discussions
+are resolved. Review `5092157759` found only stale Docker-pending prose
+(`3916199051`), now corrected. Publish the text correction, resolve that
+discussion, pass final protected CI, merge, and verify exact main. No further
+review round or heavyweight repeat is required for this text-only correction.
 
 ## Deferred hosted queue
 
