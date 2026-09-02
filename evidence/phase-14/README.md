@@ -1027,7 +1027,8 @@ required aggregate. The initial review found two evidence-index defects only:
 completed P14-R15 still appeared under planned evidence, and item71 lacked an
 exact reproducible command transcript. Both are corrected together. The
 post-remediation affected gate passes 43/43 tasks with 32 cached in 40 seconds;
-confirmation review and exact-head protected checks remain.
+confirmation review found one stale handoff action, which is corrected without
+changing product source. Final exact-head protected checks remain.
 
 ## Planned evidence
 

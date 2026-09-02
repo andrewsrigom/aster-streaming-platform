@@ -26,6 +26,8 @@ full snapshot through the archival checkpoint remains in
 - Initial review findings `3911927401` and `3911927407` identify evidence-index
   defects only. Removed completed P14-R15 from planned evidence and added an
   exact command/raw-output transcript for item71.
+- Confirmation finding `3912134690` identified one stale handoff action. The
+  handoff now resumes directly at final exact-head checks.
 
 ### Evidence
 
@@ -43,8 +45,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-Publish the review remediation, resolve both discussions, complete one
-confirmation, merge, and verify exact main before activating item72.
+Publish the confirmation correction, wait for final exact-head checks, merge,
+and verify exact main before activating item72.
 
 ## 2026-09-02 — Readability inventory initial review corrected
 

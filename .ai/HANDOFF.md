@@ -46,10 +46,9 @@ Close only the `catalog-command-flow` and `playback-session-outcome` findings:
 
 ## Exact next actions
 
-1. Finish the documentation-only checks, commit and publish the review
-   remediation, and resolve both discussions.
-2. Complete the single confirmation review and exact-head protected checks.
-3. Merge, verify exact main, then activate item72.
+1. Wait for the final exact-head protected checks.
+2. Merge when they pass, then verify exact main.
+3. Activate item72 only after item71 is verified.
 
 ## Execution boundary
 

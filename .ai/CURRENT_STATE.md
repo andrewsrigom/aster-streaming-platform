@@ -61,8 +61,9 @@ Protected PR62 workflow `33605355037` passes every applicable job. Initial
 review found two evidence defects, both corrected together: the planned-evidence
 list no longer includes completed P14-R15, and exact commands plus raw output are
 retained in `evidence/phase-14/p14-r16-readability.txt`. The remediation gate
-passes 43/43 with 32 cached in 40 seconds. Confirmation, merge, and exact-main
-acceptance remain.
+passes 43/43 with 32 cached in 40 seconds. Confirmation found one stale handoff
+instruction, which is corrected without changing product source. Final
+exact-head checks, merge, and exact-main acceptance remain.
 
 ## Ordered reference-quality runway
 
