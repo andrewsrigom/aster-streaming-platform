@@ -343,6 +343,23 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       "  governance:\n    name: Documentation and security\n    needs: classify\n",
       "  governance:\n    name: Documentation and security\n    needs: quality\n",
     );
+    const conditionalClassifier = source.replace("  classify:\n", "  classify:\n    if: false\n");
+    const quotedConditionalClassifier = source.replace(
+      "  classify:\n",
+      "  classify:\n    'if': false\n",
+    );
+    const nonBlockingClassifier = source.replace(
+      "  classify:\n",
+      "  classify:\n    continue-on-error: true\n",
+    );
+    const dependentClassifier = source.replace(
+      "  classify:\n",
+      "  classify:\n    needs: skipped-doc-check\n",
+    );
+    const emptyMatrixClassifier = source.replace(
+      "  classify:\n",
+      "  classify:\n    strategy:\n      matrix: []\n",
+    );
     const workflowRunDefaults = source.replace(
       "permissions:\n",
       `defaults:\n  run:\n    shell: node -e "process.exit(0)" {0}\n\npermissions:\n`,
@@ -385,6 +402,11 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       retainedOnlyInTrailingConditionalGovernanceJob,
       retainedOnlyInQuotedTrailingConditionalGovernanceJob,
       governanceDependsOnConditionalQuality,
+      conditionalClassifier,
+      quotedConditionalClassifier,
+      nonBlockingClassifier,
+      dependentClassifier,
+      emptyMatrixClassifier,
       workflowRunDefaults,
       quotedWorkflowRunDefaults,
       workflowShellEnvironment,

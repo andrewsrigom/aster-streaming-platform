@@ -196,6 +196,24 @@ function hasExactJobDependency(jobSource: string, dependency: string): boolean {
   return separator >= 0 && normalized.slice(separator + 1).trim() === dependency;
 }
 
+function hasUnconditionalBlockingClassifier(jobSource: string): boolean {
+  if (!jobSource) {
+    return false;
+  }
+  const jobKeys = jobSource
+    .replace(/\r\n?/gu, "\n")
+    .split("\n")
+    .filter((line) => /^ {4}\S/u.test(line))
+    .map((line) => yamlKey(line));
+  return (
+    jobKeys.length === 4 &&
+    jobKeys[0] === "name" &&
+    jobKeys[1] === "runs-on" &&
+    jobKeys[2] === "outputs" &&
+    jobKeys[3] === "steps"
+  );
+}
+
 function hasStandaloneCapabilityCheck(steps: readonly string[]): boolean {
   const required = "node ./tools/verify-capability-index.ts";
   return steps.some((step) => {
@@ -381,8 +399,17 @@ export function validateWorkflowPolicy(
     /package-manager-cache:\s*false/u,
     "implicit setup-node caching must be disabled",
   );
+  const classifySource = workflowJobSource(source, "classify");
   const governanceSource = workflowJobSource(source, "governance");
   const governanceSteps = executableWorkflowSteps(governanceSource);
+  if (!hasUnconditionalBlockingClassifier(classifySource)) {
+    violations.push({
+      detail: "capability-index classifier must be unconditional, blocking, and dependency-free",
+      file,
+      line: 1,
+      rule: "commands",
+    });
+  }
   if (!hasProtectedCapabilityPrelude(governanceSource)) {
     violations.push({
       detail: "capability-index commands must precede mutable governance steps",
