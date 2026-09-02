@@ -6,8 +6,8 @@ export PATH=/home/andrews/.local/share/node-v24.19.0-linux-x64/bin:/usr/local/sb
 export ASTER_PLAYABLE_DEMO=true
 export ASTER_ENGAGEMENT_DEMO=true
 
-readonly repository=/tmp/aster-reference-reader-confirm-20260902
-readonly project=aster-reference-confirm-20260902
+readonly repository=/tmp/aster-reference-reader-boundary-20260902
+readonly project=aster-reference-boundary-20260902
 
 cd "$repository"
 
@@ -73,8 +73,6 @@ cleanup() {
   exit "$status"
 }
 
-trap cleanup EXIT
-
 node ./tools/verify-docker-context.mjs
 docker info --format 'docker_server={{.ServerVersion}}'
 docker compose version
@@ -86,10 +84,31 @@ for port in 3000 4000 9001; do
   fi
 done
 
-test -z "$(project_containers)"
-test -z "$(project_networks)"
-test -z "$(project_volumes)"
+set +e
+preflight_containers="$(project_containers)"
+preflight_containers_status=$?
+preflight_networks="$(project_networks)"
+preflight_networks_status=$?
+preflight_volumes="$(project_volumes)"
+preflight_volumes_status=$?
+set -e
+
+if ((
+  preflight_containers_status != 0 ||
+    preflight_networks_status != 0 ||
+    preflight_volumes_status != 0
+)); then
+  echo "docker_preflight_inspection_failed containers=$preflight_containers_status networks=$preflight_networks_status volumes=$preflight_volumes_status"
+  exit 1
+fi
+
+if [[ -n "$preflight_containers" || -n "$preflight_networks" || -n "$preflight_volumes" ]]; then
+  echo "docker_preflight_occupied containers=$preflight_containers networks=$preflight_networks volumes=$preflight_volumes"
+  exit 1
+fi
+
 echo "docker_preflight=ok project=$project ports=3000,4000,9001"
+trap cleanup EXIT
 
 playable_compose up --build --wait --wait-timeout 180 web
 pnpm --filter @aster/web exec playwright install chromium

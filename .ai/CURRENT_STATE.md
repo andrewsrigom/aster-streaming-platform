@@ -61,19 +61,28 @@ high-severity audit pass. Protected runs `33643437047` and `33644727686` pass,
 and initial review discussions `3915333547` and `3915333560` are resolved.
 Confirmation review `5091322369` found fail-open cleanup inspection and missing
 absent-target/pre-install proof in discussions `3915467273` and `3915467277`.
+Corrected head `894fef9` passes protected run `33646820741`; those discussions
+are resolved. Blocker-boundary review `5091554514` then found that preflight
+inventory failures could be mistaken for an empty namespace and that the exact
+README bootstrap omitted tracked Git-hook configuration in discussions
+`3915666140` and `3915666152`.
 
-The batched confirmation remediation uses new literal source and Docker names.
-Clone target `/tmp/aster-reference-reader-confirm-20260902` is proved absent and
-free of ignored, untracked, dependency, Turbo, build, and coverage state before
-installation. It passes the frozen install, navigation, 16 focused tests, the
-complete 73-task gate in `2m5.432s`, and the high-severity audit. Project
-`aster-reference-confirm-20260902` passes healthy startup, browser playback 1/1
-in `6.0s`, unchanged seed and generated-HLS replay, checked teardown, and zero
-owned residue. The directly executed runner has SHA-256 `97e64678`. Correction
-shell syntax, documentation, repository-memory, and changed-scope checks pass;
-the final gate is 9/9 tasks with two cached tasks in `10.912s`. Correction
-publication, protected CI, discussion resolution, blocker-boundary confirmation,
-merge, and exact-main acceptance remain.
+The batched boundary remediation uses clone
+`/tmp/aster-reference-reader-boundary-20260902` and literal Docker project
+`aster-reference-boundary-20260902`. The clone is proved absent and empty,
+configures `.githooks`, and passes the frozen install, navigation, 16 focused
+tests, a clean complete 73-task gate in `52.379s`, and the high-severity audit.
+One earlier full-gate attempt hit the media process-group timing assertion; its
+focused 2/2 rerun passed. A second invocation overlapped the still-running first
+gate and was rejected by Next.js's build lock. Neither attempt is accepted as
+the complete gate. Docker preflight now checks all namespace-query statuses
+before arming cleanup. The project passes healthy startup, browser playback 1/1
+in `5.2s`, unchanged seed and generated-HLS replay, checked teardown, and zero
+owned residue. Independent queries confirm zero project resources and unchanged
+retained `aster` resources. The executed runner has SHA-256 `9d088971`. The
+candidate passes 9/9 tasks with two cached tasks in `12.826s`. Publication,
+discussion resolution, final exact-head confirmation, merge, and exact-main
+acceptance remain.
 
 A rejected cleanup attempt expanded a nested-shell project variable to empty
 and removed 13 unused volumes from the existing `aster` project. Their Docker
@@ -152,8 +161,8 @@ hosted claim.
 
 ## Next outcome
 
-Finish item75/P14-R18: run the corrected changed-scope gate, publish the two
-confirmation remediations, resolve their discussions, complete the permitted
-blocker-boundary confirmation, merge, and verify exact main. Do not repeat the
-accepted source or Docker experiments unless a relevant executable, Docker,
-browser, media, cleanup, dependency, or public-command change invalidates them.
+Finish item75/P14-R18: publish the blocker-boundary remediation, resolve
+discussions `3915666140` and `3915666152`, complete final exact-head review,
+merge, and verify exact main. Do not repeat the accepted source or Docker
+experiments unless a relevant executable, Docker, browser, media, cleanup,
+dependency, or public-command change invalidates them.

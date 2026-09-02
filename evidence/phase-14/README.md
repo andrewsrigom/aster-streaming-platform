@@ -1223,27 +1223,33 @@ P14-R17 are verified.
 
 Status: **in progress**
 
-Fresh clone `/tmp/aster-reference-reader-confirm-20260902` checks out exact PR65 squash
-main `2b6054a` from the public remote without inherited repository output. The
-README bootstrap passes with Node.js `24.19.0`, pnpm `11.24.0`, a frozen install
-that reuses all 480 packages, and the exact toolchain check.
+Fresh clone `/tmp/aster-reference-reader-boundary-20260902` checks out exact
+PR65 squash main `2b6054a` from the public remote without inherited repository
+output. The README bootstrap passes with Node.js `24.19.0`, pnpm `11.24.0`,
+tracked hooks at `.githooks`, a frozen install that reuses all 480 packages, and
+the exact toolchain check.
 
 The target is proved absent before clone, and ignored, untracked, dependency,
 Turbo, build, and coverage state are absent before installation. The public
 capability index reaches the Playback requirement, representative
 service and Web source, adverse tests, release evidence, and operations guide.
-Playback application and Web-state checks pass 16/16. The complete source gate
-passes 73/73 tasks in `2m5.432s`; the high-severity dependency audit exits zero
-with one moderate finding.
+Playback application and Web-state checks pass 16/16. One complete-gate attempt
+hit the media process-group timing assertion; its focused 2/2 rerun passed. One
+overlapping invocation was rejected by the Next.js build lock. After all prior
+processes ended, the clean source gate passed 73/73 tasks in `52.379s`; the
+high-severity dependency audit exits zero with one moderate finding.
 
 After the owner reopened Docker Desktop, Engine `26.0.0` and Compose
 `2.26.1-desktop.1` became healthy without reset or socket mutation. The accepted
-corrected repeat uses the unique literal project
-`aster-reference-confirm-20260902`. The anonymous stack becomes healthy, the
-real browser journey passes 1/1 in `6.0s`,
+boundary repeat uses the unique literal project
+`aster-reference-boundary-20260902`. Namespace inventories must succeed and be
+empty before cleanup is armed. The anonymous stack becomes healthy, the real
+browser journey passes 1/1 in `5.2s`,
 replay records an unchanged Catalog seed and reused 1,948,485-byte generated HLS
 fixture. Project-scoped cleanup checks Compose teardown and every inventory
-query before proving zero owned containers, networks, and volumes.
+query before proving zero owned containers, networks, and volumes. Independent
+post-run queries confirm zero project resources and unchanged retained `aster`
+resources.
 
 A non-accepted cleanup attempt expanded a nested-shell project variable to
 empty and removed 13 unused volumes from the existing local `aster` project.
@@ -1271,14 +1277,24 @@ Correction head `9669a7366687d7f627ca4fa7e2051b239dc55805`, tree
 `5091322369` opened discussions `3915467273` and `3915467277` for fail-open
 cleanup inspection and missing absent-target/pre-install proof.
 
-The batched remediation repeats the fresh source and Docker boundaries. Source
-passes the explicit absent/empty-state checks, frozen install, 16 focused tests,
-73/73 complete tasks, and high-severity audit. Docker passes browser playback
-1/1, replay, checked teardown, and zero residue under the new literal project.
-The current directly executed runner has SHA-256
-`97e6467864a27f670a7c4a62e7131511ef533f9cfcc97b9ac56bb17d0b9381ca`.
+The confirmation remediation repeated the source and Docker boundaries.
+Corrected head `894fef9e71dd3fb8fc0072f5ea03bfa4396fc579`, tree `02e30d0`,
+passed protected workflow `33646820741`; both discussions are resolved.
+Blocker-boundary review `5091554514` then opened discussions `3915666140` and
+`3915666152`: namespace inspection failures could look empty before teardown
+was armed, and the exact reader bootstrap omitted tracked Git-hook setup.
+
+The boundary remediation repeats only those invalidated paths. Source proves a
+new absent/empty target, configures `.githooks`, and passes the accepted clean
+73/73 gate. Docker checks every preflight inventory status before arming cleanup
+and passes browser playback 1/1, replay, teardown, independent zero-residue
+queries, and retained-resource comparison. The current directly executed runner
+has SHA-256
+`9d0889718aec0fbfe10f64b5f1afddf190286fba07f779e4f60a71621a52c561`.
+The boundary-remediation candidate passes 9/9 tasks with two cached tasks in
+`12.826s`.
 
 ## Planned evidence
 
-- P14-R18 correction publication, protected confirmation, merge, and exact-main
-  acceptance
+- P14-R18 boundary-remediation publication, final protected confirmation,
+  merge, and exact-main acceptance

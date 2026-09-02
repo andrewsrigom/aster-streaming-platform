@@ -5,15 +5,15 @@ Status: LOCAL ACCEPTANCE PASSED — protected release pending
 Source
 ------
 Remote: https://github.com/andrewsrigom/aster-streaming-platform.git
-Fresh clone: /tmp/aster-reference-reader-confirm-20260902
+Fresh clone: /tmp/aster-reference-reader-boundary-20260902
 Commit: 2b6054a6ff30b24e635b2aae830850455cdcc8b6
 Tree: 3e905ea5d3c18de426918125fbc6dbb0de310bd7
 
-$ test ! -e /tmp/aster-reference-reader-confirm-20260902
-fresh_target_absent=ok path=/tmp/aster-reference-reader-confirm-20260902
+$ test ! -e /tmp/aster-reference-reader-boundary-20260902
+fresh_target_absent=ok path=/tmp/aster-reference-reader-boundary-20260902
 
-$ git clone --branch main --single-branch https://github.com/andrewsrigom/aster-streaming-platform.git /tmp/aster-reference-reader-confirm-20260902
-Cloning into '/tmp/aster-reference-reader-confirm-20260902'...
+$ git clone --branch main --single-branch https://github.com/andrewsrigom/aster-streaming-platform.git /tmp/aster-reference-reader-boundary-20260902
+Cloning into '/tmp/aster-reference-reader-boundary-20260902'...
 
 $ git status --short --branch
 ## main...origin/main
@@ -26,6 +26,10 @@ untracked_state_before_install=empty
 
 $ find . -path ./.git -prune -o -type d \( -name node_modules -o -name .turbo -o -name dist -o -name coverage \) -print
 generated_directories_before_install=empty
+
+$ git config --local core.hooksPath .githooks
+$ git config --local --get core.hooksPath
+.githooks
 
 Toolchain and frozen install
 ----------------------------
@@ -71,7 +75,7 @@ Every destination exists.
 $ pnpm exec turbo run build --filter=@aster/playback
 Tasks: 5 successful, 5 total
 Cached: 0 cached, 5 total
-Time: 7.918s
+Time: 7.351s
 
 $ node --test ./services/playback/dist/test/create-session.test.js
 tests 6
@@ -87,15 +91,36 @@ duration_ms 304.706754
 
 Authoritative source gate and audit
 -----------------------------------
+The first full-gate attempt reached 42/55 tasks with five cached tasks in
+35.34s, then the media process-group deadline test failed its `ENOENT`
+assertion. It is a recorded temporal failure, not accepted complete evidence.
+
+$ node --test ./services/media/dist/test/process-group-deadline.test.js
+tests 2
+pass 2
+fail 0
+duration_ms 2207
+
+A second complete-gate invocation overlapped the still-running first process and
+was rejected because another Next.js build held its build lock. It is not
+accepted evidence. After every prior gate process ended, a clean invocation
+passed:
+
 $ pnpm check
 Tasks: 73 successful, 73 total
-Cached: 5 cached, 73 total
-Time: 2m5.432s
+Cached: 63 cached, 73 total
+Time: 52.379s
 
 $ pnpm audit --audit-level=high
 1 vulnerabilities found
 Severity: 1 moderate
 Exit: 0
+
+$ git status --short --branch
+## main...origin/main
+
+$ git config --local --get core.hooksPath
+.githooks
 
 Documentation candidate gate
 ----------------------------
@@ -336,9 +361,109 @@ Tasks: 9 successful, 9 total
 Cached: 2 cached, 9 total
 Time: 10.912s
 
+Protected confirmation remediation
+----------------------------------
+Head: 894fef9e71dd3fb8fc0072f5ea03bfa4396fc579
+Tree: 02e30d0b55975818a2c398089f7412cba63c2603
+Protected workflow: 33646820741 — passed
+Discussions 3915467273 and 3915467277 — resolved
+
+Blocker-boundary review 5091554514 found two acceptance blockers:
+
+- discussion 3915666140: command substitution could hide a failing namespace
+  inventory query, treat the result as empty, and arm project teardown without
+  proving the namespace safe;
+- discussion 3915666152: the exact reader transcript omitted the README step
+  that configures tracked local Git hooks.
+
+Blocker-boundary remediation: fresh source
+------------------------------------------
+The source section at the top of this artifact is the repeated boundary proof.
+It uses the new literal clone target
+`/tmp/aster-reference-reader-boundary-20260902`, proves it absent and empty,
+then configures `core.hooksPath=.githooks` before install. Frozen install,
+toolchain, seven Playback destinations, 5/5 build tasks, focused tests 6/6 and
+10/10, clean 73/73 complete gate, audit, final clean Git state, and hook-path
+check pass.
+
+The first full-gate media timing failure, focused 2/2 passing rerun, and one
+overlapping Next.js build-lock rejection are retained above. Only the final
+clean 73/73 invocation is accepted as the complete source gate.
+
+Blocker-boundary remediation: preflight before teardown
+-------------------------------------------------------
+Exact executed runner:
+evidence/phase-14/p14-r18-reference-acceptance.sh
+SHA-256: 9d0889718aec0fbfe10f64b5f1afddf190286fba07f779e4f60a71621a52c561
+
+The runner captures the status and output of container, network, and volume
+inventory queries with `errexit` temporarily disabled. Any query failure exits
+before the cleanup trap is installed. Any existing exact-project resource also
+exits before cleanup is armed. Only successful empty-namespace proof installs
+the exact-project teardown trap.
+
+docker_server=26.0.0
+Docker Compose version v2.26.1-desktop.1
+{"check":"docker-context","included":24,"excluded":18,"status":"ok"}
+docker_preflight=ok project=aster-reference-boundary-20260902 ports=3000,4000,9001
+
+$ pnpm --filter @aster/web exec playwright test demo.spec.ts
+Running 1 test using 1 worker
+Docker-only generated demo plays real HLS with captions, direct delivery and
+bounded diagnostics
+1 passed (5.2s)
+
+catalog_playable_seed ... "changed":false
+generated_hls_reused ... "totalBytes":1948485
+docker_browser_replay=ok project=aster-reference-boundary-20260902
+
+Compose listed the exact 13 owned containers before teardown. Project-scoped
+down removed those containers, two networks, and 13 volumes. All checked
+cleanup statuses were zero.
+
+docker_cleanup=ok project=aster-reference-boundary-20260902 containers=0 networks=0 volumes=0
+
+Independent post-run label queries confirmed:
+
+reference_containers=0
+reference_networks=0
+reference_volumes=0
+aster-broker-1 Exited (255)
+aster_broker-data
+aster_identity-event-trust
+
+Blocker-boundary candidate gate
+-------------------------------
+$ bash -n evidence/phase-14/p14-r18-reference-acceptance.sh
+Exit: 0
+
+$ sha256sum evidence/phase-14/p14-r18-reference-acceptance.sh
+9d0889718aec0fbfe10f64b5f1afddf190286fba07f779e4f60a71621a52c561  evidence/phase-14/p14-r18-reference-acceptance.sh
+
+$ pnpm docs:check
+documents: 253
+headings: 2979
+links: 1806
+statusClaims: 4
+violations: 0
+capability rows: 11
+
+$ pnpm ai:check
+files: 10
+queueItems: 75
+sessionEntries: 72
+activeRequirement: P14-R18
+targetRequirement: P14-R18
+violations: 0
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 2 cached, 9 total
+Time: 12.826s
+
 Remaining acceptance
 --------------------
-- publish the two confirmation remediations and pass protected CI;
-- resolve discussions 3915467273 and 3915467277;
-- complete the permitted blocker-boundary confirmation;
+- publish the boundary remediation and pass protected CI;
+- resolve discussions 3915666140 and 3915666152;
+- complete final exact-head confirmation;
 - squash merge and exact-main acceptance.

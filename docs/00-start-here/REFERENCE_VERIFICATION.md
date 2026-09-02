@@ -10,14 +10,15 @@ It does not publish Aster or make a production-readiness claim.
 
 ## Verified from a fresh checkout
 
-Fresh clone `/tmp/aster-reference-reader-confirm-20260902` uses public main commit
+Fresh clone `/tmp/aster-reference-reader-boundary-20260902` uses public main commit
 `2b6054a6ff30b24e635b2aae830850455cdcc8b6`, tree
 `3e905ea5d3c18de426918125fbc6dbb0de310bd7`.
 
 - The target path is proved absent before `git clone`.
 - Before installation, ignored files, untracked files, `node_modules`, `.turbo`,
   `dist`, and `coverage` directories are all absent.
-- Node.js `24.19.0`, Corepack, and pnpm `11.24.0` follow the README bootstrap.
+- Node.js `24.19.0`, Corepack, pnpm `11.24.0`, and local hook path `.githooks`
+  follow the complete README bootstrap.
 - The frozen install accepts the lockfile and installs all 18 workspace
   projects without downloads from an already populated package cache.
 - The toolchain check accepts the active versions and repository pins.
@@ -25,7 +26,7 @@ Fresh clone `/tmp/aster-reference-reader-confirm-20260902` uses public main comm
   its requirement, service and Web source, adverse tests, release evidence,
   and operations guide.
 - The selected Playback application and Web-state checks pass 16/16.
-- The complete source gate passes 73/73 tasks in `2m5.432s`.
+- The accepted clean complete source gate passes 73/73 tasks in `52.379s`.
 - The high-severity dependency audit exits successfully with one moderate
   finding.
 
@@ -34,23 +35,27 @@ records the exact source and Docker results.
 
 ## Verified Docker reference journey
 
-The accepted corrected Docker attempt uses Engine `26.0.0`, Compose
+The accepted boundary-corrected Docker attempt uses Engine `26.0.0`, Compose
 `2.26.1-desktop.1`, and the unique literal project
-`aster-reference-confirm-20260902`.
+`aster-reference-boundary-20260902`.
 
 - Docker context verification includes 24 reviewed paths and excludes 18
   private or generated canaries.
-- Ports `3000`, `4000`, and `9001` and the exact project namespace are free
-  before startup.
+- Ports `3000`, `4000`, and `9001` are free before startup. Every container,
+  network, and volume inventory query must succeed and report an empty exact
+  namespace before teardown is armed.
 - The anonymous Web, Router, Catalog, Playback, PostgreSQL, object-storage, and
   generated-media path becomes healthy.
-- The existing real browser journey passes 1/1 in `6.0s`, playing HLS with
+- The existing real browser journey passes 1/1 in `5.2s`, playing HLS with
   captions and direct media delivery.
 - Repeated startup records `changed:false` for the Catalog seed and
   `generated_hls_reused` for the exact 1,948,485-byte technical fixture.
 - Cleanup first inspects the exact project, then removes its containers, two
   networks, and 13 volumes. It checks the status of Compose teardown and every
   inventory query before accepting the label-query proof of zero owned residue.
+- Independent post-run queries confirm zero project resources and preserve the
+  stopped `aster-broker-1`, `aster_broker-data`, and
+  `aster_identity-event-trust` resources.
 
 The accepted attempt uses generated technical media, no credentials, no
 external film, and no hosted resource.
@@ -89,6 +94,12 @@ literal project name. The attempt is rejected. The accepted corrected repeat
 uses a script-owned literal project from preflight through fail-closed
 postcondition checks; the remaining `aster` resources are unchanged before and
 after that repeat.
+
+Two source-gate observations are also rejected as complete acceptance. One
+attempt hit the media process-group timing assertion; the focused test then
+passed 2/2. A second invocation overlapped the still-running first gate and was
+rejected by the Next.js build lock. After all prior processes ended, the clean
+73/73 gate above passed.
 
 ## Remaining release work
 

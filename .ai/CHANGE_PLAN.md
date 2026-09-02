@@ -159,6 +159,22 @@ verification notes. Do not change executable product behavior.
 - Confirmation-remediation candidate: shell syntax and checksum pass;
   documentation and repository memory report zero violations;
   `pnpm check:changed` passes 9/9 tasks with two cached tasks in `10.912s`.
+- Blocker-boundary review `5091554514` opened discussions `3915666140` and
+  `3915666152`: project-namespace preflight must check inventory failures before
+  arming teardown, and the exact README bootstrap must configure tracked Git
+  hooks. Repeat those boundaries on new literal names; retain prior unaffected
+  source and Docker evidence.
+- Boundary source repeat proves an absent/empty clone, configures `.githooks`,
+  and passes the accepted clean 73/73 gate in `52.379s`. Retain the earlier
+  media timing failure, focused 2/2 pass, and overlapping build-lock rejection
+  as non-accepted observations.
+- Boundary Docker project `aster-reference-boundary-20260902` proves successful
+  empty namespace inspection before arming teardown, then passes browser 1/1 in
+  `5.2s`, replay, checked cleanup, independent zero residue, and retained-
+  resource comparison. Executed runner SHA-256: `9d088971`.
+- Boundary-remediation candidate passes 9/9 tasks with two cached tasks in
+  `12.826s`; documentation, repository memory, formatting, syntax, checksum,
+  and diff checks pass.
 - Iteration gate: public bootstrap/version checks, selected focused tests,
   Docker startup/journey/replay/cleanup, `pnpm docs:check`, and `pnpm ai:check`
 - Candidate gate: `pnpm check:changed`

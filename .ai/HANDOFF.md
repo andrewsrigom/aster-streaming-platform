@@ -68,13 +68,29 @@ Close only `reference-fresh-acceptance`:
   runner has SHA-256 `97e64678`. Shell syntax, documentation,
   repository-memory, and changed-scope checks pass; the final gate is 9/9 tasks
   with two cached tasks in `10.912s`.
+- Corrected head `894fef9` passes protected run `33646820741`; discussions
+  `3915467273` and `3915467277` are resolved. Blocker-boundary review
+  `5091554514` opened discussions `3915666140` and `3915666152` for fail-open
+  preflight inventory and the omitted README Git-hook step.
+- Boundary clone `/tmp/aster-reference-reader-boundary-20260902` is proved
+  absent and empty, configures `.githooks`, and passes bootstrap, navigation,
+  16 focused tests, a clean 73/73 gate in `52.379s`, and the high-severity
+  audit. The transcript retains one earlier media timing failure, its focused
+  2/2 passing rerun, and one overlapping build-lock rejection.
+- Literal project `aster-reference-boundary-20260902` checks every namespace
+  query before arming cleanup, then passes healthy startup, browser playback
+  1/1 in `5.2s`, replay, checked teardown, and zero residue. Independent
+  post-run queries preserve the stopped broker and two retained `aster`
+  volumes. The executed runner SHA-256 is `9d088971`.
+- Boundary-remediation candidate checks pass 9/9 tasks with two cached tasks in
+  `12.826s`; documentation, repository-memory, formatting, syntax, checksum,
+  and diff checks pass.
 
 ## Exact next actions
 
-1. Run the changed-scope gate, publish the confirmation remediation, and
-   resolve discussions `3915467273` and `3915467277`.
-2. Complete the permitted blocker-boundary confirmation, merge, and verify
-   exact main.
+1. Publish the boundary remediation and resolve discussions `3915666140` and
+   `3915666152`.
+2. Complete final exact-head review, merge, and verify exact main.
 
 ## Execution boundary
 

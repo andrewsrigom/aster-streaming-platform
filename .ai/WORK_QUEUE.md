@@ -315,12 +315,13 @@ review discussions `3915333547` and `3915333560` are resolved.
 
 Confirmation review `5091322369` opened discussions `3915467273` and
 `3915467277` for fail-open cleanup inspection and missing fresh-target proof.
-The batched remediation proves the new clone target absent and empty before
-installation, then passes 16 focused tests, the complete 73-task gate, and
-audit. Corrected project `aster-reference-confirm-20260902` passes browser
-playback 1/1, replay, checked teardown, and zero residue. The changed-scope gate
-passes 9/9 tasks in `10.912s`. Publication, resolution, blocker-boundary
-confirmation, merge, and exact-main acceptance remain.
+Corrected head `894fef9` passes protected run `33646820741`, and both discussions
+are resolved. Blocker-boundary review `5091554514` opened discussions
+`3915666140` and `3915666152`. The remediation configures tracked hooks in a new
+absent/empty clone, passes the clean 73-task source gate, checks namespace-query
+statuses before arming cleanup, and passes isolated browser/replay/cleanup with
+zero residue. Candidate checks pass 9/9 tasks in `12.826s`. Publication, final
+review, merge, and exact-main acceptance remain.
 
 ## Deferred hosted queue
 
