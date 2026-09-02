@@ -568,9 +568,97 @@ Tasks: 9 successful, 9 total
 Cached: 2 cached, 9 total
 Time: 10.727s
 
+Exact-head review 5092002215
+----------------------------
+Reviewed head: 5c8724aca2aed937632a9d0c3333fe529ff941ae
+Protected workflow: 33651421780 — passed
+Completed: 2026-09-02T15:59:16Z
+
+- discussion 3916063357: the build-context verifier's nested bare Docker
+  command could follow a concurrently changed active context;
+- discussion 3916063367: the primary change-plan checksum still identified a
+  superseded runner even though the current digest appeared later.
+
+Context-pinned corrected acceptance
+------------------------------------
+The verifier child now receives `DOCKER_CONTEXT` equal to the already inspected
+context. Direct Docker and Compose commands keep their explicit context flag.
+The primary change-plan entry names this current full digest; older digests are
+explicitly superseded evidence snapshots.
+
+Exact runner executed via Bash:
+evidence/phase-14/p14-r18-reference-acceptance.sh
+SHA-256: cba6458212b4937015e41c45530e0c71395f1221398bae84a0fe7edcbe92604e
+
+{"check":"docker-context","included":24,"excluded":18,"status":"ok"}
+docker_server=26.0.0
+Docker Compose version v2.26.1-desktop.1
+docker_endpoint=local context=default type=linux
+docker_preflight=ok project=aster-reference-pinned-20260902 ports=3000,4000,9001
+
+$ pnpm --filter @aster/web exec playwright test demo.spec.ts
+Running 1 test using 1 worker
+Docker-only generated demo plays real HLS with captions, direct delivery and
+bounded diagnostics
+1 passed (10.5s)
+
+catalog_playable_seed ... "changed":false
+generated_hls_reused ... "totalBytes":1948485
+docker_browser_replay=ok project=aster-reference-pinned-20260902
+
+Compose listed the exact 13 owned containers before teardown. Project-scoped
+down removed those containers, two networks, and 13 volumes. Checked label and
+physical-prefix inventory statuses were zero.
+
+docker_cleanup=ok project=aster-reference-pinned-20260902 containers=0 networks=0 volumes=0
+
+Independent post-run queries pinned to context `default` confirmed:
+
+label_containers=0
+label_networks=0
+label_volumes=0
+prefix_containers=0
+prefix_networks=0
+prefix_volumes=0
+aster-broker-1 Exited (255)
+aster_broker-data
+aster_identity-event-trust
+
+Source acceptance and the earlier override/unlabeled-fixture refusal results
+remain supporting evidence because those paths were not changed.
+
+Nested-context/checksum candidate gate
+--------------------------------------
+$ bash -n evidence/phase-14/p14-r18-reference-acceptance.sh
+Exit: 0
+
+$ sha256sum evidence/phase-14/p14-r18-reference-acceptance.sh
+cba6458212b4937015e41c45530e0c71395f1221398bae84a0fe7edcbe92604e  evidence/phase-14/p14-r18-reference-acceptance.sh
+
+$ pnpm docs:check
+documents: 253
+headings: 2979
+links: 1806
+statusClaims: 4
+violations: 0
+capability rows: 11
+
+$ pnpm ai:check
+files: 10
+queueItems: 75
+sessionEntries: 72
+activeRequirement: P14-R18
+targetRequirement: P14-R18
+violations: 0
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 5 cached, 9 total
+Time: 7.123s
+
 Remaining acceptance
 --------------------
-- publish the endpoint remediation and pass protected CI;
-- resolve discussions 3915872033 and 3915872044;
+- publish the correction and pass protected CI;
+- resolve discussions 3916063357 and 3916063367;
 - complete another blocker-permitted exact-head confirmation;
 - squash merge and exact-main acceptance.

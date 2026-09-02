@@ -37,6 +37,14 @@ full snapshot through the archival checkpoint remains in
   retained-resource comparison. Runner SHA-256 is `d0d4564b`.
 - Endpoint-remediation candidate checks pass 9/9 tasks with two cached tasks in
   `10.727s`.
+- Review `5092002215` on `5c8724a` opened nested-context and checksum findings
+  `3916063357` and `3916063367`. The runner now pins the context-verifier child
+  through process-local `DOCKER_CONTEXT`, and the primary checksum is current.
+- Project `aster-reference-pinned-20260902` passes the context verifier,
+  browser 1/1 in `10.5s`, replay, teardown, independent zero label-and-prefix
+  residue, and retained-resource comparison. Runner SHA-256 is `cba64582`.
+- Nested-context/checksum candidate checks pass 9/9 tasks with five cached tasks
+  in `7.123s`.
 
 ### Evidence
 
@@ -45,8 +53,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-Publish the endpoint remediation, resolve its two discussions, complete
-blocker-permitted exact-head review, merge, and verify exact main.
+Publish the nested-context/checksum correction, resolve its two discussions,
+complete blocker-permitted exact-head review, merge, and verify exact main.
 
 ## 2026-09-02 — Fresh Docker path passed; cleanup incident recorded
 

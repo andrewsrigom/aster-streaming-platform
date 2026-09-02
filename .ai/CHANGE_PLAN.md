@@ -134,8 +134,9 @@ verification notes. Do not change executable product behavior.
   startup/browser/replay/cleanup, and rejected-attempt incident with measured
   results
 - Raw artifact path: `evidence/phase-14/p14-r18-reference-acceptance.txt`
-- Exact accepted runner: `evidence/phase-14/p14-r18-reference-acceptance.sh`,
-  SHA-256 `97e6467864a27f670a7c4a62e7131511ef533f9cfcc97b9ac56bb17d0b9381ca`
+- Current accepted runner: `evidence/phase-14/p14-r18-reference-acceptance.sh`,
+  SHA-256 `cba6458212b4937015e41c45530e0c71395f1221398bae84a0fe7edcbe92604e`.
+  Prior digests in the chronology are superseded evidence snapshots.
 - Acceptance result: fresh local source and Docker path pass; protected review,
   merge, and exact-main acceptance remain
 - Initial-review correction: the retained runner passes `bash -n`, is
@@ -189,6 +190,18 @@ verification notes. Do not change executable product behavior.
   resource comparison. Executed runner SHA-256: `d0d4564b`.
 - Endpoint-remediation candidate passes 9/9 tasks with two cached tasks in
   `10.727s`; documentation, repository-memory, formatting, syntax, checksum,
+  and diff checks pass.
+- Exact-head review `5092002215` on `5c8724a` opened discussions `3916063357`
+  and `3916063367`: pin the Docker subprocess inside the context verifier to the
+  already inspected context, and remove ambiguity from the superseded primary
+  runner checksum. Set `DOCKER_CONTEXT` only for that child process, repeat the
+  invalidated Docker runner on a new literal project, and retain source evidence.
+- The context-pinned runner passes on project `aster-reference-pinned-20260902`:
+  context verifier 24/18, browser 1/1 in `10.5s`, replay, checked teardown,
+  independent zero label-and-prefix residue, and retained-resource comparison.
+  The source, refusal fixtures, and all unchanged runtime evidence remain valid.
+- Nested-context/checksum candidate passes 9/9 tasks with five cached tasks in
+  `7.123s`; documentation, repository-memory, formatting, syntax, checksum,
   and diff checks pass.
 - Iteration gate: public bootstrap/version checks, selected focused tests,
   Docker startup/journey/replay/cleanup, `pnpm docs:check`, and `pnpm ai:check`

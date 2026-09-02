@@ -327,7 +327,13 @@ The remediation rejects endpoint overrides, pins inspected local Linux context
 `default`, refuses and preserves an unlabeled prefixed fixture before teardown,
 and passes the new literal Docker journey with independent zero label-and-prefix
 residue. Updated candidate checks pass 9/9 tasks in `10.727s`. Publication,
-exact-head review, merge, and exact-main acceptance remain.
+exact-head review, merge, and exact-main acceptance remained. Review `5092002215`
+on `5c8724a` then opened nested-context/checksum blockers `3916063357` and
+`3916063367`. The corrected runner pins the verifier child to the inspected
+context and passes project `aster-reference-pinned-20260902` with browser 1/1,
+replay, cleanup, and independent zero residue. Candidate checks pass 9/9 tasks
+in `7.123s`. Publication, exact-head review, merge, and exact-main acceptance
+remain.
 
 ## Deferred hosted queue
 

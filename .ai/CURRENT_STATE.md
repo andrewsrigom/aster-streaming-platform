@@ -67,35 +67,27 @@ inventory failures could be mistaken for an empty namespace and that the exact
 README bootstrap omitted tracked Git-hook configuration in discussions
 `3915666140` and `3915666152`.
 
-The batched boundary remediation uses clone
-`/tmp/aster-reference-reader-boundary-20260902` and literal Docker project
-`aster-reference-boundary-20260902`. The clone is proved absent and empty,
-configures `.githooks`, and passes the frozen install, navigation, 16 focused
-tests, a clean complete 73-task gate in `52.379s`, and the high-severity audit.
-One earlier full-gate attempt hit the media process-group timing assertion; its
-focused 2/2 rerun passed. A second invocation overlapped the still-running first
-gate and was rejected by Next.js's build lock. Neither attempt is accepted as
-the complete gate. Docker preflight now checks all namespace-query statuses
-before arming cleanup. The project passes healthy startup, browser playback 1/1
-in `5.2s`, unchanged seed and generated-HLS replay, checked teardown, and zero
-owned residue. Independent queries confirm zero project resources and unchanged
-retained `aster` resources. The executed runner has SHA-256 `9d088971`. The
-candidate passes 9/9 tasks with two cached tasks in `12.826s`. Publication,
-discussion resolution, final exact-head confirmation, merge, and exact-main
-acceptance remained. Final review `5091785850` on `68dda8c` opened remote-Docker
-and unlabeled physical-name blockers `3915872033` and `3915872044`.
+Clone `/tmp/aster-reference-reader-boundary-20260902` is proved absent and
+empty, configures `.githooks`, and passes the frozen install, navigation, 16
+focused tests, a clean complete 73-task gate in `52.379s`, and the high-severity
+audit. The transcript retains one earlier media timing failure, its focused 2/2
+pass, and one overlapping Next.js build-lock rejection as non-accepted attempts.
 
-The endpoint remediation refuses Docker endpoint/configuration overrides,
-accepts only the inspected local socket and Linux daemon, pins Docker and
-Compose to context `default`, and checks label ownership plus physical project
-prefixes. A hostile `DOCKER_HOST` is refused before Docker access. An unlabeled
-prefixed fixture volume is refused and preserved before teardown is armed, then
-removed by its exact fixture name. New literal project
-`aster-reference-endpoint-20260902` passes healthy startup, browser playback 1/1
-in `3.9s`, replay, checked teardown, and independent zero label-and-prefix
-residue. Retained `aster` resources are unchanged. The executed runner SHA-256
-is `d0d4564b`. The updated candidate passes 9/9 tasks with two cached tasks in
-`10.727s`. Publication, discussion resolution, another blocker-permitted exact-
+The latest runner rejects endpoint/configuration overrides, accepts only an
+inspected local Linux daemon, and pins direct Docker/Compose operations plus
+the context verifier's subprocess to context `default`. Before teardown is
+armed, every label and physical-prefix inventory must succeed and be empty. A
+hostile `DOCKER_HOST` and an unlabeled prefixed fixture are refused; the fixture
+is preserved and then removed by its exact synthetic name. Literal project
+`aster-reference-pinned-20260902` passes healthy startup, browser playback 1/1
+in `10.5s`, replay, checked teardown, independent zero label-and-prefix residue,
+and retained-resource comparison. The current runner SHA-256 is `cba64582`.
+
+Head `5c8724a` passes protected run `33651421780`. Its review `5092002215`
+opened discussions `3916063357` and `3916063367` for the nested Docker-context
+pin and stale primary checksum. Both corrections and the invalidated Docker
+repeat are complete locally. Candidate checks pass 9/9 tasks with five cached
+tasks in `7.123s`. Publication, discussion resolution, blocker-permitted exact-
 head review, merge, and exact-main acceptance remain.
 
 A rejected cleanup attempt expanded a nested-shell project variable to empty
@@ -175,8 +167,8 @@ hosted claim.
 
 ## Next outcome
 
-Finish item75/P14-R18: publish the endpoint remediation, resolve discussions
-`3915872033` and `3915872044`, complete the blocker-permitted exact-head review,
-merge, and verify exact main. Do not repeat the accepted source or Docker
-experiments unless a relevant executable, Docker, browser, media, cleanup,
-dependency, or public-command change invalidates them.
+Finish item75/P14-R18: publish the nested-context and checksum correction,
+resolve discussions `3916063357` and `3916063367`, complete
+the blocker-permitted exact-head review, merge, and verify exact main. Do not
+repeat accepted heavyweight evidence unless a relevant executable, Docker,
+browser, media, cleanup, dependency, or public-command change invalidates it.

@@ -7,7 +7,7 @@ export ASTER_PLAYABLE_DEMO=true
 export ASTER_ENGAGEMENT_DEMO=true
 
 readonly repository=/tmp/aster-reference-reader-boundary-20260902
-readonly project=aster-reference-endpoint-20260902
+readonly project=aster-reference-pinned-20260902
 
 cd "$repository"
 
@@ -116,7 +116,7 @@ cleanup() {
   exit "$status"
 }
 
-node ./tools/verify-docker-context.mjs
+DOCKER_CONTEXT="$context_name" node ./tools/verify-docker-context.mjs
 docker_os="$(docker_local info --format '{{.OSType}}' 2>/dev/null)" || fail docker_daemon_unavailable
 [[ "$docker_os" == linux ]] || fail docker_daemon_not_linux
 docker_local info --format 'docker_server={{.ServerVersion}}'

@@ -1241,10 +1241,11 @@ high-severity dependency audit exits zero with one moderate finding.
 
 After the owner reopened Docker Desktop, Engine `26.0.0` and Compose
 `2.26.1-desktop.1` became healthy without reset or socket mutation. The accepted
-boundary repeat uses the unique literal project
-`aster-reference-boundary-20260902`. Namespace inventories must succeed and be
-empty before cleanup is armed. The anonymous stack becomes healthy, the real
-browser journey passes 1/1 in `5.2s`,
+context-pinned repeat uses the unique literal project
+`aster-reference-pinned-20260902`. Every direct and nested Docker operation is
+pinned to inspected local Linux context `default`. Namespace label and physical-
+prefix inventories must succeed and be empty before cleanup is armed. The
+anonymous stack becomes healthy, the real browser journey passes 1/1 in `10.5s`,
 replay records an unchanged Catalog seed and reused 1,948,485-byte generated HLS
 fixture. Project-scoped cleanup checks Compose teardown and every inventory
 query before proving zero owned containers, networks, and volumes. Independent
@@ -1288,8 +1289,8 @@ The boundary remediation repeats only those invalidated paths. Source proves a
 new absent/empty target, configures `.githooks`, and passes the accepted clean
 73/73 gate. Docker checks every preflight inventory status before arming cleanup
 and passes browser playback 1/1, replay, teardown, independent zero-residue
-queries, and retained-resource comparison. The current directly executed runner
-has SHA-256
+queries, and retained-resource comparison. That boundary-correction runner has
+the superseded SHA-256
 `9d0889718aec0fbfe10f64b5f1afddf190286fba07f779e4f60a71621a52c561`.
 The boundary-remediation candidate passes 9/9 tasks with two cached tasks in
 `12.826s`.
@@ -1305,13 +1306,30 @@ volume is refused and preserved, then removed by its exact fixture name.
 
 New project `aster-reference-endpoint-20260902` passes healthy startup, browser
 playback 1/1 in `3.9s`, replay, label-and-prefix cleanup, independent zero
-residue, and retained-resource comparison. The current checked-in runner,
-executed via Bash, has SHA-256
+residue, and retained-resource comparison. That endpoint-correction runner,
+executed via Bash, has the superseded SHA-256
 `d0d4564b8c5ac9b126cbc9a4fc4dfbdaec65d6f9fb03013dc3db0ca46b373d59`.
 The endpoint-remediation candidate passes 9/9 tasks with two cached tasks in
 `10.727s`.
 
+Exact-head review `5092002215` on `5c8724a` opened discussions `3916063357`
+and `3916063367`: the context verifier's nested Docker command still followed
+the active context, and the primary change-plan checksum still identified a
+superseded runner. The child now receives the inspected context through a
+process-local `DOCKER_CONTEXT` value; direct commands remain explicitly pinned.
+The primary evidence entry names the current full digest and labels old digests
+as superseded snapshots.
+
+The exact corrected runner, executed via Bash, has SHA-256
+`cba6458212b4937015e41c45530e0c71395f1221398bae84a0fe7edcbe92604e`.
+Project `aster-reference-pinned-20260902` passes the 24/18 context verifier,
+browser playback 1/1 in `10.5s`, replay, checked teardown, independent zero
+label-and-prefix residue, and retained-resource comparison. Source and unchanged
+refusal-fixture evidence remain supporting evidence.
+The nested-context/checksum candidate passes 9/9 tasks with five cached tasks in
+`7.123s`.
+
 ## Planned evidence
 
-- P14-R18 endpoint-remediation candidate, publication, blocker-permitted
+- P14-R18 nested-context/checksum candidate, publication, blocker-permitted
   protected confirmation, merge, and exact-main acceptance

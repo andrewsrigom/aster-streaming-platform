@@ -98,11 +98,21 @@ Close only `reference-fresh-acceptance`:
 - Endpoint-remediation candidate checks pass 9/9 tasks with two cached tasks in
   `10.727s`; documentation, repository-memory, formatting, syntax, checksum,
   and diff checks pass.
+- Head `5c8724a` passes protected run `33651421780`. Review `5092002215` opened
+  discussions `3916063357` and `3916063367` for the context verifier's nested
+  Docker command and stale primary checksum. The runner now passes the inspected
+  context through `DOCKER_CONTEXT` only to that child, and the primary evidence
+  entry names current SHA-256 `cba64582` with prior digests marked superseded.
+- Project `aster-reference-pinned-20260902` passes the context verifier,
+  browser 1/1 in `10.5s`, replay, teardown, independent zero label-and-prefix
+  residue, and retained-resource comparison. Source/refusal evidence is unchanged.
+- Nested-context/checksum candidate checks pass 9/9 tasks with five cached tasks
+  in `7.123s`.
 
 ## Exact next actions
 
-1. Publish the endpoint remediation and resolve discussions `3915872033` and
-   `3915872044`.
+1. Publish the nested-context/checksum correction and resolve discussions
+   `3916063357` and `3916063367`.
 2. Complete another blocker-permitted exact-head review, merge, and verify exact
    main.
 

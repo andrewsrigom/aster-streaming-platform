@@ -35,21 +35,22 @@ records the exact source and Docker results.
 
 ## Verified Docker reference journey
 
-The accepted endpoint-corrected Docker attempt uses Engine `26.0.0`, Compose
+The accepted context-pinned Docker attempt uses Engine `26.0.0`, Compose
 `2.26.1-desktop.1`, inspected local Linux context `default`, and the unique
-literal project `aster-reference-endpoint-20260902`.
+literal project `aster-reference-pinned-20260902`.
 
 - Docker context verification includes 24 reviewed paths and excludes 18
   private or generated canaries.
 - Docker endpoint/configuration overrides and non-local endpoints are refused.
-  Every Docker and Compose operation is pinned to the inspected context.
+  Every direct Docker and Compose operation is pinned to the inspected context;
+  the build-context verifier's Docker child inherits that same pin.
 - Ports `3000`, `4000`, and `9001` are free before startup. Every container,
   network, and volume inventory query must succeed and report an empty exact
   namespace before teardown is armed. Physical project-name prefixes are also
   checked so missing labels cannot hide a collision.
 - The anonymous Web, Router, Catalog, Playback, PostgreSQL, object-storage, and
   generated-media path becomes healthy.
-- The existing real browser journey passes 1/1 in `3.9s`, playing HLS with
+- The existing real browser journey passes 1/1 in `10.5s`, playing HLS with
   captions and direct media delivery.
 - Repeated startup records `changed:false` for the Catalog seed and
   `generated_hls_reused` for the exact 1,948,485-byte technical fixture.
