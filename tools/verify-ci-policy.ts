@@ -371,22 +371,19 @@ export function validateWorkflowPolicy(
       rule: "credentials",
     });
   }
-  if (/runs-on:\s*ubuntu-latest/u.test(source)) {
+  const runnerValues = source
+    .replace(/\r\n?/gu, "\n")
+    .split("\n")
+    .filter((line) => /^ {4}runs-on:/u.test(line))
+    .map((line) => uncommentedYamlValue(line.slice("    runs-on:".length)));
+  if (runnerValues.length === 0 || runnerValues.some((value) => value !== "ubuntu-24.04")) {
     violations.push({
-      detail: "runner image must use the explicit ubuntu-24.04 label",
+      detail: "every CI job must use the reviewed ubuntu-24.04 runner",
       file,
       line: 1,
       rule: "runner",
     });
   }
-  addRequirement(
-    violations,
-    file,
-    source,
-    "runner",
-    /runs-on:\s*ubuntu-24\.04/u,
-    "ubuntu-24.04 runner is required",
-  );
   addRequirement(
     violations,
     file,
@@ -430,13 +427,22 @@ export function validateWorkflowPolicy(
       rule: "commands",
     });
   }
-  if (!hasExactJobRunner(governanceSource, "ubuntu-24.04")) {
-    violations.push({
-      detail: "capability-index governance must use the reviewed ubuntu-24.04 runner",
-      file,
-      line: 1,
-      rule: "runner",
-    });
+  for (const job of [
+    "classify",
+    "governance",
+    "quality",
+    "dependency-review",
+    "platform",
+    "required",
+  ] as const) {
+    if (!hasExactJobRunner(workflowJobSource(source, job), "ubuntu-24.04")) {
+      violations.push({
+        detail: `${job} must use the reviewed ubuntu-24.04 runner`,
+        file,
+        line: 1,
+        rule: "runner",
+      });
+    }
   }
   if (hasTopLevelYamlKey(source, "defaults")) {
     violations.push({

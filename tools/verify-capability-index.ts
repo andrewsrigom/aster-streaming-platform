@@ -333,12 +333,30 @@ interface ParsedRow {
 interface MarkdownVisibilityState {
   fence: { character: "`" | "~"; length: number } | undefined;
   htmlComment: boolean;
+  htmlContainers: string[];
   htmlEndMarker: ">" | "?>" | "]]>" | undefined;
   htmlTag: string | undefined;
   htmlUntilBlank: boolean;
 }
 
 const RAW_HTML_END_TAGS = new Set(["pre", "script", "style", "textarea"]);
+
+const HTML_VOID_TAGS = new Set([
+  "area",
+  "base",
+  "br",
+  "col",
+  "embed",
+  "hr",
+  "img",
+  "input",
+  "link",
+  "meta",
+  "param",
+  "source",
+  "track",
+  "wbr",
+]);
 
 const RAW_HTML_UNTIL_BLANK_TAGS = new Set([
   "address",
@@ -525,10 +543,74 @@ function isCompleteHtmlTag(line: string): boolean {
   return opening.test(line) || closing.test(line);
 }
 
+function htmlTags(line: string): { closing: boolean; selfClosing: boolean; tag: string }[] {
+  const tags: { closing: boolean; selfClosing: boolean; tag: string }[] = [];
+  let cursor = 0;
+  while (cursor < line.length) {
+    const opening = line.indexOf("<", cursor);
+    if (opening < 0) {
+      break;
+    }
+    let nameStart = opening + 1;
+    const closing = line[nameStart] === "/";
+    if (closing) {
+      nameStart += 1;
+    }
+    const name = /^[A-Za-z][A-Za-z0-9-]*/u.exec(line.slice(nameStart))?.[0];
+    if (!name) {
+      cursor = opening + 1;
+      continue;
+    }
+
+    let quote: '"' | "'" | undefined;
+    let end = nameStart + name.length;
+    for (; end < line.length; end += 1) {
+      const character = line[end];
+      if (quote) {
+        if (character === quote) {
+          quote = undefined;
+        }
+      } else if (character === '"' || character === "'") {
+        quote = character;
+      } else if (character === ">") {
+        break;
+      }
+    }
+    if (end >= line.length) {
+      break;
+    }
+    const raw = line.slice(opening, end + 1);
+    tags.push({
+      closing,
+      selfClosing: /\/\s*>$/u.test(raw),
+      tag: name.toLowerCase(),
+    });
+    cursor = end + 1;
+  }
+  return tags;
+}
+
+function updateHtmlContainers(line: string, state: MarkdownVisibilityState): void {
+  for (const { closing, selfClosing, tag } of htmlTags(line)) {
+    if (RAW_HTML_END_TAGS.has(tag) || HTML_VOID_TAGS.has(tag) || selfClosing) {
+      continue;
+    }
+    if (!closing) {
+      state.htmlContainers.push(tag);
+      continue;
+    }
+    const opening = state.htmlContainers.lastIndexOf(tag);
+    if (opening >= 0) {
+      state.htmlContainers.length = opening;
+    }
+  }
+}
+
 function visibleMarkdownLines(lines: readonly string[]): string[] {
   const state: MarkdownVisibilityState = {
     fence: undefined,
     htmlComment: false,
+    htmlContainers: [],
     htmlEndMarker: undefined,
     htmlTag: undefined,
     htmlUntilBlank: false,
@@ -558,9 +640,14 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
       return "";
     }
     if (state.htmlUntilBlank) {
+      updateHtmlContainers(uncommented, state);
       if (!line.trim()) {
         state.htmlUntilBlank = false;
       }
+      return "";
+    }
+    if (state.htmlContainers.length > 0) {
+      updateHtmlContainers(uncommented, state);
       return "";
     }
     if (state.htmlTag) {
@@ -596,11 +683,13 @@ function visibleMarkdownLines(lines: readonly string[]): string[] {
     const typeSixHtmlTag = /^ {0,3}<\/?(?<tag>[A-Za-z][A-Za-z0-9-]*)\b/u.exec(uncommented)
       ?.groups?.["tag"];
     if (typeSixHtmlTag && RAW_HTML_UNTIL_BLANK_TAGS.has(typeSixHtmlTag.toLowerCase())) {
+      updateHtmlContainers(uncommented, state);
       state.htmlUntilBlank = true;
       return "";
     }
 
     if (isCompleteHtmlTag(uncommented)) {
+      updateHtmlContainers(uncommented, state);
       state.htmlUntilBlank = true;
       return "";
     }

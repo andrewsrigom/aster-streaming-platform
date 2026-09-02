@@ -356,6 +356,36 @@ test("keeps a type-6 raw HTML block open across a comment-only line", () => {
   assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
 });
 
+test("rejects a capability table inside an HTML container after a raw-block boundary", () => {
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  const lastRow = source.split("\n").find((line) => line.startsWith("| repository-workflows |"));
+  assert.ok(lastRow);
+  for (const opening of ["<div hidden>", '<span aria-hidden="true">'] as const) {
+    const hidden = source
+      .replace(header, `${opening}\n\n${header}`)
+      .replace(lastRow, `${lastRow}\n${opening.startsWith("<div") ? "</div>" : "</span>"}`);
+    const report = analyzeCapabilityIndex(hidden);
+    assert.equal(report.rows, 0, opening);
+    assert.ok(
+      report.violations.some(({ rule }) => rule === "missing-table"),
+      opening,
+    );
+  }
+});
+
+test("accepts the root capability table after an HTML container closes", () => {
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  for (const closedContainer of ["<div hidden>\n</div>", "<div hidden></div>"] as const) {
+    const report = analyzeCapabilityIndex(
+      source.replace(header, `${closedContainer}\n\n${header}`),
+    );
+    assert.equal(report.rows, CAPABILITY_INDEX_ROWS.length, closedContainer);
+    assert.deepEqual(report.violations, [], closedContainer);
+  }
+});
+
 test("rejects a capability table inside an arbitrary CommonMark HTML block", () => {
   const source = validIndex();
   const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
