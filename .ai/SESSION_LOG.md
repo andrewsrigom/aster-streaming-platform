@@ -4,6 +4,41 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-02 — Capability index merged and readability inventory activated
+
+### Completed
+
+- Final PR60 head `aef6c8d`, tree `f57a2e5`, passed protected workflow
+  `33596017500` on attempt 3. Both final findings are resolved and no further
+  index-hardening review was requested.
+- PR60 squash main `b3f409b` retains the exact reviewed tree.
+- Exact-main run `33598493566` reached the known TraceQL diagnostic-search
+  timeout and completed project-scoped cleanup. Item69 is `WAITING_EXTERNAL`
+  only for the failed-only rerun.
+- Activated item70/P14-R15 on `docs/readability-guardrails` from exact main.
+- Drafted reviewable naming, control-flow, layout, comment, test, and example
+  guardrails plus nine bounded findings for items71–74.
+- Replaced stale active-state and handoff chronology with concise current facts.
+- No executable product, platform, schema, data, dependency, or deployment
+  behavior changed.
+
+### Evidence
+
+- Protected pull-request acceptance: run `33596017500`, attempt 3.
+- Merge: `b3f409b15ce9da2889850b693b033f69fbd312cd`, tree
+  `f57a2e5d1f827498b9b96f039ce41517b49e20f4`.
+- Focused documentation tests pass 37/37 and repository-memory tests pass
+  13/13. Documentation validation covers 251 documents, 2,901 headings, 1,703
+  links, four supported status claims, and all eleven capability rows.
+- Changed-file formatting and diff checks pass. The affected-scope candidate
+  gate remains.
+
+### Next action
+
+Rerun failed exact-main jobs once, close item69 when green, then complete and
+publish the item70 documentation candidate. Do not start source refactoring in
+item70.
+
 ## 2026-09-01 — P14-R14 capability index activation
 
 ### Completed

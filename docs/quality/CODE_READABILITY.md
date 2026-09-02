@@ -1,0 +1,140 @@
+# Code Readability
+
+## Purpose
+
+Aster is a reference implementation as well as an executable system. A reader
+must be able to follow a capability from domain decision to failure behavior
+without first decoding generic names, compressed control flow, or historical
+comments.
+
+These rules guide behavior-preserving work. They do not authorize architecture
+changes, new abstractions, or repository-wide style rewrites.
+
+## Executable baseline
+
+The existing quality gate already enforces mechanical consistency:
+
+- Prettier owns indentation, wrapping, and ordinary whitespace.
+- ESLint and strict TypeScript reject unsafe or ambiguous constructs covered by
+  their configured rules.
+- Knip rejects unused exports and dependencies.
+- Focused and affected-scope tests protect observable behavior.
+- Architecture checks protect bounded-context and dependency direction.
+
+Passing those checks is necessary, but it does not prove that names and control
+flow explain the domain. The remaining rules are reviewable requirements.
+
+## Review guardrails
+
+### Name the domain decision
+
+- Prefer a verb that states the decision or effect: `authorizeProfile`,
+  `recordProgress`, `applyPublicationTransition`.
+- Add the domain noun when a generic name such as `run`, `execute`, `process`,
+  `result`, `value`, `current`, or `handle` would make the reader inspect the
+  body to learn its role.
+- Name booleans as facts or phase markers, especially when they affect retry or
+  indeterminate-outcome behavior.
+- Keep public contract names stable unless the contract itself is the approved
+  subject of the work item.
+
+### Expose control-flow phases
+
+- Keep validation, authorization, dependency reads, durable writes, and result
+  translation visually distinct.
+- Extract a helper when it names a real domain step or removes the need to track
+  unrelated states at once. Do not extract one-line wrappers only to shorten a
+  function.
+- Prefer explicit branches over nested conditional expressions when mapping
+  failure or lifecycle states.
+- Keep network work outside locked transactions and preserve the existing
+  cancellation, deadline, idempotency, and uncertain-commit boundaries.
+
+### Use layout to support reading
+
+- Let Prettier decide mechanical formatting.
+- Use one blank line between conceptual phases; do not separate every statement
+  or combine unrelated phases into one visual block.
+- Keep imports and adjacent type declarations grouped by ownership and purpose.
+- Do not create formatting-only diffs outside the selected slice.
+
+### Write rationale comments
+
+Comments explain an invariant, ordering constraint, failure boundary, external
+limitation, or removal condition. They do not narrate assignments, repeat a
+function name, preserve review history, or compensate for a vague name.
+
+### Make tests and examples readable
+
+- Test names state actor, condition, and observable outcome.
+- Fixtures and variables use their role when more than one actor, request,
+  state, or result is present. Single-letter aliases are acceptable only for a
+  tiny, unambiguous local scope.
+- Examples use current domain vocabulary, synthetic data, bounded commands, and
+  the same authorization and cancellation assumptions as production code.
+
+### Keep refactors bounded
+
+- Start from one concrete reader problem and one owning context.
+- Cite characterization tests before changing names or structure.
+- Preserve GraphQL, event, persistence, cache, media, authorization, telemetry,
+  and failure contracts.
+- Do not introduce a shared abstraction until at least two concrete use cases
+  need the same policy and ownership is clear.
+- Reject arbitrary readability scores, file-length limits, and bulk rewrites.
+
+## Priority
+
+- **P0:** a name or flow can hide a security, rights, ownership, retry,
+  cancellation, or durable-write boundary.
+- **P1:** the code is correct, but a reader must reconstruct multiple domain
+  phases or translate generic vocabulary.
+- **P2:** local test, comment, example, or layout friction that does not obscure
+  a runtime invariant.
+
+Priority is based on the reader problem, not line count or personal style.
+
+## Bounded findings inventory
+
+The source links are stable entry points. The selected item may touch adjacent
+private helpers and tests only when needed to complete the same reading slice.
+
+| ID | Priority | Owner | Reader problem | Behavior to preserve | Source and characterization proof | Planned item |
+|---|---|---|---|---|---|---|
+| catalog-command-flow | P0 | Catalog | `planChange` combines draft edits, review, retirement, replacement, rollback, and publication; the nested private `execute` has the same name as the public operation, while `retirement`, `publishing`, and `lifecycle` hide their predicate or conversion role. | [P03-R04](../specs/phase-03-catalog-rights.md#p03-r04), [P03-R06](../specs/phase-03-catalog-rights.md#p03-r06), and [P03-R10](../specs/phase-03-catalog-rights.md#p03-r10), including rights gates, audit, replay, reserved takedown capacity, and outbox ordering. | [Catalog command flow](../../services/catalog/src/application/commands.ts); [workflow characterization](../../services/catalog/test/catalog-workflow.test.ts) | 71 |
+| playback-session-outcome | P0 | Playback | `untilAborted` is a dependency-settlement boundary, and `inserting` decides whether a failure is unavailable or indeterminate; neither name exposes that durable-write distinction. | [P07-R01](../specs/phase-07-playback.md#p07-r01) and [P07-R10](../specs/phase-07-playback.md#p07-r10), including owner timeout, cancellation, no retry after write start, and expiry after acknowledgement. | [Playback session creation](../../services/playback/src/application/create-session.ts); [session characterization](../../services/playback/test/create-session.test.ts) | 71 |
+| identity-profile-transaction | P0 | Identity and Profiles | `run`, `owned`, and `mutate` compress credential verification, session locking, owner checks, replay, capacity, versioning, audit, and outbox work into generic names inside one factory. | [P02-R03](../specs/phase-02-identity-profiles.md#p02-r03), [P02-R05](../specs/phase-02-identity-profiles.md#p02-r05), and [P02-R10](../specs/phase-02-identity-profiles.md#p02-r10), especially wrong-account rejection, expiry, idempotency, and concurrent limits. | [Profile application flow](../../services/identity/src/application/profiles.ts); [profile characterization](../../services/identity/test/profiles.test.ts) | 72 |
+| engagement-progress-write | P0 | Engagement | `timestamp`, `fresh`, `guarded`, `replay`, and `writing` make the owner-snapshot, late-settlement, receipt-replay, and uncertain-commit phases indistinct in the longest progress path. | [P08-R01](../specs/phase-08-engagement.md#p08-r01), [P08-R03](../specs/phase-08-engagement.md#p08-r03), [P08-R04](../specs/phase-08-engagement.md#p08-r04), and [P08-R09](../specs/phase-08-engagement.md#p08-r09), including stale ordering, duplicate replay, atomic outbox, and ambiguous commit. | [Progress recording](../../services/engagement/src/application/record-progress.ts); [progress characterization](../../services/engagement/test/record-progress.test.ts) | 72 |
+| discovery-home-assembly | P1 | Discovery | `rail`, `code`, `fixedResult`, `fallback`, `select`, and numeric selection indexes force the reader to reconstruct which rail failed, which fallback is permitted, and which duration belongs to it. | [P09-R03](../specs/phase-09-discovery.md#p09-r03), [P09-R05](../specs/phase-09-discovery.md#p09-r05), [P09-R08](../specs/phase-09-discovery.md#p09-r08), and [P09-R09](../specs/phase-09-discovery.md#p09-r09), including independent failure, safe fallback, partial status, and bounded telemetry. | [Home-rail assembly](../../services/discovery/src/application/home-rails.ts); [rail characterization](../../services/discovery/test/home-rails.test.ts) | 72 |
+| router-demand-analysis | P0 | Router | `reject`, `positivePolicy`, `listType`, `count`, and `selectionCost` obscure whether code validates policy, detects a list, increments a bounded metric, or recursively prices a selection set. | [P13-R03](../specs/phase-13-graphql-performance-security.md#p13-r03), [P13-R04](../specs/phase-13-graphql-performance-security.md#p13-r04), and [P13-R05](../specs/phase-13-graphql-performance-security.md#p13-r05), including parser, depth, alias, list-expansion, and cost rejection. | [Demand analysis](../../apps/router/src/demand.ts); [demand characterization](../../apps/router/test/demand.test.ts) | 73 |
+| web-player-session-flow | P1 | Web | `Controls`, `begin`, `runtime`, and `inFlight` understate player ownership and session-request state, while nested status expressions mix GraphQL translation with telemetry and UI recovery. | [P07-R05](../specs/phase-07-playback.md#p07-r05), [P07-R07](../specs/phase-07-playback.md#p07-r07), and [P07-R10](../specs/phase-07-playback.md#p07-r10), including accessible controls, failure recovery, navigation cancellation, and no stale player. | [Web player](../../apps/web/features/playback/player.tsx); [browser playback characterization](../../apps/web/test/browser/playback.spec.ts) | 73 |
+| quality-gate-lifecycle | P1 | Repository governance | `start`, `finish`, and `fallback` describe mechanics but not child-process ownership, one-time settlement, or the graceful-to-forced termination transition. | [P00-R06](../specs/phase-00-foundation.md#p00-r06), including exact task selection, bounded timeout, signal propagation, process-tree cleanup, and sanitized failure. | [Quality-gate runner](../../tools/run-quality-gate.ts); [runner characterization](../../tools/run-quality-gate.test.ts) | 73 |
+| journey-comments-examples | P2 | Repository documentation | Rationale comments and executable examples exist near individual capabilities, but there is no compact reading path that connects the core journeys and explains which comments carry invariants rather than narration. | [P14-R17](../specs/phase-14-capacity-release.md#p14-r17), without new product claims, credentials, personal data, or invented media rights. | [Capability index](../00-start-here/CAPABILITY_INDEX.md); [documentation map](../00-start-here/DOCUMENTATION_MAP.md); [Catalog examples](../../services/catalog/examples) | 74 |
+
+## Selected sequence
+
+1. Item 71: Catalog command flow and Playback session outcome.
+2. Item 72: Identity profile transaction, Engagement progress write, and
+   Discovery home assembly.
+3. Item 73: Router demand analysis, Web player session flow, and quality-gate
+   lifecycle.
+4. Item 74: rationale comments, executable examples, and core-journey reading
+   paths after the representative source names are stable.
+
+Each item closes only its listed findings. A newly noticed issue enters a later
+bounded inventory update unless it blocks the active slice's requirement,
+security, ownership, availability, or public contract.
+
+## Verification and maintenance
+
+For each refactoring slice:
+
+1. run the linked characterization test before editing;
+2. change names and structure without changing observable contracts;
+3. run the cheapest focused checks while editing;
+4. run the affected-scope candidate gate once the slice is coherent;
+5. update this inventory and the capability index when the reading entry point
+   changes.
+
+Heavy Docker, browser, media, PostgreSQL, Redis, or broker evidence is repeated
+only when the executable change can affect what that evidence measured.

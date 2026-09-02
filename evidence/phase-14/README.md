@@ -883,6 +883,55 @@ status claims and eleven rows with zero violations. The affected gate passes
 15/15, including101 platform-policy,39 CI-policy and13 repository-memory tests.
 No product runtime or deployment behavior changed. Publication remains pending.
 
+## P14-R15 — Readability guardrails and inventory
+
+Status: **implemented locally; verification pending**
+
+Item70 starts on branch `docs/readability-guardrails` from PR60 squash main
+`b3f409b15ce9da2889850b693b033f69fbd312cd`, tree
+`f57a2e5d1f827498b9b96f039ce41517b49e20f4`.
+
+The draft `docs/quality/CODE_READABILITY.md` records:
+
+- the existing executable formatting, lint, type, unused-code, architecture,
+  and test baseline;
+- reviewable rules for domain names, visible control-flow phases, layout,
+  rationale comments, tests, examples, and bounded refactoring;
+- priority based on obscured ownership or failure behavior rather than file
+  length or personal style;
+- nine concrete findings across the five bounded contexts, Router, Web,
+  repository tooling, and reading guidance;
+- the exact characterization proof and follow-up item for every finding.
+
+Item70 changes documentation and repository memory only. No heavyweight runtime
+evidence is repeated because no executable source or CI classification changes.
+
+### Focused local evidence
+
+| Command | Result |
+|---|---|
+| `pnpm docs:check` | PASS — 251 documents, 2,901 headings, 1,703 links, four supported status claims, and eleven capability rows |
+| `pnpm docs:test` | PASS — 37/37 tests |
+| `pnpm ai:check` | PASS — 10 files, 75 queue items, 63 session entries, active/target P14-R15 |
+| `pnpm ai:test` | PASS — 13/13 tests |
+| Changed-file Prettier check | PASS |
+| `git diff --check` | PASS |
+
+The changed-scope candidate gate remains pending.
+
+### P14-R14 merge boundary
+
+Final PR60 head `aef6c8d32ec77f867cb204247093079475292af3`, tree
+`f57a2e5d1f827498b9b96f039ce41517b49e20f4`, passed protected workflow
+`33596017500` on attempt 3. Every review discussion is resolved. PR60
+squash-merged as main `b3f409b15ce9da2889850b693b033f69fbd312cd`
+with the same tree.
+
+Exact-main workflow `33598493566` attempt 1 passed the completed source,
+documentation, and Local-platform setup/journey boundaries but timed out during
+the unchanged TraceQL diagnostic search. Its project-scoped cleanup step passed.
+Item69 remains `WAITING_EXTERNAL` only for the failed-only rerun and aggregate.
+
 ## Planned evidence
 
 - P14-R15 readability guardrails and findings inventory
