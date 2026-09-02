@@ -277,10 +277,20 @@ full snapshot through the archival checkpoint remains in
   pass48/48, documentation validation covers1,650 links and the affected gate
   passes15/15, including101 platform-policy,39 CI-policy and13 repository-memory
   tests. No product runtime or deployment behavior changed.
+- Exact-head review on checkpoint `2ec8032`, tree `abe220f`, opened finding
+  `3909766066` because the Discovery row omitted its independent rail assembly
+  and partial/fallback adverse tests. Protected run `33576761686` was
+  invalidated and cancellation was requested.
+- Correction source `258b36b`, tree `7fb2a25`, adds that Discovery proof and
+  proactively completes direct P00-R05/R08 documentation/repository-memory
+  implementation and adverse proof. Focused contracts pass48/48, documentation
+  validation covers1,656 links and the affected gate passes15/15, including101
+  platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
+  or deployment behavior changed.
 
 ### Next action
 
-- Publish the corrected checkpoint, resolve thread `PRRT_kwDOUEkeis6eU67_` and
+- Publish the corrected checkpoint, resolve thread `PRRT_kwDOUEkeis6eVAjz` and
   request confirmation only after the PR exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.
 

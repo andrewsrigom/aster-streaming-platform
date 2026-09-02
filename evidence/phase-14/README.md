@@ -745,6 +745,24 @@ zero violations. The affected gate passes15/15, including101 platform-policy,39
 CI-policy and13 repository-memory tests. No product runtime or deployment
 behavior changed. Publication remains pending.
 
+Checkpoint `2ec803220b2877b9c06d35b3587d90cfef397351`, tree
+`abe220fd7951cda5e6185b9abaf265b4fbedfaa1`, received exact-head review at
+`2026-09-02T00:51:28Z`. Finding `3909766066` showed that the Discovery row
+claimed independent partial/fallback behavior while linking only its cache
+wrapper. Protected run `33576761686` was invalidated and cancellation was
+requested; it is not acceptance evidence.
+
+Correction source `258b36b29ddc9383e42825576845cf9da7925548`, tree
+`7fb2a25665f251da196110146c5128b9181be92f`, adds the independent rail assembly
+and its unavailable, indeterminate, cancelled and fallback adverse tests. The
+same traceability audit adds direct documentation and repository-memory
+implementation/adverse proof for the already listed P00-R05/R08. Focused
+capability/CI-policy tests pass48/48. Documentation validation covers250
+documents, 2,880 headings, 1,656 links, four status claims and eleven rows with
+zero violations. The affected gate passes15/15, including101 platform-policy,39
+CI-policy and13 repository-memory tests. No product runtime or deployment
+behavior changed. Publication remains pending.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and

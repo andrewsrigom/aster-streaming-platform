@@ -284,11 +284,20 @@ path/anchor validity to the existing documentation validator.
   implementation/tests, then binds them in the verifier. Focused contracts
   pass48/48, documentation validation covers1,650 links and the affected gate
   passes15/15. No product runtime or deployment behavior changed.
+- Exact-head review on checkpoint `2ec8032`, tree `abe220f`, opened finding
+  `3909766066` because the Discovery row omitted its independent rail assembly
+  and partial/fallback adverse tests. Protected run `33576761686` was
+  invalidated and cancellation was requested.
+- Correction source `258b36b`, tree `7fb2a25`, adds that Discovery proof and
+  proactively completes direct P00-R05/R08 documentation/repository-memory
+  implementation and adverse proof. Focused contracts pass48/48, documentation
+  validation covers1,656 links and the affected gate passes15/15. No product
+  runtime or deployment behavior changed.
 
 ## Exact next actions
 
 1. Publish the corrected checkpoint, resolve review thread
-   `PRRT_kwDOUEkeis6eU67_` and request confirmation only after GitHub exposes
+   `PRRT_kwDOUEkeis6eVAjz` and request confirmation only after GitHub exposes
    the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating

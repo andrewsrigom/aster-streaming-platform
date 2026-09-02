@@ -309,7 +309,14 @@ file and anchor exists.
   pass48/48, documentation validation covers1,650 links and the affected gate
   passes15/15. Correction source `f600992`, tree `6fd14ae`, freezes the batch.
   Protected acceptance, exact-head confirmation, merge and exact-main
-  acceptance remain
+  acceptance remain. Exact-head review on checkpoint `2ec8032` opened finding
+  `3909766066` because the Discovery row stopped at its cache wrapper and did
+  not link independent rail failure/fallback behavior. The working correction
+  adds the rail assembly and adverse tests, and the same traceability audit adds
+  direct documentation/repository-memory implementation and adverse proof for
+  the already listed P00-R05/R08. Focused contracts pass48/48, documentation
+  validation covers1,656 links and the affected gate passes15/15. Correction
+  source `258b36b`, tree `7fb2a25`, freezes the batch
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

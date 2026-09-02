@@ -352,6 +352,21 @@ Focused contracts pass48/48, documentation validation covers1,650 links and the
 affected gate passes15/15. No product runtime or deployment behavior changed.
 Publication remains pending.
 
+Checkpoint `2ec803220b2877b9c06d35b3587d90cfef397351`, tree
+`abe220fd7951cda5e6185b9abaf265b4fbedfaa1`, received exact-head review at
+`2026-09-02T00:51:28Z`. Finding `3909766066` showed that the Discovery row
+claimed independent partial/fallback rail behavior but linked only its cache
+wrapper. Protected run `33576761686` was invalidated and cancellation was
+requested; it is not acceptance evidence. Correction source
+`258b36b29ddc9383e42825576845cf9da7925548`, tree
+`7fb2a25665f251da196110146c5128b9181be92f`, adds the independent rail assembly
+and unavailable, indeterminate, cancelled and fallback adverse tests. The same
+traceability audit adds direct documentation and repository-memory
+implementation/adverse proof for the already listed P00-R05/R08. Focused
+contracts pass48/48, documentation validation covers1,656 links and the affected
+gate passes15/15. No product runtime or deployment behavior changed.
+Publication remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;
