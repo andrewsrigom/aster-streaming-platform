@@ -323,11 +323,23 @@ full snapshot through the archival checkpoint remains in
   pass51/51 and the affected gate passes15/15, including101 platform-policy,40
   CI-policy and13 repository-memory tests. No product runtime or deployment
   behavior changed.
+- Exact-head review on checkpoint `322df29`, tree `4ae5096`, opened findings
+  `3909975893`/`3909975899` because the classifier runner remained mutable and
+  the matrix could remain inside an open hidden HTML container after a blank
+  raw-block boundary. Protected run `33580036226` passed before those findings
+  and is not final acceptance.
+- Correction source `1fb7637`, tree `d0882e4`, pins all six protected jobs,
+  tracks open HTML containers and verifies hidden plus correctly closed cases.
+  Focused contracts pass53/53 and the affected gate passes15/15, including101
+  platform-policy,40 CI-policy and13 repository-memory tests. A recreated clean
+  worktree required one full local build before lint could resolve workspace
+  package types; the final gate passed. No product runtime or deployment
+  behavior changed.
 
 ### Next action
 
-- Publish the corrected checkpoint, resolve thread `PRRT_kwDOUEkeis6eVZ42` and
-  request confirmation only
+- Publish the corrected checkpoint, resolve threads `PRRT_kwDOUEkeis6eVh7Y`
+  and `PRRT_kwDOUEkeis6eVh7d`, then request confirmation only
   after the PR exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.
 

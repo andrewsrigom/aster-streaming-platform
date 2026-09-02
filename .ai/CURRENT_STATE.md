@@ -422,6 +422,22 @@ passes15/15, including101 platform-policy,40 CI-policy and13 repository-memory
 tests. No product runtime or deployment behavior changed. Publication remains
 pending.
 
+Checkpoint `322df29f80f9e4696590665a2bd89bc02627572e`, tree
+`4ae5096329c6032897e2c6cc7b3f0c592ae56e2a`, passed protected workflow
+`33580036226` and received exact-head review at `2026-09-02T01:40:17Z`.
+Findings `3909975893`/`3909975899` showed that the prerequisite classifier could
+still move to a mutable runner and that a root-indented matrix could remain
+inside an open hidden HTML element after CommonMark ended the raw block. The
+review findings invalidate that workflow as final acceptance. Correction source
+`1fb763738a6f7a0167b55da2c8139d08a4fbf426`, tree
+`d0882e4e674785a442438d82b732650f998598f9`, requires the reviewed
+`ubuntu-24.04` runner for all six protected jobs, tracks open HTML containers
+across raw-block blank boundaries and verifies both hidden and correctly closed
+containers. Focused contracts pass53/53, documentation validation covers1,659
+links and the affected gate passes15/15, including101 platform-policy,40
+CI-policy and13 repository-memory tests. No product runtime or deployment
+behavior changed. Publication remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;

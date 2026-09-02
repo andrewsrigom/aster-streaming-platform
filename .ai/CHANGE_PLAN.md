@@ -339,7 +339,15 @@ file and anchor exists.
   run `33579229763` was invalidated and cancellation was requested. The working
   correction requires the exact `ubuntu-24.04` governance runner and adds its
   regression. Focused contracts pass51/51 and the affected gate passes15/15.
-  Correction source `db11245`, tree `61a21f6`, freezes the batch
+  Correction source `db11245`, tree `61a21f6`, freezes the batch. Exact-head
+  review on checkpoint `322df29` opened findings `3909975893` and `3909975899`
+  because the classifier runner remained mutable and a table inside an open
+  hidden HTML container could pass after the raw-block blank boundary. Protected
+  run `33580036226` passed before those findings and is not final acceptance.
+  The working correction binds all six protected jobs to `ubuntu-24.04`, tracks
+  open HTML containers across raw-block boundaries and adds adverse plus
+  non-regression tests. Focused contracts pass53/53 and the affected gate
+  passes15/15. Correction source `1fb7637`, tree `d0882e4`, freezes the batch
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

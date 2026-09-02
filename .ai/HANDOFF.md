@@ -325,11 +325,21 @@ path/anchor validity to the existing documentation validator.
   `ubuntu-24.04` governance runner and adds its regression. Focused contracts
   pass51/51 and the affected gate passes15/15. No product runtime or deployment
   behavior changed.
+- Exact-head review on checkpoint `322df29`, tree `4ae5096`, opened findings
+  `3909975893`/`3909975899` because the classifier runner remained mutable and
+  the matrix could remain inside an open hidden HTML container after a blank
+  raw-block boundary. Protected run `33580036226` passed before those findings
+  and is not final acceptance.
+- Correction source `1fb7637`, tree `d0882e4`, pins all six protected jobs,
+  tracks open HTML containers and verifies hidden plus correctly closed cases.
+  Focused contracts pass53/53 and the affected gate passes15/15. No product
+  runtime or deployment behavior changed.
 
 ## Exact next actions
 
-1. Publish the corrected checkpoint, resolve review thread
-   `PRRT_kwDOUEkeis6eVZ42` and request confirmation only after GitHub exposes
+1. Publish the corrected checkpoint, resolve review threads
+   `PRRT_kwDOUEkeis6eVh7Y` and `PRRT_kwDOUEkeis6eVh7d`, then request
+   confirmation only after GitHub exposes
    the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating

@@ -829,6 +829,25 @@ zero violations. The affected gate passes15/15, including101 platform-policy,40
 CI-policy and13 repository-memory tests. No product runtime or deployment
 behavior changed. Publication remains pending.
 
+Checkpoint `322df29f80f9e4696590665a2bd89bc02627572e`, tree
+`4ae5096329c6032897e2c6cc7b3f0c592ae56e2a`, passed protected workflow
+`33580036226` and received exact-head review at `2026-09-02T01:40:17Z`.
+Findings `3909975893`/`3909975899` showed that the prerequisite classifier could
+still move to a mutable self-hosted runner and that the matrix could remain
+inside an open hidden HTML container after a blank CommonMark raw-block
+boundary. The findings invalidate that workflow as final acceptance.
+
+Correction source `1fb763738a6f7a0167b55da2c8139d08a4fbf426`, tree
+`d0882e4e674785a442438d82b732650f998598f9`, requires the exact reviewed
+`ubuntu-24.04` runner for all six protected jobs and tracks open HTML containers
+until their actual closing tag. Focused capability/CI-policy tests pass53/53,
+including hidden-container rejection and closed-container acceptance.
+Documentation validation covers250 documents, 2,880 headings, 1,659 links, four
+status claims and eleven rows with zero violations. The affected gate
+passes15/15, including101 platform-policy,40 CI-policy and13 repository-memory
+tests. No product runtime or deployment behavior changed. Publication remains
+pending.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and
