@@ -2,72 +2,68 @@
 
 ## Resume point
 
-Phases00–13 and items68–69 are verified. Item69/P14-R14 passed protected PR
-acceptance, merged as exact-main `b3f409b` with tree `f57a2e5`, and passed
-exact-main workflow `33598493566` on attempt 2 after one cleanly recovered
-TraceQL diagnostic-search timeout.
+Phases00–13 and items68–70 are verified. PR61 final head `6de5a1d`, tree
+`448be36`, passed protected workflow `33602958653`; all three discussions were
+resolved. PR61 squash main `3858bcb` retains the exact tree, and exact-main
+workflow `33603027919` passed.
 
-Item70/P14-R15 is active on `docs/readability-guardrails`, worktree
-`/tmp/aster-readability`, from that exact main commit.
+Item71/P14-R16 is active on `refactor/catalog-playback-readability`, worktree
+`/tmp/aster-readability-catalog-playback`, from that exact main commit.
 
 ## Active outcome
 
-Publish one concise readability standard that:
+Close only the `catalog-command-flow` and `playback-session-outcome` findings:
 
-- distinguishes formatter/static enforcement from review judgment;
-- requires domain names and visible control-flow phases;
-- keeps comments about rationale and invariants;
-- makes tests and examples readable to humans;
-- rejects bulk rewrites, arbitrary scores, and speculative abstractions;
-- records a bounded priority inventory for items71–74.
+- name Catalog command decisions, lifecycle conversion, transaction execution,
+  and publication/takedown predicates explicitly;
+- expose Catalog validation, replay, capacity, decision, persistence, event,
+  receipt, and publication-revalidation phases;
+- name Playback dependency settlement and the session-write-started boundary;
+- preserve every public status, authorization, rights, event, transaction,
+  deadline, cancellation, and indeterminate-write behavior.
 
 ## Work completed locally
 
-- Restored Phase14 context, ADR-0048, relevant skills, representative source,
-  and characterization tests.
-- Merged PR60 after exact-head run `33596017500` passed on attempt 3; verified
-  exact tree preservation and zero unresolved discussions.
-- Exact-main run `33598493566` passed on attempt 2; item69 is `DONE`.
-- Activated item70 and wrote its change plan.
-- Drafted `docs/quality/CODE_READABILITY.md` with review guardrails and nine
-  findings across every required owner and cross-cutting surface.
-- Linked the draft from the documentation map and file index.
-- Focused documentation tests pass 37/37, repository-memory tests pass 13/13,
-  documentation validation covers 251 documents and 1,703 links, and
-  changed-file formatting plus diff checks pass.
-- Source checkpoint `66db1ce`, tree `754cc39`, passes the changed-scope gate
-  7/7 with zero cached tasks.
-- Published PR61 head `1e40ce3` passed protected workflow `33601388742`.
-- Initial review findings `3911583429` and `3911583432` are corrected locally:
-  the handoff resumes from the published checkpoint and evidence uses the
-  canonical `implemented` maturity label.
-- Confirmation finding `3911645670` is corrected locally by separating the
-  implemented-but-not-verified state from work that has not been implemented.
-- Final correction source `6668421` passed protected workflow `33602708481`;
-  all three PR61 discussions are resolved.
-- No executable product or platform source changed.
+- Installed the pinned workspace with zero downloads.
+- Ran the linked characterization suite before editing: 15/15 pass.
+- Catalog now uses explicit command-change, draft-content, rights-withdrawal,
+  rights-review, publication-change, transaction, takedown, and activation
+  names with visible phases.
+- Playback now uses `awaitDependencyOrAbort`, `deadlineSignal`,
+  `sessionWriteStarted`, and explicit failure-result branches.
+- The post-edit characterization suite passes 15/15; complete Catalog tests pass
+  249/249 and Playback tests pass 42/42. Builds, typechecks, changed-file lint,
+  and architecture validation pass.
+- Source `ef9e866`, tree `2c48e62`, passes the affected-scope candidate gate
+  43/43 with 10 cached tasks in 62.095 seconds.
+- PR62 protected workflow `33605355037` passes every applicable job.
+- Initial review findings `3911927401` and `3911927407` concern evidence only.
+  The stale P14-R15 planned entry is removed and exact commands plus raw output
+  now live in `evidence/phase-14/p14-r16-readability.txt`.
+- The post-remediation affected gate passes 43/43 with 32 cached in 40 seconds.
+- No public contract, data, event, cache, media, telemetry, dependency, or
+  deployment behavior changed.
 
 ## Exact next actions
 
-1. Publish this result checkpoint to PR61.
-2. Merge after its documentation-only exact-head checks pass, then verify exact
-   main.
-3. Activate item71 only after item70 releases.
+1. Wait for the final exact-head protected checks.
+2. Merge when they pass, then verify exact main.
+3. Activate item72 only after item71 is verified.
 
 ## Execution boundary
 
 Use WSL Git and pinned Node.js24.19.0/pnpm11.24.0. Never use a `codex/` branch.
-Do not create providers, credentials, paid resources, public endpoints, or new
-media-rights claims.
+Do not create providers, credentials, paid resources, public endpoints, new
+media-rights claims, public contracts, schemas, events, or abstractions.
 
 ## Heavyweight evidence
 
-Item70 changes documentation and repository memory only. Do not repeat Docker,
-browser, media, PostgreSQL, Redis, or broker evidence unless executable source
-later changes behavior measured by that evidence.
+Do not repeat Docker, browser, media, PostgreSQL, Redis, or broker evidence
+unless the refactor changes the behavior that evidence measured. The intended
+change is private naming and local structure only.
 
 ## Do not do yet
 
-Do not rename product code in item70. Do not begin item71 before item70 releases.
-Do not broaden the nine-item inventory during implementation. Do not activate
-hosted P14-R01–R12.
+Do not touch item72 owners, Router, Web, tooling, or P14-R17 examples. Newly
+noticed non-blocking readability issues return to the bounded inventory instead
+of widening item71.

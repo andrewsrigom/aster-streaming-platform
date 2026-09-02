@@ -967,9 +967,71 @@ the unchanged TraceQL diagnostic search. Its project-scoped cleanup step passed.
 Attempt 2 reran the failed path and passed Local platform plus the required
 aggregate. Item69/P14-R14 is verified.
 
+### P14-R15 release boundary and P14-R16 activation
+
+PR61 final head `6de5a1dde8b5d1a377eb8f94651d0dedd4d5e386`, tree
+`448be3646b6bc98d55dbc797c79669059c8ac755`, passed protected workflow
+`33602958653`; all three review discussions are resolved. PR61 squash main
+`3858bcb7299d10fbcb361a65c2907885966d0d4f` retains the exact tree, and
+exact-main workflow `33603027919` passed. Item70/P14-R15 is verified.
+
+Item71/P14-R16 starts from that exact main commit. Its bounded scope is the
+`catalog-command-flow` and `playback-session-outcome` inventory findings. It
+changes private naming and local application structure only; no public contract,
+schema, event, persistence, cache, media, telemetry, dependency, or deployment
+change is authorized.
+
+### P14-R16 Catalog and Playback iteration evidence
+
+Environment: WSL Ubuntu20.04 with pinned Node.js24.19.0 and pnpm11.24.0. The
+workspace install reused all480 packages from the content-addressable store and
+downloaded zero packages.
+
+Before editing, the exact linked characterization command built Catalog and
+Playback plus their workspace dependencies and passed 15/15 tests. After the
+private naming and local control-flow refactor:
+
+- the same linked characterization passes 15/15;
+- the complete Catalog package passes 249/249 tests;
+- the complete Playback package passes 42/42 tests;
+- both affected builds and typechecks pass;
+- changed-file ESLint passes;
+- architecture validation reports zero violations.
+
+The Catalog call order, rights decisions, optimistic writes, audit, event,
+receipt, reserved takedown capacity, and final publication revalidation remain
+characterized. Playback retains one Catalog lookup, one non-retried session
+write, the two-second deadline, caller cancellation, indeterminate post-write
+failure, and expiry-after-acknowledgement checks. No heavyweight experiment is
+repeated because no adapter, transaction order, public contract, runtime, or
+media behavior changed.
+
+The exact local invocations and their raw console output are retained in
+[`p14-r16-readability.txt`](./p14-r16-readability.txt). That transcript includes
+the linked characterization command, complete affected-package checks, static
+checks, and the final affected-scope candidate gate.
+
+Source checkpoint `ef9e866b1a2d04cc5a8a15c4e5e6519897f7317a`, tree
+`2c48e62c7f498121942fa42d2ae743cbe5562501`, passes `pnpm check:changed`:
+43/43 tasks pass with 10 cached tasks in 62.095 seconds. The gate includes both
+complete service suites, affected builds and typechecks, Router composition and
+contract tests, workspace lint/format/unused-code checks, architecture,
+documentation, repository memory, security, toolchain, CI policy, and governance
+checks. No Docker, browser, media, PostgreSQL, Redis, or broker experiment is
+repeated for this private naming and local-structure change.
+
+Protected PR62 workflow `33605355037` passes every applicable job, including
+source quality, complete Catalog and Playback tests, real platform integration,
+the Docker-only playable demo, Local platform, documentation, security, and the
+required aggregate. The initial review found two evidence-index defects only:
+completed P14-R15 still appeared under planned evidence, and item71 lacked an
+exact reproducible command transcript. Both are corrected together. The
+post-remediation affected gate passes 43/43 tasks with 32 cached in 40 seconds;
+confirmation review found one stale handoff action, which is corrected without
+changing product source. Final exact-head protected checks remain.
+
 ## Planned evidence
 
-- P14-R15 readability guardrails and findings inventory
-- P14-R16 owner-scoped refactoring characterization
+- P14-R16 remaining owner-scoped refactoring characterization
 - P14-R17 examples and reading-path verification
 - P14-R18 fresh-checkout and Docker reference verification

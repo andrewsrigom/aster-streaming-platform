@@ -4,6 +4,50 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-02 — Readability guardrails verified and item71 activated
+
+### Completed
+
+- PR61 final head `6de5a1d`, tree `448be36`, passed protected workflow
+  `33602958653`; all three review discussions are resolved.
+- PR61 squash main `3858bcb` retains the exact tree; exact-main workflow
+  `33603027919` passed. Item70/P14-R15 is `DONE`.
+- Activated item71/P14-R16 on `refactor/catalog-playback-readability` from exact
+  main.
+- Scoped the work to `catalog-command-flow` and `playback-session-outcome` with
+  public behavior, ownership, rights, transaction, event, deadline,
+  cancellation, and indeterminate-write behavior preserved.
+- Replaced ambiguous private Catalog names with explicit command decisions and
+  separated draft, rights-withdrawal, rights-review, publication, transaction,
+  event, receipt, and revalidation phases.
+- Renamed Playback dependency settlement and session-write state, and replaced
+  the nested failure expression with explicit typed outcomes.
+- Published PR62. Protected workflow `33605355037` passes every applicable job.
+- Initial review findings `3911927401` and `3911927407` identify evidence-index
+  defects only. Removed completed P14-R15 from planned evidence and added an
+  exact command/raw-output transcript for item71.
+- Confirmation finding `3912134690` identified one stale handoff action. The
+  handoff now resumes directly at final exact-head checks.
+
+### Evidence
+
+- Protected PR61 run: `33602958653`.
+- Merge: `3858bcb7299d10fbcb361a65c2907885966d0d4f`, tree
+  `448be3646b6bc98d55dbc797c79669059c8ac755`.
+- Exact-main run: `33603027919`.
+- The linked Catalog/Playback characterization passes 15/15 before and after the
+  refactor. Complete Catalog tests pass 249/249; Playback passes 42/42. Affected
+  builds/typechecks, changed-file lint, and architecture validation pass.
+- Source `ef9e866`, tree `2c48e62`, passes the affected-scope gate 43/43 with 10
+  cached tasks in 62.095 seconds.
+- The evidence-remediation affected gate passes 43/43 with 32 cached tasks in 40
+  seconds.
+
+### Next action
+
+Publish the confirmation correction, wait for final exact-head checks, merge,
+and verify exact main before activating item72.
+
 ## 2026-09-02 — Readability inventory initial review corrected
 
 ### Completed

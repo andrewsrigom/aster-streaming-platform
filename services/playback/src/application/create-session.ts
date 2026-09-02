@@ -4,7 +4,7 @@ import type { PlaybackSessionPorts, PlaybackSessionResult } from "./session-port
 
 export type PlaybackSessions = ReturnType<typeof createPlaybackSessions>;
 
-function untilAborted<T>(work: () => Promise<T>, signal: AbortSignal): Promise<T> {
+function awaitDependencyOrAbort<T>(work: () => Promise<T>, signal: AbortSignal): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const remove = () => {
       signal.removeEventListener("abort", abort);
@@ -21,9 +21,9 @@ function untilAborted<T>(work: () => Promise<T>, signal: AbortSignal): Promise<T
         return work();
       })
       .then(
-        (value) => {
+        (dependencyValue) => {
           remove();
-          resolve(value);
+          resolve(dependencyValue);
         },
         (error: unknown) => {
           remove();
@@ -46,51 +46,63 @@ export function createPlaybackSessions(ports: PlaybackSessionPorts) {
         return { status: "invalid_input" };
       }
       const deadline = createAsterDeadline({ parentSignal: context.signal, timeoutMs: 2000 });
-      const active = deadline.signal;
-      let inserting = false;
+      const deadlineSignal = deadline.signal;
+      let sessionWriteStarted = false;
+
       try {
-        const current = await untilAborted(
-          () => ports.catalog.currentPublication(titleId, active, context.traceparent),
-          active,
+        const publicationLookup = await awaitDependencyOrAbort(
+          () => ports.catalog.currentPublication(titleId, deadlineSignal, context.traceparent),
+          deadlineSignal,
         );
-        active.throwIfAborted();
-        if (current.status !== "completed") {
+        deadlineSignal.throwIfAborted();
+        if (publicationLookup.status !== "completed") {
           return { status: "unavailable" };
         }
-        if (current.value === null) {
+        if (publicationLookup.value === null) {
           return { status: "not_playable" };
         }
+
         const session = createAnonymousPlaybackSession({
           id: ports.nextId(),
           titleId,
           correlationId: context.correlationId,
-          publication: current.value,
+          publication: publicationLookup.value,
           now: ports.now(),
           allowLocalMedia: ports.allowLocalMedia,
         });
         if (!session) {
           return { status: "unavailable" };
         }
-        active.throwIfAborted();
-        inserting = true;
-        const result = await untilAborted(() => ports.sessions.create(session, active), active);
-        active.throwIfAborted();
-        if (result.status !== "completed") {
-          return { status: result.status };
+
+        deadlineSignal.throwIfAborted();
+        sessionWriteStarted = true;
+        const sessionWrite = await awaitDependencyOrAbort(
+          () => ports.sessions.create(session, deadlineSignal),
+          deadlineSignal,
+        );
+        deadlineSignal.throwIfAborted();
+        if (sessionWrite.status !== "completed") {
+          return { status: sessionWrite.status };
         }
-        const now = ports.now();
-        if (!Number.isSafeInteger(now) || now < session.createdAt || now >= session.expiresAt) {
+
+        const checkedAt = ports.now();
+        if (
+          !Number.isSafeInteger(checkedAt) ||
+          checkedAt < session.createdAt ||
+          checkedAt >= session.expiresAt
+        ) {
           return { status: "not_playable" };
         }
+
         return { status: "completed", value: session };
       } catch {
-        return {
-          status: inserting
-            ? "indeterminate"
-            : context.signal.aborted
-              ? "cancelled"
-              : "unavailable",
-        };
+        if (sessionWriteStarted) {
+          return { status: "indeterminate" };
+        }
+        if (context.signal.aborted) {
+          return { status: "cancelled" };
+        }
+        return { status: "unavailable" };
       } finally {
         deadline.dispose();
       }

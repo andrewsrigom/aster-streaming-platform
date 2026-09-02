@@ -90,8 +90,8 @@ The latest release is Phase13:
 | 67 | Prove query counts and owner authorization; close Phase13 | P13-R07 | DONE |
 | 68 | Record Phase13 release and establish the reference-first Phase14 runway | P14-R13 | DONE |
 | 69 | Publish the capability-to-code/test/evidence/operations index | P14-R14 | DONE |
-| 70 | Define readability guardrails and a bounded prioritized findings inventory | P14-R15 | IN_PROGRESS |
-| 71 | Refactor representative Catalog and Playback reading slices | P14-R16 | READY |
+| 70 | Define readability guardrails and a bounded prioritized findings inventory | P14-R15 | DONE |
+| 71 | Refactor representative Catalog and Playback reading slices | P14-R16 | IN_PROGRESS |
 | 72 | Refactor representative Identity, Engagement and Discovery reading slices | P14-R16 | READY |
 | 73 | Refactor representative Router, Web and repository-tooling reading slices | P14-R16 | READY |
 | 74 | Align rationale comments, executable examples and core-journey reading paths | P14-R17 | READY |
@@ -148,7 +148,7 @@ pull-request acceptance passed and every discussion is resolved. Exact-main run
 `33598493566` passed on attempt 2 after attempt 1 hit the known TraceQL
 diagnostic-search timeout and completed scoped cleanup.
 
-## Item70 — active
+## Item70 — verified
 
 ### Outcome
 
@@ -163,7 +163,32 @@ before changing implementation code.
 - Rules reject narration comments, speculative abstractions and bulk rewrites.
 - The inventory selects bounded slices for items71–74.
 
-## Items71–74 — scoped implementation work
+PR61 final head `6de5a1d`, tree `448be36`, passed protected workflow
+`33602958653` after one initial review, one confirmation, and three resolved
+repository-memory findings. PR61 squash main `3858bcb` retains the exact tree;
+exact-main workflow `33603027919` passed.
+
+## Item71 — active
+
+### Outcome
+
+Make the Catalog operator-command flow and Playback session failure boundary
+readable through explicit domain names and visible phases while preserving all
+public behavior.
+
+### Acceptance
+
+- Private names state command decisions, lifecycle conversion, durable-write
+  phases, dependency settlement, and uncertain-write boundaries.
+- Catalog rights, audit, replay, capacity, event, receipt, transaction, and
+  publication behavior remains unchanged.
+- Playback owner lookup, deadline, cancellation, no-retry, expiry, and result
+  behavior remains unchanged.
+- Linked characterization tests and the affected-scope candidate gate pass.
+- No public contract, schema, event, persistence, cache, media, telemetry, or
+  deployment change is introduced.
+
+## Items72–74 — scoped implementation work
 
 Each item starts only after its predecessor releases. Every slice:
 

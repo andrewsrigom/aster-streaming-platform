@@ -70,7 +70,9 @@ Phase13. Item68 final result `7f1dd6c`, tree `b7398a9`, passed protected run
 tree; exact-main run `33495029876` passed and verifies P14-R13. Item69/P14-R14
 passed protected PR acceptance and merged through PR60 as main `b3f409b` with
 the reviewed tree; exact-main run `33598493566` passed on attempt 2. Item70/
-P14-R15 is the active readability-guardrail and bounded-inventory work.
+P14-R15 passed PR61 protected acceptance and merged as exact-tree main
+`3858bcb`; exact-main run `33603027919` passed. Item71/P14-R16 is the active
+Catalog and Playback readability work.
 
 Phase12 final
 source `b646e496d0946262a688f34a118a896f6c40ebda`, tree
