@@ -22,7 +22,7 @@
     "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"
   },
   "dependencies": {
-    "content-type": "1.0.5",
+    "content-type": "3.0.0",
     "express": "5.2.1"
   },
   "devDependencies": {
