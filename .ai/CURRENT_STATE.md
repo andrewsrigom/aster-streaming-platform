@@ -367,6 +367,21 @@ contracts pass48/48, documentation validation covers1,656 links and the affected
 gate passes15/15. No product runtime or deployment behavior changed.
 Publication remains pending.
 
+Checkpoint `0e043f73ebce63ad375fe9b30d697fd0bfc0baee`, tree
+`72b41e9cfeb102091dd31af6dedac268b920a1ba`, received exact-head review at
+`2026-09-02T01:01:03Z`. Findings `3909806922`/`3909806926` showed that a
+governance job container could inject `NODE_OPTIONS` before mandatory commands
+and that P05-R05 implementation navigation stopped at the profile dialog.
+Protected run `33577392566` was invalidated and cancellation was requested; it
+is not acceptance evidence. Correction source
+`f85b83355d5171507f0788c2222d8b289d5caeb2`, tree
+`c2cea95eab42fae6725d03fa476314bc950c1c0f`, allowlists the exact governance
+job-level shape, rejects containers and adds representative navigation,
+home-rail and catalog/title Web implementation sources. Focused contracts
+pass48/48, documentation validation covers1,659 links and the affected gate
+passes15/15. No product runtime or deployment behavior changed. Publication
+remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;

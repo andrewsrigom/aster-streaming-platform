@@ -763,6 +763,24 @@ zero violations. The affected gate passes15/15, including101 platform-policy,39
 CI-policy and13 repository-memory tests. No product runtime or deployment
 behavior changed. Publication remains pending.
 
+Checkpoint `0e043f73ebce63ad375fe9b30d697fd0bfc0baee`, tree
+`72b41e9cfeb102091dd31af6dedac268b920a1ba`, received exact-head review at
+`2026-09-02T01:01:03Z`. Findings `3909806922`/`3909806926` showed that a
+governance job container could inject Node startup behavior before mandatory
+commands and that P05-R05 implementation navigation stopped at the profile
+dialog. Protected run `33577392566` was invalidated and cancellation was
+requested; it is not acceptance evidence.
+
+Correction source `f85b83355d5171507f0788c2222d8b289d5caeb2`, tree
+`c2cea95eab42fae6725d03fa476314bc950c1c0f`, allowlists the exact governance
+job-level shape, rejects containers and adds representative application-shell,
+home-rail and catalog/title Web implementation sources. Focused
+capability/CI-policy tests pass48/48. Documentation validation covers250
+documents, 2,880 headings, 1,659 links, four status claims and eleven rows with
+zero violations. The affected gate passes15/15, including101 platform-policy,39
+CI-policy and13 repository-memory tests. No product runtime or deployment
+behavior changed. Publication remains pending.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and

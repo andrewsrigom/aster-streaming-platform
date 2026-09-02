@@ -316,7 +316,14 @@ file and anchor exists.
   direct documentation/repository-memory implementation and adverse proof for
   the already listed P00-R05/R08. Focused contracts pass48/48, documentation
   validation covers1,656 links and the affected gate passes15/15. Correction
-  source `258b36b`, tree `7fb2a25`, freezes the batch
+  source `258b36b`, tree `7fb2a25`, freezes the batch. Exact-head review on
+  checkpoint `0e043f7` opened findings `3909806922`/`3909806926` for
+  container-scoped Node startup injection and P05-R05 implementation links that
+  stopped at the profile dialog. The working correction allowlists the exact
+  governance job shape, rejects job containers and adds representative
+  navigation, home-rail and catalog/title Web sources. Focused contracts
+  pass48/48, documentation validation covers1,659 links and the affected gate
+  passes15/15. Correction source `f85b833`, tree `c2cea95`, freezes the batch
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

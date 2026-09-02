@@ -287,11 +287,22 @@ full snapshot through the archival checkpoint remains in
   validation covers1,656 links and the affected gate passes15/15, including101
   platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
   or deployment behavior changed.
+- Exact-head review on checkpoint `0e043f7`, tree `72b41e9`, opened findings
+  `3909806922`/`3909806926` for container-scoped Node startup injection and
+  P05-R05 implementation links that stopped at the profile dialog. Protected
+  run `33577392566` was invalidated and cancellation was requested.
+- Correction source `f85b833`, tree `c2cea95`, allowlists the exact governance
+  job shape, rejects containers and adds representative navigation, home-rail
+  and catalog/title Web sources. Focused contracts pass48/48, documentation
+  validation covers1,659 links and the affected gate passes15/15, including101
+  platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
+  or deployment behavior changed.
 
 ### Next action
 
-- Publish the corrected checkpoint, resolve thread `PRRT_kwDOUEkeis6eVAjz` and
-  request confirmation only after the PR exposes the new exact head. Then merge and
+- Publish the corrected checkpoint, resolve threads
+  `PRRT_kwDOUEkeis6eVHDc`/`PRRT_kwDOUEkeis6eVHDf` and request confirmation only
+  after the PR exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway

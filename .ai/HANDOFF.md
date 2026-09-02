@@ -293,11 +293,21 @@ path/anchor validity to the existing documentation validator.
   implementation and adverse proof. Focused contracts pass48/48, documentation
   validation covers1,656 links and the affected gate passes15/15. No product
   runtime or deployment behavior changed.
+- Exact-head review on checkpoint `0e043f7`, tree `72b41e9`, opened findings
+  `3909806922`/`3909806926` for container-scoped Node startup injection and
+  P05-R05 implementation links that stopped at the profile dialog. Protected
+  run `33577392566` was invalidated and cancellation was requested.
+- Correction source `f85b833`, tree `c2cea95`, allowlists the exact governance
+  job shape, rejects containers and adds representative navigation, home-rail
+  and catalog/title Web sources. Focused contracts pass48/48, documentation
+  validation covers1,659 links and the affected gate passes15/15. No product
+  runtime or deployment behavior changed.
 
 ## Exact next actions
 
-1. Publish the corrected checkpoint, resolve review thread
-   `PRRT_kwDOUEkeis6eVAjz` and request confirmation only after GitHub exposes
+1. Publish the corrected checkpoint, resolve review threads
+   `PRRT_kwDOUEkeis6eVHDc`/`PRRT_kwDOUEkeis6eVHDf` and request confirmation only
+   after GitHub exposes
    the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating
