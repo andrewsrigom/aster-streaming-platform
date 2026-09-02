@@ -107,6 +107,17 @@ function hasExactJobKeys(jobSource: string, expected: readonly string[]): boolea
   return actual.length === expected.length && actual.every((key, index) => key === expected[index]);
 }
 
+function hasExactJobRunner(jobSource: string, expected: string): boolean {
+  return jobSource
+    .replace(/\r\n?/gu, "\n")
+    .split("\n")
+    .some(
+      (line) =>
+        /^ {4}runs-on:/u.test(line) &&
+        uncommentedYamlValue(line.slice("    runs-on:".length)) === expected,
+    );
+}
+
 function hasProtectedCapabilityPrelude(jobSource: string): boolean {
   if (!hasExactJobKeys(jobSource, ["name", "needs", "runs-on", "steps"])) {
     return false;
@@ -417,6 +428,14 @@ export function validateWorkflowPolicy(
       file,
       line: 1,
       rule: "commands",
+    });
+  }
+  if (!hasExactJobRunner(governanceSource, "ubuntu-24.04")) {
+    violations.push({
+      detail: "capability-index governance must use the reviewed ubuntu-24.04 runner",
+      file,
+      line: 1,
+      rule: "runner",
     });
   }
   if (hasTopLevelYamlKey(source, "defaults")) {

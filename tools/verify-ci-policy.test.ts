@@ -196,6 +196,21 @@ test("rejects duplicate feature pushes and missing cancellation", async () => {
   assert.ok(rules.includes("concurrency"));
 });
 
+test("capability governance must use the reviewed runner", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  const weakened = source.replace(
+    "  governance:\n    name: Documentation and security\n    needs: classify\n    runs-on: ubuntu-24.04\n",
+    "  governance:\n    name: Documentation and security\n    needs: classify\n    runs-on: self-hosted\n",
+  );
+
+  assert.notEqual(weakened, source);
+  assert.ok(
+    validateWorkflowPolicy(weakened).some(
+      ({ detail, rule }) => rule === "runner" && detail.includes("governance"),
+    ),
+  );
+});
+
 test("diagnostic failure exercises cannot be omitted, broadened or run for every change", async () => {
   const source = await readFile(workflowPath, "utf8");
   for (const changed of [
