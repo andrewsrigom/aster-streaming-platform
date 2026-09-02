@@ -270,12 +270,16 @@ path/anchor validity to the existing documentation validator.
   classifier shape and rejects conditions, non-blocking behavior, dependencies
   and empty matrix strategies. Focused contracts pass48/48 and the affected
   gate passes15/15. No product runtime or deployment behavior changed.
+- Candidate checkpoint `c8ad883`, tree `8b5d6a9`, received a clean exact-head
+  review at `2026-09-02T00:14:52Z`; no review thread remains open.
+- Protected workflow `33574235870` attempt1 hit a cleanly recovered PostgreSQL
+  TraceQL search timeout after all other jobs passed. Attempt2 reran the failed
+  path and passed Local platform plus the required aggregate.
 
 ## Exact next actions
 
-1. Publish the exact correction checkpoint, resolve review thread
-   `PRRT_kwDOUEkeis6eUcuQ`
-   and request confirmation only after GitHub exposes the new exact PR head.
+1. Publish the result-only checkpoint and request confirmation only after
+   GitHub exposes the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating
    item70/P14-R15.

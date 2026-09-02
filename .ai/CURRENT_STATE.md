@@ -326,6 +326,17 @@ empty matrix strategies. Focused contracts pass48/48 and the affected gate
 passes15/15. No product runtime or deployment behavior changed. Publication
 remains pending.
 
+Candidate checkpoint `c8ad883c43b25f3bbc4e0155c033d8a09dc1d495`, tree
+`8b5d6a933d0bc6ea05be075f6dc1c184d1534315`, received a clean exact-head review
+at `2026-09-02T00:14:52Z`; no review thread remains open. Protected workflow
+`33574235870` attempt1 passed classification, dependency review, governance and
+source quality but Local platform timed out waiting for PostgreSQL TraceQL
+search for trace `08f10a32423dfc23029f02e60e67d7f7`; scoped cleanup reported
+clean. Attempt2 reran the failed path and passed Local platform and the required
+aggregate, so the exact candidate is accepted. No product runtime or deployment
+behavior changed. A result-only checkpoint, its exact-head confirmation, merge
+and exact-main acceptance remain.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;

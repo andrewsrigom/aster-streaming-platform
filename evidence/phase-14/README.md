@@ -717,6 +717,17 @@ affected gate passes15/15, including101 platform-policy,39 CI-policy and13
 repository-memory tests. No product runtime or deployment behavior changed.
 Publication remains pending.
 
+Candidate checkpoint `c8ad883c43b25f3bbc4e0155c033d8a09dc1d495`, tree
+`8b5d6a933d0bc6ea05be075f6dc1c184d1534315`, received a clean exact-head review
+at `2026-09-02T00:14:52Z`; no review thread remains open. Protected workflow
+`33574235870` attempt1 passed classification, dependency review, governance and
+source quality but Local platform timed out waiting for PostgreSQL TraceQL
+search for trace `08f10a32423dfc23029f02e60e67d7f7`; scoped cleanup reported
+clean. Attempt2 reran the failed path and passed Local platform and the required
+aggregate. This is accepted exact-candidate evidence. No product runtime or
+deployment behavior changed. A result-only checkpoint, its exact-head
+confirmation, merge and exact-main acceptance remain.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and

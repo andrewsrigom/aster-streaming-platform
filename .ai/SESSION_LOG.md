@@ -261,12 +261,17 @@ full snapshot through the archival checkpoint remains in
   and empty matrix strategies. Focused contracts pass48/48 and the affected
   gate passes15/15, including101 platform-policy,39 CI-policy and13
   repository-memory tests. No product runtime or deployment behavior changed.
+- Candidate checkpoint `c8ad883`, tree `8b5d6a9`, received a clean exact-head
+  review at `2026-09-02T00:14:52Z`; no review thread remains open.
+- Protected workflow `33574235870` attempt1 passed every other job but Local
+  platform timed out waiting for PostgreSQL TraceQL search; scoped cleanup was
+  clean. Attempt2 reran the failed path and passed Local platform plus the
+  required aggregate.
 
 ### Next action
 
-- Publish the exact correction checkpoint, resolve thread
-  `PRRT_kwDOUEkeis6eUcuQ` and request
-  confirmation only after the PR exposes the new exact head. Then merge and
+- Publish the result-only checkpoint and request confirmation only after the PR
+  exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway

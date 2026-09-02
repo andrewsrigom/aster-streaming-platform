@@ -296,7 +296,13 @@ file and anchor exists.
   blocking classifier job shape and rejects conditions, non-blocking behavior,
   dependencies and empty matrix strategies. Focused contracts pass48/48 and
   the affected gate passes15/15. Correction source `ee8d25e`, tree `2920242`,
-  freezes the batch
+  freezes the batch. Candidate checkpoint `c8ad883`, tree `8b5d6a9`, received a
+  clean exact-head review at `2026-09-02T00:14:52Z`. Protected workflow
+  `33574235870` attempt1 passed every other job but hit a cleanly recovered
+  PostgreSQL TraceQL search timeout in Local platform; attempt2 reran the
+  failed path and passed every job plus the aggregate. One result-only
+  checkpoint, its exact-head confirmation, merge and exact-main acceptance
+  remain
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff
