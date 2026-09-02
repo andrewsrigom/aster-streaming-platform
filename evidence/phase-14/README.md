@@ -941,6 +941,12 @@ as `implemented`, with protected acceptance and confirmation stated separately.
 Focused diff, formatting, repository-memory, and documentation checks pass. No
 executable behavior or heavyweight evidence changed.
 
+Confirmation review on corrected head `9fa6668bdba3182b8b59bdbe79e626e260cafde1`
+found one remaining truthfulness defect, `3911645670`: current-state prose still
+grouped implemented P14-R15 under `Not implemented`. The final correction gives
+implemented-but-not-verified work its own section. Protected workflow
+`33602069611` passed on that reviewed head; no executable behavior changed.
+
 ### P14-R14 merge boundary
 
 Final PR60 head `aef6c8d32ec77f867cb204247093079475292af3`, tree

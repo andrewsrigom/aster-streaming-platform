@@ -13,6 +13,9 @@ full snapshot through the archival checkpoint remains in
 - Initial review completed with findings `3911583429` and `3911583432`.
 - Corrected the stale handoff instruction and replaced the composite maturity
   phrase with the canonical `implemented` label plus separate pending checks.
+- Confirmation review found one remaining grouping defect: P14-R15 appeared
+  under `Not implemented`. It now has a separate implemented-but-not-verified
+  section.
 - The active goal remains human-readable reference code; deployment stays out
   of scope.
 
@@ -24,8 +27,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-Publish the correction, resolve both discussions, complete one confirmation,
-merge and verify exact main. Then activate item71; do not reopen item70 style
+Publish the final correction, resolve its discussion, merge after exact-head
+checks, and verify exact main. Then activate item71; do not reopen item70 style
 scope.
 
 ## 2026-09-02 — Capability index merged and readability inventory activated

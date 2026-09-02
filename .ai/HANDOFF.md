@@ -41,13 +41,15 @@ Publish one concise readability standard that:
 - Initial review findings `3911583429` and `3911583432` are corrected locally:
   the handoff resumes from the published checkpoint and evidence uses the
   canonical `implemented` maturity label.
+- Confirmation finding `3911645670` is corrected locally by separating the
+  implemented-but-not-verified state from work that has not been implemented.
 - No executable product or platform source changed.
 
 ## Exact next actions
 
-1. Publish the correction to PR61.
-2. Resolve both addressed discussions, complete one confirmation review, merge,
-   and verify exact main.
+1. Publish the confirmation-review correction to PR61.
+2. Resolve the addressed discussion, merge after exact-head checks pass, and
+   verify exact main.
 3. Activate item71 only after item70 releases.
 
 ## Execution boundary
