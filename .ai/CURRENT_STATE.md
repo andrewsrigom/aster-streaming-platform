@@ -60,7 +60,10 @@ fresh-clone bootstrap, navigation, 16 focused tests, complete 73-task gate, and
 high-severity audit pass. Docker Desktop failed before Compose startup because
 its local analytics socket could not be removed; the owner closed Docker. No
 Compose project was started. Browser, replay, scoped cleanup, publication, and
-protected release remain.
+protected release remain. The local reference-verification note now records the
+passing source path, pending Docker leg, verified local scope, and excluded
+hosted/commercial claims without presenting P14-R18 as complete. Its changed-
+scope gate passes 9/9 tasks in `13.792s`.
 
 ## Ordered reference-quality runway
 

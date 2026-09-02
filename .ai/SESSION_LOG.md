@@ -17,6 +17,11 @@ full snapshot through the archival checkpoint remains in
   application and Web-state checks passed 16/16.
 - The exact-main complete gate passed 73/73 in `1m47.705s`. The high-severity
   audit gate passed and reported one moderate finding.
+- Published the in-progress local reference-verification note in repository
+  navigation. It separates passing source proof from the pending Docker leg and
+  explicitly excludes hosted, capacity, broader-rights, and commercial claims.
+- The documentation candidate gate passes 9/9 tasks with zero cached tasks in
+  `13.792s`.
 
 ### Evidence
 

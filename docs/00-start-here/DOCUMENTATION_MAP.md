@@ -50,6 +50,8 @@
   requirement, representative code, adverse test, evidence, and operational guide
 - [`docs/00-start-here/CORE_JOURNEY_READING_PATHS.md`](CORE_JOURNEY_READING_PATHS.md) — follow
   eight end-to-end journeys and run one bounded synthetic check for each
+- [`docs/00-start-here/REFERENCE_VERIFICATION.md`](REFERENCE_VERIFICATION.md) — inspect the
+  fresh-checkout evidence, remaining Docker checkpoint, local scope, and hosted exclusions
 - `docs/00-start-here/ENGINEERING_DEMONSTRATION.md`
 - `docs/handbook/01-node-in-production.md`
 - `docs/handbook/02-domain-and-clean-architecture.md`
@@ -115,6 +117,7 @@
 | Operational response | `docs/operations/` |
 | Capability-to-code navigation | `docs/00-start-here/CAPABILITY_INDEX.md` |
 | Core journeys and executable checks | `docs/00-start-here/CORE_JOURNEY_READING_PATHS.md` |
+| Local reference acceptance boundary | `docs/00-start-here/REFERENCE_VERIFICATION.md` |
 | Code readability rules and active findings | `docs/quality/CODE_READABILITY.md` |
 | Engineering demonstration coverage | `docs/00-start-here/ENGINEERING_DEMONSTRATION.md` |
 | Remaining Phase 01 runtime design | `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` |

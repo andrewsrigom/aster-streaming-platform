@@ -135,6 +135,8 @@ verification notes. Do not change executable product behavior.
 - Raw artifact path: `evidence/phase-14/p14-r18-reference-acceptance.txt`
 - Acceptance result: partial; Docker startup, browser journey, replay, cleanup,
   publication, and protected release remain
+- Current documentation candidate: `pnpm check:changed` passes 9/9 tasks with
+  zero cached tasks in `13.792s`
 - Iteration gate: public bootstrap/version checks, selected focused tests,
   Docker startup/journey/replay/cleanup, `pnpm docs:check`, and `pnpm ai:check`
 - Candidate gate: `pnpm check:changed`
@@ -155,6 +157,8 @@ using a broad deletion command. No production or hosted state exists.
 
 - `README.md`
 - `docs/00-start-here/REFERENCE_VERIFICATION.md`
+- `docs/00-start-here/DOCUMENTATION_MAP.md`
+- `docs/00-start-here/FILE_INDEX.md`
 - `evidence/phase-14/README.md`
 - `evidence/phase-14/p14-r18-reference-acceptance.txt`
 - `.ai/CURRENT_STATE.md`, `.ai/WORK_QUEUE.md`, `.ai/SESSION_LOG.md`, and

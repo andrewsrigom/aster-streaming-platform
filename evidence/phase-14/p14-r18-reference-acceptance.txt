@@ -82,6 +82,16 @@ $ pnpm audit --audit-level=high
 Severity: 1 moderate
 Exit: 0
 
+Documentation candidate gate
+----------------------------
+The in-progress verification note and repository navigation add no executable
+behavior or completion claim.
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 0 cached, 9 total
+Time: 13.792s
+
 Docker preflight diagnostic
 ---------------------------
 Docker Desktop was initially stopped. Starting it did not yield a healthy
@@ -110,4 +120,5 @@ Remaining acceptance
 - existing real browser journey;
 - replay-safe seed and generated-media reuse;
 - inspected project-scoped cleanup and zero owned residue;
-- verification note, protected review, merge, and exact-main acceptance.
+- verification-note finalization, protected review, merge, and exact-main
+  acceptance.

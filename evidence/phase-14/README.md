@@ -1237,8 +1237,11 @@ with one moderate finding.
 Docker Desktop fails before Compose startup while removing its stale local
 analytics socket. The owner closed Docker; no reset or socket removal was
 attempted, and no disposable Compose project started. The browser journey,
-replay, exact cleanup, verification note, protected review, merge, and exact-
-main acceptance remain. The exact partial transcript is retained in
+replay, exact cleanup, verification-note finalization, protected review, merge,
+and exact-main acceptance remain. The current boundary is published in the
+[local reference verification](../../docs/00-start-here/REFERENCE_VERIFICATION.md),
+whose changed-scope gate passes 9/9 tasks with zero cached tasks in `13.792s`.
+The exact partial transcript is retained in
 [`p14-r18-reference-acceptance.txt`](./p14-r18-reference-acceptance.txt).
 
 ## Planned evidence

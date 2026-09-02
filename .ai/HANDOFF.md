@@ -40,6 +40,10 @@ Close only `reference-fresh-acceptance`:
 - Docker Desktop failed before Compose startup because it could not remove the
   stale local analytics socket. The owner closed Docker. No disposable Compose
   project was started and no project cleanup is due.
+- Drafted and linked the local reference-verification note with the exact
+  passing source proof, pending Docker leg, verified local capabilities, and
+  explicit hosted, capacity, rights, and commercial exclusions. Its changed-
+  scope candidate gate passes 9/9 tasks in `13.792s`.
 
 ## Exact next actions
 
