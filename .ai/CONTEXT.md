@@ -69,9 +69,8 @@ Phase13. Item68 final result `7f1dd6c`, tree `b7398a9`, passed protected run
 `33494938005` and clean review. PR58 squash main `e925504` retained that
 tree; exact-main run `33495029876` passed and verifies P14-R13. Item69/P14-R14
 passed protected PR acceptance and merged through PR60 as main `b3f409b` with
-the reviewed tree; exact-main run `33598493566` waits for one failed-only
-diagnostic rerun after clean scoped cleanup. Item70/P14-R15 is the active
-readability-guardrail and bounded-inventory work.
+the reviewed tree; exact-main run `33598493566` passed on attempt 2. Item70/
+P14-R15 is the active readability-guardrail and bounded-inventory work.
 
 Phase12 final
 source `b646e496d0946262a688f34a118a896f6c40ebda`, tree

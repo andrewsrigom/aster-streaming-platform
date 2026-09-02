@@ -15,11 +15,10 @@ test, and example problems before implementation refactoring begins.
 
 ## Current behavior
 
-P14-R14 is merged through PR60 as exact-main commit `b3f409b`, retaining tree
+P14-R14 is verified through PR60 as exact-main commit `b3f409b`, retaining tree
 `f57a2e5`. The protected pull-request run `33596017500` passed on attempt 3 and
-all review discussions are resolved. Exact-main run `33598493566` has one
-cleanly scoped Local-platform diagnostic failure while the unchanged source
-jobs continue; item69 is frozen as `WAITING_EXTERNAL` for its failed-only rerun.
+all review discussions are resolved. Exact-main run `33598493566` passed on
+attempt 2 after attempt 1 hit a cleanly scoped TraceQL diagnostic timeout.
 
 The source is formatted, strictly typed, linted, tested, and organized by
 bounded context. Those executable controls do not define when a generic name,

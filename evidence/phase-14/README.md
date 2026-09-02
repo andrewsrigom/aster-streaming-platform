@@ -128,7 +128,7 @@ a new finding. All four PR58 review threads are resolved.
 
 ## P14-R14 — Capability-to-proof index
 
-Status: **implemented — protected acceptance pending**
+Status: **verified**
 
 Source commit `91009bbcc68c40f5947fd93925b7d79498d115b2`, tree
 `78742f48c2f939b9073f419aaded775be1e58876`, records:
@@ -936,7 +936,8 @@ with the same tree.
 Exact-main workflow `33598493566` attempt 1 passed the completed source,
 documentation, and Local-platform setup/journey boundaries but timed out during
 the unchanged TraceQL diagnostic search. Its project-scoped cleanup step passed.
-Item69 remains `WAITING_EXTERNAL` only for the failed-only rerun and aggregate.
+Attempt 2 reran the failed path and passed Local platform plus the required
+aggregate. Item69/P14-R14 is verified.
 
 ## Planned evidence
 

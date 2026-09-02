@@ -12,9 +12,9 @@ full snapshot through the archival checkpoint remains in
   `33596017500` on attempt 3. Both final findings are resolved and no further
   index-hardening review was requested.
 - PR60 squash main `b3f409b` retains the exact reviewed tree.
-- Exact-main run `33598493566` reached the known TraceQL diagnostic-search
-  timeout and completed project-scoped cleanup. Item69 is `WAITING_EXTERNAL`
-  only for the failed-only rerun.
+- Exact-main run `33598493566` passed on attempt 2. Attempt 1 reached the known
+  Catalog TraceQL diagnostic-search timeout and completed project-scoped
+  cleanup. Item69 is `DONE`.
 - Activated item70/P14-R15 on `docs/readability-guardrails` from exact main.
 - Drafted reviewable naming, control-flow, layout, comment, test, and example
   guardrails plus nine bounded findings for items71–74.
@@ -35,9 +35,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-Rerun failed exact-main jobs once, close item69 when green, then publish the
-item70 documentation candidate for one review and one confirmation. Do not
-start source refactoring in item70.
+Commit the item69 closeout, then publish the item70 documentation candidate for
+one review and one confirmation. Do not start source refactoring in item70.
 
 ## 2026-09-01 — P14-R14 capability index activation
 

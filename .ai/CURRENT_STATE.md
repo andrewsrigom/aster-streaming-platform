@@ -11,9 +11,9 @@ reference track P14-R13–R18 is active under ADR-0048. Hosted P14-R01–R12 rem
 planned and requires explicit owner authorization for providers, credentials,
 paid resources, and public endpoints.
 
-Item69/P14-R14 is `WAITING_EXTERNAL` only for an exact-main CI rerun. Item70/
-P14-R15 is the sole `IN_PROGRESS` item on `docs/readability-guardrails`,
-worktree `/tmp/aster-readability`, from exact PR60 squash main `b3f409b`.
+Item69/P14-R14 is verified. Item70/P14-R15 is the sole `IN_PROGRESS` item on
+`docs/readability-guardrails`, worktree `/tmp/aster-readability`, from exact
+PR60 squash main `b3f409b`.
 
 ## Verified
 
@@ -23,10 +23,9 @@ worktree `/tmp/aster-readability`, from exact PR60 squash main `b3f409b`.
 - Item69's reviewed tree `f57a2e5` passed protected PR run `33596017500` on
   attempt 3. Every PR60 discussion is resolved. PR60 squash main
   `b3f409b15ce9da2889850b693b033f69fbd312cd` retains that exact tree.
-- Exact-main run `33598493566` attempt 1 passed classification, documentation,
-  and the completed Local-platform setup/journey checks, but its unchanged
-  TraceQL diagnostic search timed out. Project-scoped cleanup passed. The source
-  job and failed-only rerun remain the sole item69 release conditions.
+- Exact-main run `33598493566` passed on attempt 2. Attempt 1's unchanged
+  Catalog TraceQL diagnostic search timed out and completed clean project-scoped
+  cleanup; the failed-only rerun passed Local platform and the aggregate gate.
 
 The authoritative Phase14 chronology is in
 [`evidence/phase-14/README.md`](../evidence/phase-14/README.md). No hosted
@@ -58,7 +57,7 @@ dependency, or deployment behavior changes in item70.
 ## Ordered reference-quality runway
 
 1. item68 — P14-R13 reference-first runway: verified;
-2. item69 — P14-R14 capability index: merged, exact-main rerun pending;
+2. item69 — P14-R14 capability index: verified;
 3. item70 — P14-R15 readability guardrails and inventory: active;
 4. item71 — P14-R16 Catalog and Playback reading slices;
 5. item72 — P14-R16 Identity, Engagement, and Discovery reading slices;

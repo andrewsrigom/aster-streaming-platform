@@ -2,10 +2,10 @@
 
 ## Resume point
 
-Phases00–13 and item68/P14-R13 are verified. Item69/P14-R14 passed protected
-PR acceptance, merged as exact-main `b3f409b` with tree `f57a2e5`, and waits
-only for failed-only rerun of exact-main workflow `33598493566`. Its first
-TraceQL diagnostic search timed out and project-scoped cleanup passed.
+Phases00–13 and items68–69 are verified. Item69/P14-R14 passed protected PR
+acceptance, merged as exact-main `b3f409b` with tree `f57a2e5`, and passed
+exact-main workflow `33598493566` on attempt 2 after one cleanly recovered
+TraceQL diagnostic-search timeout.
 
 Item70/P14-R15 is active on `docs/readability-guardrails`, worktree
 `/tmp/aster-readability`, from that exact main commit.
@@ -27,8 +27,7 @@ Publish one concise readability standard that:
   and characterization tests.
 - Merged PR60 after exact-head run `33596017500` passed on attempt 3; verified
   exact tree preservation and zero unresolved discussions.
-- Started exact-main run `33598493566`; its Local-platform diagnostic timed out
-  while cleanup passed. Item69 is frozen as `WAITING_EXTERNAL`.
+- Exact-main run `33598493566` passed on attempt 2; item69 is `DONE`.
 - Activated item70 and wrote its change plan.
 - Drafted `docs/quality/CODE_READABILITY.md` with review guardrails and nine
   findings across every required owner and cross-cutting surface.
@@ -42,12 +41,10 @@ Publish one concise readability standard that:
 
 ## Exact next actions
 
-1. Let exact-main run `33598493566` finish, inspect the bounded diagnostic log,
-   and rerun failed jobs once. When green, mark item69 `DONE` in this branch.
-2. Commit the item70 evidence checkpoint.
-3. Publish one item70 candidate, complete one review and one confirmation, merge,
+1. Commit the item69 closeout and item70 evidence checkpoint.
+2. Publish one item70 candidate, complete one review and one confirmation, merge,
    and verify exact main.
-4. Activate item71 only after item70 releases.
+3. Activate item71 only after item70 releases.
 
 ## Execution boundary
 
