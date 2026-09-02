@@ -781,6 +781,22 @@ zero violations. The affected gate passes15/15, including101 platform-policy,39
 CI-policy and13 repository-memory tests. No product runtime or deployment
 behavior changed. Publication remains pending.
 
+Checkpoint `aa12f6b8ed0e2d7de14442180437b42807bbdbc7`, tree
+`1c4206c6ec0443ebfc5932558de1ab784a251393`, received exact-head review at
+`2026-09-02T01:10:16Z`. Finding `3909847310` showed that a list-contained fence
+could hide the matrix while its two-space-indented rows still passed the
+visibility parser. Protected run `33577968379` was invalidated and cancellation
+was requested; it is not acceptance evidence.
+
+Correction source `9e34ee24e6d26b59e42e4a207fd396747fdea1eb`, tree
+`c60d9e010eeb0306e1e849618688a1edd520b731`, requires every public matrix line
+at the Markdown root and adds the exact nested-list fence regression. Focused
+capability/CI-policy tests pass49/49. Documentation validation covers250
+documents, 2,880 headings, 1,659 links, four status claims and eleven rows with
+zero violations. The affected gate passes15/15, including101 platform-policy,39
+CI-policy and13 repository-memory tests. No product runtime or deployment
+behavior changed. Publication remains pending.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and

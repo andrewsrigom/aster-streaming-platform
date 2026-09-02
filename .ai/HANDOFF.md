@@ -302,12 +302,19 @@ path/anchor validity to the existing documentation validator.
   and catalog/title Web sources. Focused contracts pass48/48, documentation
   validation covers1,659 links and the affected gate passes15/15. No product
   runtime or deployment behavior changed.
+- Exact-head review on checkpoint `aa12f6b`, tree `1c4206c`, opened finding
+  `3909847310` because a list-contained fence could hide the matrix while the
+  parser accepted its two-space indentation. Protected run `33577968379` was
+  invalidated and cancellation was requested.
+- Correction source `9e34ee2`, tree `c60d9e0`, requires the matrix at the
+  Markdown root and adds the nested-list fence regression. Focused contracts
+  pass49/49 and the affected gate passes15/15. No product runtime or deployment
+  behavior changed.
 
 ## Exact next actions
 
-1. Publish the corrected checkpoint, resolve review threads
-   `PRRT_kwDOUEkeis6eVHDc`/`PRRT_kwDOUEkeis6eVHDf` and request confirmation only
-   after GitHub exposes
+1. Publish the corrected checkpoint, resolve review thread
+   `PRRT_kwDOUEkeis6eVNeK` and request confirmation only after GitHub exposes
    the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating

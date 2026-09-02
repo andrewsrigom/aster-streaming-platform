@@ -297,11 +297,20 @@ full snapshot through the archival checkpoint remains in
   validation covers1,659 links and the affected gate passes15/15, including101
   platform-policy,39 CI-policy and13 repository-memory tests. No product runtime
   or deployment behavior changed.
+- Exact-head review on checkpoint `aa12f6b`, tree `1c4206c`, opened finding
+  `3909847310` because a list-contained fence could hide the matrix while the
+  parser accepted its two-space indentation. Protected run `33577968379` was
+  invalidated and cancellation was requested.
+- Correction source `9e34ee2`, tree `c60d9e0`, requires the matrix at the
+  Markdown root and adds the nested-list fence regression. Focused contracts
+  pass49/49 and the affected gate passes15/15, including101 platform-policy,39
+  CI-policy and13 repository-memory tests. No product runtime or deployment
+  behavior changed.
 
 ### Next action
 
-- Publish the corrected checkpoint, resolve threads
-  `PRRT_kwDOUEkeis6eVHDc`/`PRRT_kwDOUEkeis6eVHDf` and request confirmation only
+- Publish the corrected checkpoint, resolve thread `PRRT_kwDOUEkeis6eVNeK` and
+  request confirmation only
   after the PR exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.
 

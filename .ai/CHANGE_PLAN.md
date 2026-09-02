@@ -323,7 +323,13 @@ file and anchor exists.
   governance job shape, rejects job containers and adds representative
   navigation, home-rail and catalog/title Web sources. Focused contracts
   pass48/48, documentation validation covers1,659 links and the affected gate
-  passes15/15. Correction source `f85b833`, tree `c2cea95`, freezes the batch
+  passes15/15. Correction source `f85b833`, tree `c2cea95`, freezes the batch.
+  Exact-head review on checkpoint `aa12f6b` opened finding `3909847310` because
+  a table inside a list-contained fence could pass visibility checks. The
+  working correction requires the public matrix at the Markdown root and adds
+  the nested-list fence regression. Focused contracts pass49/49 and the
+  affected gate passes15/15. Correction source `9e34ee2`, tree `c60d9e0`,
+  freezes the batch
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

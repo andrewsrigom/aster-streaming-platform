@@ -382,6 +382,19 @@ pass48/48, documentation validation covers1,659 links and the affected gate
 passes15/15. No product runtime or deployment behavior changed. Publication
 remains pending.
 
+Checkpoint `aa12f6b8ed0e2d7de14442180437b42807bbdbc7`, tree
+`1c4206c6ec0443ebfc5932558de1ab784a251393`, received exact-head review at
+`2026-09-02T01:10:16Z`. Finding `3909847310` showed that a list-contained fence
+could hide an indented matrix while the parser still accepted it. Protected run
+`33577968379` was invalidated and cancellation was requested; it is not
+acceptance evidence. Correction source
+`9e34ee24e6d26b59e42e4a207fd396747fdea1eb`, tree
+`c60d9e010eeb0306e1e849618688a1edd520b731`, requires every public matrix line
+at the Markdown root and adds the exact nested-list fence regression. Focused
+contracts pass49/49, documentation validation covers1,659 links and the affected
+gate passes15/15. No product runtime or deployment behavior changed.
+Publication remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;
