@@ -310,11 +310,18 @@ path/anchor validity to the existing documentation validator.
   Markdown root and adds the nested-list fence regression. Focused contracts
   pass49/49 and the affected gate passes15/15. No product runtime or deployment
   behavior changed.
+- Exact-head review on checkpoint `8cd270f`, tree `51eeb24`, opened finding
+  `3909888845` because prose without a blank separator could stop GFM table
+  rendering while the parser accepted the rows. Protected run `33578618697` was
+  invalidated and cancellation was requested.
+- Correction source `c2a0521`, tree `790fe8d`, requires the original blank block
+  boundary and adds its regression. Focused contracts pass50/50 and the affected
+  gate passes15/15. No product runtime or deployment behavior changed.
 
 ## Exact next actions
 
 1. Publish the corrected checkpoint, resolve review thread
-   `PRRT_kwDOUEkeis6eVNeK` and request confirmation only after GitHub exposes
+   `PRRT_kwDOUEkeis6eVUF5` and request confirmation only after GitHub exposes
    the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating

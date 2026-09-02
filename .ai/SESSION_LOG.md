@@ -306,10 +306,18 @@ full snapshot through the archival checkpoint remains in
   pass49/49 and the affected gate passes15/15, including101 platform-policy,39
   CI-policy and13 repository-memory tests. No product runtime or deployment
   behavior changed.
+- Exact-head review on checkpoint `8cd270f`, tree `51eeb24`, opened finding
+  `3909888845` because prose without a blank separator could stop GFM table
+  rendering while the parser accepted the rows. Protected run `33578618697` was
+  invalidated and cancellation was requested.
+- Correction source `c2a0521`, tree `790fe8d`, requires the original blank block
+  boundary and adds its regression. Focused contracts pass50/50 and the affected
+  gate passes15/15, including101 platform-policy,39 CI-policy and13
+  repository-memory tests. No product runtime or deployment behavior changed.
 
 ### Next action
 
-- Publish the corrected checkpoint, resolve thread `PRRT_kwDOUEkeis6eVNeK` and
+- Publish the corrected checkpoint, resolve thread `PRRT_kwDOUEkeis6eVUF5` and
   request confirmation only
   after the PR exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.

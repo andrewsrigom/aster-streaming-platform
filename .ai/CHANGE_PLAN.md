@@ -329,7 +329,11 @@ file and anchor exists.
   working correction requires the public matrix at the Markdown root and adds
   the nested-list fence regression. Focused contracts pass49/49 and the
   affected gate passes15/15. Correction source `9e34ee2`, tree `c60d9e0`,
-  freezes the batch
+  freezes the batch. Exact-head review on checkpoint `8cd270f` opened finding
+  `3909888845` because prose without a blank separator could prevent GFM table
+  rendering. The working correction requires the original blank block boundary
+  and adds its regression. Focused contracts pass50/50 and the affected gate
+  passes15/15. Correction source `c2a0521`, tree `790fe8d`, freezes the batch
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

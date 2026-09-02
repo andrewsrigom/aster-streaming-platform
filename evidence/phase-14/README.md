@@ -797,6 +797,22 @@ zero violations. The affected gate passes15/15, including101 platform-policy,39
 CI-policy and13 repository-memory tests. No product runtime or deployment
 behavior changed. Publication remains pending.
 
+Checkpoint `8cd270fdc6fd1e22925738471f759f0a5d1ebb7a`, tree
+`51eeb24fcff7bbac3927e2bac0cd377301e60176`, received exact-head review at
+`2026-09-02T01:19:46Z`. Finding `3909888845` showed that prose immediately
+before the matrix, without a blank separator, could prevent GFM table rendering
+while the parser still accepted every row. Protected run `33578618697` was
+invalidated and cancellation was requested; it is not acceptance evidence.
+
+Correction source `c2a05211982a6e0a08ac3a3e71d4b120741a441c`, tree
+`790fe8d616835a4d9b3abddcfefba91883cc80d4`, requires the original blank block
+boundary before the root matrix and adds the exact regression. Focused
+capability/CI-policy tests pass50/50. Documentation validation covers250
+documents, 2,880 headings, 1,659 links, four status claims and eleven rows with
+zero violations. The affected gate passes15/15, including101 platform-policy,39
+CI-policy and13 repository-memory tests. No product runtime or deployment
+behavior changed. Publication remains pending.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and

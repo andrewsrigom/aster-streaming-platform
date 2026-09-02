@@ -395,6 +395,19 @@ contracts pass49/49, documentation validation covers1,659 links and the affected
 gate passes15/15. No product runtime or deployment behavior changed.
 Publication remains pending.
 
+Checkpoint `8cd270fdc6fd1e22925738471f759f0a5d1ebb7a`, tree
+`51eeb24fcff7bbac3927e2bac0cd377301e60176`, received exact-head review at
+`2026-09-02T01:19:46Z`. Finding `3909888845` showed that prose immediately
+before the matrix, without a blank separator, could prevent GFM table rendering
+while the parser still accepted the rows. Protected run `33578618697` was
+invalidated and cancellation was requested; it is not acceptance evidence.
+Correction source `c2a05211982a6e0a08ac3a3e71d4b120741a441c`, tree
+`790fe8d616835a4d9b3abddcfefba91883cc80d4`, requires the original blank block
+boundary before the root matrix and adds the exact regression. Focused
+contracts pass50/50, documentation validation covers1,659 links and the affected
+gate passes15/15. No product runtime or deployment behavior changed.
+Publication remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;
