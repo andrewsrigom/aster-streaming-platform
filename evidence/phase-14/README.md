@@ -885,7 +885,8 @@ No product runtime or deployment behavior changed. Publication remains pending.
 
 ## P14-R15 — Readability guardrails and inventory
 
-Status: **implemented locally; verification pending**
+Status: **implemented**. Protected acceptance and confirmation review remain
+pending.
 
 Item70 starts on branch `docs/readability-guardrails` from PR60 squash main
 `b3f409b15ce9da2889850b693b033f69fbd312cd`, tree
@@ -924,6 +925,21 @@ The changed-scope gate selected documentation, repository-memory, community,
 security, formatting, and pinned-toolchain checks. It did not select executable
 owner or platform runtime tasks because no executable source or CI
 classification changed.
+
+### Initial protected review
+
+Published checkpoint `1e40ce313ecfb0a8a6b9985b94398f7f52d09281` passed
+protected workflow `33601388742`. The initial review completed with two
+repository-memory findings:
+
+- `3911583429` identified an already-completed commit step in the handoff;
+- `3911583432` identified a composite maturity phrase outside the canonical
+  `planned`, `implemented`, `verified`, and `released` vocabulary.
+
+The correction makes the handoff resume from publication and records P14-R15
+as `implemented`, with protected acceptance and confirmation stated separately.
+Focused diff, formatting, repository-memory, and documentation checks pass. No
+executable behavior or heavyweight evidence changed.
 
 ### P14-R14 merge boundary
 

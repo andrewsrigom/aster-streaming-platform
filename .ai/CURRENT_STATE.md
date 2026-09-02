@@ -49,7 +49,10 @@ Documentation validation covers 251 documents, 2,901 headings, 1,703 links,
 four supported status claims, and all eleven capability rows. Changed-file
 formatting and diff checks pass. Source checkpoint `66db1ce`, tree `754cc39`,
 passes the affected-scope candidate gate 7/7 with zero cached tasks. Protected
-review, merge, and exact-main acceptance remain.
+PR workflow `33601388742` passed on published head `1e40ce3`. The initial review
+found two repository-memory defects: an already-completed commit instruction and
+a non-canonical maturity label. Both are corrected locally. Confirmation review,
+merge, and exact-main acceptance remain.
 
 No source, GraphQL, schema, persistence, event, cache, media, runtime, telemetry,
 dependency, or deployment behavior changes in item70.
@@ -119,6 +122,6 @@ owned whitespace, and explicit preserved behavior.
 
 ## Next outcome
 
-Complete and verify item70/P14-R15: publish the readability guardrails and
-bounded inventory, then activate item71 for the first behavior-preserving
-Catalog and Playback slice.
+Complete and verify item70/P14-R15: publish the two initial-review corrections,
+complete one confirmation, merge, verify exact main, then activate item71 for
+the first behavior-preserving Catalog and Playback slice.

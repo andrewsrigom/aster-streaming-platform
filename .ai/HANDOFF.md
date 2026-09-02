@@ -37,12 +37,16 @@ Publish one concise readability standard that:
   changed-file formatting plus diff checks pass.
 - Source checkpoint `66db1ce`, tree `754cc39`, passes the changed-scope gate
   7/7 with zero cached tasks.
+- Published PR61 head `1e40ce3` passed protected workflow `33601388742`.
+- Initial review findings `3911583429` and `3911583432` are corrected locally:
+  the handoff resumes from the published checkpoint and evidence uses the
+  canonical `implemented` maturity label.
 - No executable product or platform source changed.
 
 ## Exact next actions
 
-1. Commit the item69 closeout and item70 evidence checkpoint.
-2. Publish one item70 candidate, complete one review and one confirmation, merge,
+1. Publish the correction to PR61.
+2. Resolve both addressed discussions, complete one confirmation review, merge,
    and verify exact main.
 3. Activate item71 only after item70 releases.
 
