@@ -41,7 +41,7 @@
     "@aster/redis": "workspace:*",
     "@aster/runtime": "workspace:*",
     "@aster/telemetry": "workspace:*",
-    "@aws-sdk/client-s3": "3.1118.0",
+    "@aws-sdk/client-s3": "3.1121.0",
     "pg": "8.23.0",
     "dataloader": "2.2.3",
     "graphql": "16.14.2"
