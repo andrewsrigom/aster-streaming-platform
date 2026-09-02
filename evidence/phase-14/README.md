@@ -1168,7 +1168,7 @@ offline frozen install reused all 480 packages and downloaded zero packages.
 The guide connects public browse, rights-safe publication, playback, profile
 progress, Discovery degradation, GraphQL admission, dependency recovery, and
 telemetry-led diagnosis to requirement, representative source, adverse test,
-evidence, operations, and a bounded command. All eight commands pass 142
+evidence, operations, and a bounded command. All eight commands pass 178
 focused tests in total. They use synthetic fixtures and require no credentials,
 Docker, external media, or hosted state. The guide explicitly keeps the
 unresolved draft non-publishable and historical media/publication payloads
@@ -1176,7 +1176,7 @@ non-replayable.
 
 Web source tests pass 119/119 before and after the two comment clarifications.
 Documentation tests pass 37/37. Documentation validation covers 252 documents,
-2,955 headings, 1,789 links, four status claims, and eleven capability rows with
+2,955 headings, 1,796 links, four status claims, and eleven capability rows with
 zero violations. Repository-memory tests pass 13/13. Changed-file ESLint,
 Prettier, architecture validation, and the affected-scope candidate gate pass.
 The gate completes 16/16 tasks with one cached task in 47.823 seconds.
@@ -1190,6 +1190,13 @@ Exact commands and results are retained in
 No heavyweight evidence is repeated because no executable statement, public
 contract, rights workflow, adapter, runtime, media, browser interaction,
 telemetry shape, dependency, or deployment behavior changed.
+
+Initial review discussions `3914109519` and `3914109534` found two real proof-
+path gaps: playback cited client disposal but did not execute its source test,
+and GraphQL admission linked P13-R06/R07 without navigating or running their
+runtime, limiter, batching, and query-count proofs. The remediation adds those
+links and commands. The added Web test passes 10/10; the expanded GraphQL checks
+pass 26/26 beyond the existing eight demand tests. No executable source changed.
 
 ## Planned evidence
 

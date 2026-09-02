@@ -48,6 +48,8 @@ $ pnpm exec turbo run build --filter=@aster/playback
 Tasks: 5 successful, 5 total
 $ node --test ./services/playback/dist/test/create-session.test.js
 tests 6; pass 6; fail 0
+$ node --test ./apps/web/test/playback-state.test.ts
+tests 10; pass 10; fail 0
 EXIT 0
 
 $ pnpm exec turbo run build --filter=@aster/engagement
@@ -64,8 +66,10 @@ EXIT 0
 
 $ pnpm exec turbo run build --filter=@aster/router
 Tasks: 15 successful, 15 total; 11 cached
-$ node --test ./apps/router/dist/test/demand.test.js
-tests 8; pass 8; fail 0
+$ node --test ./apps/router/dist/test/demand.test.js ./services/identity/dist/test/profile-operation-limiter.test.js ./services/catalog/dist/test/catalog-subgraph.test.js
+tests 23; pass 23; fail 0
+$ node --test ./tools/verify-router-runtime.test.mjs ./tools/graphql-query-count-proof.test.mjs
+tests 11; pass 11; fail 0
 EXIT 0
 
 $ pnpm exec turbo run build --filter=@aster/runtime
@@ -84,7 +88,7 @@ $ pnpm diagnostics:test
 tests 14; pass 14; fail 0
 EXIT 0
 
-All eight journey examples: 142 focused tests; pass 142; fail 0.
+All eight journey examples: 178 focused tests; pass 178; fail 0.
 
 POST-EDIT FOCUSED AND STATIC CHECKS
 
@@ -107,6 +111,22 @@ EXIT 0
 
 $ pnpm ai:check
 {"check":"ai-state","status":"ok","files":10,"queueItems":75,"sessionEntries":68,"activeRequirement":"P14-R17","targetRequirement":"P14-R17","violations":[]}
+EXIT 0
+
+INITIAL REVIEW REMEDIATION
+
+Discussion 3914109519: the playback path cited client disposal but did not run
+its credential-free source test. The command now runs playback-state.test.ts;
+its 10 tests pass.
+
+Discussion 3914109534: P13-R06/R07 were linked without their runtime,
+identity-aware limiter, request-scoped batching, and query-count proofs. The
+path now links those sources/tests and executes 23 compiled owner/Router tests
+plus 11 tooling policy/query-count tests; all 34 pass.
+
+$ pnpm docs:check
+{"check":"documentation","status":"ok","documents":252,"headings":2955,"links":1796,"statusClaims":4,"violations":0}
+{"check":"capability-index","status":"ok","rows":11,"violations":0}
 EXIT 0
 
 EXACT COMMITTED-SOURCE GATE

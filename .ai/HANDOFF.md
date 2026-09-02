@@ -34,21 +34,26 @@ Close only `journey-comments-examples`:
 - Added the eight core-journey paths and linked them from the README,
   documentation map, capability index, and complete file inventory.
 - Clarified the two Web storage comments; no executable statement changed.
-- All eight documented examples pass 142 focused tests in total. Web source
+- All eight documented examples pass 178 focused tests in total. Web source
   tests pass 119/119 before and after.
 - Documentation tests pass 37/37; documentation validation covers 252
-  documents, 2,955 headings, 1,789 links, four status claims, and eleven
+  documents, 2,955 headings, 1,796 links, four status claims, and eleven
   capability rows with zero violations. Repository-memory tests pass 13/13.
 - ESLint, Prettier, architecture validation, and the affected-scope candidate
   gate pass. The gate completes 16/16 tasks with one cached task in 47.823
   seconds.
 - Exact source `1402157`, tree `176c757`, repeats the gate 16/16 with six
   cached tasks in 37.612 seconds.
+- Initial review discussions `3914109519` and `3914109534` found that playback
+  omitted its client-disposal check and GraphQL admission omitted runtime,
+  limiter, batching, and query-count proofs. Both reading paths and commands are
+  corrected, and the added checks pass 10/10 Web and 26/26 GraphQL tests.
 
 ## Exact next actions
 
-1. Commit the evidence checkpoint and publish one candidate.
-2. Complete one review and one confirmation, merge, and verify exact main.
+1. Run the corrected affected gate, commit, and publish the remediation batch.
+2. Resolve both discussions, complete one confirmation, merge, and verify exact
+   main.
 
 ## Execution boundary
 

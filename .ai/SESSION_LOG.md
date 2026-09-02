@@ -20,16 +20,20 @@ full snapshot through the archival checkpoint remains in
   comments, and test-command context.
 - Added the eight journey paths and linked repository entry points. Clarified
   the two Web storage comments; no executable statement changed.
-- All eight examples pass 142 focused tests. Web source tests pass 119/119
+- All eight examples pass 178 focused tests. Web source tests pass 119/119
   before and after.
 - Documentation tests pass 37/37; validation covers 252 documents, 2,955
-  headings, 1,789 links, four status claims, and eleven capability rows with
+  headings, 1,796 links, four status claims, and eleven capability rows with
   zero violations. Repository-memory tests pass 13/13.
 - ESLint, Prettier, architecture validation, and the affected-scope candidate
   gate pass. The gate completes 16/16 tasks with one cached task in 47.823
   seconds.
 - Exact source `1402157`, tree `176c757`, repeats the gate 16/16 with six
   cached tasks in 37.612 seconds.
+- Initial review discussions `3914109519` and `3914109534` found that playback
+  omitted its client-disposal check and GraphQL admission omitted runtime,
+  limiter, batching, and query-count proofs. Both paths and commands are
+  corrected; the added checks pass 10/10 Web and 26/26 GraphQL tests.
 
 ### Evidence
 
@@ -42,8 +46,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-Commit the evidence checkpoint, then publish one candidate for review and
-confirmation.
+Run the corrected affected gate, commit and publish the remediation batch,
+resolve both discussions, then require one confirmation.
 
 ## 2026-09-02 — Identity/Engagement/Discovery readability verified and item73 activated
 

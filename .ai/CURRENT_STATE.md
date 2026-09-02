@@ -55,15 +55,19 @@ Repository entry points link the guide. The two ambiguous Web storage comments
 now state the safe-default and non-authoritative persistence rationale; the
 other representative comments already state invariants or observer boundaries.
 
-All eight documented examples pass 142 focused tests in total. Documentation
-tests pass 37/37 and validation covers 252 documents, 2,955 headings, 1,789
+All eight documented examples pass 178 focused tests in total. Documentation
+tests pass 37/37 and validation covers 252 documents, 2,955 headings, 1,796
 links, four status claims, and eleven capability rows with zero violations. Web
 source tests pass 119/119 before and after. Repository-memory tests pass 13/13;
 ESLint, Prettier, architecture validation, and the affected-scope candidate
 gate pass. The gate completes 16/16 tasks with one cached task in 47.823
 seconds. Exact source `1402157`, tree `176c757`, repeats the gate 16/16 with six
-cached tasks in 37.612 seconds. This is documentation and comment alignment
-only; protected review, merge, and exact-main verification remain.
+cached tasks in 37.612 seconds. Initial review discussions `3914109519` and
+`3914109534` found that the playback check omitted its client-disposal test and
+the GraphQL check omitted runtime, limiter, batching, and query-count proofs.
+Both commands and paths now cover those boundaries. This is documentation and
+comment alignment only; corrected-source acceptance, confirmation, merge, and
+exact-main verification remain.
 
 ## Ordered reference-quality runway
 

@@ -78,6 +78,7 @@ session from attaching stale media.
 2. Source: [session creation](../../services/playback/src/application/create-session.ts)
    and [Web player flow](../../apps/web/features/playback/player.tsx).
 3. Adverse test: [session failure boundaries](../../services/playback/test/create-session.test.ts)
+   [client disposal and response validation](../../apps/web/test/playback-state.test.ts),
    and [browser playback states](../../apps/web/test/browser/playback.spec.ts).
 4. Evidence: [Phase 07 release](../../evidence/phase-07/release.md).
 5. Operations: [playback guide](../../apps/web/PLAYBACK.md).
@@ -85,6 +86,7 @@ session from attaching stale media.
 ```sh
 pnpm exec turbo run build --filter=@aster/playback
 node --test ./services/playback/dist/test/create-session.test.js
+node --test ./apps/web/test/playback-state.test.ts
 ```
 
 ## Profile progress
@@ -139,14 +141,21 @@ does not replace authorization in the owning service.
    [P13-R06](../specs/phase-13-graphql-performance-security.md#p13-r06), and
    [P13-R07](../specs/phase-13-graphql-performance-security.md#p13-r07).
 2. Source: [demand analysis](../../apps/router/src/demand.ts) and
-   [Router runtime policy](../../infra/router/router.yaml).
-3. Adverse test: [amplification and policy coverage](../../apps/router/test/demand.test.ts).
+   [Router runtime policy](../../infra/router/router.yaml),
+   [profile-operation limiter](../../services/identity/src/infrastructure/profile-operation-limiter.ts),
+   and [request-scoped Catalog batching](../../services/catalog/src/transport/catalog-schema.ts).
+3. Adverse test: [amplification and policy coverage](../../apps/router/test/demand.test.ts),
+   [runtime policy enforcement](../../tools/verify-router-runtime.test.mjs),
+   [identity-aware admission](../../services/identity/test/profile-operation-limiter.test.ts),
+   [request-scoped batching](../../services/catalog/test/catalog-subgraph.test.ts),
+   and [federated query-count bounds](../../tools/graphql-query-count-proof.test.mjs).
 4. Evidence: [Phase 13 release](../../evidence/phase-13/release.md).
 5. Operations: [Router guide](../../apps/router/README.md).
 
 ```sh
 pnpm exec turbo run build --filter=@aster/router
-node --test ./apps/router/dist/test/demand.test.js
+node --test ./apps/router/dist/test/demand.test.js ./services/identity/dist/test/profile-operation-limiter.test.js ./services/catalog/dist/test/catalog-subgraph.test.js
+node --test ./tools/verify-router-runtime.test.mjs ./tools/graphql-query-count-proof.test.mjs
 ```
 
 ## Dependency recovery

@@ -120,15 +120,17 @@ browser-storage comments. Do not change executable behavior.
 - Commands: exact pinned-environment commands and raw output will be retained in
   `evidence/phase-14/p14-r17-core-journey-reading-paths.txt`
 - Raw artifact path: `evidence/phase-14/p14-r17-core-journey-reading-paths.txt`
-- Acceptance result: all eight documented examples pass 142 focused tests in
+- Acceptance result: all eight documented examples pass 178 focused tests in
   total; Web source tests pass 119/119 before and after; documentation tests
-  pass 37/37 and validation covers 252 documents, 2,955 headings, 1,789 links,
+  pass 37/37 and validation covers 252 documents, 2,955 headings, 1,796 links,
   four status claims, and eleven capability rows with zero violations;
   repository-memory tests pass 13/13; ESLint, Prettier, architecture validation,
   and the affected-scope candidate gate pass. The gate completes 16/16 tasks
   with one cached task in 47.823 seconds. Exact source `1402157`, tree
   `176c757`, repeats the gate 16/16 with six cached tasks in 37.612 seconds.
-  Protected acceptance remains.
+  Initial review discussions `3914109519` and `3914109534` identified omitted
+  client-disposal and GraphQL execution/limiter/batching/query-count checks. The
+  corrected examples pass; corrected-source and protected acceptance remain.
 - Iteration gate: `pnpm docs:test`, `pnpm docs:check`, `pnpm ai:check`, the Web
   source suite, and each documented focused example
 - Candidate gate: `pnpm check:changed`

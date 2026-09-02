@@ -265,13 +265,18 @@ executable check for each while keeping source comments rare and rationale-led.
 - Documentation, focused source, repository-memory, formatting, and
   affected-scope gates pass without a runtime or public-contract change.
 
-The eight executable examples pass 142 focused tests in total. Web source
+The eight executable examples pass 178 focused tests in total. Web source
 tests pass 119/119 before and after comment alignment. Documentation validation
-covers 252 documents and 1,789 links with zero violations; documentation and
+covers 252 documents and 1,796 links with zero violations; documentation and
 repository-memory tests pass 37/37 and 13/13. The affected-scope candidate gate
 passes 16/16 tasks with one cached task in 47.823 seconds. Exact source
 `1402157`, tree `176c757`, repeats the gate 16/16 with six cached tasks in
 37.612 seconds. Protected review, merge, and exact-main verification remain.
+
+Initial review discussions `3914109519` and `3914109534` found two proof-path
+gaps. Playback now runs its client-disposal source test, and GraphQL admission
+now links and executes runtime policy, identity-aware limiting, request-scoped
+batching, and query-count proofs. Corrected-source acceptance remains.
 
 ## Items72–74 — scoped implementation work
 
