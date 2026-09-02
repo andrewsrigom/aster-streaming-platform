@@ -173,7 +173,12 @@ export const CAPABILITY_INDEX_ROWS = [
     status: "released",
     targets: {
       Requirement: ["../specs/phase-05-web-ssr.md#p05-r05", "../specs/phase-05-web-ssr.md#p05-r10"],
-      Implementation: ["../../apps/web/features/identity/dialog.tsx"],
+      Implementation: [
+        "../../apps/web/app/layout.tsx",
+        "../../apps/web/features/discovery/home.tsx",
+        "../../apps/web/features/catalog/catalog.tsx",
+        "../../apps/web/features/identity/dialog.tsx",
+      ],
       "Adverse test": [
         "../../apps/web/test/browser/accessibility.spec.ts",
         "../../apps/web/test/browser/public.spec.ts",

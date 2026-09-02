@@ -95,7 +95,22 @@ function hasTopLevelYamlKey(source: string, key: string): boolean {
     .some((line) => /^\S/u.test(line) && yamlKey(line) === key);
 }
 
+function hasExactJobKeys(jobSource: string, expected: readonly string[]): boolean {
+  if (!jobSource) {
+    return false;
+  }
+  const actual = jobSource
+    .replace(/\r\n?/gu, "\n")
+    .split("\n")
+    .filter((line) => /^ {4}\S/u.test(line))
+    .map((line) => yamlKey(line));
+  return actual.length === expected.length && actual.every((key, index) => key === expected[index]);
+}
+
 function hasProtectedCapabilityPrelude(jobSource: string): boolean {
+  if (!hasExactJobKeys(jobSource, ["name", "needs", "runs-on", "steps"])) {
+    return false;
+  }
   const stepsStart = jobSource.indexOf("    steps:\n");
   if (stepsStart < 0) {
     return false;
@@ -197,21 +212,7 @@ function hasExactJobDependency(jobSource: string, dependency: string): boolean {
 }
 
 function hasUnconditionalBlockingClassifier(jobSource: string): boolean {
-  if (!jobSource) {
-    return false;
-  }
-  const jobKeys = jobSource
-    .replace(/\r\n?/gu, "\n")
-    .split("\n")
-    .filter((line) => /^ {4}\S/u.test(line))
-    .map((line) => yamlKey(line));
-  return (
-    jobKeys.length === 4 &&
-    jobKeys[0] === "name" &&
-    jobKeys[1] === "runs-on" &&
-    jobKeys[2] === "outputs" &&
-    jobKeys[3] === "steps"
-  );
+  return hasExactJobKeys(jobSource, ["name", "runs-on", "outputs", "steps"]);
 }
 
 function hasStandaloneCapabilityCheck(steps: readonly string[]): boolean {

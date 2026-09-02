@@ -343,6 +343,10 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       "  governance:\n    name: Documentation and security\n    needs: classify\n",
       "  governance:\n    name: Documentation and security\n    needs: quality\n",
     );
+    const governanceContainerEnvironment = source.replace(
+      "  governance:\n    name: Documentation and security\n    needs: classify\n    runs-on: ubuntu-24.04\n",
+      `  governance:\n    name: Documentation and security\n    needs: classify\n    runs-on: ubuntu-24.04\n    container:\n      image: node:24.19.0\n      env:\n        NODE_OPTIONS: --import=data:text/javascript,process.exit(0)\n`,
+    );
     const conditionalClassifier = source.replace("  classify:\n", "  classify:\n    if: false\n");
     const quotedConditionalClassifier = source.replace(
       "  classify:\n",
@@ -402,6 +406,7 @@ test("docs-only CI cannot bypass capability-index validation", async () => {
       retainedOnlyInTrailingConditionalGovernanceJob,
       retainedOnlyInQuotedTrailingConditionalGovernanceJob,
       governanceDependsOnConditionalQuality,
+      governanceContainerEnvironment,
       conditionalClassifier,
       quotedConditionalClassifier,
       nonBlockingClassifier,
