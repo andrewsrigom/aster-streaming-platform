@@ -31,13 +31,22 @@ Close only `reference-fresh-acceptance`:
   bootstrap, capability, journey, Docker, evidence, and cleanup context.
 - Activated item75 and recorded its ownership, boundaries, failure behavior,
   gates, repeat triggers, review rule, and guarded cleanup.
+- Created fresh clone `/tmp/aster-reference-reader-20260902` at exact main
+  `2b6054a`. Public bootstrap passed with Node.js `24.19.0`, pnpm `11.24.0`,
+  frozen install, and toolchain verification.
+- Capability navigation reached every Playback proof destination. Playback
+  application and Web-state checks passed 16/16; `pnpm check` passed 73/73 in
+  `1m47.705s`; the high-severity audit gate passed with one moderate finding.
+- Docker Desktop failed before Compose startup because it could not remove the
+  stale local analytics socket. The owner closed Docker. No disposable Compose
+  project was started and no project cleanup is due.
 
 ## Exact next actions
 
-1. Create one new exact-main clone and run the public install, navigation,
-   focused-test, evidence, playable journey, replay, and cleanup path.
-2. Publish raw evidence and verification notes, pass local gates, then complete
-   protected review, merge, and exact-main verification.
+1. After Docker Desktop is healthy, reuse the existing exact-main clone and run
+   the playable journey, replay, inspected scoped cleanup, and residue checks.
+2. Publish the complete raw evidence and verification notes, pass the changed-
+   scope gate, then complete protected review, merge, and exact-main verification.
 
 ## Execution boundary
 
@@ -52,7 +61,12 @@ The fresh-checkout and anonymous playable Docker journey are required once for
 P14-R18. Repeat them only if a later change touches executable source, Docker,
 browser, media, migration, dependency, cleanup, or a public command.
 
+The fresh-checkout bootstrap, navigation, focused tests, complete source gate,
+and audit already pass on exact main and need no unchanged repetition. The
+Docker journey has not begun.
+
 ## Do not do yet
 
 Do not activate hosted P14-R01–R12. Newly noticed unrelated readability issues
-return to the bounded inventory.
+return to the bounded inventory. Do not reset Docker or remove its stale socket
+without owner authorization.

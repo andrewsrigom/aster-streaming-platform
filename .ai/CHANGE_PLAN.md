@@ -21,9 +21,14 @@ P14-R13–R17 are verified. Item74 final head `903f50e`, tree `3e905e`, passed
 protected workflow `33633680649` on attempt 2 after attempt 1's isolated
 `docker info` timeout. Every discussion is resolved. PR65 squash main
 `2b6054a` retains the exact tree, and exact-main workflow `33636042474` passed.
-The public bootstrap, capability index, journey guide, playable Docker command,
-evidence links, and cleanup instructions exist but have not yet been exercised
-together as the P14-R18 reader path from a new checkout.
+Fresh clone `/tmp/aster-reference-reader-20260902` is at exact main `2b6054a`
+with no inherited repository output. The public bootstrap passed with
+Node.js `24.19.0`, pnpm `11.24.0`, a frozen install, and the toolchain check.
+The public capability index reached Playback requirements, source, adverse
+tests, evidence, and operations; 16 focused tests and the complete 73-task
+quality gate passed. The high-severity audit gate passed with one known
+moderate finding. The Docker leg has not started: Docker Desktop failed during
+startup on its stale `userAnalyticsOtlpHttp.sock`, and the owner closed it.
 
 ## Proposed behavior
 
@@ -124,9 +129,12 @@ verification notes. Do not change executable product behavior.
 
 ## Evidence
 
-- Commands: exact fresh-clone and Docker commands with measured results
+- Commands: exact fresh clone, bootstrap, capability navigation, 16 focused
+  tests, 73-task complete quality gate, high-severity audit, and Docker
+  preflight diagnostic with measured results
 - Raw artifact path: `evidence/phase-14/p14-r18-reference-acceptance.txt`
-- Acceptance result: pending
+- Acceptance result: partial; Docker startup, browser journey, replay, cleanup,
+  publication, and protected release remain
 - Iteration gate: public bootstrap/version checks, selected focused tests,
   Docker startup/journey/replay/cleanup, `pnpm docs:check`, and `pnpm ai:check`
 - Candidate gate: `pnpm check:changed`

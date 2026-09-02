@@ -306,6 +306,12 @@ test, the documented Docker reference journey, evidence lookup and exact
 project-scoped cleanup. Verification notes must state verified local
 capabilities, known limitations and all deferred hosted work.
 
+Exact-main clone `2b6054a` passes the public bootstrap, proof navigation, 16
+focused Playback checks, the complete 73-task gate, and high-severity audit.
+Docker Desktop failed before Compose startup on its stale local analytics
+socket and was closed by the owner. No Compose project started. Docker journey,
+replay, scoped cleanup, publication, review, and release remain.
+
 ## Deferred hosted queue
 
 Phase14 P14-R01–R12 is `PLANNED`, not `READY`. It can enter this queue only

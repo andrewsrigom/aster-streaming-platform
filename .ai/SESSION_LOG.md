@@ -4,6 +4,32 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-02 — Fresh-reader source path passed; Docker startup blocked
+
+### Completed
+
+- Created `/tmp/aster-reference-reader-20260902` from the public remote at exact
+  main `2b6054a`; the checkout began clean and without generated repository
+  state.
+- Followed the public bootstrap with Node.js `24.19.0`, Corepack, pnpm `11.24.0`,
+  frozen install, and toolchain verification.
+- Followed the capability index to all Playback proof destinations. Playback
+  application and Web-state checks passed 16/16.
+- The exact-main complete gate passed 73/73 in `1m47.705s`. The high-severity
+  audit gate passed and reported one moderate finding.
+
+### Evidence
+
+- Docker context verification stopped before creating a Compose project because
+  Docker Desktop failed during startup while removing its stale local analytics
+  socket. The owner closed Docker. No reset or socket removal was attempted.
+
+### Next action
+
+When Docker Desktop is healthy, run only the remaining playable browser,
+replay, scoped-cleanup, and residue proof. Then publish complete evidence and
+verification notes and finish protected release.
+
 ## 2026-09-02 — Core journeys verified and item75 activated
 
 ### Completed

@@ -56,8 +56,11 @@ Item75 closes only `reference-fresh-acceptance`. It follows the public reader
 path from a new exact-main checkout: pinned install, capability navigation,
 focused adverse test, evidence and operations lookup, anonymous playable Docker
 journey, replay-safe initialization, and exact project-scoped cleanup. The
-result will publish verified local capabilities, limitations, and all deferred
-hosted work without changing executable product behavior.
+fresh-clone bootstrap, navigation, 16 focused tests, complete 73-task gate, and
+high-severity audit pass. Docker Desktop failed before Compose startup because
+its local analytics socket could not be removed; the owner closed Docker. No
+Compose project was started. Browser, replay, scoped cleanup, publication, and
+protected release remain.
 
 ## Ordered reference-quality runway
 
@@ -119,6 +122,9 @@ processes.
   not exact.
 - The generated sample can be mistaken for licensed third-party content.
 - Reference-track status can be mistaken for hosted release status.
+- Docker Desktop currently exits during startup while removing
+  `C:\Users\andre\AppData\Local\Docker\run\userAnalyticsOtlpHttp.sock`; do not
+  reset Docker or remove the socket without owner authorization.
 
 The guardrails require exact commit/tool versions, synthetic bounded checks,
 unique Docker ownership, zero owned residue, explicit media limitations, and no
@@ -126,7 +132,8 @@ hosted claim.
 
 ## Next outcome
 
-Complete item75/P14-R18: follow the public path from a fresh checkout, prove
-capability navigation and focused verification, run the anonymous playable
-Docker journey, prove exact cleanup, publish reference-verification notes, pass
-one review and one confirmation, merge, and verify exact main.
+Resume item75/P14-R18 after Docker Desktop is healthy: reuse the exact clean
+clone, run only the anonymous playable journey, prove replay and exact cleanup,
+publish reference-verification notes, pass one review and one confirmation,
+merge, and verify exact main. Do not repeat the already passing install, focused
+tests, complete quality gate, or audit unless a relevant source changes.
