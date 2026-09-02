@@ -51,9 +51,11 @@ formatting and diff checks pass. Source checkpoint `66db1ce`, tree `754cc39`,
 passes the affected-scope candidate gate 7/7 with zero cached tasks. Protected
 PR workflow `33601388742` passed on published head `1e40ce3`. The initial review
 found two repository-memory defects: an already-completed commit instruction and
-a non-canonical maturity label. Both are corrected locally. Confirmation review,
+a non-canonical maturity label. Both are corrected locally. Confirmation review
 found one remaining status-grouping defect, now corrected locally. Final
-exact-head checks, merge, and exact-main acceptance remain.
+correction source `6668421` passed protected workflow `33602708481`, and all
+three discussions are resolved. Result-checkpoint publication, merge, and
+exact-main acceptance remain.
 
 No source, GraphQL, schema, persistence, event, cache, media, runtime, telemetry,
 dependency, or deployment behavior changes in item70.

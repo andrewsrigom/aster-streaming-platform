@@ -947,6 +947,12 @@ grouped implemented P14-R15 under `Not implemented`. The final correction gives
 implemented-but-not-verified work its own section. Protected workflow
 `33602069611` passed on that reviewed head; no executable behavior changed.
 
+Final correction source `6668421cca1ea8d7ffdcf260419c295b384befa8`
+passed protected workflow `33602708481`. All three PR61 discussions are
+resolved. The result checkpoint changes only this evidence and repository
+memory, so it does not invalidate the reviewed readability standard or require
+another review round under the recorded stopping rule.
+
 ### P14-R14 merge boundary
 
 Final PR60 head `aef6c8d32ec77f867cb204247093079475292af3`, tree

@@ -118,7 +118,8 @@ priorities, and owning follow-up items 71–74.
   tests pass 13/13, documentation validation covers 251 documents and 1,703
   links, and changed-file formatting plus diff checks pass. Source checkpoint
   `66db1ce`, tree `754cc39`, passes the changed-scope candidate gate 7/7 with
-  zero cached tasks
+  zero cached tasks. Final correction source `6668421` passes protected workflow
+  `33602708481`, and all three review discussions are resolved
 - Iteration gate: documentation and repository-memory checks plus formatting
 - Candidate gate: changed-scope gate from the exact item70 diff
 - Heavyweight repeat triggers: executable source, dependency, CI
@@ -144,9 +145,9 @@ schema, data, media, provider, or credential state needs recovery.
 
 ## Completion checklist
 
-- [ ] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
-- [ ] Remaining risks recorded
+- [x] Requirements satisfied
+- [x] Tests pass
+- [x] Evidence captured
+- [x] Documentation current
+- [x] `.ai/` state updated
+- [x] Remaining risks recorded

@@ -43,13 +43,15 @@ Publish one concise readability standard that:
   canonical `implemented` maturity label.
 - Confirmation finding `3911645670` is corrected locally by separating the
   implemented-but-not-verified state from work that has not been implemented.
+- Final correction source `6668421` passed protected workflow `33602708481`;
+  all three PR61 discussions are resolved.
 - No executable product or platform source changed.
 
 ## Exact next actions
 
-1. Publish the confirmation-review correction to PR61.
-2. Resolve the addressed discussion, merge after exact-head checks pass, and
-   verify exact main.
+1. Publish this result checkpoint to PR61.
+2. Merge after its documentation-only exact-head checks pass, then verify exact
+   main.
 3. Activate item71 only after item70 releases.
 
 ## Execution boundary

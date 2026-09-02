@@ -16,20 +16,22 @@ full snapshot through the archival checkpoint remains in
 - Confirmation review found one remaining grouping defect: P14-R15 appeared
   under `Not implemented`. It now has a separate implemented-but-not-verified
   section.
+- Final correction source `6668421` passed protected workflow `33602708481`;
+  all three PR61 discussions are resolved.
 - The active goal remains human-readable reference code; deployment stays out
   of scope.
 
 ### Evidence
 
-- Local diff, formatting, repository-memory, and documentation checks pass.
+- Local diff, formatting, repository-memory, documentation, and changed-scope
+  checks pass. Protected correction run `33602708481` passes.
 - No executable product, platform, schema, dependency, or deployment behavior
   changed.
 
 ### Next action
 
-Publish the final correction, resolve its discussion, merge after exact-head
-checks, and verify exact main. Then activate item71; do not reopen item70 style
-scope.
+Publish the result checkpoint, merge after its exact-head checks pass, and
+verify exact main. Then activate item71; do not reopen item70 style scope.
 
 ## 2026-09-02 — Capability index merged and readability inventory activated
 
