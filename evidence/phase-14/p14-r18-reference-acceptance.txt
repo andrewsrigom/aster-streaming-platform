@@ -5,12 +5,27 @@ Status: LOCAL ACCEPTANCE PASSED — protected release pending
 Source
 ------
 Remote: https://github.com/andrewsrigom/aster-streaming-platform.git
-Fresh clone: /tmp/aster-reference-reader-20260902
+Fresh clone: /tmp/aster-reference-reader-confirm-20260902
 Commit: 2b6054a6ff30b24e635b2aae830850455cdcc8b6
 Tree: 3e905ea5d3c18de426918125fbc6dbb0de310bd7
 
+$ test ! -e /tmp/aster-reference-reader-confirm-20260902
+fresh_target_absent=ok path=/tmp/aster-reference-reader-confirm-20260902
+
+$ git clone --branch main --single-branch https://github.com/andrewsrigom/aster-streaming-platform.git /tmp/aster-reference-reader-confirm-20260902
+Cloning into '/tmp/aster-reference-reader-confirm-20260902'...
+
 $ git status --short --branch
 ## main...origin/main
+
+$ git ls-files --others --ignored --exclude-standard
+ignored_state_before_install=empty
+
+$ git ls-files --others --exclude-standard
+untracked_state_before_install=empty
+
+$ find . -path ./.git -prune -o -type d \( -name node_modules -o -name .turbo -o -name dist -o -name coverage \) -print
+generated_directories_before_install=empty
 
 Toolchain and frozen install
 ----------------------------
@@ -56,26 +71,26 @@ Every destination exists.
 $ pnpm exec turbo run build --filter=@aster/playback
 Tasks: 5 successful, 5 total
 Cached: 0 cached, 5 total
-Time: 7.208s
+Time: 7.918s
 
 $ node --test ./services/playback/dist/test/create-session.test.js
 tests 6
 pass 6
 fail 0
-duration_ms 2080.607448
+duration_ms 2076.475479
 
 $ node --test ./apps/web/test/playback-state.test.ts
 tests 10
 pass 10
 fail 0
-duration_ms 411.013767
+duration_ms 304.706754
 
 Authoritative source gate and audit
 -----------------------------------
 $ pnpm check
 Tasks: 73 successful, 73 total
 Cached: 5 cached, 73 total
-Time: 1m47.705s
+Time: 2m5.432s
 
 $ pnpm audit --audit-level=high
 1 vulnerabilities found
@@ -168,12 +183,12 @@ Accepted isolated Docker/browser/replay/cleanup attempt
 The required repeat used a new literal project name in one script-owned scope.
 The remaining `aster` resources above were identical before and after it.
 
-Exact executed runner:
+Exact runner at initial-review correction head `9669a73`:
 evidence/phase-14/p14-r18-reference-acceptance.sh
 SHA-256: 35da14d54dcc7c75eba1a8ba4aea378576fde55488efaff0ea68b7464956b526
 
-The checked-in runner is byte-identical to the executed temporary script. It
-defines `playable_compose`, the literal project, preflight resource filters,
+That committed runner was byte-identical to the executed temporary script. It
+defined `playable_compose`, the literal project, preflight resource filters,
 startup, browser, replay, inspected teardown, and post-cleanup label queries.
 
 docker_server=26.0.0
@@ -224,8 +239,106 @@ Tasks: 9 successful, 9 total
 Cached: 0 cached, 9 total
 Time: 14.519s
 
+Protected initial-review correction
+-----------------------------------
+Head: 9669a7366687d7f627ca4fa7e2051b239dc55805
+Tree: 0dca0a47f648721726cdbc5362efe031fb61a05e
+Protected workflow: 33644727686 — passed
+Initial discussions 3915333547 and 3915333560 — resolved
+
+Confirmation review 5091322369 completed at 2026-09-02T14:56:55Z and found
+two acceptance-proof blockers:
+
+- discussion 3915467273: cleanup could report success when Compose teardown or
+  inventory queries failed;
+- discussion 3915467277: the source transcript did not prove that the clone
+  target was absent and free of ignored/generated state before installation.
+
+Confirmation remediation: fresh source
+--------------------------------------
+The explicit absent-target clone and pre-install checks at the top of this
+artifact pass. The repeated public path then passes:
+
+- frozen install: 480 reused, zero downloaded;
+- toolchain: Node.js 24.19.0 and pnpm 11.24.0;
+- Playback navigation: 7/7 destinations;
+- Playback build: 5/5 tasks in 7.918s;
+- focused tests: 6/6 and 10/10;
+- complete source gate: 73/73 tasks, 5 cached, in 2m5.432s;
+- high-severity audit: exit 0 with one moderate finding;
+- final Git status: `main...origin/main` with no tracked change.
+
+Confirmation remediation: fail-closed Docker cleanup
+-----------------------------------------------------
+Exact executed runner:
+evidence/phase-14/p14-r18-reference-acceptance.sh
+SHA-256: 97e6467864a27f670a7c4a62e7131511ef533f9cfcc97b9ac56bb17d0b9381ca
+
+The checked-in runner was executed directly. Its cleanup records and checks
+the status of Compose inspection, logs, teardown, and each container, network,
+and volume inventory query. Any command failure or residue changes the final
+status to failure.
+
+docker_server=26.0.0
+Docker Compose version v2.26.1-desktop.1
+{"check":"docker-context","included":24,"excluded":18,"status":"ok"}
+docker_preflight=ok project=aster-reference-confirm-20260902 ports=3000,4000,9001
+
+$ pnpm --filter @aster/web exec playwright test demo.spec.ts
+Running 1 test using 1 worker
+Docker-only generated demo plays real HLS with captions, direct delivery and
+bounded diagnostics
+1 passed (6.0s)
+
+catalog_playable_seed ... "changed":false
+generated_hls_reused ... "totalBytes":1948485
+docker_browser_replay=ok project=aster-reference-confirm-20260902
+
+Compose listed the exact 13 owned containers before teardown. Project-scoped
+down removed those containers, two networks, and 13 volumes. All six checked
+cleanup command statuses were zero.
+
+docker_cleanup=ok project=aster-reference-confirm-20260902 containers=0 networks=0 volumes=0
+
+Independent post-run label queries returned no project-owned resource. The
+retained unrelated resources remained exactly:
+
+aster-broker-1 Exited (255)
+aster_broker-data
+aster_identity-event-trust
+
+Confirmation-remediation candidate gate
+---------------------------------------
+$ bash -n evidence/phase-14/p14-r18-reference-acceptance.sh
+Exit: 0
+
+$ sha256sum evidence/phase-14/p14-r18-reference-acceptance.sh
+97e6467864a27f670a7c4a62e7131511ef533f9cfcc97b9ac56bb17d0b9381ca  evidence/phase-14/p14-r18-reference-acceptance.sh
+
+$ pnpm docs:check
+documents: 253
+headings: 2975
+links: 1806
+statusClaims: 4
+violations: 0
+capability rows: 11
+
+$ pnpm ai:check
+files: 10
+queueItems: 75
+sessionEntries: 71
+activeRequirement: P14-R18
+targetRequirement: P14-R18
+violations: 0
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 2 cached, 9 total
+Time: 10.912s
+
 Remaining acceptance
 --------------------
-- protected initial review and CI;
-- one confirmation review;
+- publish the two confirmation remediations and pass protected CI;
+- resolve discussions 3915467273 and 3915467277;
+- complete the permitted blocker-boundary confirmation;
 - squash merge and exact-main acceptance.

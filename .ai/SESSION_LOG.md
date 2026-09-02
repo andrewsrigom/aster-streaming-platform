@@ -25,6 +25,21 @@ full snapshot through the archival checkpoint remains in
 - The correction passes shell syntax, byte identity, checksum, documentation and
   repository-memory checks. `pnpm check:changed` passes 9/9 tasks with no cached
   tasks in `14.519s`.
+- Correction head `9669a73` passes protected run `33644727686`; both initial
+  discussions are resolved. Confirmation review `5091322369` opened
+  discussions `3915467273` and `3915467277` for fail-open cleanup inspection
+  and missing absent-target/pre-install proof.
+- The confirmation remediation proves new clone target
+  `/tmp/aster-reference-reader-confirm-20260902` absent and empty before
+  installation, then passes the frozen install, navigation, 16 focused tests,
+  73/73 complete source tasks in `2m5.432s`, and the high-severity audit.
+- Corrected project `aster-reference-confirm-20260902` passes healthy startup,
+  browser playback 1/1 in `6.0s`, unchanged seed/generated-media replay, checked
+  teardown, and zero residue. The directly executed runner has SHA-256
+  `97e64678`.
+- Shell syntax, documentation, repository-memory, and changed-scope checks pass;
+  the confirmation-remediation gate is 9/9 tasks with two cached tasks in
+  `10.912s`.
 
 ### Evidence
 
@@ -38,8 +53,9 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-Publish and resolve both initial discussions, then complete one confirmation,
-merge, and exact-main acceptance.
+Run the changed-scope gate, publish and resolve both confirmation discussions,
+then complete the permitted blocker-boundary confirmation, merge, and exact-
+main acceptance.
 
 ## 2026-09-02 — Fresh-reader source path passed; Docker startup blocked
 

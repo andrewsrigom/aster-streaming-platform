@@ -57,20 +57,23 @@ path from a new exact-main checkout: pinned install, capability navigation,
 focused adverse test, evidence and operations lookup, anonymous playable Docker
 journey, replay-safe initialization, and exact project-scoped cleanup. The
 fresh-clone bootstrap, navigation, 16 focused tests, complete 73-task gate, and
-high-severity audit pass. After Docker Desktop recovered, accepted project
-`aster-reference-final-20260902` passed healthy startup, the real browser
-journey 1/1 in `5.0s`, unchanged seed and generated-HLS replay, inspected exact
-cleanup, and zero owned residue. The local verification note records the full
-result, verified scope, and excluded hosted/commercial claims. Its existing
-changed-scope gate passes 9/9 tasks with two cached tasks in `15.406s`.
-Protected run `33643437047` passes. Initial review discussions `3915333547`
-and `3915333560` found that the accepted Docker runner was not retained in full
-and that README/map navigation still called the Docker leg pending. The runner
-is now retained byte-for-byte with its checksum, and both entry points describe
-completed local source/Docker acceptance. The correction passes shell syntax,
-byte-identity, checksum, documentation and repository-memory checks, followed by
-`pnpm check:changed` at 9/9 tasks with no cached tasks in `14.519s`. Discussion
-resolution, confirmation, merge, and exact-main acceptance remain.
+high-severity audit pass. Protected runs `33643437047` and `33644727686` pass,
+and initial review discussions `3915333547` and `3915333560` are resolved.
+Confirmation review `5091322369` found fail-open cleanup inspection and missing
+absent-target/pre-install proof in discussions `3915467273` and `3915467277`.
+
+The batched confirmation remediation uses new literal source and Docker names.
+Clone target `/tmp/aster-reference-reader-confirm-20260902` is proved absent and
+free of ignored, untracked, dependency, Turbo, build, and coverage state before
+installation. It passes the frozen install, navigation, 16 focused tests, the
+complete 73-task gate in `2m5.432s`, and the high-severity audit. Project
+`aster-reference-confirm-20260902` passes healthy startup, browser playback 1/1
+in `6.0s`, unchanged seed and generated-HLS replay, checked teardown, and zero
+owned residue. The directly executed runner has SHA-256 `97e64678`. Correction
+shell syntax, documentation, repository-memory, and changed-scope checks pass;
+the final gate is 9/9 tasks with two cached tasks in `10.912s`. Correction
+publication, protected CI, discussion resolution, blocker-boundary confirmation,
+merge, and exact-main acceptance remain.
 
 A rejected cleanup attempt expanded a nested-shell project variable to empty
 and removed 13 unused volumes from the existing `aster` project. Their Docker
@@ -149,8 +152,8 @@ hosted claim.
 
 ## Next outcome
 
-Finish item75/P14-R18: run the corrected changed-scope gate, commit and publish
-the two review corrections, resolve their discussions, complete one
-confirmation, merge, and verify exact main. Do not repeat the accepted source
-or Docker experiments unless a relevant executable, Docker, browser, media,
-cleanup, dependency, or public-command change invalidates them.
+Finish item75/P14-R18: run the corrected changed-scope gate, publish the two
+confirmation remediations, resolve their discussions, complete the permitted
+blocker-boundary confirmation, merge, and verify exact main. Do not repeat the
+accepted source or Docker experiments unless a relevant executable, Docker,
+browser, media, cleanup, dependency, or public-command change invalidates them.

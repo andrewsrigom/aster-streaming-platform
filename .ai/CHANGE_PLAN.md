@@ -135,7 +135,7 @@ verification notes. Do not change executable product behavior.
   results
 - Raw artifact path: `evidence/phase-14/p14-r18-reference-acceptance.txt`
 - Exact accepted runner: `evidence/phase-14/p14-r18-reference-acceptance.sh`,
-  SHA-256 `35da14d54dcc7c75eba1a8ba4aea378576fde55488efaff0ea68b7464956b526`
+  SHA-256 `97e6467864a27f670a7c4a62e7131511ef533f9cfcc97b9ac56bb17d0b9381ca`
 - Acceptance result: fresh local source and Docker path pass; protected review,
   merge, and exact-main acceptance remain
 - Initial-review correction: the retained runner passes `bash -n`, is
@@ -145,6 +145,20 @@ verification notes. Do not change executable product behavior.
   and `3915333560` require the complete accepted runner and current public
   navigation; both corrections are batched without changing an executable
   product path.
+- Confirmation discussions `3915467273` and `3915467277` require cleanup to
+  fail when Compose or inventory inspection errors and source acceptance to
+  prove creation in an absent directory with no ignored/generated state. Repeat
+  the affected Docker cleanup and fresh-reader source path on new literal names;
+  do not broaden product behavior.
+- Confirmation remediation passes: the new clone target is absent and empty
+  before installation; 16 focused tests and the complete 73-task source gate
+  pass; project `aster-reference-confirm-20260902` passes browser playback 1/1,
+  replay, checked teardown, and zero residue. Correction publication, protected
+  CI, discussion resolution, blocker-boundary confirmation, merge, and exact
+  main remain.
+- Confirmation-remediation candidate: shell syntax and checksum pass;
+  documentation and repository memory report zero violations;
+  `pnpm check:changed` passes 9/9 tasks with two cached tasks in `10.912s`.
 - Iteration gate: public bootstrap/version checks, selected focused tests,
   Docker startup/journey/replay/cleanup, `pnpm docs:check`, and `pnpm ai:check`
 - Candidate gate: `pnpm check:changed`

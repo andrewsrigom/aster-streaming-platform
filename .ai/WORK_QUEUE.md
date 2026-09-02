@@ -307,16 +307,20 @@ project-scoped cleanup. Verification notes must state verified local
 capabilities, known limitations and all deferred hosted work.
 
 Exact-main clone `2b6054a` passes the public bootstrap, proof navigation, 16
-focused Playback checks, the complete 73-task gate, and high-severity audit.
-Accepted project `aster-reference-final-20260902` passes healthy Docker startup,
-the real browser journey 1/1 in `5.0s`, replay-safe seed/generated-media reuse,
-exact cleanup, and zero owned residue. A rejected nested-shell cleanup removed
-13 unused existing `aster` volumes; the loss and retained broker resources are
-recorded, and empty replacements are forbidden. Local acceptance passes;
-protected run `33643437047` passes. Initial review discussions `3915333547` and
-`3915333560` require the byte-identical accepted runner and current README/map
-status. Both corrections are batched. Corrected gate, resolution, confirmation,
-merge, and exact-main acceptance remain.
+focused Playback checks, the complete 73-task gate, and high-severity audit. A
+rejected nested-shell cleanup removed 13 unused existing `aster` volumes; the
+loss and retained broker resources are recorded, and empty replacements are
+forbidden. Protected runs `33643437047` and `33644727686` pass, and initial
+review discussions `3915333547` and `3915333560` are resolved.
+
+Confirmation review `5091322369` opened discussions `3915467273` and
+`3915467277` for fail-open cleanup inspection and missing fresh-target proof.
+The batched remediation proves the new clone target absent and empty before
+installation, then passes 16 focused tests, the complete 73-task gate, and
+audit. Corrected project `aster-reference-confirm-20260902` passes browser
+playback 1/1, replay, checked teardown, and zero residue. The changed-scope gate
+passes 9/9 tasks in `10.912s`. Publication, resolution, blocker-boundary
+confirmation, merge, and exact-main acceptance remain.
 
 ## Deferred hosted queue
 

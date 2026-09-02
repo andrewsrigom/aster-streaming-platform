@@ -1223,24 +1223,27 @@ P14-R17 are verified.
 
 Status: **in progress**
 
-Fresh clone `/tmp/aster-reference-reader-20260902` checks out exact PR65 squash
+Fresh clone `/tmp/aster-reference-reader-confirm-20260902` checks out exact PR65 squash
 main `2b6054a` from the public remote without inherited repository output. The
 README bootstrap passes with Node.js `24.19.0`, pnpm `11.24.0`, a frozen install
 that reuses all 480 packages, and the exact toolchain check.
 
-The public capability index reaches the Playback requirement, representative
+The target is proved absent before clone, and ignored, untracked, dependency,
+Turbo, build, and coverage state are absent before installation. The public
+capability index reaches the Playback requirement, representative
 service and Web source, adverse tests, release evidence, and operations guide.
 Playback application and Web-state checks pass 16/16. The complete source gate
-passes 73/73 tasks in `1m47.705s`; the high-severity dependency audit exits zero
+passes 73/73 tasks in `2m5.432s`; the high-severity dependency audit exits zero
 with one moderate finding.
 
 After the owner reopened Docker Desktop, Engine `26.0.0` and Compose
 `2.26.1-desktop.1` became healthy without reset or socket mutation. The accepted
-repeat uses the unique literal project `aster-reference-final-20260902`. The
-anonymous stack becomes healthy, the real browser journey passes 1/1 in `5.0s`,
+corrected repeat uses the unique literal project
+`aster-reference-confirm-20260902`. The anonymous stack becomes healthy, the
+real browser journey passes 1/1 in `6.0s`,
 replay records an unchanged Catalog seed and reused 1,948,485-byte generated HLS
-fixture, and inspected project-scoped cleanup proves zero owned containers,
-networks, and volumes.
+fixture. Project-scoped cleanup checks Compose teardown and every inventory
+query before proving zero owned containers, networks, and volumes.
 
 A non-accepted cleanup attempt expanded a nested-shell project variable to
 empty and removed 13 unused volumes from the existing local `aster` project.
@@ -1262,6 +1265,20 @@ accepted runner and current README/map navigation. Those corrections pass shell
 syntax, byte identity, checksum, documentation, repository-memory, and changed-
 scope checks without modifying an executable product path.
 
+Correction head `9669a7366687d7f627ca4fa7e2051b239dc55805`, tree
+`0dca0a47f648721726cdbc5362efe031fb61a05e`, passed protected workflow
+`33644727686`; both initial discussions are resolved. Confirmation review
+`5091322369` opened discussions `3915467273` and `3915467277` for fail-open
+cleanup inspection and missing absent-target/pre-install proof.
+
+The batched remediation repeats the fresh source and Docker boundaries. Source
+passes the explicit absent/empty-state checks, frozen install, 16 focused tests,
+73/73 complete tasks, and high-severity audit. Docker passes browser playback
+1/1, replay, checked teardown, and zero residue under the new literal project.
+The current directly executed runner has SHA-256
+`97e6467864a27f670a7c4a62e7131511ef533f9cfcc97b9ac56bb17d0b9381ca`.
+
 ## Planned evidence
 
-- P14-R18 protected review, merge, and exact-main acceptance
+- P14-R18 correction publication, protected confirmation, merge, and exact-main
+  acceptance

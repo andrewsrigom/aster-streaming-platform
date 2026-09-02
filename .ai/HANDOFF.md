@@ -56,12 +56,25 @@ Close only `reference-fresh-acceptance`:
   correction passes shell syntax, byte identity, checksum, documentation and
   repository-memory checks, then `pnpm check:changed` passes 9/9 tasks with no
   cached tasks in `14.519s`.
+- Correction head `9669a73` passes protected run `33644727686`; both initial
+  discussions are resolved. Confirmation review `5091322369` opened cleanup
+  fail-closed discussion `3915467273` and fresh-target proof discussion
+  `3915467277`.
+- The confirmation remediation proves the new clone target absent and empty
+  before installation, then passes the frozen install, 16 focused tests, 73/73
+  complete source tasks in `2m5.432s`, and the high-severity audit. Corrected
+  project `aster-reference-confirm-20260902` passes browser playback 1/1 in
+  `6.0s`, replay, checked teardown, and zero residue. The directly executed
+  runner has SHA-256 `97e64678`. Shell syntax, documentation,
+  repository-memory, and changed-scope checks pass; the final gate is 9/9 tasks
+  with two cached tasks in `10.912s`.
 
 ## Exact next actions
 
-1. Commit and publish the review corrections, then resolve discussions
-   `3915333547` and `3915333560`.
-2. Complete one confirmation, merge, and verify exact main.
+1. Run the changed-scope gate, publish the confirmation remediation, and
+   resolve discussions `3915467273` and `3915467277`.
+2. Complete the permitted blocker-boundary confirmation, merge, and verify
+   exact main.
 
 ## Execution boundary
 

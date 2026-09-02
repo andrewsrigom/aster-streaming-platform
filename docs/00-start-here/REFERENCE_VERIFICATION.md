@@ -10,10 +10,13 @@ It does not publish Aster or make a production-readiness claim.
 
 ## Verified from a fresh checkout
 
-Fresh clone `/tmp/aster-reference-reader-20260902` uses public main commit
+Fresh clone `/tmp/aster-reference-reader-confirm-20260902` uses public main commit
 `2b6054a6ff30b24e635b2aae830850455cdcc8b6`, tree
 `3e905ea5d3c18de426918125fbc6dbb0de310bd7`.
 
+- The target path is proved absent before `git clone`.
+- Before installation, ignored files, untracked files, `node_modules`, `.turbo`,
+  `dist`, and `coverage` directories are all absent.
 - Node.js `24.19.0`, Corepack, and pnpm `11.24.0` follow the README bootstrap.
 - The frozen install accepts the lockfile and installs all 18 workspace
   projects without downloads from an already populated package cache.
@@ -22,7 +25,7 @@ Fresh clone `/tmp/aster-reference-reader-20260902` uses public main commit
   its requirement, service and Web source, adverse tests, release evidence,
   and operations guide.
 - The selected Playback application and Web-state checks pass 16/16.
-- The complete source gate passes 73/73 tasks in `1m47.705s`.
+- The complete source gate passes 73/73 tasks in `2m5.432s`.
 - The high-severity dependency audit exits successfully with one moderate
   finding.
 
@@ -31,9 +34,9 @@ records the exact source and Docker results.
 
 ## Verified Docker reference journey
 
-The accepted Docker attempt uses Engine `26.0.0`, Compose
+The accepted corrected Docker attempt uses Engine `26.0.0`, Compose
 `2.26.1-desktop.1`, and the unique literal project
-`aster-reference-final-20260902`.
+`aster-reference-confirm-20260902`.
 
 - Docker context verification includes 24 reviewed paths and excludes 18
   private or generated canaries.
@@ -41,12 +44,13 @@ The accepted Docker attempt uses Engine `26.0.0`, Compose
   before startup.
 - The anonymous Web, Router, Catalog, Playback, PostgreSQL, object-storage, and
   generated-media path becomes healthy.
-- The existing real browser journey passes 1/1 in `5.0s`, playing HLS with
+- The existing real browser journey passes 1/1 in `6.0s`, playing HLS with
   captions and direct media delivery.
 - Repeated startup records `changed:false` for the Catalog seed and
   `generated_hls_reused` for the exact 1,948,485-byte technical fixture.
 - Cleanup first inspects the exact project, then removes its containers, two
-  networks, and 13 volumes. Label queries prove zero owned residue.
+  networks, and 13 volumes. It checks the status of Compose teardown and every
+  inventory query before accepting the label-query proof of zero owned residue.
 
 The accepted attempt uses generated technical media, no credentials, no
 external film, and no hosted resource.
@@ -81,14 +85,16 @@ Docker volume data is not recoverable without an external backup. The stopped
 hide the loss.
 
 This command was not part of the documented reader path, whose cleanup uses a
-literal project name. The attempt is rejected. The accepted repeat uses a
-script-owned literal project from preflight through postcondition checks; the
-remaining `aster` resources are unchanged before and after that repeat.
+literal project name. The attempt is rejected. The accepted corrected repeat
+uses a script-owned literal project from preflight through fail-closed
+postcondition checks; the remaining `aster` resources are unchanged before and
+after that repeat.
 
 ## Remaining release work
 
-The fresh local path passes. P14-R18 remains in progress until the documentation
-candidate completes protected review, merge, and exact-main acceptance.
+The fresh local path passes. P14-R18 remains in progress until the corrected
+evidence candidate completes protected review, merge, and exact-main
+acceptance.
 
 Earlier protected and exact-main workflows prove the same checked-in playable
 path on CI infrastructure. They support the implementation claim but do not
