@@ -702,6 +702,21 @@ capability/CI-policy tests pass48/48. The affected gate passes15/15,
 including101 platform-policy,39 CI-policy and13 repository-memory tests. No
 product runtime or deployment behavior changed. Publication remains pending.
 
+Checkpoint `346d7c3b65f74718e41f3317223b0eeff364c801`, tree
+`f872d0e540d3dfec36374b8c2485a507aecd7ba2`, received exact-head review at
+`2026-09-02T00:02:57Z`. Finding `3909542407` showed that a conditional
+classifier could skip the dependent governance job and both mandatory
+capability commands. Protected run `33573346002` was invalidated by the finding
+and cancellation was requested; it is not acceptance evidence.
+
+Correction source `ee8d25ea62497d838a5cb29ada95f83fd88d7c39`, tree
+`29202423f51a869974c8fabfd633e95eb1cf6024`, allowlists the exact classifier
+job-level shape and rejects conditions, non-blocking behavior, dependencies and
+empty matrix strategies. Focused capability/CI-policy tests pass48/48. The
+affected gate passes15/15, including101 platform-policy,39 CI-policy and13
+repository-memory tests. No product runtime or deployment behavior changed.
+Publication remains pending.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and

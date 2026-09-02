@@ -252,10 +252,20 @@ full snapshot through the archival checkpoint remains in
   pass48/48 and the affected gate passes15/15, including101 platform-policy,39
   CI-policy and13 repository-memory tests. No product runtime or deployment
   behavior changed.
+- Exact-head review on checkpoint `346d7c3`, tree `f872d0e`, opened finding
+  `3909542407` because a conditional classifier could skip its dependent
+  governance job. Protected run `33573346002` was invalidated and cancellation
+  was requested; it is not acceptance evidence.
+- Correction source `ee8d25e`, tree `2920242`, allowlists the exact blocking
+  classifier shape and rejects conditions, non-blocking behavior, dependencies
+  and empty matrix strategies. Focused contracts pass48/48 and the affected
+  gate passes15/15, including101 platform-policy,39 CI-policy and13
+  repository-memory tests. No product runtime or deployment behavior changed.
 
 ### Next action
 
-- Publish the exact correction checkpoint, resolve its two threads and request
+- Publish the exact correction checkpoint, resolve thread
+  `PRRT_kwDOUEkeis6eUcuQ` and request
   confirmation only after the PR exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.
 

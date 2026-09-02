@@ -313,6 +313,19 @@ the first mutable governance steps after exact pinned setup and fixes the
 label. Focused contracts pass48/48 and the affected gate passes15/15. No
 product runtime or deployment behavior changed. Publication remains pending.
 
+Checkpoint `346d7c3b65f74718e41f3317223b0eeff364c801`, tree
+`f872d0e540d3dfec36374b8c2485a507aecd7ba2`, received exact-head review at
+`2026-09-02T00:02:57Z`. Finding `3909542407` showed that adding a condition to
+the classifier would skip its dependent governance job. Protected run
+`33573346002` was invalidated by that finding and cancellation was requested;
+it is not acceptance evidence. Correction source
+`ee8d25ea62497d838a5cb29ada95f83fd88d7c39`, tree
+`29202423f51a869974c8fabfd633e95eb1cf6024`, allowlists the exact classifier
+job-level shape and rejects conditions, non-blocking behavior, dependencies and
+empty matrix strategies. Focused contracts pass48/48 and the affected gate
+passes15/15. No product runtime or deployment behavior changed. Publication
+remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;

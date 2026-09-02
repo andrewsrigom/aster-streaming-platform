@@ -262,10 +262,19 @@ path/anchor validity to the existing documentation validator.
   first mutable governance steps after exact pinned setup and uses canonical
   `released`. Focused contracts pass48/48 and the affected gate passes15/15. No
   product runtime or deployment behavior changed.
+- Exact-head review on checkpoint `346d7c3`, tree `f872d0e`, opened finding
+  `3909542407` because a conditional classifier could skip its dependent
+  governance job. Protected run `33573346002` was invalidated and cancellation
+  was requested; it is not acceptance evidence.
+- Correction source `ee8d25e`, tree `2920242`, allowlists the exact blocking
+  classifier shape and rejects conditions, non-blocking behavior, dependencies
+  and empty matrix strategies. Focused contracts pass48/48 and the affected
+  gate passes15/15. No product runtime or deployment behavior changed.
 
 ## Exact next actions
 
-1. Publish the exact correction checkpoint, resolve the two review threads
+1. Publish the exact correction checkpoint, resolve review thread
+   `PRRT_kwDOUEkeis6eUcuQ`
    and request confirmation only after GitHub exposes the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating

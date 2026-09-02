@@ -290,6 +290,12 @@ file and anchor exists.
   for preceding-step command poisoning and an uppercase public status label.
   The working correction closes both. Focused contracts pass48/48 and the
   affected gate passes15/15. Correction source `c618464`, tree `75624f9`,
+  freezes the batch. Exact-head review on checkpoint `346d7c3` opened finding
+  `3909542407` because a conditional, non-blocking or dependent classifier
+  could skip the governance job. The working correction allowlists the exact
+  blocking classifier job shape and rejects conditions, non-blocking behavior,
+  dependencies and empty matrix strategies. Focused contracts pass48/48 and
+  the affected gate passes15/15. Correction source `ee8d25e`, tree `2920242`,
   freezes the batch
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
