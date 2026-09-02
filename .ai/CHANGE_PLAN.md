@@ -347,16 +347,26 @@ file and anchor exists.
   The working correction binds all six protected jobs to `ubuntu-24.04`, tracks
   open HTML containers across raw-block boundaries and adds adverse plus
   non-regression tests. Focused contracts pass53/53 and the affected gate
-  passes15/15. Correction source `1fb7637`, tree `d0882e4`, freezes the batch
+  passes15/15. Correction source `1fb7637`, tree `d0882e4`, freezes the batch.
+  Exact-head review on checkpoint `376acc3` opened findings `3911058468` and
+  `3911058476` because Markdown-rendered code could impersonate an HTML closer
+  and a prior classifier step could poison command lookup. Protected run
+  `33595113198` was invalidated and cancellation was requested. The working
+  correction tracks Markdown code boundaries before accepting HTML closers and
+  requires the complete exact classifier job. Focused contracts pass54/54 and
+  the affected gate passes15/15. Correction source `653537d`, tree `95820ff`,
+  freezes the final remediation batch. Owner direction ends further iterative
+  index hardening after these two valid findings; protected CI, merge and
+  exact-main verification close item69 before readability work starts
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff
 - Heavyweight repeat triggers: repeat runtime, PostgreSQL, browser, media or
   platform evidence only if executable product behavior or CI classification
   changes
-- Review stopping rule: one initial review and one confirmation only when a
-  finding changes a requirement, security/data invariant, availability
-  behavior or public contract
+- Review stopping rule: the owner ended further iterative review after the
+  final two exact-head findings. Close those findings with focused and protected
+  gates; do not request another index-hardening round
 
 ## Rollback or recovery
 

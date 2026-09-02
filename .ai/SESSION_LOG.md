@@ -335,13 +335,22 @@ full snapshot through the archival checkpoint remains in
   worktree required one full local build before lint could resolve workspace
   package types; the final gate passed. No product runtime or deployment
   behavior changed.
+- Exact-head review on checkpoint `376acc3`, tree `9c9a77c`, opened findings
+  `3911058468`/`3911058476` because Markdown code could impersonate an HTML
+  closer and a prior classifier step could poison command lookup. Protected run
+  `33595113198` was invalidated and cancellation was requested.
+- Correction source `653537d`, tree `95820ff`, tracks Markdown code/fence
+  boundaries and requires the exact complete classifier job. Focused contracts
+  pass54/54 and the affected gate passes15/15, including101 platform-policy,40
+  CI-policy and13 repository-memory tests. The owner ended further iterative
+  index hardening and directed the next active goal to human readability:
+  naming, flow, spacing, formatting and small characterization-backed slices.
 
 ### Next action
 
-- Publish the corrected checkpoint, resolve threads `PRRT_kwDOUEkeis6eVh7Y`
-  and `PRRT_kwDOUEkeis6eVh7d`, then request confirmation only
-  after the PR exposes the new exact head. Then merge and
-  complete exact-main verification before activating P14-R15.
+- Publish the corrected checkpoint, resolve threads `PRRT_kwDOUEkeis6eYQ6b`
+  and `PRRT_kwDOUEkeis6eYQ6h`, and run protected CI without another iterative
+  index review. Merge, verify exact main, then activate readability item70.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway
 

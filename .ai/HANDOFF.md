@@ -334,16 +334,22 @@ path/anchor validity to the existing documentation validator.
   tracks open HTML containers and verifies hidden plus correctly closed cases.
   Focused contracts pass53/53 and the affected gate passes15/15. No product
   runtime or deployment behavior changed.
+- Exact-head review on checkpoint `376acc3`, tree `9c9a77c`, opened findings
+  `3911058468`/`3911058476` because Markdown code could impersonate an HTML
+  closer and a prior classifier step could poison command lookup. Protected run
+  `33595113198` was invalidated and cancellation was requested.
+- Correction source `653537d`, tree `95820ff`, tracks Markdown code/fence
+  boundaries and requires the exact complete classifier job. Focused contracts
+  pass54/54 and the affected gate passes15/15. Owner direction ends further
+  iterative index review after this batch.
 
 ## Exact next actions
 
-1. Publish the corrected checkpoint, resolve review threads
-   `PRRT_kwDOUEkeis6eVh7Y` and `PRRT_kwDOUEkeis6eVh7d`, then request
-   confirmation only after GitHub exposes
-   the new exact PR head.
-2. Merge only after a clean exact-head review, verify exact-main CI and close
-   item69 before activating
-   item70/P14-R15.
+1. Publish the corrected checkpoint and resolve review threads
+   `PRRT_kwDOUEkeis6eYQ6b` and `PRRT_kwDOUEkeis6eYQ6h`. Do not request another
+   iterative index review.
+2. Merge after protected exact-head CI, verify exact-main CI, close item69 and
+   activate item70/P14-R15 as the readability-only goal.
 
 ## Execution boundary
 

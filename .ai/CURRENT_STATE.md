@@ -438,6 +438,21 @@ links and the affected gate passes15/15, including101 platform-policy,40
 CI-policy and13 repository-memory tests. No product runtime or deployment
 behavior changed. Publication remains pending.
 
+Checkpoint `376acc3693ea350294592288e142fe33ef620d56`, tree
+`9c9a77c8541b23e443200b9d99ddc30b56b78297`, received exact-head review at
+`2026-09-02T05:37:43Z`. Findings `3911058468`/`3911058476` showed that inline or
+block code could impersonate a closing HTML tag and that a prior classifier step
+could poison `GITHUB_PATH` before trusted outputs were written. Protected run
+`33595113198` was invalidated and cancellation was requested. Correction source
+`653537db5f7e5706a2da424fd863d432f26fb870`, tree
+`95820fff0f4520c45db1e6fa35ad992d444a0fc7`, tracks Markdown inline-code and
+fence boundaries before accepting standalone HTML tags and requires the exact
+complete classifier job. Focused contracts pass54/54, documentation validation
+covers1,659 links and the affected gate passes15/15, including101
+platform-policy,40 CI-policy and13 repository-memory tests. Owner direction
+ends further iterative index hardening after these two findings. Protected CI,
+merge and exact-main verification remain before item70 becomes active.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;

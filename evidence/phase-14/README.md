@@ -848,6 +848,23 @@ passes15/15, including101 platform-policy,40 CI-policy and13 repository-memory
 tests. No product runtime or deployment behavior changed. Publication remains
 pending.
 
+Checkpoint `376acc3693ea350294592288e142fe33ef620d56`, tree
+`9c9a77c8541b23e443200b9d99ddc30b56b78297`, received exact-head review at
+`2026-09-02T05:37:43Z`. Findings `3911058468`/`3911058476` showed that Markdown
+code could impersonate a closing HTML tag and that a prior classifier step could
+poison `GITHUB_PATH` before the trusted outputs. Protected run `33595113198` was
+invalidated and cancellation was requested; it is not acceptance evidence.
+
+Correction source `653537db5f7e5706a2da424fd863d432f26fb870`, tree
+`95820fff0f4520c45db1e6fa35ad992d444a0fc7`, tracks inline-code and fenced-code
+boundaries before accepting standalone HTML tags and requires the complete
+exact classifier job. Focused capability/CI-policy tests pass54/54.
+Documentation validation covers250 documents, 2,880 headings, 1,659 links, four
+status claims and eleven rows with zero violations. The affected gate
+passes15/15, including101 platform-policy,40 CI-policy and13 repository-memory
+tests. No product runtime or deployment behavior changed. Owner direction ends
+further iterative index hardening after these findings.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and
