@@ -430,7 +430,7 @@ function tableCells(line: string): string[] | undefined {
       break;
     }
   }
-  if (indentation >= 4) {
+  if (indentation !== 0) {
     return undefined;
   }
   const trimmed = line.trim();

@@ -225,6 +225,16 @@ test("rejects a capability table hidden in a fence or HTML comment", () => {
   }
 });
 
+test("rejects a capability table inside a list-contained fence", () => {
+  const nested = validIndex()
+    .split("\n")
+    .map((line) => `  ${line}`)
+    .join("\n");
+  const report = analyzeCapabilityIndex(`# Hidden matrix\n\n- \`\`\`markdown\n${nested}  \`\`\`\n`);
+  assert.equal(report.rows, 0);
+  assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
 test("discards the complete source line for a CommonMark HTML-comment block", () => {
   const source = validIndex();
   const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
