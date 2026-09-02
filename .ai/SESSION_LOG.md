@@ -29,6 +29,8 @@ full snapshot through the archival checkpoint remains in
   public contracts, policies, status values, telemetry, or time bounds.
 - Changed-file lint/format and architecture validation pass. The affected-scope
   candidate gate passes 46/46 with zero cached tasks in 1m22.659s.
+- Exact source `4013545`, tree `f8398bb`, repeats the candidate gate 46/46 with
+  34 cached tasks in 38.962 seconds.
 - Docker Desktop started, but its daemon/WSL integration did not become ready;
   no local browser pass is claimed and protected acceptance remains required.
 
@@ -41,9 +43,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-Finalize repository memory/evidence, commit the coherent source, repeat the
-exact-source candidate gate, then publish for protected browser/Docker-capable
-acceptance and the bounded review cycle.
+Commit the evidence/repository-memory checkpoint, then publish for protected
+browser/Docker-capable acceptance and the bounded review cycle.
 
 ## 2026-09-02 — Catalog/Playback readability verified and item72 activated
 

@@ -1133,6 +1133,8 @@ hard timeout, graceful termination, forced termination, and final-exit timers.
 The affected-scope candidate gate passes 46/46 tasks with zero cached tasks in
 1m22.659s. Exact commands and results are retained in
 [`p14-r16-router-web-tooling-readability.txt`](./p14-r16-router-web-tooling-readability.txt).
+Exact source `4013545`, tree `f8398bb`, repeats the candidate gate 46/46 with
+34 cached tasks in 38.962 seconds.
 The local Docker daemon did not become available, so no local browser pass is
 claimed; protected candidate acceptance must supply the browser/Docker-capable
 check before verification.

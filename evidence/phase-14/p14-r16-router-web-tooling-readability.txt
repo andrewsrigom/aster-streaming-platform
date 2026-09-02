@@ -122,6 +122,15 @@ Command:
 Result:
   PASS — 46/46 tasks, 0 cached, 1m22.659s.
 
+Exact source checkpoint:
+  commit 40135459f03d3bf0ac0b8cc919fbd5a6b62e2ca1
+  tree   f8398bbb2bab6b13cc52bb579f3f1aab76976799
+
+Repeated command:
+  pnpm check:changed
+Repeated result:
+  PASS — 46/46 tasks, 34 cached, 38.962s.
+
 The gate includes affected builds, Router and Web tests/typechecks, workspace
 lint/format/unused-code checks, architecture, documentation, repository memory,
 security, toolchain, CI policy, platform policy, and governance. Protected CI

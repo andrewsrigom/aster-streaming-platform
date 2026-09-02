@@ -137,8 +137,10 @@ and process-tree cleanup remain unchanged.
   before and after. Web source tests pass 119/119 before and after, and strict
   typecheck passes. Changed-file lint/format and architecture checks pass. The
   affected-scope candidate gate passes 46/46 with zero cached tasks in
-  1m22.659s. Local browser acceptance is pending because the Docker daemon did
-  not become available; protected candidate acceptance remains required.
+  1m22.659s. Exact source `4013545`, tree `f8398bb`, repeats it 46/46 with 34
+  cached tasks in 38.962 seconds. Local browser acceptance is pending because
+  the Docker daemon did not become available; protected candidate acceptance
+  remains required.
 - Iteration gate: Router build/demand test, Web typecheck/browser playback test,
   and root quality-gate runner test
 - Candidate gate: `pnpm check:changed`

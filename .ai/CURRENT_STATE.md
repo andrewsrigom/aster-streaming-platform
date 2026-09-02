@@ -61,8 +61,10 @@ lifecycle characterization passes 8/8 before and after. Web source tests pass
 119/119 before and after, and strict typecheck passes. Changed-file lint,
 Prettier, and architecture validation pass. The affected-scope candidate gate
 passes 46/46 tasks with zero cached tasks in 1m22.659s. The local Docker daemon
-did not become available, so no local browser pass is claimed; protected
-candidate acceptance remains required before verification.
+did not become available, so no local browser pass is claimed. Exact source
+`4013545`, tree `f8398bb`, repeats the candidate gate 46/46 with 34 cached tasks
+in 38.962 seconds. Evidence commit, protected candidate acceptance, review,
+merge, and exact-main verification remain.
 
 ## Ordered reference-quality runway
 

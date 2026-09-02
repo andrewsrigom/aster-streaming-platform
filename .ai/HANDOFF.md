@@ -41,14 +41,15 @@ Close only the `router-demand-analysis`, `web-player-session-flow`, and
   validation pass.
 - The affected-scope candidate gate passes 46/46 tasks with zero cached tasks
   in 1m22.659s.
+- Exact source `4013545`, tree `f8398bb`, repeats the candidate gate 46/46 with
+  34 cached tasks in 38.962 seconds.
 - Local Docker Desktop started but its daemon/WSL integration did not become
   ready. No local browser pass is claimed; protected acceptance must provide it.
 
 ## Exact next actions
 
-1. Finalize evidence and repository memory on the coherent candidate.
-2. Commit and repeat `pnpm check:changed` on the exact source checkpoint.
-3. Publish one PR; require browser/Docker-capable protected acceptance, one
+1. Commit the evidence and repository-memory checkpoint.
+2. Publish one PR; require browser/Docker-capable protected acceptance, one
    initial review, one confirmation, merge, and exact-main acceptance.
 
 ## Execution boundary
