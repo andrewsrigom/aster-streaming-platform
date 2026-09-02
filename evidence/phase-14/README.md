@@ -916,8 +916,14 @@ evidence is repeated because no executable source or CI classification changes.
 | `pnpm ai:test` | PASS — 13/13 tests |
 | Changed-file Prettier check | PASS |
 | `git diff --check` | PASS |
+| `pnpm check:changed` | PASS — 7/7 tasks, 0 cached |
 
-The changed-scope candidate gate remains pending.
+Source checkpoint `66db1ce173375e205e4fc74a0e28a04b23f430c8`, tree
+`754cc391bab7b3a850b95e4f0adc0ea904203427`, is the coherent local candidate.
+The changed-scope gate selected documentation, repository-memory, community,
+security, formatting, and pinned-toolchain checks. It did not select executable
+owner or platform runtime tasks because no executable source or CI
+classification changed.
 
 ### P14-R14 merge boundary
 

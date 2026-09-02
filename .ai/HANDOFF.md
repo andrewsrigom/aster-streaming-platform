@@ -36,17 +36,18 @@ Publish one concise readability standard that:
 - Focused documentation tests pass 37/37, repository-memory tests pass 13/13,
   documentation validation covers 251 documents and 1,703 links, and
   changed-file formatting plus diff checks pass.
+- Source checkpoint `66db1ce`, tree `754cc39`, passes the changed-scope gate
+  7/7 with zero cached tasks.
 - No executable product or platform source changed.
 
 ## Exact next actions
 
 1. Let exact-main run `33598493566` finish, inspect the bounded diagnostic log,
    and rerun failed jobs once. When green, mark item69 `DONE` in this branch.
-2. Run the item70 changed-scope candidate gate and record its exact result.
-3. Complete the item70 repository-memory checkpoint.
-4. Publish one item70 candidate, complete one review and one confirmation, merge,
+2. Commit the item70 evidence checkpoint.
+3. Publish one item70 candidate, complete one review and one confirmation, merge,
    and verify exact main.
-5. Activate item71 only after item70 releases.
+4. Activate item71 only after item70 releases.
 
 ## Execution boundary
 

@@ -117,8 +117,9 @@ priorities, and owning follow-up items 71–74.
 - Raw artifact path: `evidence/phase-14/README.md`
 - Acceptance result: focused documentation tests pass 37/37, repository-memory
   tests pass 13/13, documentation validation covers 251 documents and 1,703
-  links, and changed-file formatting plus diff checks pass; candidate gate
-  pending
+  links, and changed-file formatting plus diff checks pass. Source checkpoint
+  `66db1ce`, tree `754cc39`, passes the changed-scope candidate gate 7/7 with
+  zero cached tasks
 - Iteration gate: documentation and repository-memory checks plus formatting
 - Candidate gate: changed-scope gate from the exact item70 diff
 - Heavyweight repeat triggers: executable source, dependency, CI

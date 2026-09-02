@@ -31,13 +31,13 @@ full snapshot through the archival checkpoint remains in
   13/13. Documentation validation covers 251 documents, 2,901 headings, 1,703
   links, four supported status claims, and all eleven capability rows.
 - Changed-file formatting and diff checks pass. The affected-scope candidate
-  gate remains.
+  gate passes 7/7 with zero cached tasks on source `66db1ce`, tree `754cc39`.
 
 ### Next action
 
-Rerun failed exact-main jobs once, close item69 when green, then complete and
-publish the item70 documentation candidate. Do not start source refactoring in
-item70.
+Rerun failed exact-main jobs once, close item69 when green, then publish the
+item70 documentation candidate for one review and one confirmation. Do not
+start source refactoring in item70.
 
 ## 2026-09-01 — P14-R14 capability index activation
 

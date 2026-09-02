@@ -48,7 +48,9 @@ personal style are not acceptance criteria.
 Focused documentation tests pass 37/37 and repository-memory tests pass 13/13.
 Documentation validation covers 251 documents, 2,901 headings, 1,703 links,
 four supported status claims, and all eleven capability rows. Changed-file
-formatting and diff checks pass. The affected-scope candidate gate remains.
+formatting and diff checks pass. Source checkpoint `66db1ce`, tree `754cc39`,
+passes the affected-scope candidate gate 7/7 with zero cached tasks. Protected
+review, merge, and exact-main acceptance remain.
 
 No source, GraphQL, schema, persistence, event, cache, media, runtime, telemetry,
 dependency, or deployment behavior changes in item70.
@@ -88,7 +90,7 @@ commercial-catalog claims.
 ## Not implemented
 
 - P14-R15 is not verified until the readability standard, inventory,
-  affected-scope candidate gate, review, and release gates pass.
+  protected review and release gates pass.
 - P14-R16 representative source refactors have not started.
 - P14-R17 journey examples and final rationale-comment alignment are planned.
 - P14-R18 fresh-reference acceptance is planned.
