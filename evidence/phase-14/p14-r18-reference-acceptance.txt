@@ -713,3 +713,15 @@ $ pnpm check:changed
 Tasks: 9 successful, 9 total
 Cached: 0 cached, 9 total
 Time: 26.203s
+
+PR67 closeout review correction
+-------------------------------
+Discussion 3916372644 found a stale document-wide evidence-index status. The
+header now states that the reference track is verified and hosted work remains
+planned and inactive. No executable or blocking boundary changed; no further
+review round or heavyweight repeat is required for this status-only correction.
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 2 cached, 9 total
+Time: 23.991s

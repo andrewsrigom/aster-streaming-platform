@@ -1,6 +1,6 @@
 # Phase 14 Evidence Index
 
-Status: **in progress — reference track**
+Status: **reference track verified — hosted track planned and inactive**
 
 Hosted capacity and release requirements P14-R01–R12 remain planned and
 inactive. This evidence index does not claim a hosted environment, production
@@ -1354,6 +1354,11 @@ The documentation-only closeout aligns README, roadmap, phase activation,
 verification notes, and idle repository memory. Its local candidate gate passes
 9/9 tasks with no cached tasks in `26.203s`; documentation has zero violations,
 and repository memory reports no active or target requirement.
+
+PR67's closeout review found only the stale document-wide status
+(`3916372644`). The header now agrees with the verified requirement sections.
+No executable, acceptance, or blocking boundary changed; no additional review
+round or heavyweight repeat is required for this status-only correction.
 
 ## Deferred evidence
 

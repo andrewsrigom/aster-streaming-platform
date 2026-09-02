@@ -19,6 +19,10 @@ full snapshot through the archival checkpoint remains in
   broader media-rights claim, or new readability sweep is authorized.
 - Documentation-only closeout gate passes 9/9 tasks with no cached tasks in
   `26.203s`; repository memory reports no active or target requirement.
+- PR67 closeout review found only stale document-wide evidence status
+  (`3916372644`), now aligned. This status-only correction changes no executable
+  or blocking boundary and requires no further review round or heavyweight proof.
+- The status-correction gate passes 9/9 tasks with two cached tasks in `23.991s`.
 
 ### Evidence
 
