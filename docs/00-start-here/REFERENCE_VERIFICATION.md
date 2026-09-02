@@ -1,6 +1,6 @@
 # Local Reference Verification
 
-Status: **in progress — fresh local acceptance passes; protected release pending**
+Status: **verified — local reference track complete**
 
 This checkpoint answers one bounded question: can a reader clone Aster, find a
 capability, inspect how it is implemented, run its focused proof, and exercise
@@ -110,15 +110,22 @@ passed 2/2. A second invocation overlapped the still-running first gate and was
 rejected by the Next.js build lock. After all prior processes ended, the clean
 73/73 gate above passed.
 
-## Remaining release work
+## Protected acceptance
 
-The fresh local path passes. P14-R18 remains in progress until the corrected
-evidence candidate completes protected review, merge, and exact-main
-acceptance.
+Final candidate `662c597986d0edf0885896b1ff42d78f9b59b457`, tree
+`70ef84a88f06dd2b16f5633f2285d9a610b12809`, passed protected workflow
+`33654220663`. Every PR66 discussion is resolved. Final review `5092157759`
+required only a stale-status prose correction; it changed no executable or
+blocking boundary, so the recorded stopping rule required no further round.
 
-Earlier protected and exact-main workflows prove the same checked-in playable
-path on CI infrastructure. They support the implementation claim but do not
-replace the recorded fresh-reader checkpoint.
+PR66 squash main `85658dffdf827ce5eaa08f4a43ee82c24a586565` preserves that
+exact tree. Exact-main workflow `33654343586` passed. P14-R18 and the complete
+local reference track P14-R13–R18 are verified.
+
+The later candidate changed verification evidence and prose, not product
+source, dependencies, media, or the public journey. The fresh-reader source and
+latest exact-runner Docker results therefore remain supporting evidence; the
+protected checks verify the final documentation and repository state.
 
 ## Verified local scope
 

@@ -13,7 +13,7 @@ observability and bounded GraphQL execution through focused tests, real local
 dependencies and Docker-based journeys. [Phase13 release evidence](evidence/phase-13/release.md)
 records the final protected review, merge and exact-main acceptance.
 
-Phase14 now starts with a reference-quality track: make capabilities easier to
+Phase14's [local reference-quality track is verified](evidence/phase-14/README.md): capabilities are easier to
 locate, read, discuss and verify without changing their behavior. Hosted
 capacity and deployment remain planned but are not the immediate objective and
 are not implied by the verified local reference checkpoint. See [ADR-0048](docs/adr/0048-reference-first-phase-14-runway.md),
@@ -31,7 +31,7 @@ representative source, focused adverse test, checked-in evidence and operational
 browse, publication, playback, progress, degradation, admission, recovery and diagnosis to
 bounded executable checks. The current
 [local reference verification](docs/00-start-here/REFERENCE_VERIFICATION.md) records the
-completed fresh-checkout source and Docker proof, its pending protected release, and every
+completed fresh-checkout source, Docker and protected acceptance, and every
 deferred hosted claim. The
 [documentation map](docs/00-start-here/DOCUMENTATION_MAP.md) provides broader reading paths for
 product, architecture, implementation, operations and quality.

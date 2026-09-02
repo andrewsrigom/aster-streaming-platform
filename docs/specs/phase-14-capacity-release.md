@@ -23,8 +23,12 @@ authorization for credentials and resource creation.
 
 ## Activation state
 
-- **Active:** P14-R13–R18, the local reference implementation track.
+- **Verified:** P14-R13–R18, the local reference implementation track.
 - **Planned and deferred:** P14-R01–R12, the hosted capacity and release track.
+
+The [local reference verification](../00-start-here/REFERENCE_VERIFICATION.md)
+records the completed fresh-source, Docker, protected merge, and exact-main
+acceptance. No local reference work item remains active or ready.
 
 Completing the reference track does not satisfy or waive a hosted requirement.
 
@@ -50,7 +54,7 @@ Completing the reference track does not satisfy or waive a hosted requirement.
 
 ## Requirements
 
-### Reference implementation track — active
+### Reference implementation track — verified
 
 ### P14-R13
 

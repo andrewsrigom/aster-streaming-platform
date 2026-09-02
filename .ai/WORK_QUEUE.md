@@ -95,7 +95,7 @@ The latest release is Phase13:
 | 72 | Refactor representative Identity, Engagement and Discovery reading slices | P14-R16 | DONE |
 | 73 | Refactor representative Router, Web and repository-tooling reading slices | P14-R16 | DONE |
 | 74 | Align rationale comments, executable examples and core-journey reading paths | P14-R17 | DONE |
-| 75 | Run fresh-checkout/Docker acceptance and verify the reference track | P14-R18 | IN_PROGRESS |
+| 75 | Run fresh-checkout/Docker acceptance and verify the reference track | P14-R18 | DONE |
 
 ## Item68 — verified
 
@@ -299,44 +299,27 @@ Each item starts only after its predecessor releases. Every slice:
 - runs focused checks during iteration and the affected-scope candidate gate;
 - updates the capability index and reading guidance with the same change.
 
-## Item75 — active reference-track verification
+## Item75 — verified reference-track acceptance
 
 From a fresh checkout, prove installation, capability navigation, a focused
 test, the documented Docker reference journey, evidence lookup and exact
 project-scoped cleanup. Verification notes must state verified local
 capabilities, known limitations and all deferred hosted work.
 
-Exact-main clone `2b6054a` passes the public bootstrap, proof navigation, 16
-focused Playback checks, the complete 73-task gate, and high-severity audit. A
-rejected nested-shell cleanup removed 13 unused existing `aster` volumes; the
-loss and retained broker resources are recorded, and empty replacements are
-forbidden. Protected runs `33643437047` and `33644727686` pass, and initial
-review discussions `3915333547` and `3915333560` are resolved.
+Exact-main clone `2b6054a` passes absent-target and empty-state proof, the full
+README bootstrap with tracked hooks, navigation, 16 focused Playback checks,
+the accepted 73-task source gate, and the high-severity audit. Context-pinned
+project `aster-reference-pinned-20260902` passes browser 1/1 in `10.5s`, replay,
+checked cleanup, and independent zero label-and-prefix residue.
 
-Confirmation review `5091322369` opened discussions `3915467273` and
-`3915467277` for fail-open cleanup inspection and missing fresh-target proof.
-Corrected head `894fef9` passes protected run `33646820741`, and both discussions
-are resolved. Blocker-boundary review `5091554514` opened discussions
-`3915666140` and `3915666152`. The remediation configures tracked hooks in a new
-absent/empty clone, passes the clean 73-task source gate, checks namespace-query
-statuses before arming cleanup, and passes isolated browser/replay/cleanup with
-zero residue. Candidate checks pass 9/9 tasks in `12.826s`. Publication, final
-review, merge, and exact-main acceptance remained. Review `5091785850` then
-opened remote-Docker and unlabeled-name blockers `3915872033` and `3915872044`.
-The remediation rejects endpoint overrides, pins inspected local Linux context
-`default`, refuses and preserves an unlabeled prefixed fixture before teardown,
-and passes the new literal Docker journey with independent zero label-and-prefix
-residue. Updated candidate checks pass 9/9 tasks in `10.727s`. Publication,
-exact-head review, merge, and exact-main acceptance remained. Review `5092002215`
-on `5c8724a` then opened nested-context/checksum blockers `3916063357` and
-`3916063367`. The corrected runner pins the verifier child to the inspected
-context and passes project `aster-reference-pinned-20260902` with browser 1/1,
-replay, cleanup, and independent zero residue. Candidate checks pass 9/9 tasks
-in `7.123s`. Head `7a3279a` passes protected run `33653251535`; prior discussions
-are resolved. Review `5092157759` found only stale Docker-pending prose
-(`3916199051`), now corrected. Publish the text correction, resolve that
-discussion, pass final protected CI, merge, and verify exact main. No further
-review round or heavyweight repeat is required for this text-only correction.
+Final candidate `662c597`, tree `70ef84a`, passed protected run `33654220663`.
+Every PR66 discussion is resolved. Squash main `85658df` retains that exact
+tree, and exact-main run `33654343586` passed. P14-R18 and the complete local
+reference track P14-R13–R18 are verified. No active or ready work remains.
+
+A rejected cleanup removed 13 old local `aster` volumes. The raw transcript
+records their exact names, retained broker resources, and failed attempts.
+Recovery needs an actual external backup; empty replacements remain forbidden.
 
 ## Deferred hosted queue
 

@@ -20,14 +20,18 @@ The phase order is also the engineering demonstration path. [`docs/00-start-here
 | 11 | Resilience policies and failure laboratory | Released |
 | 12 | Observability, SLI/SLOs, and operational dashboards | Released |
 | 13 | GraphQL performance and abuse resistance | Released |
-| 14 | Reference quality now; capacity and hosted operation when explicitly activated | Active — reference track |
+| 14 | Local reference quality; capacity and hosted operation when explicitly activated | Reference verified — hosted planned |
 
-Phase14's immediate outcome is a public source reference that is navigable,
-reproducible and verifiable locally. Its P14-R13–R18 track improves reading
-paths, names, flow, comments, examples and fresh-checkout acceptance without
+Phase14's verified local outcome is a public source reference that is navigable,
+reproducible and verifiable locally. Its P14-R13–R18 track delivers reading
+paths, clearer names and flow, rationale comments, examples and fresh-checkout acceptance without
 requiring a public endpoint. Existing P14-R01–R12 capacity, provider, security,
 backup and hosted-release obligations remain planned and deferred; they are not
 satisfied by local Docker evidence.
+
+The [local reference verification](docs/00-start-here/REFERENCE_VERIFICATION.md)
+records completed source, Docker, protected merge, and exact-main acceptance.
+No reference-track work item remains active or ready.
 
 Optional product extensions begin only after the hosted Phase14 track is
 explicitly activated and released:

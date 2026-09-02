@@ -3,9 +3,9 @@
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
 [ADR-0048](../docs/adr/0048-reference-first-phase-14-runway.md) separates
-Phase14 into an active local reference implementation track (P14-R13–R18) and
+Phase14 into a reference-first local implementation track (P14-R13–R18) and
 the existing hosted capacity/release track (P14-R01–R12), which remains planned
-until the owner authorizes providers, credentials and resource creation. A
+until the owner authorizes providers, credentials and resource creation.
 A verified reference checkpoint means navigable, reproducible and locally
 verified source; it does not claim hosted production, capacity, on-call
 operation or broader media rights. Readability work uses small owner-scoped
