@@ -317,11 +317,19 @@ path/anchor validity to the existing documentation validator.
 - Correction source `c2a0521`, tree `790fe8d`, requires the original blank block
   boundary and adds its regression. Focused contracts pass50/50 and the affected
   gate passes15/15. No product runtime or deployment behavior changed.
+- Exact-head review on checkpoint `30a22f2`, tree `8d7002e5`, opened finding
+  `3909925502` because the governance job could move to a self-hosted runner
+  while unrelated jobs satisfied the global runner check. Protected run
+  `33579229763` was invalidated and cancellation was requested.
+- Correction source `db11245`, tree `61a21f6`, requires the exact reviewed
+  `ubuntu-24.04` governance runner and adds its regression. Focused contracts
+  pass51/51 and the affected gate passes15/15. No product runtime or deployment
+  behavior changed.
 
 ## Exact next actions
 
 1. Publish the corrected checkpoint, resolve review thread
-   `PRRT_kwDOUEkeis6eVUF5` and request confirmation only after GitHub exposes
+   `PRRT_kwDOUEkeis6eVZ42` and request confirmation only after GitHub exposes
    the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating

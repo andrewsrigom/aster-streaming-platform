@@ -314,10 +314,19 @@ full snapshot through the archival checkpoint remains in
   boundary and adds its regression. Focused contracts pass50/50 and the affected
   gate passes15/15, including101 platform-policy,39 CI-policy and13
   repository-memory tests. No product runtime or deployment behavior changed.
+- Exact-head review on checkpoint `30a22f2`, tree `8d7002e5`, opened finding
+  `3909925502` because the governance job could move to a self-hosted runner
+  while unrelated jobs satisfied the global runner check. Protected run
+  `33579229763` was invalidated and cancellation was requested.
+- Correction source `db11245`, tree `61a21f6`, requires the exact reviewed
+  `ubuntu-24.04` governance runner and adds its regression. Focused contracts
+  pass51/51 and the affected gate passes15/15, including101 platform-policy,40
+  CI-policy and13 repository-memory tests. No product runtime or deployment
+  behavior changed.
 
 ### Next action
 
-- Publish the corrected checkpoint, resolve thread `PRRT_kwDOUEkeis6eVUF5` and
+- Publish the corrected checkpoint, resolve thread `PRRT_kwDOUEkeis6eVZ42` and
   request confirmation only
   after the PR exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.

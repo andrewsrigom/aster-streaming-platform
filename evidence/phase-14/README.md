@@ -813,6 +813,22 @@ zero violations. The affected gate passes15/15, including101 platform-policy,39
 CI-policy and13 repository-memory tests. No product runtime or deployment
 behavior changed. Publication remains pending.
 
+Checkpoint `30a22f2de193faa583007ba69200ff46c5f8385e`, tree
+`8d7002e5f52fa559a698fa6a1fba55dddf884325`, received exact-head review at
+`2026-09-02T01:28:18Z`. Finding `3909925502` showed that a self-hosted
+governance runner could execute the mandatory checks while unrelated Ubuntu
+jobs satisfied the global runner requirement. Protected run `33579229763` was
+invalidated and cancellation was requested; it is not acceptance evidence.
+
+Correction source `db1124576b64e3fc55975e0635ac8b845b6647c6`, tree
+`61a21f6b8eb10067275355f24d2a46724e059271`, requires the exact reviewed
+`ubuntu-24.04` governance runner and adds its regression. Focused
+capability/CI-policy tests pass51/51. Documentation validation covers250
+documents, 2,880 headings, 1,659 links, four status claims and eleven rows with
+zero violations. The affected gate passes15/15, including101 platform-policy,40
+CI-policy and13 repository-memory tests. No product runtime or deployment
+behavior changed. Publication remains pending.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and

@@ -333,7 +333,13 @@ file and anchor exists.
   `3909888845` because prose without a blank separator could prevent GFM table
   rendering. The working correction requires the original blank block boundary
   and adds its regression. Focused contracts pass50/50 and the affected gate
-  passes15/15. Correction source `c2a0521`, tree `790fe8d`, freezes the batch
+  passes15/15. Correction source `c2a0521`, tree `790fe8d`, freezes the batch.
+  Exact-head review on checkpoint `30a22f2` opened finding `3909925502` because
+  the governance runner was not bound to the reviewed Ubuntu image. Protected
+  run `33579229763` was invalidated and cancellation was requested. The working
+  correction requires the exact `ubuntu-24.04` governance runner and adds its
+  regression. Focused contracts pass51/51 and the affected gate passes15/15.
+  Correction source `db11245`, tree `61a21f6`, freezes the batch
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff
