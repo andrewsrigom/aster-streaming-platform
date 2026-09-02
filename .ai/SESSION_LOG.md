@@ -4,6 +4,32 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-02 — Core journeys verified and item75 activated
+
+### Completed
+
+- Item74 final head `903f50e`, tree `3e905e`, passed protected workflow
+  `33633680649` on attempt 2 after attempt 1's isolated `docker info` timeout.
+  Every discussion is resolved.
+- PR65 squash main `2b6054a` retains the exact tree; exact-main workflow
+  `33636042474` passed every applicable job. Item74/P14-R17 is `DONE`.
+- Activated item75/P14-R18 on `docs/reference-acceptance` from exact main.
+- Restored the required Phase14, ADR-0048, reader-path, Docker, testing,
+  release, documentation, and cleanup context.
+- Scoped the work to one fresh exact-main clone, public installation and
+  navigation, one focused adverse test, the anonymous playable journey,
+  evidence lookup, replay-safe initialization, and zero owned Docker residue.
+
+### Evidence
+
+- Item74 protected run `33633680649`, PR65 main `2b6054a`, tree `3e905e`, and
+  exact-main workflow `33636042474` establish the accepted P14-R18 base.
+
+### Next action
+
+Run the fresh-reader acceptance once, publish raw evidence and verification
+notes, then complete protected review, merge, and exact-main verification.
+
 ## 2026-09-02 — Router/Web/tooling readability verified and item74 activated
 
 ### Completed

@@ -1,175 +1,162 @@
-# Work Item: Align core-journey reading paths and examples
+# Work Item: Verify the local reference track from a fresh checkout
 
 - Status: IN_PROGRESS
-- Owner: Repository documentation
+- Owner: Repository verification
 - Phase: 14
-- Requirement IDs: P14-R17
+- Requirement IDs: P14-R18
 - Created: 2026-09-02
 - Updated: 2026-09-02
 
 ## Outcome
 
-A reader can move through eight core Aster journeys from requirement to code,
-adverse test, evidence, operations, and a bounded executable check. Source
-comments identify rationale or unusual failure behavior without narrating code.
+A reader can start from a fresh checkout, install the pinned toolchain, locate
+one capability, run its focused adverse test, start and exercise the documented
+Docker reference journey, find its evidence, and complete exact project-scoped
+cleanup. The published verification notes distinguish verified local behavior
+from every deferred hosted claim.
 
 ## Current behavior
 
-Item73/P14-R16 is verified through PR64 squash main `5be75bd`, exact tree
-`455857a`, and exact-main workflow `33626869266`. The capability index maps
-individual capabilities, and capability-specific guides contain commands and
-examples, but no compact path connects the eight P14-R17 journeys. Two browser
-storage comments state conditions without making the preserved fallback
-rationale explicit. Other comments in the representative slices already state
-invariants or non-authoritative observer boundaries.
+P14-R13–R17 are verified. Item74 final head `903f50e`, tree `3e905e`, passed
+protected workflow `33633680649` on attempt 2 after attempt 1's isolated
+`docker info` timeout. Every discussion is resolved. PR65 squash main
+`2b6054a` retains the exact tree, and exact-main workflow `33636042474` passed.
+The public bootstrap, capability index, journey guide, playable Docker command,
+evidence links, and cleanup instructions exist but have not yet been exercised
+together as the P14-R18 reader path from a new checkout.
 
 ## Proposed behavior
 
-Add one concise core-journey guide. Each journey will name what to notice, link
-the requirement, representative source, adverse test, evidence, and operations,
-and provide a root-relative command that exercises synthetic local behavior.
-Link the guide from the repository entry points and clarify the two ambiguous
-browser-storage comments. Do not change executable behavior.
+Create a temporary clone at exact main and follow only public instructions.
+Verify pinned installation, capability navigation, one linked focused test, the
+anonymous playable Docker journey, evidence lookup, replay-safe startup, and
+project-scoped cleanup. Publish the raw transcript and concise reference-track
+verification notes. Do not change executable product behavior.
 
 ## Boundaries
 
-- Owning context: repository documentation; each linked bounded context retains
-  its existing behavior and data ownership
-- Affected services/packages: documentation and comment text in `@aster/web`
-- Authoritative data: none changed
-- Read models/caches: none changed
-- Trust boundaries: example commands must not require credentials, external
-  media, personal data, or mutable hosted resources; historical rights payloads
-  must not be represented as safe replay inputs
-- External dependencies: pinned local Node.js/pnpm toolchain and existing tests
+- Owning context: repository verification; product owners retain all existing
+  data and behavior
+- Affected services/packages: documentation and repository memory only
+- Authoritative data: disposable `aster-reference-*` Docker project data only
+- Read models/caches: disposable Docker volumes only
+- Trust boundaries: public repository clone, package registry, local Docker
+  daemon, loopback Web/Router/object-storage ports, synthetic generated media
+- External dependencies: GitHub clone, pinned Node.js/pnpm, package registry,
+  Docker Engine/Compose, digest-pinned images
 
 ## Invariants
 
-- The guide covers exactly public browse, rights-safe publication, playback,
-  profile progress, Discovery degradation, GraphQL admission, dependency
-  recovery, and telemetry-led diagnosis.
-- Each journey links requirement, source, adverse test, evidence, and operations
-  rather than duplicating their contracts.
-- Executable checks are bounded, synthetic, credential-free, and start at the
-  repository root after the frozen install.
-- The deliberately unresolved draft remains non-publishable, and historical
-  media/publication payloads remain explicitly non-replayable.
-- Comments explain why a boundary exists or how failure is contained; they do
-  not restate local syntax.
-- Product behavior, public contracts, schemas, events, persistence, cache,
-  rights, media, telemetry, dependencies, and deployment remain unchanged.
+- The checkout starts without inherited `node_modules`, build output, Git
+  configuration, Docker containers, networks, or volumes.
+- Exact main commit and tool versions are recorded before verification.
+- Capability navigation begins at the public capability index and reaches its
+  requirement, source, adverse test, evidence, and operations paths.
+- The focused check is synthetic, bounded, credential-free, and exits cleanly.
+- The Docker journey uses one unique explicit project name and loopback-only
+  published ports.
+- The generated technical sample is not represented as third-party media or a
+  hosted release.
+- Cleanup targets only the inspected disposable project and proves zero owned
+  containers, networks, and volumes remain.
+- Existing projects, retained media, credentials, and host processes are not
+  changed.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| A linked requirement, source, test, evidence, or operations path drifts | Documentation validation rejects the broken local link | None; repository check only |
-| A focused example exposes a regression | The command exits nonzero with the existing test diagnostic | Existing test output only |
-| A Catalog example depends on rights or historical state | The guide points to the bounded synthetic test and labels the payload as non-replayable | None |
-| Browser storage is unavailable | Playback uses defaults or skips preference persistence without interruption | Existing behavior; no new telemetry |
+| Clone, install, or version pin fails | Stop before Docker startup and retain the exact diagnostic | Command transcript only |
+| Capability link or focused test fails | Stop and correct documentation or source before any verification claim | Test output only |
+| Docker startup or browser journey fails | Capture status/logs, run the same exact scoped cleanup, and do not claim the checkpoint | Existing structured logs and browser output |
+| Cleanup ownership cannot be proved | Refuse destructive cleanup and retain exact project identifiers for diagnosis | Cleanup command output |
+| Hosted or media-rights claim is implied | Correct the notes before publication | Documentation validation |
 
 ## Data and contracts
 
-- Schema/migration: none
-- GraphQL: none
-- Events: none
-- Cache: none
-- Compatibility: documentation links and comments only; executable behavior is
-  unchanged
-- Retention/deletion: no data or evidence deletion
+- Schema/migration: existing migrations run only inside disposable containers
+- GraphQL: existing public and private contracts are exercised, not changed
+- Events: none changed
+- Cache: disposable local cache/state only
+- Compatibility: current public bootstrap, navigation, test, Docker, evidence,
+  and cleanup instructions are the acceptance contract
+- Retention/deletion: delete only the uniquely named disposable Docker project;
+  retain images and package caches
 
 ## Security and privacy
 
-- Authorization: no change; example tests retain owner checks
-- Input limits: no change; examples exercise existing bounded fixtures
-- Sensitive data: examples use synthetic values and no credentials, personal
-  data, signed URLs, or external media
-- Abuse cases: misleading rights replay, stale links, accidental network or
-  hosted mutation, and narration-comment churn are explicitly excluded
+- Authorization: existing anonymous playback and owner-side publication checks
+  remain active
+- Input limits: existing generated fixture and bounded test limits apply
+- Sensitive data: no credentials, personal data, signed URLs, or external media
+  enter evidence
+- Abuse cases: remote Docker endpoints, inherited Compose project names,
+  unscoped cleanup, historical rights replay, and public-hosting claims are
+  rejected
 
 ## Implementation steps
 
-1. Record item73's exact-main verification and activate item74.
-2. Run documentation tests and the selected Web source suite before editing.
-3. Add the eight journey paths with bounded commands and explicit rights/example
-   boundaries.
-4. Link the guide from the README, documentation map, capability index, and
-   complete file inventory.
-5. Clarify only the selected browser-storage comments; retain already useful
-   rationale comments.
-6. Execute all eight documented checks, documentation/repository-memory/static
-   checks, and `pnpm check:changed`.
-7. Record evidence and repository memory; publish one candidate for one review
-   and one confirmation.
+1. Record item74's exact protected, merge, and exact-main acceptance and
+   activate item75.
+2. Create one new temporary clone at exact main and record its clean state,
+   origin, commit, tool versions, and absence of generated state.
+3. Follow the README bootstrap with the pinned toolchain and frozen lockfile.
+4. Use the capability index to locate the playback path and run its linked
+   focused adverse test.
+5. Verify the linked evidence and operations destinations.
+6. Start the anonymous playable Docker checkpoint under a unique project name,
+   run the existing real browser journey, and verify replay-safe initialization.
+7. Inspect exact ownership, perform documented project-scoped cleanup with
+   volumes, and prove zero owned residue.
+8. Publish raw evidence and reference-verification notes, run local gates, then
+   complete one review and one confirmation.
 
 ## Tests
 
-- Domain: the existing Catalog, Playback, Engagement, Discovery, Router, and
-  runtime adverse tests used by the examples
-- Application: selected source tests for all eight journeys
-- Integration: no new integration; existing checked-in phase evidence remains
-  linked
-- Contract: documentation link validation and the capability-index contract
-- Browser: Web source tests cover the comment-only player boundary; no browser
-  behavior changes
-- Performance/failure: no benchmark claim; existing dependency recovery and
-  diagnostic-exercise tests remain the bounded examples
+- Domain: existing Playback session characterization test selected through the
+  capability index
+- Application: existing Web playback state test
+- Integration: playable Catalog/Playback/Router/object-storage Docker path
+- Contract: documentation, capability-index, and local platform validation
+- Browser: existing anonymous playable journey
+- Performance/failure: no capacity claim; startup, replay, failure diagnostics,
+  and exact cleanup only
 
 ## Evidence
 
-- Commands: exact pinned-environment commands and raw output will be retained in
-  `evidence/phase-14/p14-r17-core-journey-reading-paths.txt`
-- Raw artifact path: `evidence/phase-14/p14-r17-core-journey-reading-paths.txt`
-- Acceptance result: all eight documented examples pass 178 focused tests in
-  total; Web source tests pass 119/119 before and after; documentation tests
-  pass 37/37 and validation covers 252 documents, 2,955 headings, 1,796 links,
-  four status claims, and eleven capability rows with zero violations;
-  repository-memory tests pass 13/13; ESLint, Prettier, architecture validation,
-  and the affected-scope candidate gate pass. The gate completes 16/16 tasks
-  with one cached task in 47.823 seconds. Initial exact source `1402157`, tree
-  `176c757`, repeats the gate 16/16 with six cached tasks in 37.612 seconds.
-  Corrected exact source `a43247b`, tree `561ff0e`, passes 16/16 with twelve
-  cached tasks in 1.949 seconds.
-  Initial review discussions `3914109519` and `3914109534` identified omitted
-  client-disposal and GraphQL execution/limiter/batching/query-count checks. The
-  corrected examples and corrected-source gate pass. Evidence head `0e10a85`,
-  tree `1bf3362`, passes protected workflow `33631634720`; both discussions are
-  resolved. Confirmation review `5089816369` found one evidence-order defect,
-  now corrected. Final exact-head protected acceptance remains; another review
-  is outside the stopping rule because the correction changes no executable or
-  public boundary.
-- Iteration gate: `pnpm docs:test`, `pnpm docs:check`, `pnpm ai:check`, the Web
-  source suite, and each documented focused example
+- Commands: exact fresh-clone and Docker commands with measured results
+- Raw artifact path: `evidence/phase-14/p14-r18-reference-acceptance.txt`
+- Acceptance result: pending
+- Iteration gate: public bootstrap/version checks, selected focused tests,
+  Docker startup/journey/replay/cleanup, `pnpm docs:check`, and `pnpm ai:check`
 - Candidate gate: `pnpm check:changed`
-- Heavyweight repeat triggers: executable application behavior, public contract,
-  rights workflow, adapter, runtime configuration, media, browser interaction,
-  telemetry shape, or deployment change
+- Heavyweight repeat triggers: any executable, Docker model, browser journey,
+  generated-media, migration, cleanup, dependency, or public-command change
 - Review stopping rule: one complete initial review and one confirmation; an
-  additional round requires a new blocker in requirements, ownership, security,
-  availability, data, or a public contract
+  additional round requires a new blocker in requirements, security, data,
+  availability, cleanup, rights, or a public contract
 
 ## Rollback or recovery
 
-Revert the guide, entry-point links, and comment wording. No schema, data, cache,
-media, provider, credential, process, or hosted state needs recovery.
+Delete only the verified temporary clone after evidence capture and revert the
+verification notes/memory updates. If Docker cleanup cannot prove ownership,
+retain the project and its exact identifiers for manual diagnosis rather than
+using a broad deletion command. No production or hosted state exists.
 
 ## Documentation updates
 
 - `README.md`
-- `docs/00-start-here/CORE_JOURNEY_READING_PATHS.md`
-- `docs/00-start-here/CAPABILITY_INDEX.md`
-- `docs/00-start-here/DOCUMENTATION_MAP.md`
-- `docs/00-start-here/FILE_INDEX.md`
-- `docs/quality/CODE_READABILITY.md`
+- `docs/00-start-here/REFERENCE_VERIFICATION.md`
 - `evidence/phase-14/README.md`
+- `evidence/phase-14/p14-r18-reference-acceptance.txt`
 - `.ai/CURRENT_STATE.md`, `.ai/WORK_QUEUE.md`, `.ai/SESSION_LOG.md`, and
   `.ai/HANDOFF.md`
 
 ## Completion checklist
 
-- [x] Requirements satisfied
-- [x] Tests pass
-- [x] Evidence captured
-- [x] Documentation current
-- [x] `.ai/` state updated
-- [x] Remaining risks recorded
+- [ ] Requirements satisfied
+- [ ] Tests pass
+- [ ] Evidence captured
+- [ ] Documentation current
+- [ ] `.ai/` state updated
+- [ ] Remaining risks recorded

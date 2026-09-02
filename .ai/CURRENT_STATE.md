@@ -11,9 +11,9 @@ reference track P14-R13–R18 is active under ADR-0048. Hosted P14-R01–R12 rem
 planned and requires explicit owner authorization for providers, credentials,
 paid resources, and public endpoints.
 
-Items69/P14-R14,70/P14-R15, and71–73/P14-R16 are verified. Item74/P14-R17
-is the sole `IN_PROGRESS` item on `docs/core-journey-reading-paths`, worktree
-`/tmp/aster-core-journey-reading-paths`, from exact PR64 squash main `5be75bd`.
+Items69/P14-R14,70/P14-R15,71–73/P14-R16, and74/P14-R17 are verified. Item75/
+P14-R18 is the sole `IN_PROGRESS` item on `docs/reference-acceptance`, worktree
+`/tmp/aster-reference-acceptance`, from exact PR65 squash main `2b6054a`.
 
 ## Verified
 
@@ -41,6 +41,10 @@ is the sole `IN_PROGRESS` item on `docs/core-journey-reading-paths`, worktree
   `33625208487`; its sole review discussion is resolved and corrected-head
   confirmation is clean. PR64 squash main `5be75bd` retains the exact tree, and
   exact-main workflow `33626869266` passed every applicable job.
+- Item74 final head `903f50e`, tree `3e905e`, passed protected workflow
+  `33633680649` on attempt 2 after attempt 1's isolated `docker info` timeout.
+  Every discussion is resolved. PR65 squash main `2b6054a` retains the exact
+  tree, and exact-main workflow `33636042474` passed every applicable job.
 
 The authoritative Phase14 chronology is in
 [`evidence/phase-14/README.md`](../evidence/phase-14/README.md). No hosted
@@ -48,32 +52,12 @@ deployment, production capacity, or broader media rights are claimed.
 
 ## Current work
 
-Item74 closes only `journey-comments-examples`. The new core-journey guide
-connects all eight required journeys to their requirement, representative
-source, adverse test, evidence, operations, and a bounded executable check.
-Repository entry points link the guide. The two ambiguous Web storage comments
-now state the safe-default and non-authoritative persistence rationale; the
-other representative comments already state invariants or observer boundaries.
-
-All eight documented examples pass 178 focused tests in total. Documentation
-tests pass 37/37 and validation covers 252 documents, 2,955 headings, 1,796
-links, four status claims, and eleven capability rows with zero violations. Web
-source tests pass 119/119 before and after. Repository-memory tests pass 13/13;
-ESLint, Prettier, architecture validation, and the affected-scope candidate
-gate pass. The gate completes 16/16 tasks with one cached task in 47.823
-seconds. Initial exact source `1402157`, tree `176c757`, repeats the gate 16/16
-with six cached tasks in 37.612 seconds. Corrected exact source `a43247b`, tree
-`561ff0e`, passes 16/16 with twelve cached tasks in 1.949 seconds. Initial review
-discussions `3914109519` and
-`3914109534` found that the playback check omitted its client-disposal test and
-the GraphQL check omitted runtime, limiter, batching, and query-count proofs.
-Both commands and paths now cover those boundaries. Evidence head `0e10a85`,
-tree `1bf3362`, passed protected workflow `33631634720`; both initial
-discussions are resolved. Confirmation review `5089816369` found only that the
-raw transcript placed the corrected gate before the retained initial gate. The
-transcript is now chronological. This is documentation and comment alignment
-only; final exact-head protected acceptance, merge, and exact-main verification
-remain. No additional review round is required by the recorded stopping rule.
+Item75 closes only `reference-fresh-acceptance`. It follows the public reader
+path from a new exact-main checkout: pinned install, capability navigation,
+focused adverse test, evidence and operations lookup, anonymous playable Docker
+journey, replay-safe initialization, and exact project-scoped cleanup. The
+result will publish verified local capabilities, limitations, and all deferred
+hosted work without changing executable product behavior.
 
 ## Ordered reference-quality runway
 
@@ -85,8 +69,8 @@ remain. No additional review round is required by the recorded stopping rule.
    verified;
 6. item73 — P14-R16 Router, Web, and tooling reading slices: verified;
 7. item74 — P14-R17 rationale comments, executable examples, and reading paths:
-   active;
-8. item75 — P14-R18 fresh-checkout and Docker reference acceptance.
+   verified;
+8. item75 — P14-R18 fresh-checkout and Docker reference acceptance: active.
 
 The exact queue and activation states live in
 [`WORK_QUEUE.md`](WORK_QUEUE.md).
@@ -111,9 +95,8 @@ commercial-catalog claims.
 
 ## Not implemented
 
-- P14-R17 is not verified until the eight journey paths, executable examples,
-  rationale-comment audit, protected review, and exact-main gate pass.
-- P14-R18 fresh-reference acceptance is planned.
+- P14-R18 is not verified until the public reader path passes from a fresh
+  checkout with exact project-scoped Docker cleanup and protected release.
 - Hosted P14-R01–R12 remains planned and inactive.
 
 ## Runtime and recovery
@@ -122,28 +105,28 @@ Use WSL Git and Node.js24.19.0/pnpm11.24.0 from
 `/mnt/c/Users/andre/.cache/aster-node-24.19.0`. Never use a branch beginning
 with `codex/`.
 
-Item74 changes documentation and, when needed, comment text only. Run the eight
-documented bounded checks, documentation/repository-memory checks, formatting,
-and the affected-scope gate. Existing PostgreSQL, Redis, broker, media, browser,
-and Docker evidence remains applicable because executable behavior is not
-changing. Preserve retained data, media, unrelated Docker projects,
-credentials, and host processes.
+Item75 changes verification notes and repository memory only. Run its source
+and Docker acceptance from one new temporary clone with a unique explicit
+project name. Inspect ownership before scoped cleanup. Preserve retained data,
+media, unrelated Docker projects, credentials, images, package caches, and host
+processes.
 
 ## Current risks
 
-- A reading path can imply behavior or rights that its linked evidence does not
-  prove.
-- An example can look safe to replay when it is historical or rights-dependent.
-- Excess comments can narrate syntax and make the important invariants harder
-  to find.
+- A fresh-clone proof can accidentally inherit package/build state or Docker
+  resources and stop being reproducible.
+- Cleanup can target unrelated local data if the project name or ownership is
+  not exact.
+- The generated sample can be mistaken for licensed third-party content.
 - Reference-track status can be mistaken for hosted release status.
 
-The guardrails require current links, synthetic bounded checks, explicit rights
-warnings, rationale-only comments, and no runtime change.
+The guardrails require exact commit/tool versions, synthetic bounded checks,
+unique Docker ownership, zero owned residue, explicit media limitations, and no
+hosted claim.
 
 ## Next outcome
 
-Complete item74/P14-R17: publish the eight core-journey reading paths, execute
-their bounded examples, align the selected rationale comments, pass focused and
-affected-scope gates, complete one review and one confirmation, merge, and
-verify exact main.
+Complete item75/P14-R18: follow the public path from a fresh checkout, prove
+capability navigation and focused verification, run the anonymous playable
+Docker journey, prove exact cleanup, publish reference-verification notes, pass
+one review and one confirmation, merge, and verify exact main.

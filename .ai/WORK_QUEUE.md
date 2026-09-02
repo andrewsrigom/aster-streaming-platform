@@ -94,8 +94,8 @@ The latest release is Phase13:
 | 71 | Refactor representative Catalog and Playback reading slices | P14-R16 | DONE |
 | 72 | Refactor representative Identity, Engagement and Discovery reading slices | P14-R16 | DONE |
 | 73 | Refactor representative Router, Web and repository-tooling reading slices | P14-R16 | DONE |
-| 74 | Align rationale comments, executable examples and core-journey reading paths | P14-R17 | IN_PROGRESS |
-| 75 | Run fresh-checkout/Docker acceptance and verify the reference track | P14-R18 | READY |
+| 74 | Align rationale comments, executable examples and core-journey reading paths | P14-R17 | DONE |
+| 75 | Run fresh-checkout/Docker acceptance and verify the reference track | P14-R18 | IN_PROGRESS |
 
 ## Item68 — verified
 
@@ -243,7 +243,7 @@ PR64 final head `90efa2b`, tree `455857a`, passed protected workflow
 confirmation is clean. PR64 squash main `5be75bd` retains the exact tree, and
 exact-main workflow `33626869266` passed every applicable job.
 
-## Item74 — active
+## Item74 — verified
 
 ### Outcome
 
@@ -282,8 +282,11 @@ batching, and query-count proofs. The corrected-source gate passes; protected
 workflow `33631634720` passes on evidence head `0e10a85`, tree `1bf3362`, and
 both discussions are resolved. Confirmation review `5089816369` found only a
 non-chronological raw transcript. The transcript is reordered without changing
-an executable or public boundary. Final exact-head protected acceptance, merge,
-and exact-main verification remain; the recorded review stopping rule is met.
+an executable or public boundary. Final head `903f50e`, tree `3e905e`, passed
+protected workflow `33633680649` on attempt 2 after attempt 1's isolated
+`docker info` timeout. Every discussion is resolved. PR65 squash main `2b6054a`
+retains the exact tree, and exact-main workflow `33636042474` passed every
+applicable job. The recorded review stopping rule is met.
 
 ## Items72–74 — scoped implementation work
 
@@ -296,7 +299,7 @@ Each item starts only after its predecessor releases. Every slice:
 - runs focused checks during iteration and the affected-scope candidate gate;
 - updates the capability index and reading guidance with the same change.
 
-## Item75 — reference-track verification
+## Item75 — active reference-track verification
 
 From a fresh checkout, prove installation, capability navigation, a focused
 test, the documented Docker reference journey, evidence lookup and exact

@@ -75,8 +75,11 @@ P14-R15 passed PR61 protected acceptance and merged as exact-tree main
 workflow `33609186840` on attempt 2 and merged through PR62 as exact-tree main
 `34a32c4`; exact-main run `33612201728` passed. Item72/P14-R16 passed protected
 workflow `33619298315`, merged through PR63 as exact-tree main `f7b0aad`, and
-exact-main run `33620771727` passed. Item73/P14-R16 is the active Router, Web,
-and repository-tooling readability work.
+exact-main run `33620771727` passed. Item73/P14-R16 is verified through PR64
+squash main `5be75bd` and exact-main workflow `33626869266`. Item74/P14-R17 is
+verified through PR65 squash main `2b6054a` and exact-main workflow
+`33636042474`. Item75/P14-R18 is the active fresh-checkout and Docker reference
+acceptance.
 
 Phase12 final
 source `b646e496d0946262a688f34a118a896f6c40ebda`, tree
