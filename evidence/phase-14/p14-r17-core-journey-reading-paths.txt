@@ -109,6 +109,17 @@ $ pnpm ai:check
 {"check":"ai-state","status":"ok","files":10,"queueItems":75,"sessionEntries":68,"activeRequirement":"P14-R17","targetRequirement":"P14-R17","violations":[]}
 EXIT 0
 
+EXACT COMMITTED-SOURCE GATE
+
+Source: 140215764afdf88d11ceb05f92dcd6b0d7c218d5
+Tree: 176c757133fe7c63a5d682770259e05a61474dae
+
+$ pnpm check:changed
+Tasks: 16 successful, 16 total
+Cached: 6 cached, 16 total
+Time: 37.612s
+EXIT 0
+
 $ pnpm ai:test
 tests 13; pass 13; fail 0
 EXIT 0

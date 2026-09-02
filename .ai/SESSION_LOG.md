@@ -28,6 +28,8 @@ full snapshot through the archival checkpoint remains in
 - ESLint, Prettier, architecture validation, and the affected-scope candidate
   gate pass. The gate completes 16/16 tasks with one cached task in 47.823
   seconds.
+- Exact source `1402157`, tree `176c757`, repeats the gate 16/16 with six
+  cached tasks in 37.612 seconds.
 
 ### Evidence
 
@@ -40,8 +42,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-Commit the coherent source checkpoint, repeat its affected gate, record the
-exact source, then publish one candidate for review and confirmation.
+Commit the evidence checkpoint, then publish one candidate for review and
+confirmation.
 
 ## 2026-09-02 — Identity/Engagement/Discovery readability verified and item73 activated
 

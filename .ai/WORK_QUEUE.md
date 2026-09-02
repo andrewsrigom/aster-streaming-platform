@@ -269,8 +269,9 @@ The eight executable examples pass 142 focused tests in total. Web source
 tests pass 119/119 before and after comment alignment. Documentation validation
 covers 252 documents and 1,789 links with zero violations; documentation and
 repository-memory tests pass 37/37 and 13/13. The affected-scope candidate gate
-passes 16/16 tasks with one cached task in 47.823 seconds. Protected review,
-merge, and exact-main verification remain.
+passes 16/16 tasks with one cached task in 47.823 seconds. Exact source
+`1402157`, tree `176c757`, repeats the gate 16/16 with six cached tasks in
+37.612 seconds. Protected review, merge, and exact-main verification remain.
 
 ## Items72–74 — scoped implementation work
 

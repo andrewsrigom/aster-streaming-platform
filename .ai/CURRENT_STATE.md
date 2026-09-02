@@ -61,8 +61,9 @@ links, four status claims, and eleven capability rows with zero violations. Web
 source tests pass 119/119 before and after. Repository-memory tests pass 13/13;
 ESLint, Prettier, architecture validation, and the affected-scope candidate
 gate pass. The gate completes 16/16 tasks with one cached task in 47.823
-seconds. This is documentation and comment alignment only; protected review,
-merge, and exact-main verification remain.
+seconds. Exact source `1402157`, tree `176c757`, repeats the gate 16/16 with six
+cached tasks in 37.612 seconds. This is documentation and comment alignment
+only; protected review, merge, and exact-main verification remain.
 
 ## Ordered reference-quality runway
 

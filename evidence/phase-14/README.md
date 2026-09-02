@@ -1180,6 +1180,10 @@ Documentation tests pass 37/37. Documentation validation covers 252 documents,
 zero violations. Repository-memory tests pass 13/13. Changed-file ESLint,
 Prettier, architecture validation, and the affected-scope candidate gate pass.
 The gate completes 16/16 tasks with one cached task in 47.823 seconds.
+Exact source `140215764afdf88d11ceb05f92dcd6b0d7c218d5`, tree
+`176c757133fe7c63a5d682770259e05a61474dae`, repeats the gate 16/16 with six
+cached tasks in 37.612 seconds. The next commit records this exact result and
+repository memory only.
 
 Exact commands and results are retained in
 [`p14-r17-core-journey-reading-paths.txt`](./p14-r17-core-journey-reading-paths.txt).

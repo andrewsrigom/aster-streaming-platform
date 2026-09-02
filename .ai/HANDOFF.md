@@ -42,13 +42,13 @@ Close only `journey-comments-examples`:
 - ESLint, Prettier, architecture validation, and the affected-scope candidate
   gate pass. The gate completes 16/16 tasks with one cached task in 47.823
   seconds.
+- Exact source `1402157`, tree `176c757`, repeats the gate 16/16 with six
+  cached tasks in 37.612 seconds.
 
 ## Exact next actions
 
-1. Commit the coherent source checkpoint and repeat `pnpm check:changed` on that
-   exact source.
-2. Commit the evidence checkpoint and publish one candidate.
-3. Complete one review and one confirmation, merge, and verify exact main.
+1. Commit the evidence checkpoint and publish one candidate.
+2. Complete one review and one confirmation, merge, and verify exact main.
 
 ## Execution boundary
 

@@ -126,8 +126,9 @@ browser-storage comments. Do not change executable behavior.
   four status claims, and eleven capability rows with zero violations;
   repository-memory tests pass 13/13; ESLint, Prettier, architecture validation,
   and the affected-scope candidate gate pass. The gate completes 16/16 tasks
-  with one cached task in 47.823 seconds. Exact committed-source repetition and
-  protected acceptance remain.
+  with one cached task in 47.823 seconds. Exact source `1402157`, tree
+  `176c757`, repeats the gate 16/16 with six cached tasks in 37.612 seconds.
+  Protected acceptance remains.
 - Iteration gate: `pnpm docs:test`, `pnpm docs:check`, `pnpm ai:check`, the Web
   source suite, and each documented focused example
 - Candidate gate: `pnpm check:changed`
