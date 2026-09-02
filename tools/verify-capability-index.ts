@@ -124,8 +124,14 @@ export const CAPABILITY_INDEX_ROWS = [
         "../specs/phase-09-discovery.md#p09-r08",
         "../specs/phase-10-redis.md#p10-r04",
       ],
-      Implementation: ["../../services/discovery/src/application/home-cache.ts"],
-      "Adverse test": ["../../services/discovery/test/home-cache.test.ts"],
+      Implementation: [
+        "../../services/discovery/src/application/home-rails.ts",
+        "../../services/discovery/src/application/home-cache.ts",
+      ],
+      "Adverse test": [
+        "../../services/discovery/test/home-rails.test.ts",
+        "../../services/discovery/test/home-cache.test.ts",
+      ],
       Evidence: [
         "../../evidence/phase-09/web-discovery-release.md",
         "../../evidence/phase-10/discovery-swr-release.txt",
@@ -255,8 +261,15 @@ export const CAPABILITY_INDEX_ROWS = [
         "../specs/phase-00-foundation.md#p00-r08",
         "../specs/phase-00-foundation.md#p00-r10",
       ],
-      Implementation: ["../../tools/run-quality-gate.ts", "../../.github/workflows/ci.yml"],
+      Implementation: [
+        "../../tools/verify-documentation.ts",
+        "../../tools/verify-ai-state.ts",
+        "../../tools/run-quality-gate.ts",
+        "../../.github/workflows/ci.yml",
+      ],
       "Adverse test": [
+        "../../tools/verify-documentation.test.ts",
+        "../../tools/verify-ai-state.test.ts",
         "../../tools/run-quality-gate.test.ts",
         "../../tools/classify-ci-change.test.ts",
         "../../tools/verify-ci-policy.test.ts",
