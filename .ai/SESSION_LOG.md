@@ -17,6 +17,14 @@ full snapshot through the archival checkpoint remains in
   result and unchanged hosted, capacity, rights, and commercial exclusions.
 - The final changed-scope gate passes 9/9 tasks with two cached tasks in
   `15.406s`.
+- Initial protected run `33643437047` passes. Review discussions `3915333547`
+  and `3915333560` require the complete accepted Docker command sequence and
+  current README/map status.
+- The accepted runner is now retained byte-identically with SHA-256 `35da14d`,
+  and both public entry points describe completed local source/Docker proof.
+- The correction passes shell syntax, byte identity, checksum, documentation and
+  repository-memory checks. `pnpm check:changed` passes 9/9 tasks with no cached
+  tasks in `14.519s`.
 
 ### Evidence
 
@@ -30,8 +38,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-Commit the complete evidence, repeat the changed-scope gate, then complete one
-initial review, one confirmation, merge, and exact-main acceptance.
+Publish and resolve both initial discussions, then complete one confirmation,
+merge, and exact-main acceptance.
 
 ## 2026-09-02 — Fresh-reader source path passed; Docker startup blocked
 

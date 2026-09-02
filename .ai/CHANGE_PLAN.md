@@ -134,10 +134,17 @@ verification notes. Do not change executable product behavior.
   startup/browser/replay/cleanup, and rejected-attempt incident with measured
   results
 - Raw artifact path: `evidence/phase-14/p14-r18-reference-acceptance.txt`
+- Exact accepted runner: `evidence/phase-14/p14-r18-reference-acceptance.sh`,
+  SHA-256 `35da14d54dcc7c75eba1a8ba4aea378576fde55488efaff0ea68b7464956b526`
 - Acceptance result: fresh local source and Docker path pass; protected review,
   merge, and exact-main acceptance remain
-- Current documentation candidate: `pnpm check:changed` passes 9/9 tasks with
-  two cached tasks in `15.406s`
+- Initial-review correction: the retained runner passes `bash -n`, is
+  byte-identical to the executed script, and has the recorded SHA-256.
+  `pnpm check:changed` then passes 9/9 tasks with no cached tasks in `14.519s`.
+- Initial protected run `33643437047` passes. Review discussions `3915333547`
+  and `3915333560` require the complete accepted runner and current public
+  navigation; both corrections are batched without changing an executable
+  product path.
 - Iteration gate: public bootstrap/version checks, selected focused tests,
   Docker startup/journey/replay/cleanup, `pnpm docs:check`, and `pnpm ai:check`
 - Candidate gate: `pnpm check:changed`
@@ -165,6 +172,7 @@ that could hide the loss. No production or hosted state exists.
 - `docs/00-start-here/FILE_INDEX.md`
 - `evidence/phase-14/README.md`
 - `evidence/phase-14/p14-r18-reference-acceptance.txt`
+- `evidence/phase-14/p14-r18-reference-acceptance.sh`
 - `.ai/CURRENT_STATE.md`, `.ai/WORK_QUEUE.md`, `.ai/SESSION_LOG.md`, and
   `.ai/HANDOFF.md`
 

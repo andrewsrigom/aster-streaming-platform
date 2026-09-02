@@ -49,12 +49,19 @@ Close only `reference-fresh-acceptance`:
   data is not recoverable without an external backup. The stopped broker,
   `aster_broker-data`, and `aster_identity-event-trust` remain. No empty
   replacements were created; the accepted repeat preserved those resources.
+- Initial protected run `33643437047` passes. Review discussions `3915333547`
+  and `3915333560` require the exact accepted runner and current README/map
+  status. The runner is now retained byte-identically with SHA-256 `35da14d`,
+  and both navigation entries describe completed local source/Docker proof. The
+  correction passes shell syntax, byte identity, checksum, documentation and
+  repository-memory checks, then `pnpm check:changed` passes 9/9 tasks with no
+  cached tasks in `14.519s`.
 
 ## Exact next actions
 
-1. Commit the complete local evidence and repeat `pnpm check:changed`.
-2. Publish the candidate, complete one initial review and one confirmation,
-   merge, and verify exact main.
+1. Commit and publish the review corrections, then resolve discussions
+   `3915333547` and `3915333560`.
+2. Complete one confirmation, merge, and verify exact main.
 
 ## Execution boundary
 

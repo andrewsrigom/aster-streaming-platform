@@ -63,7 +63,14 @@ journey 1/1 in `5.0s`, unchanged seed and generated-HLS replay, inspected exact
 cleanup, and zero owned residue. The local verification note records the full
 result, verified scope, and excluded hosted/commercial claims. Its existing
 changed-scope gate passes 9/9 tasks with two cached tasks in `15.406s`.
-Protected review, merge, and exact-main acceptance remain.
+Protected run `33643437047` passes. Initial review discussions `3915333547`
+and `3915333560` found that the accepted Docker runner was not retained in full
+and that README/map navigation still called the Docker leg pending. The runner
+is now retained byte-for-byte with its checksum, and both entry points describe
+completed local source/Docker acceptance. The correction passes shell syntax,
+byte-identity, checksum, documentation and repository-memory checks, followed by
+`pnpm check:changed` at 9/9 tasks with no cached tasks in `14.519s`. Discussion
+resolution, confirmation, merge, and exact-main acceptance remain.
 
 A rejected cleanup attempt expanded a nested-shell project variable to empty
 and removed 13 unused volumes from the existing `aster` project. Their Docker
@@ -142,8 +149,8 @@ hosted claim.
 
 ## Next outcome
 
-Finish item75/P14-R18: commit the complete local evidence, repeat the changed-
-scope candidate gate, publish for one review and one confirmation, merge, and
-verify exact main. Do not repeat the accepted source or Docker experiments
-unless a relevant executable, Docker, browser, media, cleanup, dependency, or
-public-command change invalidates them.
+Finish item75/P14-R18: run the corrected changed-scope gate, commit and publish
+the two review corrections, resolve their discussions, complete one
+confirmation, merge, and verify exact main. Do not repeat the accepted source
+or Docker experiments unless a relevant executable, Docker, browser, media,
+cleanup, dependency, or public-command change invalidates them.

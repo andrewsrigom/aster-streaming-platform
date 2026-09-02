@@ -168,6 +168,14 @@ Accepted isolated Docker/browser/replay/cleanup attempt
 The required repeat used a new literal project name in one script-owned scope.
 The remaining `aster` resources above were identical before and after it.
 
+Exact executed runner:
+evidence/phase-14/p14-r18-reference-acceptance.sh
+SHA-256: 35da14d54dcc7c75eba1a8ba4aea378576fde55488efaff0ea68b7464956b526
+
+The checked-in runner is byte-identical to the executed temporary script. It
+defines `playable_compose`, the literal project, preflight resource filters,
+startup, browser, replay, inspected teardown, and post-cleanup label queries.
+
 docker_server=26.0.0
 Docker Compose version v2.26.1-desktop.1
 {"check":"docker-context","included":24,"excluded":18,"status":"ok"}
@@ -198,6 +206,23 @@ $ pnpm check:changed
 Tasks: 9 successful, 9 total
 Cached: 2 cached, 9 total
 Time: 15.406s
+
+Initial-review correction gate
+------------------------------
+$ bash -n evidence/phase-14/p14-r18-reference-acceptance.sh
+Exit: 0
+
+$ cmp /tmp/aster-reference-playable-final.sh evidence/phase-14/p14-r18-reference-acceptance.sh
+Exit: 0
+
+$ sha256sum /tmp/aster-reference-playable-final.sh evidence/phase-14/p14-r18-reference-acceptance.sh
+35da14d54dcc7c75eba1a8ba4aea378576fde55488efaff0ea68b7464956b526  /tmp/aster-reference-playable-final.sh
+35da14d54dcc7c75eba1a8ba4aea378576fde55488efaff0ea68b7464956b526  evidence/phase-14/p14-r18-reference-acceptance.sh
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 0 cached, 9 total
+Time: 14.519s
 
 Remaining acceptance
 --------------------

@@ -1252,9 +1252,15 @@ were created.
 The local source and Docker acceptance now pass. Protected review, merge, and
 exact-main acceptance remain. The current boundary is published in the
 [local reference verification](../../docs/00-start-here/REFERENCE_VERIFICATION.md),
-and the final changed-scope gate passes 9/9 tasks with two cached tasks in
-`15.406s`. The exact transcript is retained in
-[`p14-r18-reference-acceptance.txt`](./p14-r18-reference-acceptance.txt).
+and the initial-review correction gate passes 9/9 tasks with no cached tasks in
+`14.519s`. The exact transcript and byte-identical executed runner are retained
+in [`p14-r18-reference-acceptance.txt`](./p14-r18-reference-acceptance.txt) and
+[`p14-r18-reference-acceptance.sh`](./p14-r18-reference-acceptance.sh).
+
+Initial review discussions `3915333547` and `3915333560` requested the complete
+accepted runner and current README/map navigation. Those corrections pass shell
+syntax, byte identity, checksum, documentation, repository-memory, and changed-
+scope checks without modifying an executable product path.
 
 ## Planned evidence
 

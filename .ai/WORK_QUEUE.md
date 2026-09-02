@@ -313,7 +313,10 @@ the real browser journey 1/1 in `5.0s`, replay-safe seed/generated-media reuse,
 exact cleanup, and zero owned residue. A rejected nested-shell cleanup removed
 13 unused existing `aster` volumes; the loss and retained broker resources are
 recorded, and empty replacements are forbidden. Local acceptance passes;
-protected review, merge, and exact-main acceptance remain.
+protected run `33643437047` passes. Initial review discussions `3915333547` and
+`3915333560` require the byte-identical accepted runner and current README/map
+status. Both corrections are batched. Corrected gate, resolution, confirmation,
+merge, and exact-main acceptance remain.
 
 ## Deferred hosted queue
 

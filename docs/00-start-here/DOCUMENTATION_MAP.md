@@ -51,7 +51,7 @@
 - [`docs/00-start-here/CORE_JOURNEY_READING_PATHS.md`](CORE_JOURNEY_READING_PATHS.md) — follow
   eight end-to-end journeys and run one bounded synthetic check for each
 - [`docs/00-start-here/REFERENCE_VERIFICATION.md`](REFERENCE_VERIFICATION.md) — inspect the
-  fresh-checkout evidence, remaining Docker checkpoint, local scope, and hosted exclusions
+  completed fresh local proof, pending protected release, local scope, and hosted exclusions
 - `docs/00-start-here/ENGINEERING_DEMONSTRATION.md`
 - `docs/handbook/01-node-in-production.md`
 - `docs/handbook/02-domain-and-clean-architecture.md`
