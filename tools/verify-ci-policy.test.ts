@@ -196,6 +196,21 @@ test("rejects duplicate feature pushes and missing cancellation", async () => {
   assert.ok(rules.includes("concurrency"));
 });
 
+test("every protected CI job must use the reviewed runner", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  const runners = [...source.matchAll(/^ {4}runs-on: ubuntu-24\.04$/gmu)];
+  assert.equal(runners.length, 6);
+  for (const runner of runners) {
+    const index = runner.index;
+    assert.notEqual(index, undefined);
+    const changed = `${source.slice(0, index)}    runs-on: self-hosted${source.slice(index + runner[0].length)}`;
+    assert.ok(
+      validateWorkflowPolicy(changed).some(({ rule }) => rule === "runner"),
+      String(index),
+    );
+  }
+});
+
 test("diagnostic failure exercises cannot be omitted, broadened or run for every change", async () => {
   const source = await readFile(workflowPath, "utf8");
   for (const changed of [
@@ -264,6 +279,180 @@ test("rejects a missing public contribution check", async () => {
     "node ./tools/verify-documentation.ts",
   );
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "commands"));
+});
+
+test("docs-only CI cannot bypass capability-index validation", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const requiredCommand of [
+    "node ./tools/verify-capability-index.ts",
+    "./tools/verify-capability-index.test.ts",
+  ] as const) {
+    assert.ok(source.includes(requiredCommand), requiredCommand);
+    const requiredInvocation = requiredCommand.startsWith("node ")
+      ? requiredCommand
+      : `node --test ${requiredCommand}`;
+    const movedOutsideGovernance = source
+      .replace(requiredCommand, "true")
+      .replace("  quality:\n", `  quality:\n    # ${requiredCommand}\n`);
+    const movedIntoSkippedIntermediateJob = source
+      .replace(requiredCommand, "true")
+      .replace(
+        "  quality:\n",
+        `  skipped-doc-check:\n    if: false\n    runs-on: ubuntu-24.04\n    steps:\n      - run: ${requiredCommand}\n\n  quality:\n`,
+      );
+    const retainedOnlyAsGovernanceComment = source.replace(
+      requiredCommand,
+      `true # ${requiredCommand}`,
+    );
+    const retainedOnlyAsGovernanceEnvironment = source
+      .replace(requiredCommand, "true")
+      .replace(
+        "      - name: Validate repository memory\n",
+        `      - name: Retain unused command text\n        env:\n          UNUSED_COMMAND: ${requiredCommand}\n        run: true\n      - name: Validate repository memory\n`,
+      );
+    const retainedOnlyInSuppressedGovernanceStep = source
+      .replace(requiredCommand, "true")
+      .replace(
+        "      - name: Validate repository memory\n",
+        `      - name: Suppressed capability command\n        if: false\n        run: ${requiredInvocation}\n      - name: Validate repository memory\n`,
+      );
+    const retainedOnlyInConditionalGovernanceStep = source
+      .replace(requiredCommand, "true")
+      .replace(
+        "      - name: Validate repository memory\n",
+        `      - name: Conditional capability command\n        if: github.event_name == 'push'\n        run: ${requiredInvocation}\n      - name: Validate repository memory\n`,
+      );
+    const retainedOnlyInNonBlockingGovernanceStep = source
+      .replace(requiredCommand, "true")
+      .replace(
+        "      - name: Validate repository memory\n",
+        `      - name: Non-blocking capability command\n        continue-on-error: true\n        run: ${requiredInvocation}\n      - name: Validate repository memory\n`,
+      );
+    const retainedOnlyInQuotedConditionalGovernanceStep = source
+      .replace(requiredCommand, "true")
+      .replace(
+        "      - name: Validate repository memory\n",
+        `      - name: Quoted conditional capability command\n        "if": false\n        run: ${requiredInvocation}\n      - name: Validate repository memory\n`,
+      );
+    const retainedOnlyInConditionalGovernanceJob = source.replace(
+      "  governance:\n",
+      "  governance:\n    if: github.event_name == 'push'\n",
+    );
+    const retainedOnlyInNonBlockingGovernanceJob = source.replace(
+      "  governance:\n",
+      "  governance:\n    continue-on-error: ${{ true }}\n",
+    );
+    const retainedOnlyInQuotedNonBlockingGovernanceJob = source.replace(
+      "  governance:\n",
+      "  governance:\n    'continue-on-error': ${{ true }}\n",
+    );
+    const retainedOnlyInTrailingConditionalGovernanceJob = source.replace(
+      "  quality:\n",
+      "    if: false\n\n  quality:\n",
+    );
+    const retainedOnlyInQuotedTrailingConditionalGovernanceJob = source.replace(
+      "  quality:\n",
+      "    'if': false\n\n  quality:\n",
+    );
+    const governanceDependsOnConditionalQuality = source.replace(
+      "  governance:\n    name: Documentation and security\n    needs: classify\n",
+      "  governance:\n    name: Documentation and security\n    needs: quality\n",
+    );
+    const governanceContainerEnvironment = source.replace(
+      "  governance:\n    name: Documentation and security\n    needs: classify\n    runs-on: ubuntu-24.04\n",
+      `  governance:\n    name: Documentation and security\n    needs: classify\n    runs-on: ubuntu-24.04\n    container:\n      image: node:24.19.0\n      env:\n        NODE_OPTIONS: --import=data:text/javascript,process.exit(0)\n`,
+    );
+    const conditionalClassifier = source.replace("  classify:\n", "  classify:\n    if: false\n");
+    const quotedConditionalClassifier = source.replace(
+      "  classify:\n",
+      "  classify:\n    'if': false\n",
+    );
+    const nonBlockingClassifier = source.replace(
+      "  classify:\n",
+      "  classify:\n    continue-on-error: true\n",
+    );
+    const dependentClassifier = source.replace(
+      "  classify:\n",
+      "  classify:\n    needs: skipped-doc-check\n",
+    );
+    const emptyMatrixClassifier = source.replace(
+      "  classify:\n",
+      "  classify:\n    strategy:\n      matrix: []\n",
+    );
+    const classifierPoisonedByPriorRun = source.replace(
+      "      - name: Classify changed paths\n",
+      `      - name: Poison classifier command lookup
+        run: |
+          mkdir -p .fake-bin
+          echo .fake-bin >> "$GITHUB_PATH"
+      - name: Classify changed paths
+`,
+    );
+    const workflowRunDefaults = source.replace(
+      "permissions:\n",
+      `defaults:\n  run:\n    shell: node -e "process.exit(0)" {0}\n\npermissions:\n`,
+    );
+    const quotedWorkflowRunDefaults = source.replace(
+      "permissions:\n",
+      `"defaults":\n  run:\n    shell: node -e "process.exit(0)" {0}\n\npermissions:\n`,
+    );
+    const workflowShellEnvironment = source.replace(
+      "permissions:\n",
+      "env:\n  BASH_ENV: ./tools/governance-noop.sh\n\npermissions:\n",
+    );
+    const quotedWorkflowShellEnvironment = source.replace(
+      "permissions:\n",
+      `"env":\n  BASH_ENV: ./tools/governance-noop.sh\n\npermissions:\n`,
+    );
+    const governancePoisonedByPriorRun = source.replace(
+      "      - name: Validate capability index\n",
+      `      - name: Poison later command lookup\n        run: |\n          mkdir -p .fake-bin\n          echo .fake-bin >> "$GITHUB_PATH"\n      - name: Validate capability index\n`,
+    );
+    const retainedOnlyAsPrintedText = source.replace(requiredCommand, `echo '${requiredCommand}'`);
+    const retainedOnlyInHereDocument = source
+      .replace(requiredCommand, "true")
+      .replace(
+        "      - name: Validate repository memory\n",
+        `      - name: Retain a non-executed here-document\n        run: |\n          cat <<'CAPABILITY_CHECK'\n          ${requiredInvocation}\n          CAPABILITY_CHECK\n      - name: Validate repository memory\n`,
+      );
+    for (const weakened of [
+      movedOutsideGovernance,
+      movedIntoSkippedIntermediateJob,
+      retainedOnlyAsGovernanceComment,
+      retainedOnlyAsGovernanceEnvironment,
+      retainedOnlyInSuppressedGovernanceStep,
+      retainedOnlyInConditionalGovernanceStep,
+      retainedOnlyInNonBlockingGovernanceStep,
+      retainedOnlyInQuotedConditionalGovernanceStep,
+      retainedOnlyInConditionalGovernanceJob,
+      retainedOnlyInNonBlockingGovernanceJob,
+      retainedOnlyInQuotedNonBlockingGovernanceJob,
+      retainedOnlyInTrailingConditionalGovernanceJob,
+      retainedOnlyInQuotedTrailingConditionalGovernanceJob,
+      governanceDependsOnConditionalQuality,
+      governanceContainerEnvironment,
+      conditionalClassifier,
+      quotedConditionalClassifier,
+      nonBlockingClassifier,
+      dependentClassifier,
+      emptyMatrixClassifier,
+      classifierPoisonedByPriorRun,
+      workflowRunDefaults,
+      quotedWorkflowRunDefaults,
+      workflowShellEnvironment,
+      quotedWorkflowShellEnvironment,
+      governancePoisonedByPriorRun,
+      retainedOnlyAsPrintedText,
+      retainedOnlyInHereDocument,
+    ]) {
+      assert.ok(
+        validateWorkflowPolicy(weakened).some(
+          ({ detail, rule }) => rule === "commands" && detail.includes("capability-index"),
+        ),
+        requiredCommand,
+      );
+    }
+  }
 });
 
 test("rejects missing or unbounded Docker-only build and metric verification", async () => {

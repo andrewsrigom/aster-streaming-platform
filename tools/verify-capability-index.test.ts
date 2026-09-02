@@ -1,0 +1,479 @@
+import assert from "node:assert/strict";
+import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import test from "node:test";
+
+import {
+  analyzeCapabilityIndex,
+  CAPABILITY_INDEX_COLUMNS,
+  CAPABILITY_INDEX_ROWS,
+  scanCapabilityIndex,
+} from "./verify-capability-index.ts";
+
+function validIndex(): string {
+  const rows = CAPABILITY_INDEX_ROWS.map(({ capability, id, owner, status, targets }) => {
+    const links = (column: keyof typeof targets): string =>
+      targets[column]
+        .map((target, index) => {
+          const label =
+            column === "Requirement"
+              ? (target.split("#", 2)[1]?.toUpperCase() ?? "")
+              : `${column} ${index + 1}`;
+          return `[${label}](${target})`;
+        })
+        .join(", ");
+    return `| ${id} | ${capability} | ${owner} | ${links("Requirement")} | ${status} | ${links("Implementation")} | ${links("Adverse test")} | ${links("Evidence")} | ${links("Operations")} |`;
+  });
+  return [
+    "# Capability Index",
+    "",
+    "## Capability-to-proof matrix",
+    "",
+    `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`,
+    `| ${CAPABILITY_INDEX_COLUMNS.map(() => "---").join(" | ")} |`,
+    ...rows,
+    "",
+  ].join("\n");
+}
+
+test("accepts the exact bounded capability set with linked proof columns", () => {
+  const report = analyzeCapabilityIndex(validIndex());
+  assert.equal(report.rows, CAPABILITY_INDEX_ROWS.length);
+  assert.deepEqual(report.violations, []);
+});
+
+test("rejects missing links and non-authoritative owner or status vocabulary", () => {
+  const source = validIndex()
+    .replace(
+      "| catalog | Rights-aware title lifecycle | Catalog |",
+      "| catalog | Rights-aware title lifecycle | Search team |",
+    )
+    .replace(
+      "| released | [Implementation 1](../../services/identity/src/application/profiles.ts)",
+      "| deployed | [Implementation 1](https://example.com/source.ts)",
+    );
+  const report = analyzeCapabilityIndex(source);
+  const rules = report.violations.map(({ rule }) => rule);
+  assert.ok(rules.includes("invalid-status"));
+  assert.ok(rules.includes("missing-link"));
+  assert.ok(rules.includes("invalid-link"));
+  assert.ok(rules.includes("invalid-owner"));
+});
+
+test("rejects a misleading displayed capability name", () => {
+  const source = validIndex().replace(
+    "| identity-profiles | Profile ownership and lifecycle |",
+    "| identity-profiles | Unrelated account behavior |",
+  );
+  const report = analyzeCapabilityIndex(source);
+  assert.ok(
+    report.violations.some(
+      ({ detail, rule }) => rule === "invalid-capability" && detail.includes("identity-profiles"),
+    ),
+  );
+});
+
+test("rejects a misleading displayed requirement label", () => {
+  const source = validIndex().replace("[P13-R07]", "[P99-R99]");
+  const report = analyzeCapabilityIndex(source);
+  assert.ok(
+    report.violations.some(
+      ({ detail, rule }) =>
+        rule === "invalid-requirement-label" && detail.includes("router-graphql"),
+    ),
+  );
+});
+
+test("rejects reviewed links rendered as inline code", () => {
+  const link = "[Operations 1](../../services/identity/README.md)";
+  for (const delimiter of ["`", "``"] as const) {
+    const report = analyzeCapabilityIndex(
+      validIndex().replace(link, `${delimiter}${link}${delimiter}`),
+    );
+    assert.ok(
+      report.violations.some(
+        ({ detail, rule }) =>
+          rule === "invalid-link" &&
+          detail.includes("identity-profiles") &&
+          detail.includes("Operations"),
+      ),
+      delimiter,
+    );
+    assert.ok(
+      report.violations.some(
+        ({ detail, rule }) => rule === "missing-link" && detail.includes("Operations"),
+      ),
+      delimiter,
+    );
+  }
+});
+
+test("rejects escaped links and images as interactive proof destinations", () => {
+  const link = "[Operations 1](../../services/identity/README.md)";
+  for (const replacement of [
+    `\\${link}`,
+    link.replace("]", "\\]"),
+    link.replace("](", "]\\("),
+    link.replace(")", "\\)"),
+    `!${link}`,
+  ]) {
+    const report = analyzeCapabilityIndex(validIndex().replace(link, replacement));
+    assert.ok(
+      report.violations.some(
+        ({ detail, rule }) =>
+          rule === "invalid-link" &&
+          detail.includes("identity-profiles") &&
+          detail.includes("Operations"),
+      ),
+      replacement,
+    );
+    assert.ok(
+      report.violations.some(
+        ({ detail, rule }) => rule === "missing-link" && detail.includes("Operations"),
+      ),
+      replacement,
+    );
+  }
+});
+
+test("rejects reviewed link syntax hidden inside inline HTML attributes", () => {
+  const link = "[P02-R03](../specs/phase-02-identity-profiles.md#p02-r03)";
+  for (const replacement of [
+    `<span title="${link}"></span>`,
+    `<?hidden ${link} ?>`,
+    `<!HIDDEN ${link}>`,
+    `<![CDATA[${link}]]>`,
+  ]) {
+    const hidden = validIndex().replace(link, replacement);
+    const report = analyzeCapabilityIndex(hidden);
+    assert.ok(
+      report.violations.some(({ rule }) => rule === "invalid-link"),
+      replacement,
+    );
+  }
+});
+
+test("rejects a reviewed destination hidden inside another link title", () => {
+  const link = "[Implementation 1](../../services/identity/src/application/profiles.ts)";
+  const hidden = validIndex().replace(link, `[outer](<../../README.md> "${link}")`);
+  const report = analyzeCapabilityIndex(hidden);
+  assert.ok(report.violations.some(({ rule }) => rule === "invalid-link"));
+});
+
+test("rejects an existing but unrelated destination in each traceability role", () => {
+  for (const column of [
+    "Requirement",
+    "Implementation",
+    "Adverse test",
+    "Evidence",
+    "Operations",
+  ] as const) {
+    const expected = CAPABILITY_INDEX_ROWS[0].targets[column][0];
+    const unrelated = CAPABILITY_INDEX_ROWS[1].targets[column][0];
+    assert.ok(expected);
+    assert.ok(unrelated);
+    const report = analyzeCapabilityIndex(validIndex().replace(expected, unrelated));
+    assert.ok(
+      report.violations.some(
+        ({ detail, rule }) =>
+          rule === "invalid-link" &&
+          detail.includes("identity-profiles") &&
+          detail.includes(column),
+      ),
+      column,
+    );
+  }
+});
+
+test("rejects duplicate, missing, unexpected, and reordered capability IDs", () => {
+  const source = validIndex()
+    .replace(
+      "| catalog | Rights-aware title lifecycle",
+      "| identity-profiles | Rights-aware title lifecycle",
+    )
+    .replace(
+      "| playback | Owner-authoritative playback sessions",
+      "| unknown-capability | Owner-authoritative playback sessions",
+    );
+  const report = analyzeCapabilityIndex(source);
+  const rules = report.violations.map(({ rule }) => rule);
+  assert.ok(rules.includes("duplicate-id"));
+  assert.ok(rules.includes("unexpected-id"));
+  assert.ok(rules.includes("wrong-order"));
+  assert.equal(rules.filter((rule) => rule === "missing-id").length, 2);
+});
+
+test("rejects a changed table contract and oversized input", () => {
+  const invalidHeader = analyzeCapabilityIndex(
+    validIndex().replace("| Operations |", "| Runbook |"),
+  );
+  assert.equal(invalidHeader.violations[0]?.rule, "invalid-header");
+
+  const oversized = analyzeCapabilityIndex(`|${"x".repeat(200_001)}|`);
+  assert.equal(oversized.violations[0]?.rule, "source-limit");
+});
+
+test("rejects a capability table hidden in a fence or HTML comment", () => {
+  for (const hidden of [
+    `# Capability Index\n\n\`\`\`markdown\n${validIndex()}\`\`\`\n`,
+    `# Capability Index\n\n<!--\n${validIndex()}-->\n`,
+  ]) {
+    const report = analyzeCapabilityIndex(hidden);
+    assert.equal(report.rows, 0);
+    assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+  }
+});
+
+test("rejects a capability table inside a list-contained fence", () => {
+  const nested = validIndex()
+    .split("\n")
+    .map((line) => `  ${line}`)
+    .join("\n");
+  const report = analyzeCapabilityIndex(`# Hidden matrix\n\n- \`\`\`markdown\n${nested}  \`\`\`\n`);
+  assert.equal(report.rows, 0);
+  assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
+test("requires a blank block boundary before the capability table", () => {
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  const report = analyzeCapabilityIndex(
+    validIndex().replace(`\n\n${header}`, `\nprose\n${header}`),
+  );
+  assert.equal(report.rows, 0);
+  assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
+test("discards the complete source line for a CommonMark HTML-comment block", () => {
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  const hidden = source.replace(header, `<!-- hidden -->${header}`);
+  const report = analyzeCapabilityIndex(hidden);
+  assert.equal(report.rows, 0);
+  assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
+test("rejects a capability table rendered as indented code", () => {
+  const hidden = validIndex().replace(/^\|/gmu, "    |");
+  const report = analyzeCapabilityIndex(hidden);
+  assert.equal(report.rows, 0);
+  assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
+test("rejects a capability table inside a raw HTML block", () => {
+  const hidden = `# Capability Index\n\n<pre>\n${validIndex()}</pre>\n`;
+  const report = analyzeCapabilityIndex(hidden);
+  assert.equal(report.rows, 0);
+  assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
+test("rejects a capability table after every CommonMark type-6 block tag", () => {
+  const tags = [
+    "address",
+    "article",
+    "aside",
+    "base",
+    "basefont",
+    "blockquote",
+    "body",
+    "caption",
+    "center",
+    "col",
+    "colgroup",
+    "dd",
+    "details",
+    "dialog",
+    "dir",
+    "div",
+    "dl",
+    "dt",
+    "fieldset",
+    "figcaption",
+    "figure",
+    "footer",
+    "form",
+    "frame",
+    "frameset",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "head",
+    "header",
+    "hr",
+    "html",
+    "iframe",
+    "legend",
+    "li",
+    "link",
+    "main",
+    "menu",
+    "menuitem",
+    "nav",
+    "noframes",
+    "ol",
+    "optgroup",
+    "option",
+    "p",
+    "param",
+    "search",
+    "section",
+    "summary",
+    "table",
+    "tbody",
+    "td",
+    "tfoot",
+    "th",
+    "thead",
+    "title",
+    "tr",
+    "track",
+    "ul",
+  ];
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  for (const tag of tags) {
+    for (const opener of [`<${tag}>`, `</${tag}> hidden`]) {
+      const hidden = source.replace(header, `${opener}\n${header}`);
+      const report = analyzeCapabilityIndex(hidden);
+      assert.equal(report.rows, 0, opener);
+      assert.ok(
+        report.violations.some(({ rule }) => rule === "missing-table"),
+        opener,
+      );
+    }
+  }
+});
+
+test("keeps a type-6 raw HTML block open across a comment-only line", () => {
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  const hidden = source.replace(header, `<div>\n<!-- still inside raw HTML -->\n${header}`);
+  const report = analyzeCapabilityIndex(hidden);
+  assert.equal(report.rows, 0);
+  assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
+test("rejects a capability table inside an HTML container after a raw-block boundary", () => {
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  const lastRow = source.split("\n").find((line) => line.startsWith("| repository-workflows |"));
+  assert.ok(lastRow);
+  for (const opening of ["<div hidden>", '<span aria-hidden="true">'] as const) {
+    const hidden = source
+      .replace(header, `${opening}\n\n${header}`)
+      .replace(lastRow, `${lastRow}\n${opening.startsWith("<div") ? "</div>" : "</span>"}`);
+    const report = analyzeCapabilityIndex(hidden);
+    assert.equal(report.rows, 0, opening);
+    assert.ok(
+      report.violations.some(({ rule }) => rule === "missing-table"),
+      opening,
+    );
+  }
+});
+
+test("ignores apparent HTML closers that Markdown renders as text", () => {
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  const lastRow = source.split("\n").find((line) => line.startsWith("| repository-workflows |"));
+  assert.ok(lastRow);
+  for (const apparentCloser of [
+    "`</div>`",
+    "`\n</div>\n`",
+    "```\n</div>\n```",
+    "~~~\n</div>\n~~~",
+    "\\</div>",
+    "    </div>",
+    "[close](</div>)",
+  ] as const) {
+    const hidden = source
+      .replace(header, `<div hidden>\n\n${apparentCloser}\n\n${header}`)
+      .replace(lastRow, `${lastRow}\n</div>`);
+    const report = analyzeCapabilityIndex(hidden);
+    assert.equal(report.rows, 0, apparentCloser);
+    assert.ok(
+      report.violations.some(({ rule }) => rule === "missing-table"),
+      apparentCloser,
+    );
+  }
+});
+
+test("accepts the root capability table after an HTML container closes", () => {
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  for (const closedContainer of ["<div hidden>\n</div>", "<div hidden></div>"] as const) {
+    const report = analyzeCapabilityIndex(
+      source.replace(header, `${closedContainer}\n\n${header}`),
+    );
+    assert.equal(report.rows, CAPABILITY_INDEX_ROWS.length, closedContainer);
+    assert.deepEqual(report.violations, [], closedContainer);
+  }
+});
+
+test("rejects a capability table inside an arbitrary CommonMark HTML block", () => {
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  const lastRow = source.split("\n").find((line) => line.startsWith("| repository-workflows |"));
+  assert.ok(lastRow);
+  const hidden = source
+    .replace(header, `<span>\n${header}`)
+    .replace(lastRow, `${lastRow}\n</span>`);
+  const report = analyzeCapabilityIndex(hidden);
+  assert.equal(report.rows, 0);
+  assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
+test("rejects a capability table after a complete HTML tag with quoted greater-than text", () => {
+  const source = validIndex();
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  for (const opening of [`<span title=">">`, `<span title='>'>`]) {
+    const hidden = source.replace(header, `${opening}\n${header}`);
+    const report = analyzeCapabilityIndex(hidden);
+    assert.equal(report.rows, 0, opening);
+    assert.ok(
+      report.violations.some(({ rule }) => rule === "missing-table"),
+      opening,
+    );
+  }
+});
+
+test("rejects a capability table inside every marker-terminated CommonMark HTML block", () => {
+  for (const [opening, closing] of [
+    ["<?hide", "?>"],
+    ["<!HIDE", ">"],
+    ["<![CDATA[", "]]>"],
+  ] as const) {
+    const hidden = `# Capability Index\n\n${opening}\n${validIndex()}${closing}\n`;
+    const report = analyzeCapabilityIndex(hidden);
+    assert.equal(report.rows, 0, opening);
+    assert.ok(
+      report.violations.some(({ rule }) => rule === "missing-table"),
+      opening,
+    );
+  }
+});
+
+test("reads the canonical path from an explicit repository root", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "aster-capability-index-"));
+  context.after(async () => rm(root, { force: true, recursive: true }));
+  await mkdir(join(root, "docs", "00-start-here"), { recursive: true });
+  await writeFile(join(root, "docs", "00-start-here", "CAPABILITY_INDEX.md"), validIndex());
+
+  const report = await scanCapabilityIndex(root);
+  assert.equal(report.rows, CAPABILITY_INDEX_ROWS.length);
+  assert.deepEqual(report.violations, []);
+});
+
+test("rejects malformed UTF-8 at the canonical path", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "aster-capability-encoding-"));
+  context.after(async () => rm(root, { force: true, recursive: true }));
+  await mkdir(join(root, "docs", "00-start-here"), { recursive: true });
+  await writeFile(
+    join(root, "docs", "00-start-here", "CAPABILITY_INDEX.md"),
+    Buffer.from([0xc3, 0x28]),
+  );
+
+  await assert.rejects(scanCapabilityIndex(root), /must be valid UTF-8/u);
+});

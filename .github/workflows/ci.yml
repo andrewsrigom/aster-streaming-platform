@@ -55,10 +55,15 @@ jobs:
         with:
           node-version: 24.19.0
           package-manager-cache: false
+      - name: Validate capability index
+        run: node ./tools/verify-capability-index.ts
+      - name: Test capability index
+        run: node --test ./tools/verify-capability-index.test.ts
       - name: Validate repository memory
         run: node ./tools/verify-ai-state.ts
       - name: Validate documentation
-        run: node ./tools/verify-documentation.ts
+        run: |
+          node ./tools/verify-documentation.ts
       - name: Validate public contribution contract
         run: node ./tools/verify-community-files.ts
       - name: Scan tracked files for secrets

@@ -62,6 +62,227 @@ function addRequirement(
   }
 }
 
+function workflowJobSource(source: string, jobName: string): string {
+  const lines = source.replace(/\r\n?/gu, "\n").split("\n");
+  const start = lines.findIndex((line) => line === `  ${jobName}:`);
+  if (start < 0) {
+    return "";
+  }
+  const relativeEnd = lines
+    .slice(start + 1)
+    .findIndex((line) => /^ {2}[A-Za-z0-9_-]+:\s*$/u.test(line));
+  const end = relativeEnd < 0 ? lines.length : start + 1 + relativeEnd;
+  return lines.slice(start + 1, end).join("\n");
+}
+
+function uncommentedYamlValue(value: string): string {
+  return value.replace(/\s+#.*$/u, "").trim();
+}
+
+function yamlKey(value: string): string | undefined {
+  const normalized = uncommentedYamlValue(value).replace(/^-\s+/u, "");
+  const match =
+    /^(?:"(?<double>[A-Za-z0-9_-]+)"|'(?<single>[A-Za-z0-9_-]+)'|(?<plain>[A-Za-z0-9_-]+))\s*:/u.exec(
+      normalized,
+    );
+  return match?.groups?.["double"] ?? match?.groups?.["single"] ?? match?.groups?.["plain"];
+}
+
+function hasTopLevelYamlKey(source: string, key: string): boolean {
+  return source
+    .replace(/\r\n?/gu, "\n")
+    .split("\n")
+    .some((line) => /^\S/u.test(line) && yamlKey(line) === key);
+}
+
+function hasExactJobKeys(jobSource: string, expected: readonly string[]): boolean {
+  if (!jobSource) {
+    return false;
+  }
+  const actual = jobSource
+    .replace(/\r\n?/gu, "\n")
+    .split("\n")
+    .filter((line) => /^ {4}\S/u.test(line))
+    .map((line) => yamlKey(line));
+  return actual.length === expected.length && actual.every((key, index) => key === expected[index]);
+}
+
+function hasExactJobRunner(jobSource: string, expected: string): boolean {
+  return jobSource
+    .replace(/\r\n?/gu, "\n")
+    .split("\n")
+    .some(
+      (line) =>
+        /^ {4}runs-on:/u.test(line) &&
+        uncommentedYamlValue(line.slice("    runs-on:".length)) === expected,
+    );
+}
+
+function hasProtectedCapabilityPrelude(jobSource: string): boolean {
+  if (!hasExactJobKeys(jobSource, ["name", "needs", "runs-on", "steps"])) {
+    return false;
+  }
+  const stepsStart = jobSource.indexOf("    steps:\n");
+  if (stepsStart < 0) {
+    return false;
+  }
+  const expected = `    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up exact Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.19.0
+          package-manager-cache: false
+      - name: Validate capability index
+        run: node ./tools/verify-capability-index.ts
+      - name: Test capability index
+        run: node --test ./tools/verify-capability-index.test.ts
+`;
+  return jobSource.slice(stepsStart).startsWith(expected);
+}
+
+function executableWorkflowSteps(jobSource: string): string[] {
+  const lines = jobSource.replace(/\r\n?/gu, "\n").split("\n");
+  const stepsStart = lines.findIndex((line) => line === "    steps:");
+  if (stepsStart < 0) {
+    return [];
+  }
+  const unsafeJobKeys = new Set(["continue-on-error", "defaults", "env", "if"]);
+  if (lines.some((line) => /^ {4}\S/u.test(line) && unsafeJobKeys.has(yamlKey(line) ?? ""))) {
+    return [];
+  }
+
+  const stepStarts = lines
+    .map((line, index) => ({ index, isStep: index > stepsStart && /^ {6}-\s+/u.test(line) }))
+    .filter(({ isStep }) => isStep)
+    .map(({ index }) => index);
+  const commands: string[] = [];
+  for (const [stepIndex, start] of stepStarts.entries()) {
+    const end = stepStarts[stepIndex + 1] ?? lines.length;
+    const step = lines.slice(start, end);
+    const unsafeStepKeys = new Set([
+      "continue-on-error",
+      "env",
+      "if",
+      "shell",
+      "working-directory",
+    ]);
+    if (step.some((line) => unsafeStepKeys.has(yamlKey(line) ?? ""))) {
+      continue;
+    }
+
+    const runIndex = step.findIndex(
+      (line) => /^ {6}-\s+run:/u.test(line) || /^ {8}run:/u.test(line),
+    );
+    if (runIndex < 0) {
+      continue;
+    }
+    const runLine = step[runIndex] ?? "";
+    const runMatch = /^(?<indent> {6}-\s+| {8})run:\s*(?<value>.*)$/u.exec(runLine);
+    const value = uncommentedYamlValue(runMatch?.groups?.["value"] ?? "");
+    if (!/^[>|][+-]?$/u.test(value)) {
+      commands.push(value);
+      continue;
+    }
+
+    const runIndent = runLine.search(/\S/u);
+    const blockLines: string[] = [];
+    for (const line of step.slice(runIndex + 1)) {
+      const contentIndent = line.search(/\S/u);
+      if (contentIndent >= 0 && contentIndent <= runIndent) {
+        break;
+      }
+      const command = uncommentedYamlValue(line);
+      if (command) {
+        blockLines.push(command);
+      }
+    }
+    if (value.startsWith(">")) {
+      commands.push(blockLines.join(" "));
+    } else {
+      commands.push(blockLines.join("\n"));
+    }
+  }
+  return commands;
+}
+
+function hasExactJobDependency(jobSource: string, dependency: string): boolean {
+  const dependencyLines = jobSource
+    .replace(/\r\n?/gu, "\n")
+    .split("\n")
+    .filter((line) => /^ {4}\S/u.test(line) && yamlKey(line) === "needs");
+  if (dependencyLines.length !== 1) {
+    return false;
+  }
+  const normalized = uncommentedYamlValue(dependencyLines[0] ?? "");
+  const separator = normalized.indexOf(":");
+  return separator >= 0 && normalized.slice(separator + 1).trim() === dependency;
+}
+
+function hasProtectedClassifier(jobSource: string): boolean {
+  if (!hasExactJobKeys(jobSource, ["name", "runs-on", "outputs", "steps"])) {
+    return false;
+  }
+  return (
+    jobSource ===
+    [
+      "    name: Classify change",
+      "    runs-on: ubuntu-24.04",
+      "    outputs:",
+      "      full: ${{ steps.change.outputs.full }}",
+      "      platform: ${{ steps.change.outputs.platform }}",
+      "      diagnostics: ${{ steps.change.outputs.diagnostics }}",
+      "      classification: ${{ steps.change.outputs.classification }}",
+      "    steps:",
+      "      - name: Check out repository history",
+      "        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1",
+      "        with:",
+      "          fetch-depth: 0",
+      "          persist-credentials: false",
+      "      - name: Set up exact Node.js",
+      "        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0",
+      "        with:",
+      "          node-version: 24.19.0",
+      "          package-manager-cache: false",
+      "      - name: Classify changed paths",
+      "        id: change",
+      "        env:",
+      "          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}",
+      "          HEAD_SHA: ${{ github.sha }}",
+      '        run: node ./tools/classify-ci-change.ts --base "$BASE_SHA" --head "$HEAD_SHA"',
+      "",
+    ].join("\n")
+  );
+}
+
+function hasStandaloneCapabilityCheck(steps: readonly string[]): boolean {
+  const required = "node ./tools/verify-capability-index.ts";
+  return steps.some((step) => {
+    const commands = step.split("\n").filter(Boolean);
+    return (
+      commands.includes(required) &&
+      commands.every((command) => /^node \.\/tools\/[A-Za-z0-9./-]+\.(?:mjs|ts)$/u.test(command))
+    );
+  });
+}
+
+function hasStandaloneCapabilityTests(steps: readonly string[]): boolean {
+  return steps.some((step) => {
+    const tokens = step.split(/\s+/u).filter(Boolean);
+    return (
+      tokens[0] === "node" &&
+      tokens[1] === "--test" &&
+      tokens.slice(2).includes("./tools/verify-capability-index.test.ts") &&
+      tokens
+        .slice(2)
+        .every((token) => /^\.\/tools\/[A-Za-z0-9./*-]+\.test\.(?:mjs|ts)$/u.test(token))
+    );
+  });
+}
+
 export function validateWorkflowPolicy(
   source: string,
   file = ".github/workflows/ci.yml",
@@ -182,22 +403,19 @@ export function validateWorkflowPolicy(
       rule: "credentials",
     });
   }
-  if (/runs-on:\s*ubuntu-latest/u.test(source)) {
+  const runnerValues = source
+    .replace(/\r\n?/gu, "\n")
+    .split("\n")
+    .filter((line) => /^ {4}runs-on:/u.test(line))
+    .map((line) => uncommentedYamlValue(line.slice("    runs-on:".length)));
+  if (runnerValues.length === 0 || runnerValues.some((value) => value !== "ubuntu-24.04")) {
     violations.push({
-      detail: "runner image must use the explicit ubuntu-24.04 label",
+      detail: "every CI job must use the reviewed ubuntu-24.04 runner",
       file,
       line: 1,
       rule: "runner",
     });
   }
-  addRequirement(
-    violations,
-    file,
-    source,
-    "runner",
-    /runs-on:\s*ubuntu-24\.04/u,
-    "ubuntu-24.04 runner is required",
-  );
   addRequirement(
     violations,
     file,
@@ -222,6 +440,80 @@ export function validateWorkflowPolicy(
     /package-manager-cache:\s*false/u,
     "implicit setup-node caching must be disabled",
   );
+  const classifySource = workflowJobSource(source, "classify");
+  const governanceSource = workflowJobSource(source, "governance");
+  const governanceSteps = executableWorkflowSteps(governanceSource);
+  if (!hasProtectedClassifier(classifySource)) {
+    violations.push({
+      detail: "capability-index classifier must match the protected job and step contract",
+      file,
+      line: 1,
+      rule: "commands",
+    });
+  }
+  if (!hasProtectedCapabilityPrelude(governanceSource)) {
+    violations.push({
+      detail: "capability-index commands must precede mutable governance steps",
+      file,
+      line: 1,
+      rule: "commands",
+    });
+  }
+  for (const job of [
+    "classify",
+    "governance",
+    "quality",
+    "dependency-review",
+    "platform",
+    "required",
+  ] as const) {
+    if (!hasExactJobRunner(workflowJobSource(source, job), "ubuntu-24.04")) {
+      violations.push({
+        detail: `${job} must use the reviewed ubuntu-24.04 runner`,
+        file,
+        line: 1,
+        rule: "runner",
+      });
+    }
+  }
+  if (hasTopLevelYamlKey(source, "defaults")) {
+    violations.push({
+      detail: "workflow-level defaults can bypass capability-index governance commands",
+      file,
+      line: 1,
+      rule: "commands",
+    });
+  }
+  if (hasTopLevelYamlKey(source, "env")) {
+    violations.push({
+      detail: "workflow-level environment can bypass capability-index governance commands",
+      file,
+      line: 1,
+      rule: "commands",
+    });
+  }
+  if (!hasExactJobDependency(governanceSource, "classify")) {
+    violations.push({
+      detail: "capability-index governance job must depend only on classify",
+      file,
+      line: 1,
+      rule: "commands",
+    });
+  }
+  for (const [present, detail] of [
+    [
+      hasStandaloneCapabilityCheck(governanceSteps),
+      "capability-index check is required in the always-run governance job",
+    ],
+    [
+      hasStandaloneCapabilityTests(governanceSteps),
+      "capability-index policy tests are required in the always-run governance job",
+    ],
+  ] as const) {
+    if (!present) {
+      violations.push({ detail, file, line: 1, rule: "commands" });
+    }
+  }
   for (const [pattern, detail] of [
     [/node \.\/tools\/verify-ai-state\.ts/u, "repository-memory check is required"],
     [/\.\/tools\/verify-ai-state\.test\.ts/u, "repository-memory policy tests are required"],

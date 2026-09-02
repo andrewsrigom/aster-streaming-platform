@@ -68,7 +68,8 @@ tree; exact-main run `33489232182` passed every required job and releases
 Phase13. Item68 final result `7f1dd6c`, tree `b7398a9`, passed protected run
 `33494938005` and clean review. PR58 squash main `e925504` retained that
 tree; exact-main run `33495029876` passed and verifies P14-R13. Item69
-(P14-R14) is the next ready outcome.
+(P14-R14) is active from PR59 closeout main `56acfb7`, which passed exact-main
+run `33496347713`.
 
 Phase12 final
 source `b646e496d0946262a688f34a118a896f6c40ebda`, tree
