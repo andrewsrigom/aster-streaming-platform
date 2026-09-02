@@ -11,9 +11,10 @@ reference track P14-R13–R18 is active under ADR-0048. Hosted P14-R01–R12 rem
 planned and requires explicit owner authorization for providers, credentials,
 paid resources, and public endpoints.
 
-Item69/P14-R14 is verified. Item70/P14-R15 is the sole `IN_PROGRESS` item on
-`docs/readability-guardrails`, worktree `/tmp/aster-readability`, from exact
-PR60 squash main `b3f409b`.
+Items69/P14-R14 and70/P14-R15 are verified. Item71/P14-R16 is the sole
+`IN_PROGRESS` item on `refactor/catalog-playback-readability`, worktree
+`/tmp/aster-readability-catalog-playback`, from exact PR61 squash main
+`3858bcb`.
 
 ## Verified
 
@@ -26,6 +27,9 @@ PR60 squash main `b3f409b`.
 - Exact-main run `33598493566` passed on attempt 2. Attempt 1's unchanged
   Catalog TraceQL diagnostic search timed out and completed clean project-scoped
   cleanup; the failed-only rerun passed Local platform and the aggregate gate.
+- Item70 final head `6de5a1d`, tree `448be36`, passed protected workflow
+  `33602958653`; all three discussions are resolved. PR61 squash main `3858bcb`
+  retains the exact tree, and exact-main workflow `33603027919` passed.
 
 The authoritative Phase14 chronology is in
 [`evidence/phase-14/README.md`](../evidence/phase-14/README.md). No hosted
@@ -33,39 +37,32 @@ deployment, production capacity, or broader media rights are claimed.
 
 ## Current work
 
-Item70 defines repository-owned readability guardrails and a finite inventory
-before product code changes. The draft standard separates executable formatting,
-lint, type, unused-code, architecture, and test controls from reviewable rules
-for domain names, control-flow phases, layout, comments, fixtures, and examples.
+Item71 closes only the two P0 inventory findings owned by Catalog and Playback.
+The Catalog slice now names command decisions, lifecycle conversion, transaction
+execution, takedown-capacity predicates, and publication effects. Concrete
+helpers separate draft content, rights withdrawal, rights review, and
+publication changes; the transaction exposes validation, replay, capacity,
+decision, durable-write, event, receipt, and publication-revalidation phases.
+The Playback slice now names dependency settlement and the point after which a
+failed session write is indeterminate, with explicit failure-result branches.
 
-The inventory contains nine concrete findings across Catalog, Playback,
-Identity, Engagement, Discovery, Router, Web, repository tooling, and reading
-guidance. Every finding names its reader problem, owner, preserved requirements,
-characterization proof, priority, and owning follow-up item. File size and
-personal style are not acceptance criteria.
+The work is behavior-preserving. Catalog remains the owner of titles, rights,
+publication, audits, receipts, and outbox events. Playback remains the owner of
+sessions and performs the same one bounded Catalog lookup before one durable
+write. Public contracts, schemas, events, persistence, cache, media, telemetry,
+dependencies, and deployment remain unchanged.
 
-Focused documentation tests pass 37/37 and repository-memory tests pass 13/13.
-Documentation validation covers 251 documents, 2,901 headings, 1,703 links,
-four supported status claims, and all eleven capability rows. Changed-file
-formatting and diff checks pass. Source checkpoint `66db1ce`, tree `754cc39`,
-passes the affected-scope candidate gate 7/7 with zero cached tasks. Protected
-PR workflow `33601388742` passed on published head `1e40ce3`. The initial review
-found two repository-memory defects: an already-completed commit instruction and
-a non-canonical maturity label. Both are corrected locally. Confirmation review
-found one remaining status-grouping defect, now corrected locally. Final
-correction source `6668421` passed protected workflow `33602708481`, and all
-three discussions are resolved. Result-checkpoint publication, merge, and
-exact-main acceptance remain.
-
-No source, GraphQL, schema, persistence, event, cache, media, runtime, telemetry,
-dependency, or deployment behavior changes in item70.
+The pre-edit and post-edit linked characterization suite passes 15/15. The
+complete Catalog package passes 249 tests, Playback passes 42 tests, both
+affected builds and typechecks pass, changed-file lint passes, and architecture
+validation reports zero violations. The affected-scope candidate gate remains.
 
 ## Ordered reference-quality runway
 
 1. item68 — P14-R13 reference-first runway: verified;
 2. item69 — P14-R14 capability index: verified;
-3. item70 — P14-R15 readability guardrails and inventory: active;
-4. item71 — P14-R16 Catalog and Playback reading slices;
+3. item70 — P14-R15 readability guardrails and inventory: verified;
+4. item71 — P14-R16 Catalog and Playback reading slices: active;
 5. item72 — P14-R16 Identity, Engagement, and Discovery reading slices;
 6. item73 — P14-R16 Router, Web, and tooling reading slices;
 7. item74 — P14-R17 rationale comments, executable examples, and reading paths;
@@ -92,15 +89,10 @@ The released local baseline includes:
 These are local repository claims backed by phase evidence, not hosted or
 commercial-catalog claims.
 
-## Implemented, not verified
-
-- P14-R15 is implemented: the readability standard and bounded inventory exist
-  and their focused checks pass. Verification remains pending until the final
-  protected and exact-main release gates pass.
-
 ## Not implemented
 
-- P14-R16 representative source refactors have not started.
+- P14-R16 is not verified until all owner and cross-cutting slices in items71–73
+  pass their protected and exact-main gates.
 - P14-R17 journey examples and final rationale-comment alignment are planned.
 - P14-R18 fresh-reference acceptance is planned.
 - Hosted P14-R01–R12 remains planned and inactive.
@@ -111,10 +103,11 @@ Use WSL Git and Node.js24.19.0/pnpm11.24.0 from
 `/mnt/c/Users/andre/.cache/aster-node-24.19.0`. Never use a branch beginning
 with `codex/`.
 
-Item70 is documentation-only. Existing PostgreSQL, Redis, broker, browser,
-media, and Docker evidence remains applicable. Repeat heavyweight evidence only
-after a later executable change can affect what it measured. Preserve retained
-data, media, unrelated Docker projects, credentials, and host processes.
+Item71 changes private application names and local control-flow structure only.
+Existing PostgreSQL, Redis, broker, browser, media, and Docker evidence remains
+applicable unless the refactor changes transaction order, dependency work,
+deadlines, contracts, or other behavior that evidence measured. Preserve
+retained data, media, unrelated Docker projects, credentials, and host processes.
 
 ## Current risks
 
@@ -129,6 +122,6 @@ owned whitespace, and explicit preserved behavior.
 
 ## Next outcome
 
-Complete and verify item70/P14-R15: publish the confirmation-review correction,
-merge, verify exact main, then activate item71 for the first behavior-preserving
-Catalog and Playback slice.
+Complete item71/P14-R16: run the affected-scope candidate gate, capture the
+exact source evidence, and publish the two behavior-preserving readability
+slices for protected review.

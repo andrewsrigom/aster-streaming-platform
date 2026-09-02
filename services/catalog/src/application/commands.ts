@@ -26,17 +26,32 @@ import type {
 } from "./operator-ports.js";
 import type { CatalogStoreResult, StoredCatalogTitle } from "./rights-ports.js";
 
-type Change = Readonly<{
+type CatalogCommandChange = Readonly<{
   title: CatalogTitleLifecycle;
   rights?: RightsRecord;
   metadata?: TitleMetadata;
 }>;
-type Outcome = CatalogStoreResult<CatalogCommandResult>;
-const retirement = (kind: CatalogCommandKind): boolean =>
+type CatalogCommandOutcome = CatalogStoreResult<CatalogCommandResult>;
+type DraftContentCommand = CatalogCommand & { readonly kind: "create" | "edit" };
+type RightsWithdrawalCommand = CatalogCommand & { readonly kind: "dispute" | "expire" };
+type RightsReviewCommand = CatalogCommand & { readonly kind: "review" };
+type PublicationCommand = CatalogCommand & {
+  readonly kind: "media-ready" | "publish" | "replace" | "rollback";
+};
+
+const retiresTitle = (kind: CatalogCommandKind): boolean =>
   ["retire", "dispute", "expire"].includes(kind);
-const publishing = (kind: CatalogCommandKind): boolean =>
+const activatesTitlePublication = (kind: CatalogCommandKind): boolean =>
   ["publish", "replace", "rollback"].includes(kind);
-const eventTrace = (ports: CatalogOperatorPorts): Readonly<{ traceparent?: string }> => {
+const changesDraftContent = (command: CatalogCommand): command is DraftContentCommand =>
+  command.kind === "create" || command.kind === "edit";
+const withdrawsRights = (command: CatalogCommand): command is RightsWithdrawalCommand =>
+  command.kind === "dispute" || command.kind === "expire";
+const reviewsRights = (command: CatalogCommand): command is RightsReviewCommand =>
+  command.kind === "review";
+const changesPublication = (command: CatalogCommand): command is PublicationCommand =>
+  ["media-ready", "publish", "replace", "rollback"].includes(command.kind);
+const publicationEventTrace = (ports: CatalogOperatorPorts): Readonly<{ traceparent?: string }> => {
   try {
     const traceparent = ports.traceContext?.()?.traceparent;
     return Object.freeze(catalogTraceparent(traceparent) ? { traceparent } : {});
@@ -44,7 +59,7 @@ const eventTrace = (ports: CatalogOperatorPorts): Readonly<{ traceparent?: strin
     return Object.freeze({});
   }
 };
-const lifecycle = (title: StoredCatalogTitle): CatalogTitleLifecycle => ({
+const toTitleLifecycle = (title: StoredCatalogTitle): CatalogTitleLifecycle => ({
   id: title.id,
   version: title.version,
   state: title.state,
@@ -52,17 +67,22 @@ const lifecycle = (title: StoredCatalogTitle): CatalogTitleLifecycle => ({
   publicationId: title.publicationId,
 });
 
-function transition(
+function applyTitleTransition(
   title: CatalogTitleLifecycle,
   target: TitleState,
   rights: RightsRecord | undefined,
   publication: ValidatedPublicationReference | undefined,
   now: number,
   ports: CatalogOperatorPorts,
-): CatalogStoreResult<Change> {
-  const result = transitionTitle(title, target, { rights, publication, now, policy: ports.policy });
-  if (result.status === "completed") {
-    return { status: "completed", value: { title: result.title } };
+): CatalogStoreResult<CatalogCommandChange> {
+  const transitionResult = transitionTitle(title, target, {
+    rights,
+    publication,
+    now,
+    policy: ports.policy,
+  });
+  if (transitionResult.status === "completed") {
+    return { status: "completed", value: { title: transitionResult.title } };
   }
   const codes = {
     INVALID_INPUT: "invalid_input",
@@ -70,10 +90,10 @@ function transition(
     RIGHTS_NOT_APPROVED: "rights_not_approved",
     MEDIA_NOT_READY: "media_not_ready",
   } as const;
-  return { status: codes[result.code] };
+  return { status: codes[transitionResult.code] };
 }
 
-function reviewedMetadata(
+function applyArtworkRightsReview(
   metadata: TitleMetadata,
   decision: "approve" | "clarify" | "reject",
   actor: CatalogOperator,
@@ -103,48 +123,223 @@ function reviewedMetadata(
   return { ...metadata, artwork: { ...metadata.artwork, rights } };
 }
 
-async function planChange(
+function prepareDraftContentChange(
+  command: DraftContentCommand,
+  storedTitle: StoredCatalogTitle,
+  title: CatalogTitleLifecycle,
+  ports: CatalogOperatorPorts,
+): CatalogStoreResult<CatalogCommandChange> {
+  if (title.state !== "DRAFT") {
+    return { status: "invalid_transition" };
+  }
+
+  const rights = {
+    ...command.rights,
+    id: ports.nextId(),
+    revision: storedTitle.latestRightsRevision + 1,
+  };
+  const metadata =
+    command.metadata.artwork === null
+      ? command.metadata
+      : {
+          ...command.metadata,
+          artwork: {
+            ...command.metadata.artwork,
+            rights: {
+              ...command.metadata.artwork.rights,
+              id: ports.nextId(),
+              revision: rights.revision,
+            },
+          },
+        };
+
+  return {
+    status: "completed",
+    value: { title: { ...title, version: title.version + 1 }, rights, metadata },
+  };
+}
+
+function prepareRightsWithdrawal(
+  command: RightsWithdrawalCommand,
+  title: CatalogTitleLifecycle,
+  latestRights: RightsRecord,
+  actor: CatalogOperator,
+  now: number,
+  ports: CatalogOperatorPorts,
+): CatalogStoreResult<CatalogCommandChange> {
+  if (
+    command.kind === "expire" &&
+    (latestRights.validUntil === null || latestRights.validUntil > now)
+  ) {
+    return { status: "invalid_transition" };
+  }
+
+  const titleRetirement = applyTitleTransition(title, "RETIRED", undefined, undefined, now, ports);
+  if (titleRetirement.status !== "completed") {
+    return titleRetirement;
+  }
+
+  return {
+    status: "completed",
+    value: {
+      ...titleRetirement.value,
+      rights: {
+        ...latestRights,
+        id: ports.nextId(),
+        revision: latestRights.revision + 1,
+        status: command.kind === "dispute" ? "DISPUTED" : "EXPIRED",
+        reviewedAt: now,
+        reviewedBy: actor.id,
+      },
+    },
+  };
+}
+
+function prepareRightsReview(
+  command: RightsReviewCommand,
+  title: CatalogTitleLifecycle,
+  latestRights: RightsRecord,
+  metadata: TitleMetadata,
+  actor: CatalogOperator,
+  now: number,
+  ports: CatalogOperatorPorts,
+): CatalogStoreResult<CatalogCommandChange> {
+  if (title.state !== "DRAFT" || !["DRAFT", "NEEDS_CLARIFICATION"].includes(latestRights.status)) {
+    return { status: "invalid_transition" };
+  }
+
+  const reviewCandidate = {
+    ...latestRights,
+    id: ports.nextId(),
+    revision: latestRights.revision + 1,
+    reviewedBy: actor.id,
+    reviewedAt: now,
+  };
+  const reviewedMetadata = applyArtworkRightsReview(metadata, command.decision, actor, now, ports);
+  if (!reviewedMetadata) {
+    return { status: "rights_not_approved" };
+  }
+
+  if (command.decision !== "approve") {
+    return {
+      status: "completed",
+      value: {
+        title: { ...title, version: title.version + 1 },
+        metadata: reviewedMetadata,
+        rights: {
+          ...reviewCandidate,
+          status: command.decision === "clarify" ? "NEEDS_CLARIFICATION" : "REJECTED",
+        },
+      },
+    };
+  }
+
+  const approvedRights = approveRights(reviewCandidate, now, ports.policy);
+  if (
+    approvedRights.status !== "approved" ||
+    !artworkPublishable(reviewedMetadata, title.id, now, ports.policy)
+  ) {
+    return { status: "rights_not_approved" };
+  }
+
+  const rightsReviewed = applyTitleTransition(
+    title,
+    "RIGHTS_REVIEWED",
+    approvedRights.record,
+    undefined,
+    now,
+    ports,
+  );
+  return rightsReviewed.status === "completed"
+    ? {
+        status: "completed",
+        value: {
+          ...rightsReviewed.value,
+          rights: approvedRights.record,
+          metadata: reviewedMetadata,
+        },
+      }
+    : rightsReviewed;
+}
+
+async function preparePublicationChange(
+  command: PublicationCommand,
+  title: CatalogTitleLifecycle,
+  latestRights: RightsRecord,
+  metadata: TitleMetadata,
+  tx: CatalogWorkflowTransaction,
+  now: number,
+  ports: CatalogOperatorPorts,
+): Promise<CatalogStoreResult<CatalogCommandChange>> {
+  if (
+    !currentApprovedRights(latestRights, now, ports.policy) ||
+    !artworkPublishable(metadata, title.id, now, ports.policy)
+  ) {
+    return { status: "rights_not_approved" };
+  }
+
+  const requestedPublicationId =
+    "publicationId" in command ? command.publicationId : title.publicationId;
+  const requestedPublication =
+    requestedPublicationId === null ? undefined : await tx.findPublication(requestedPublicationId);
+
+  if (command.kind === "replace" || command.kind === "rollback") {
+    const activePublication =
+      title.publicationId === null ? undefined : await tx.findPublication(title.publicationId);
+    const replacement = replaceTitlePublication(title, {
+      rights: latestRights,
+      currentPublication: activePublication,
+      publication: requestedPublication,
+      now,
+      policy: ports.policy,
+    });
+    if (replacement.status === "rejected") {
+      const codes = {
+        INVALID_INPUT: "invalid_input",
+        INVALID_TRANSITION: "invalid_transition",
+        RIGHTS_NOT_APPROVED: "rights_not_approved",
+        MEDIA_NOT_READY: "media_not_ready",
+      } as const;
+      return { status: codes[replacement.code] };
+    }
+    if (
+      command.kind === "rollback" &&
+      !(await tx.wasPublicationActive(title.id, command.publicationId, title.version))
+    ) {
+      return { status: "media_not_ready" };
+    }
+    return { status: "completed", value: { title: replacement.title } };
+  }
+
+  return applyTitleTransition(
+    title,
+    command.kind === "media-ready" ? "MEDIA_READY" : "PUBLISHED",
+    latestRights,
+    requestedPublication,
+    now,
+    ports,
+  );
+}
+
+async function decideCatalogCommandChange(
   command: CatalogCommand,
-  stored: StoredCatalogTitle,
+  storedTitle: StoredCatalogTitle,
   tx: CatalogWorkflowTransaction,
   actor: CatalogOperator,
   now: number,
   ports: CatalogOperatorPorts,
-): Promise<CatalogStoreResult<Change>> {
-  const title = lifecycle(stored);
+): Promise<CatalogStoreResult<CatalogCommandChange>> {
+  const title = toTitleLifecycle(storedTitle);
   if (title.version === 2_147_483_647) {
     return { status: "invalid_input" };
   }
-  if (command.kind === "create" || command.kind === "edit") {
-    if (title.state !== "DRAFT") {
-      return { status: "invalid_transition" };
-    }
-    const rights = {
-      ...command.rights,
-      id: ports.nextId(),
-      revision: stored.latestRightsRevision + 1,
-    };
-    const metadata =
-      command.metadata.artwork === null
-        ? command.metadata
-        : {
-            ...command.metadata,
-            artwork: {
-              ...command.metadata.artwork,
-              rights: {
-                ...command.metadata.artwork.rights,
-                id: ports.nextId(),
-                revision: rights.revision,
-              },
-            },
-          };
-    return {
-      status: "completed",
-      value: { title: { ...title, version: title.version + 1 }, rights, metadata },
-    };
+
+  if (changesDraftContent(command)) {
+    return prepareDraftContentChange(command, storedTitle, title, ports);
   }
+
   if (command.kind === "reopen" || command.kind === "retire") {
-    return transition(
+    return applyTitleTransition(
       title,
       command.kind === "reopen" ? "DRAFT" : "RETIRED",
       undefined,
@@ -153,139 +348,45 @@ async function planChange(
       ports,
     );
   }
-  const latest = (await tx.findRights(title.id, null))?.record;
-  if (!latest || latest.revision !== stored.latestRightsRevision) {
+
+  const latestRights = (await tx.findRights(title.id, null))?.record;
+  if (!latestRights || latestRights.revision !== storedTitle.latestRightsRevision) {
     return { status: "rights_not_approved" };
   }
-  if (command.kind === "dispute" || command.kind === "expire") {
-    if (command.kind === "expire" && (latest.validUntil === null || latest.validUntil > now)) {
-      return { status: "invalid_transition" };
-    }
-    const result = transition(title, "RETIRED", undefined, undefined, now, ports);
-    if (result.status !== "completed") {
-      return result;
-    }
-    return {
-      status: "completed",
-      value: {
-        ...result.value,
-        rights: {
-          ...latest,
-          id: ports.nextId(),
-          revision: latest.revision + 1,
-          status: command.kind === "dispute" ? "DISPUTED" : "EXPIRED",
-          reviewedAt: now,
-          reviewedBy: actor.id,
-        },
-      },
-    };
+
+  if (withdrawsRights(command)) {
+    return prepareRightsWithdrawal(command, title, latestRights, actor, now, ports);
   }
+
   const metadata = await tx.findMetadata(title.id);
   if (!metadata) {
     return { status: "invalid_input" };
   }
-  if (command.kind === "review") {
-    if (title.state !== "DRAFT" || !["DRAFT", "NEEDS_CLARIFICATION"].includes(latest.status)) {
-      return { status: "invalid_transition" };
-    }
-    const candidate = {
-      ...latest,
-      id: ports.nextId(),
-      revision: latest.revision + 1,
-      reviewedBy: actor.id,
-      reviewedAt: now,
-    };
-    const updatedMetadata = reviewedMetadata(metadata, command.decision, actor, now, ports);
-    if (!updatedMetadata) {
-      return { status: "rights_not_approved" };
-    }
-    if (command.decision !== "approve") {
-      return {
-        status: "completed",
-        value: {
-          title: { ...title, version: title.version + 1 },
-          metadata: updatedMetadata,
-          rights: {
-            ...candidate,
-            status: command.decision === "clarify" ? "NEEDS_CLARIFICATION" : "REJECTED",
-          },
-        },
-      };
-    }
-    const approved = approveRights(candidate, now, ports.policy);
-    if (
-      approved.status !== "approved" ||
-      !artworkPublishable(updatedMetadata, title.id, now, ports.policy)
-    ) {
-      return { status: "rights_not_approved" };
-    }
-    const result = transition(title, "RIGHTS_REVIEWED", approved.record, undefined, now, ports);
-    return result.status === "completed"
-      ? {
-          status: "completed",
-          value: { ...result.value, rights: approved.record, metadata: updatedMetadata },
-        }
-      : result;
+
+  if (reviewsRights(command)) {
+    return prepareRightsReview(command, title, latestRights, metadata, actor, now, ports);
   }
-  if (
-    !currentApprovedRights(latest, now, ports.policy) ||
-    !artworkPublishable(metadata, title.id, now, ports.policy)
-  ) {
-    return { status: "rights_not_approved" };
-  }
-  const publicationId = "publicationId" in command ? command.publicationId : title.publicationId;
-  const publication = publicationId === null ? undefined : await tx.findPublication(publicationId);
-  if (command.kind === "replace" || command.kind === "rollback") {
-    const currentPublication =
-      title.publicationId === null ? undefined : await tx.findPublication(title.publicationId);
-    const result = replaceTitlePublication(title, {
-      rights: latest,
-      currentPublication,
-      publication,
-      now,
-      policy: ports.policy,
-    });
-    if (result.status === "rejected") {
-      const codes = {
-        INVALID_INPUT: "invalid_input",
-        INVALID_TRANSITION: "invalid_transition",
-        RIGHTS_NOT_APPROVED: "rights_not_approved",
-        MEDIA_NOT_READY: "media_not_ready",
-      } as const;
-      return { status: codes[result.code] };
-    }
-    if (
-      command.kind === "rollback" &&
-      !(await tx.wasPublicationActive(title.id, command.publicationId, title.version))
-    ) {
-      return { status: "media_not_ready" };
-    }
-    return { status: "completed", value: { title: result.title } };
-  }
-  return transition(
-    title,
-    command.kind === "media-ready" ? "MEDIA_READY" : "PUBLISHED",
-    latest,
-    publication,
-    now,
-    ports,
-  );
+
+  return changesPublication(command)
+    ? preparePublicationChange(command, title, latestRights, metadata, tx, now, ports)
+    : { status: "invalid_input" };
 }
 
 export function createCatalogCommands(ports: CatalogOperatorPorts) {
-  async function execute(
+  async function executeCatalogCommandTransaction(
     tx: CatalogWorkflowTransaction,
     command: CatalogCommand,
     digest: string,
     actor: CatalogOperator,
     request: CatalogCommandRequest,
     legacyDigest: string | undefined,
-  ): Promise<Outcome> {
-    const created = command.kind === "create" ? await tx.createDraft(command.titleId) : false;
-    const title = await tx.lockTitle(command.titleId);
-    if (!title) {
+  ): Promise<CatalogCommandOutcome> {
+    const draftCreated = command.kind === "create" ? await tx.createDraft(command.titleId) : false;
+    const lockedTitle = await tx.lockTitle(command.titleId);
+    if (!lockedTitle) {
       return { status: "not_found" };
     }
+
     const now = ports.now();
     if (!catalogTimestamp(now) || now > 253_402_214_399) {
       return { status: "invalid_input" };
@@ -293,37 +394,49 @@ export function createCatalogCommands(ports: CatalogOperatorPorts) {
     if (ports.authority.authorize(request.credential, now)?.id !== actor.id) {
       return { status: "unauthorized" };
     }
-    await tx.pruneReceipts(title.id, now);
-    const receipt = await tx.findReceipt(title.id, command.mutationId);
-    if (receipt) {
-      return receipt.actorId === actor.id &&
-        (receipt.digest === digest || receipt.digest === legacyDigest) &&
-        receipt.expiresAt > now
-        ? { status: "completed", value: receipt.result }
+
+    await tx.pruneReceipts(lockedTitle.id, now);
+    const existingReceipt = await tx.findReceipt(lockedTitle.id, command.mutationId);
+    if (existingReceipt) {
+      return existingReceipt.actorId === actor.id &&
+        (existingReceipt.digest === digest || existingReceipt.digest === legacyDigest) &&
+        existingReceipt.expiresAt > now
+        ? { status: "completed", value: existingReceipt.result }
         : { status: "conflict" };
     }
+
     if (
-      (command.kind === "create" && !created) ||
-      (command.kind !== "create" && title.version !== command.expectedVersion)
+      (command.kind === "create" && !draftCreated) ||
+      (command.kind !== "create" && lockedTitle.version !== command.expectedVersion)
     ) {
       return { status: "conflict" };
     }
-    const pending = await tx.pendingCounts(title.id);
+
+    const pendingWrites = await tx.pendingCounts(lockedTitle.id);
     // Both resources reserve the final slot; a full replay cache must not prevent takedown.
     if (
-      pending.receipts >= (retirement(command.kind) ? 64 : 63) ||
-      pending.outbox >= (retirement(command.kind) ? 128 : 127)
+      pendingWrites.receipts >= (retiresTitle(command.kind) ? 64 : 63) ||
+      pendingWrites.outbox >= (retiresTitle(command.kind) ? 128 : 127)
     ) {
       return { status: "backpressure" };
     }
-    const change = await planChange(command, title, tx, actor, now, ports);
-    if (change.status !== "completed") {
-      return change;
+
+    const commandChange = await decideCatalogCommandChange(
+      command,
+      lockedTitle,
+      tx,
+      actor,
+      now,
+      ports,
+    );
+    if (commandChange.status !== "completed") {
+      return commandChange;
     }
-    const next = change.value;
+    const nextState = commandChange.value;
+
     if (
-      next.rights &&
-      !(await tx.appendRights(next.rights, title.version, {
+      nextState.rights &&
+      !(await tx.appendRights(nextState.rights, lockedTitle.version, {
         actorId: actor.id,
         recordedAt: now,
         correlationId: request.correlationId,
@@ -333,75 +446,86 @@ export function createCatalogCommands(ports: CatalogOperatorPorts) {
     }
     if (
       !(await tx.saveTitle(
-        next.title,
-        next.rights ? title.version + 1 : title.version,
-        next.metadata,
+        nextState.title,
+        nextState.rights ? lockedTitle.version + 1 : lockedTitle.version,
+        nextState.metadata,
       ))
     ) {
       return { status: "conflict" };
     }
-    const value = Object.freeze({
-      titleId: title.id,
-      version: next.title.version,
-      state: next.title.state,
-      rightsRevision: next.title.rightsRevision,
-      publicationId: next.title.publicationId,
+
+    const commandResult = Object.freeze({
+      titleId: lockedTitle.id,
+      version: nextState.title.version,
+      state: nextState.title.state,
+      rightsRevision: nextState.title.rightsRevision,
+      publicationId: nextState.title.publicationId,
     });
     await tx.appendCommandAudit({
       id: ports.nextId(),
       kind: command.kind,
       actorId: actor.id,
-      titleId: title.id,
-      version: next.title.version,
+      titleId: lockedTitle.id,
+      version: nextState.title.version,
       occurredAt: now,
       correlationId: request.correlationId,
       mutationId: command.mutationId,
       reason: "reason" in command ? command.reason : null,
-      metadata: next.metadata ?? null,
+      metadata: nextState.metadata ?? null,
     });
-    if (publishing(command.kind) || retirement(command.kind)) {
+    if (activatesTitlePublication(command.kind) || retiresTitle(command.kind)) {
       await tx.appendPublicationEvent({
         eventId: ports.nextId(),
-        eventType: publishing(command.kind) ? "catalog.title-published" : "catalog.title-retired",
+        eventType: activatesTitlePublication(command.kind)
+          ? "catalog.title-published"
+          : "catalog.title-retired",
         schemaVersion: 1,
         occurredAt: new Date(now * 1000).toISOString(),
         producer: "catalog",
-        aggregate: { type: "Title", id: title.id, version: next.title.version },
+        aggregate: { type: "Title", id: lockedTitle.id, version: nextState.title.version },
         correlationId: request.correlationId,
         causationId: command.mutationId,
-        trace: eventTrace(ports),
+        trace: publicationEventTrace(ports),
         payload: {
-          titleId: title.id,
-          publicationId: next.title.publicationId,
-          rightsRevision: next.rights?.revision ?? next.title.rightsRevision,
+          titleId: lockedTitle.id,
+          publicationId: nextState.title.publicationId,
+          rightsRevision: nextState.rights?.revision ?? nextState.title.rightsRevision,
         },
       });
     }
     await tx.writeReceipt({
-      titleId: title.id,
+      titleId: lockedTitle.id,
       mutationId: command.mutationId,
       actorId: actor.id,
       digest,
       expiresAt: now + 86400,
-      result: value,
+      result: commandResult,
     });
-    if (publishing(command.kind)) {
-      const rights = (await tx.findRights(title.id, null))?.record;
-      const metadata = await tx.findMetadata(title.id);
-      const publication =
-        next.title.publicationId === null
+
+    if (activatesTitlePublication(command.kind)) {
+      const latestRights = (await tx.findRights(lockedTitle.id, null))?.record;
+      const storedMetadata = await tx.findMetadata(lockedTitle.id);
+      const activePublication =
+        nextState.title.publicationId === null
           ? undefined
-          : await tx.findPublication(next.title.publicationId);
-      const checkedAt = ports.now();
+          : await tx.findPublication(nextState.title.publicationId);
+      const revalidatedAt = ports.now();
       if (
-        !metadata ||
-        !artworkPublishable(metadata, title.id, checkedAt, ports.policy) ||
-        !isPublicTitle(next.title, rights, publication, checkedAt, ports.policy)
+        !storedMetadata ||
+        !artworkPublishable(storedMetadata, lockedTitle.id, revalidatedAt, ports.policy) ||
+        !isPublicTitle(
+          nextState.title,
+          latestRights,
+          activePublication,
+          revalidatedAt,
+          ports.policy,
+        )
       ) {
         return { status: "rights_not_approved" };
       }
     }
-    return { status: "completed", value };
+
+    return { status: "completed", value: commandResult };
   }
   return Object.freeze({
     async inspect(
@@ -415,15 +539,15 @@ export function createCatalogCommands(ports: CatalogOperatorPorts) {
       if (!actor) {
         return { status: "unauthorized" };
       }
-      const value = catalogRecord(input, ["titleId"]);
+      const inputRecord = catalogRecord(input, ["titleId"]);
       if (
-        !value ||
-        !catalogIdentifier(value["titleId"]) ||
+        !inputRecord ||
+        !catalogIdentifier(inputRecord["titleId"]) ||
         !catalogIdentifier(request.correlationId)
       ) {
         return { status: "invalid_input" };
       }
-      const titleId = value["titleId"];
+      const titleId = inputRecord["titleId"];
       return ports.transactions.run(async (tx) => {
         const title = await tx.lockTitle(titleId);
         if (ports.authority.authorize(request.credential, ports.now())?.id !== actor.id) {
@@ -436,7 +560,7 @@ export function createCatalogCommands(ports: CatalogOperatorPorts) {
       kind: CatalogCommandKind,
       input: unknown,
       request: CatalogCommandRequest,
-    ): Promise<Outcome> {
+    ): Promise<CatalogCommandOutcome> {
       if (request.signal.aborted) {
         return { status: "cancelled" };
       }
@@ -473,14 +597,21 @@ export function createCatalogCommands(ports: CatalogOperatorPorts) {
         return { status: "invalid_input" };
       }
       return ports.transactions.run(async (tx) => {
-        const result = await execute(tx, command, digest, actor, request, legacyDigest);
+        const commandOutcome = await executeCatalogCommandTransaction(
+          tx,
+          command,
+          digest,
+          actor,
+          request,
+          legacyDigest,
+        );
         if (request.signal.aborted) {
           return { status: "cancelled" };
         }
         if (ports.authority.authorize(request.credential, ports.now())?.id !== actor.id) {
           return { status: "unauthorized" };
         }
-        return result;
+        return commandOutcome;
       }, request.signal);
     },
   });

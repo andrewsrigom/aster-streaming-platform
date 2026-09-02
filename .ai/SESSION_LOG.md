@@ -4,6 +4,40 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-09-02 — Readability guardrails verified and item71 activated
+
+### Completed
+
+- PR61 final head `6de5a1d`, tree `448be36`, passed protected workflow
+  `33602958653`; all three review discussions are resolved.
+- PR61 squash main `3858bcb` retains the exact tree; exact-main workflow
+  `33603027919` passed. Item70/P14-R15 is `DONE`.
+- Activated item71/P14-R16 on `refactor/catalog-playback-readability` from exact
+  main.
+- Scoped the work to `catalog-command-flow` and `playback-session-outcome` with
+  public behavior, ownership, rights, transaction, event, deadline,
+  cancellation, and indeterminate-write behavior preserved.
+- Replaced ambiguous private Catalog names with explicit command decisions and
+  separated draft, rights-withdrawal, rights-review, publication, transaction,
+  event, receipt, and revalidation phases.
+- Renamed Playback dependency settlement and session-write state, and replaced
+  the nested failure expression with explicit typed outcomes.
+
+### Evidence
+
+- Protected PR61 run: `33602958653`.
+- Merge: `3858bcb7299d10fbcb361a65c2907885966d0d4f`, tree
+  `448be3646b6bc98d55dbc797c79669059c8ac755`.
+- Exact-main run: `33603027919`.
+- The linked Catalog/Playback characterization passes 15/15 before and after the
+  refactor. Complete Catalog tests pass 249/249; Playback passes 42/42. Affected
+  builds/typechecks, changed-file lint, and architecture validation pass.
+
+### Next action
+
+Commit the coherent source candidate, run `pnpm check:changed`, record exact
+evidence, and publish item71 for protected review.
+
 ## 2026-09-02 — Readability inventory initial review corrected
 
 ### Completed
