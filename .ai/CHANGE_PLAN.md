@@ -130,7 +130,8 @@ checks, event payloads, and telemetry remain unchanged.
 - Acceptance result: linked characterization passes 15/15 before and after the
   refactor; complete Catalog tests pass 249/249 and Playback tests pass 42/42;
   both builds/typechecks, changed-file lint, and architecture validation pass.
-  The affected-scope candidate gate remains
+  Source `ef9e866`, tree `2c48e62`, passes the affected-scope candidate gate
+  43/43 with 10 cached tasks in 62.095 seconds
 - Iteration gate: affected package build/typecheck plus the two linked
   characterization files
 - Candidate gate: `pnpm check:changed`

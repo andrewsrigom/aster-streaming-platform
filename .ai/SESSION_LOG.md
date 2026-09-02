@@ -32,11 +32,13 @@ full snapshot through the archival checkpoint remains in
 - The linked Catalog/Playback characterization passes 15/15 before and after the
   refactor. Complete Catalog tests pass 249/249; Playback passes 42/42. Affected
   builds/typechecks, changed-file lint, and architecture validation pass.
+- Source `ef9e866`, tree `2c48e62`, passes the affected-scope gate 43/43 with 10
+  cached tasks in 62.095 seconds.
 
 ### Next action
 
-Commit the coherent source candidate, run `pnpm check:changed`, record exact
-evidence, and publish item71 for protected review.
+Publish the exact evidenced candidate, complete one review and one confirmation,
+merge, and verify exact main before activating item72.
 
 ## 2026-09-02 — Readability inventory initial review corrected
 

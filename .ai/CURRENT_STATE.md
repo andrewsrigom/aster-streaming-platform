@@ -55,7 +55,9 @@ dependencies, and deployment remain unchanged.
 The pre-edit and post-edit linked characterization suite passes 15/15. The
 complete Catalog package passes 249 tests, Playback passes 42 tests, both
 affected builds and typechecks pass, changed-file lint passes, and architecture
-validation reports zero violations. The affected-scope candidate gate remains.
+validation reports zero violations. Source `ef9e866`, tree `2c48e62`, passes
+the affected-scope candidate gate 43/43 with 10 cached tasks in 62.095 seconds.
+Protected publication, review, merge, and exact-main acceptance remain.
 
 ## Ordered reference-quality runway
 
@@ -122,6 +124,5 @@ owned whitespace, and explicit preserved behavior.
 
 ## Next outcome
 
-Complete item71/P14-R16: run the affected-scope candidate gate, capture the
-exact source evidence, and publish the two behavior-preserving readability
-slices for protected review.
+Complete item71/P14-R16: publish the exact evidenced candidate, complete one
+review and one confirmation, merge, and verify exact main.

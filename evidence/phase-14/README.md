@@ -1004,7 +1004,16 @@ characterized. Playback retains one Catalog lookup, one non-retried session
 write, the two-second deadline, caller cancellation, indeterminate post-write
 failure, and expiry-after-acknowledgement checks. No heavyweight experiment is
 repeated because no adapter, transaction order, public contract, runtime, or
-media behavior changed. The affected-scope candidate gate remains pending.
+media behavior changed.
+
+Source checkpoint `ef9e866b1a2d04cc5a8a15c4e5e6519897f7317a`, tree
+`2c48e62c7f498121942fa42d2ae743cbe5562501`, passes `pnpm check:changed`:
+43/43 tasks pass with 10 cached tasks in 62.095 seconds. The gate includes both
+complete service suites, affected builds and typechecks, Router composition and
+contract tests, workspace lint/format/unused-code checks, architecture,
+documentation, repository memory, security, toolchain, CI policy, and governance
+checks. No Docker, browser, media, PostgreSQL, Redis, or broker experiment is
+repeated for this private naming and local-structure change.
 
 ## Planned evidence
 

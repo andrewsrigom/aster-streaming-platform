@@ -34,15 +34,17 @@ Close only the `catalog-command-flow` and `playback-session-outcome` findings:
 - The post-edit characterization suite passes 15/15; complete Catalog tests pass
   249/249 and Playback tests pass 42/42. Builds, typechecks, changed-file lint,
   and architecture validation pass.
+- Source `ef9e866`, tree `2c48e62`, passes the affected-scope candidate gate
+  43/43 with 10 cached tasks in 62.095 seconds.
 - No public contract, data, event, cache, media, telemetry, dependency, or
   deployment behavior changed.
 
 ## Exact next actions
 
-1. Run formatting, repository-memory, documentation, and diff checks.
-2. Commit the coherent source candidate and run `pnpm check:changed` against it.
-3. Record exact evidence and publish one candidate for one review and one
-   confirmation before merge and exact-main verification.
+1. Commit and publish this evidence checkpoint.
+2. Complete one initial review and one confirmation on the bounded candidate.
+3. Merge after exact-head protected checks pass, verify exact main, then activate
+   item72.
 
 ## Execution boundary
 
