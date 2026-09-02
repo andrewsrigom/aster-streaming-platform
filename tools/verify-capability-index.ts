@@ -778,7 +778,10 @@ export function analyzeCapabilityIndex(sourceText: string): CapabilityIndexRepor
 
   const candidateHeaders = visibleLines
     .map((line, index) => ({ cells: tableCells(line), index }))
-    .filter(({ cells }) => cells?.[0] === "ID");
+    .filter(
+      ({ cells, index }) =>
+        cells?.[0] === "ID" && index > 0 && (lines[index - 1] ?? "").trim() === "",
+    );
   const header = candidateHeaders[0];
   if (!header) {
     addViolation(violations, {

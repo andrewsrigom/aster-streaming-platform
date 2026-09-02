@@ -235,6 +235,15 @@ test("rejects a capability table inside a list-contained fence", () => {
   assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
 });
 
+test("requires a blank block boundary before the capability table", () => {
+  const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
+  const report = analyzeCapabilityIndex(
+    validIndex().replace(`\n\n${header}`, `\nprose\n${header}`),
+  );
+  assert.equal(report.rows, 0);
+  assert.ok(report.violations.some(({ rule }) => rule === "missing-table"));
+});
+
 test("discards the complete source line for a CommonMark HTML-comment block", () => {
   const source = validIndex();
   const header = `| ${CAPABILITY_INDEX_COLUMNS.join(" | ")} |`;
