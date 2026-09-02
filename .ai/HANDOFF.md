@@ -48,12 +48,20 @@ Close only the `identity-profile-transaction`, `engagement-progress-write`, and
   1m4.03s.
 - Exact source `6239362`, tree `217aaf6`, repeats the candidate gate 44/44 with
   33 cached tasks in 39.287 seconds.
+- Evidence head `1e45071` opened PR63 and passed protected workflow
+  `33616377473`, including source quality, owner integrations, the Docker-only
+  demo, Local platform, documentation, security, and the aggregate gate.
+- Initial review found one repository-memory defect: the handoff, current state,
+  and session log still instructed the next agent to create and publish the
+  already-completed evidence checkpoint. This correction changes only those
+  resume instructions and evidence.
 
 ## Exact next actions
 
-1. Commit the exact source evidence and repository-memory checkpoint.
-2. Publish it and complete one review plus one confirmation.
-3. Merge only after exact-head protected acceptance, then verify exact main.
+1. Confirm the repository-memory correction is published and discussion
+   `3913089979` is resolved.
+2. Require corrected exact-head protected acceptance and one confirmation.
+3. Merge only after both pass, then verify exact main.
 
 ## Execution boundary
 

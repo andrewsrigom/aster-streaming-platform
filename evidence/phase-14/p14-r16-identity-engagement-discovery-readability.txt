@@ -137,3 +137,28 @@ Interpretation:
 The exact committed source checkpoint passes the same complete affected-scope
 gate. This is the source candidate to publish for protected acceptance and
 review; the following evidence-only commit does not change product source.
+
+PROTECTED ACCEPTANCE AND INITIAL REVIEW
+
+Pull request: https://github.com/andrewsrigom/aster-streaming-platform/pull/63
+Evidence head: 1e45071819534e717ad3aeb56afd40bfa52b19f6
+Protected workflow: 33616377473
+
+Raw result:
+Classify change: PASS
+Dependency review: PASS
+Documentation and security: PASS (12s)
+Local platform: PASS (4m0s)
+Install and source quality: PASS (17m54s)
+CI required: PASS
+
+Initial review result:
+Discussion 3913089979 found one stale repository-memory resume instruction. The
+handoff, current state, and session log still told the next agent to create and
+publish the evidence checkpoint that already existed at the reviewed head.
+
+Remediation:
+Update only repository-memory and evidence prose so the next action begins with
+the corrected published head, discussion resolution, exact-head checks, and
+confirmation. Product source and prior local/heavyweight acceptance are not
+changed.

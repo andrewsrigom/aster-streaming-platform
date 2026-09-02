@@ -143,7 +143,10 @@ fallbacks, and telemetry remain unchanged.
   Discovery passes 110. All three affected builds/typechecks, changed-file
   lint, and architecture validation pass. The affected-scope candidate gate
   passes 44/44 tasks with 12 cached tasks in 1m4.03s. Exact source `6239362`,
-  tree `217aaf6`, repeats it with 33 cached tasks in 39.287 seconds.
+  tree `217aaf6`, repeats it with 33 cached tasks in 39.287 seconds. Evidence
+  head `1e45071` passes protected workflow `33616377473`; initial review found
+  one stale repository-memory resume instruction, corrected without product
+  source changes.
 - Iteration gate: affected package build/typecheck plus the three linked
   characterization files
 - Candidate gate: `pnpm check:changed`

@@ -1084,6 +1084,15 @@ Exact source checkpoint `62393627960ab473488e9232e345a0af9bf90c58`, tree
 44/44 tasks pass with 33 cached tasks in 39.287 seconds. The next commit records
 this evidence and repository memory only.
 
+Evidence head `1e45071819534e717ad3aeb56afd40bfa52b19f6` opened PR63.
+Protected workflow `33616377473` passed every applicable job: dependency review,
+documentation/security, source quality, owner integrations, Docker-only demo,
+Local platform, and the aggregate gate. Initial review discussion `3913089979`
+found only stale resume instructions that still asked the next agent to create
+and publish the already-completed evidence checkpoint. The correction updates
+repository memory and this evidence only; product source and the heavyweight
+acceptance remain unchanged.
+
 ## Planned evidence
 
 - P14-R16 remaining owner-scoped refactoring characterization

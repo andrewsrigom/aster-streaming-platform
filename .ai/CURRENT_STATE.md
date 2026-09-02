@@ -62,8 +62,10 @@ pass 47/47 before and after implementation. Complete Identity tests pass
 affected builds and typechecks, changed-file lint, and architecture validation
 pass. The affected-scope candidate gate passes 44/44 tasks with 12 cached tasks
 in 1m4.03s. Exact source `6239362`, tree `217aaf6`, repeats it with 33 cached
-tasks in 39.287 seconds. Evidence commit, publication, review, merge, and
-exact-main acceptance remain.
+tasks in 39.287 seconds. Evidence head `1e45071` passed protected workflow
+`33616377473`. Initial review found one stale repository-memory resume action;
+the correction changes documentation only. Corrected exact-head checks,
+discussion resolution, confirmation, merge, and exact-main acceptance remain.
 
 ## Ordered reference-quality runway
 

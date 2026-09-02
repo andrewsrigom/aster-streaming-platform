@@ -34,6 +34,12 @@ full snapshot through the archival checkpoint remains in
   1m4.03s.
 - Exact source `6239362`, tree `217aaf6`, repeats the candidate gate 44/44 with
   33 cached tasks in 39.287 seconds.
+- Evidence head `1e45071` opened PR63. Protected workflow `33616377473` passed
+  every applicable job.
+- Initial review discussion `3913089979` found that the handoff, current state,
+  and this session entry still asked the next agent to create/publish the
+  already-completed evidence checkpoint. The correction updates only resume
+  prose and evidence.
 
 ### Evidence
 
@@ -47,11 +53,13 @@ full snapshot through the archival checkpoint remains in
 - Architecture validation: zero violations.
 - Affected-scope candidate gate: 44/44 pass, 12 cached, 1m4.03s.
 - Exact committed-source gate: 44/44 pass, 33 cached, 39.287s.
+- Protected PR63 workflow: `33616377473`, all applicable jobs pass.
 
 ### Next action
 
-Commit the exact evidence checkpoint, then publish it for one review and one
-confirmation.
+Confirm the repository-memory correction is published, resolve discussion
+`3913089979`, require exact-head checks and one confirmation, then merge and
+verify exact main.
 
 ## 2026-09-02 — Readability guardrails verified and item71 activated
 
