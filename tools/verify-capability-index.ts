@@ -146,10 +146,14 @@ export const CAPABILITY_INDEX_ROWS = [
       ],
       Implementation: [
         "../../apps/router/src/demand.ts",
+        "../../infra/router/router.yaml",
+        "../../services/identity/src/infrastructure/profile-operation-limiter.ts",
         "../../services/catalog/src/transport/catalog-schema.ts",
       ],
       "Adverse test": [
         "../../apps/router/test/demand.test.ts",
+        "../../tools/verify-router-runtime.test.mjs",
+        "../../services/identity/test/profile-operation-limiter.test.ts",
         "../../tools/graphql-query-count-proof.test.mjs",
       ],
       Evidence: ["../../evidence/phase-13/release.md"],
