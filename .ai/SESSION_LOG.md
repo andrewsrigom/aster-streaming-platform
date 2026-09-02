@@ -267,11 +267,21 @@ full snapshot through the archival checkpoint remains in
   platform timed out waiting for PostgreSQL TraceQL search; scoped cleanup was
   clean. Attempt2 reran the failed path and passed Local platform plus the
   required aggregate.
+- Exact-head review on result checkpoint `aec45b2`, tree `2e2720a`, opened
+  finding `3909731071` because P13-R06 lacked navigable deadline, concurrency
+  and identity-aware rate-limit enforcement proof. Protected run `33576156958`
+  was invalidated and cancellation was requested.
+- Correction source `f600992`, tree `6fd14ae`, links Router traffic shaping,
+  Router adverse tests and Identity's account-partitioned limiter
+  implementation/tests, then binds them in the verifier. Focused contracts
+  pass48/48, documentation validation covers1,650 links and the affected gate
+  passes15/15, including101 platform-policy,39 CI-policy and13 repository-memory
+  tests. No product runtime or deployment behavior changed.
 
 ### Next action
 
-- Publish the result-only checkpoint and request confirmation only after the PR
-  exposes the new exact head. Then merge and
+- Publish the corrected checkpoint, resolve thread `PRRT_kwDOUEkeis6eU67_` and
+  request confirmation only after the PR exposes the new exact head. Then merge and
   complete exact-main verification before activating P14-R15.
 
 ## 2026-09-01 — Phase13 release and reference-first Phase14 runway

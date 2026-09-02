@@ -275,11 +275,21 @@ path/anchor validity to the existing documentation validator.
 - Protected workflow `33574235870` attempt1 hit a cleanly recovered PostgreSQL
   TraceQL search timeout after all other jobs passed. Attempt2 reran the failed
   path and passed Local platform plus the required aggregate.
+- Exact-head review on result checkpoint `aec45b2`, tree `2e2720a`, opened
+  finding `3909731071` because P13-R06 lacked navigable deadline, concurrency
+  and identity-aware rate-limit enforcement proof. Protected run `33576156958`
+  was invalidated and cancellation was requested.
+- Correction source `f600992`, tree `6fd14ae`, links Router traffic shaping,
+  Router adverse tests and Identity's account-partitioned limiter
+  implementation/tests, then binds them in the verifier. Focused contracts
+  pass48/48, documentation validation covers1,650 links and the affected gate
+  passes15/15. No product runtime or deployment behavior changed.
 
 ## Exact next actions
 
-1. Publish the result-only checkpoint and request confirmation only after
-   GitHub exposes the new exact PR head.
+1. Publish the corrected checkpoint, resolve review thread
+   `PRRT_kwDOUEkeis6eU67_` and request confirmation only after GitHub exposes
+   the new exact PR head.
 2. Merge only after a clean exact-head review, verify exact-main CI and close
    item69 before activating
    item70/P14-R15.

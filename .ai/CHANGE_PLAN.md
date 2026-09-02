@@ -301,8 +301,15 @@ file and anchor exists.
   `33574235870` attempt1 passed every other job but hit a cleanly recovered
   PostgreSQL TraceQL search timeout in Local platform; attempt2 reran the
   failed path and passed every job plus the aggregate. One result-only
-  checkpoint, its exact-head confirmation, merge and exact-main acceptance
-  remain
+  checkpoint was published as `aec45b2`; its exact-head review opened finding
+  `3909731071` because P13-R06 lacked navigable runtime enforcement proof. The
+  working correction links Router deadline/concurrency configuration, Router
+  adverse tests and Identity's account-partitioned limiter implementation and
+  tests, then binds those destinations in the verifier. Focused contracts
+  pass48/48, documentation validation covers1,650 links and the affected gate
+  passes15/15. Correction source `f600992`, tree `6fd14ae`, freezes the batch.
+  Protected acceptance, exact-head confirmation, merge and exact-main
+  acceptance remain
 - Iteration gate: focused verifier tests plus documentation/repository-memory
 - Candidate gate: changed-scope gate selected from exact source/documentation
   diff

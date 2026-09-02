@@ -728,6 +728,23 @@ aggregate. This is accepted exact-candidate evidence. No product runtime or
 deployment behavior changed. A result-only checkpoint, its exact-head
 confirmation, merge and exact-main acceptance remain.
 
+Result checkpoint `aec45b2a832a88b11d651e369af38bd5af57d8b5`, tree
+`2e2720a6a0ada813bc0ae44463575f6074c441dc`, received exact-head review at
+`2026-09-02T00:43:29Z`. Finding `3909731071` showed that the P13-R06 row linked
+demand metadata and query-count proof but stopped before deadline, concurrency
+and identity-aware rate-limit enforcement. Protected run `33576156958` was
+invalidated and cancellation was requested; it is not acceptance evidence.
+
+Correction source `f600992de4c9ff3e6f56b5023395e7f71c2ac4b8`, tree
+`6fd14ae407f50725586d30f178f16d2e01889ea7`, links Router traffic shaping,
+Router runtime adverse tests and Identity's account-partitioned limiter
+implementation and tests, then binds those exact destinations in the verifier.
+Focused capability/CI-policy tests pass48/48. Documentation validation covers250
+documents, 2,880 headings, 1,650 links, four status claims and eleven rows with
+zero violations. The affected gate passes15/15, including101 platform-policy,39
+CI-policy and13 repository-memory tests. No product runtime or deployment
+behavior changed. Publication remains pending.
+
 Checkpoint `c69cb0eb00a73b3b308e496eb73b50ff735daf5f` passed exact-head workflow
 `33563190969`, including source quality, Local platform, governance and the
 aggregate gate. Exact-head review completed at `2026-09-01T21:54:26Z` and

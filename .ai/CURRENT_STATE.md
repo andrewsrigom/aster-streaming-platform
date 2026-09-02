@@ -337,6 +337,21 @@ aggregate, so the exact candidate is accepted. No product runtime or deployment
 behavior changed. A result-only checkpoint, its exact-head confirmation, merge
 and exact-main acceptance remain.
 
+Result checkpoint `aec45b2a832a88b11d651e369af38bd5af57d8b5`, tree
+`2e2720a6a0ada813bc0ae44463575f6074c441dc`, received exact-head review at
+`2026-09-02T00:43:29Z`. Finding `3909731071` showed that the P13-R06 row stopped
+at demand metadata and query-count proof instead of linking deadline,
+concurrency and identity-aware rate-limit enforcement. Protected run
+`33576156958` was invalidated and cancellation was requested; it is not
+acceptance evidence. Correction source
+`f600992de4c9ff3e6f56b5023395e7f71c2ac4b8`, tree
+`6fd14ae407f50725586d30f178f16d2e01889ea7`, links Router traffic shaping,
+Router runtime adverse tests and Identity's account-partitioned limiter
+implementation and tests, then binds those destinations in the verifier.
+Focused contracts pass48/48, documentation validation covers1,650 links and the
+affected gate passes15/15. No product runtime or deployment behavior changed.
+Publication remains pending.
+
 Item68 verifies P14-R13 as a documentation and delivery-governance slice:
 
 - ADR-0048 separates the active reference track from the deferred hosted track;
