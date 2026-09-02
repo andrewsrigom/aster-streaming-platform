@@ -461,9 +461,116 @@ Tasks: 9 successful, 9 total
 Cached: 2 cached, 9 total
 Time: 12.826s
 
+Final exact-head review 5091785850
+----------------------------------
+Reviewed head: 68dda8ca16197bdedf63cebf45986a313ccf8454
+Completed: 2026-09-02T15:38:55Z
+
+- discussion 3915872033: the runner must reject Docker endpoint and
+  configuration overrides, refuse a non-local active endpoint, and pin every
+  Docker/Compose operation to the inspected local context;
+- discussion 3915872044: label-only preflight can miss an unlabeled resource
+  with a Compose-generated physical name, so physical project prefixes must be
+  checked before teardown is armed.
+
+Endpoint and physical-name refusal proof
+----------------------------------------
+The corrected runner checks endpoint overrides before its first Docker command.
+
+$ DOCKER_HOST=tcp://example.invalid:2375 bash evidence/phase-14/p14-r18-reference-acceptance.sh
+docker_acceptance_refused=docker_endpoint_override
+remote_refusal=ok
+
+A synthetic empty volume was created with exact name
+`aster-reference-endpoint-20260902_unowned-probe`, fixture label
+`com.aster.fixture=reference-boundary`, and no Compose project label. The runner
+reported:
+
+docker_preflight_occupied containers= networks= volumes= prefixed_containers= prefixed_networks= prefixed_volumes=aster-reference-endpoint-20260902_unowned-probe
+physical_name_refusal=ok
+preserved=aster-reference-endpoint-20260902_unowned-probe
+
+The trap had not been armed and the fixture remained. Its exact name and labels
+were re-inspected before targeted removal. The removal succeeded and a final
+inspect reported the fixture absent.
+
+Endpoint-corrected Docker acceptance
+------------------------------------
+Exact executed runner:
+evidence/phase-14/p14-r18-reference-acceptance.sh
+SHA-256: d0d4564b8c5ac9b126cbc9a4fc4dfbdaec65d6f9fb03013dc3db0ca46b373d59
+
+The runner rejects `DOCKER_HOST`, `DOCKER_CONTEXT`, TLS/certificate, and Docker
+configuration overrides. It inspects the active endpoint, accepts only a Unix
+or named-pipe socket, pins every Docker and Compose command to that context,
+requires Linux containers, and checks both Compose labels and physical project
+prefixes before and after the run.
+
+docker_server=26.0.0
+Docker Compose version v2.26.1-desktop.1
+docker_endpoint=local context=default type=linux
+docker_preflight=ok project=aster-reference-endpoint-20260902 ports=3000,4000,9001
+
+$ pnpm --filter @aster/web exec playwright test demo.spec.ts
+Running 1 test using 1 worker
+Docker-only generated demo plays real HLS with captions, direct delivery and
+bounded diagnostics
+1 passed (3.9s)
+
+catalog_playable_seed ... "changed":false
+generated_hls_reused ... "totalBytes":1948485
+docker_browser_replay=ok project=aster-reference-endpoint-20260902
+
+Compose listed the exact 13 owned containers before teardown. Project-scoped
+down removed those containers, two networks, and 13 volumes. Checked label and
+physical-prefix inventory statuses were zero.
+
+docker_cleanup=ok project=aster-reference-endpoint-20260902 containers=0 networks=0 volumes=0
+
+Independent post-run queries confirmed:
+
+label_containers=0
+label_networks=0
+label_volumes=0
+prefix_containers=0
+prefix_networks=0
+prefix_volumes=0
+aster-broker-1 Exited (255)
+aster_broker-data
+aster_identity-event-trust
+
+Endpoint-remediation candidate gate
+-----------------------------------
+$ bash -n evidence/phase-14/p14-r18-reference-acceptance.sh
+Exit: 0
+
+$ sha256sum evidence/phase-14/p14-r18-reference-acceptance.sh
+d0d4564b8c5ac9b126cbc9a4fc4dfbdaec65d6f9fb03013dc3db0ca46b373d59  evidence/phase-14/p14-r18-reference-acceptance.sh
+
+$ pnpm docs:check
+documents: 253
+headings: 2979
+links: 1806
+statusClaims: 4
+violations: 0
+capability rows: 11
+
+$ pnpm ai:check
+files: 10
+queueItems: 75
+sessionEntries: 72
+activeRequirement: P14-R18
+targetRequirement: P14-R18
+violations: 0
+
+$ pnpm check:changed
+Tasks: 9 successful, 9 total
+Cached: 2 cached, 9 total
+Time: 10.727s
+
 Remaining acceptance
 --------------------
-- publish the boundary remediation and pass protected CI;
-- resolve discussions 3915666140 and 3915666152;
-- complete final exact-head confirmation;
+- publish the endpoint remediation and pass protected CI;
+- resolve discussions 3915872033 and 3915872044;
+- complete another blocker-permitted exact-head confirmation;
 - squash merge and exact-main acceptance.

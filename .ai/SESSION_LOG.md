@@ -26,6 +26,17 @@ full snapshot through the archival checkpoint remains in
 - The directly executed runner SHA-256 is `9d088971`.
 - Boundary-remediation candidate checks pass 9/9 tasks with two cached tasks in
   `12.826s`.
+- Final review `5091785850` on `68dda8c` opened remote-Docker and unlabeled-name
+  blockers `3915872033` and `3915872044`.
+- Endpoint remediation refuses Docker overrides and non-local endpoints, pins
+  context `default`, and checks physical project prefixes. A hostile
+  `DOCKER_HOST` is refused. An unlabeled prefixed fixture volume is refused and
+  preserved before its exact cleanup.
+- Project `aster-reference-endpoint-20260902` passes browser playback 1/1 in
+  `3.9s`, replay, label-and-prefix cleanup, independent zero residue, and
+  retained-resource comparison. Runner SHA-256 is `d0d4564b`.
+- Endpoint-remediation candidate checks pass 9/9 tasks with two cached tasks in
+  `10.727s`.
 
 ### Evidence
 
@@ -34,8 +45,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-Publish the two blocker-boundary remediations, resolve their discussions,
-complete final exact-head review, merge, and verify exact main.
+Publish the endpoint remediation, resolve its two discussions, complete
+blocker-permitted exact-head review, merge, and verify exact main.
 
 ## 2026-09-02 — Fresh Docker path passed; cleanup incident recorded
 

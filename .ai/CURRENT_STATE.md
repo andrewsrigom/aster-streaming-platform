@@ -82,7 +82,21 @@ owned residue. Independent queries confirm zero project resources and unchanged
 retained `aster` resources. The executed runner has SHA-256 `9d088971`. The
 candidate passes 9/9 tasks with two cached tasks in `12.826s`. Publication,
 discussion resolution, final exact-head confirmation, merge, and exact-main
-acceptance remain.
+acceptance remained. Final review `5091785850` on `68dda8c` opened remote-Docker
+and unlabeled physical-name blockers `3915872033` and `3915872044`.
+
+The endpoint remediation refuses Docker endpoint/configuration overrides,
+accepts only the inspected local socket and Linux daemon, pins Docker and
+Compose to context `default`, and checks label ownership plus physical project
+prefixes. A hostile `DOCKER_HOST` is refused before Docker access. An unlabeled
+prefixed fixture volume is refused and preserved before teardown is armed, then
+removed by its exact fixture name. New literal project
+`aster-reference-endpoint-20260902` passes healthy startup, browser playback 1/1
+in `3.9s`, replay, checked teardown, and independent zero label-and-prefix
+residue. Retained `aster` resources are unchanged. The executed runner SHA-256
+is `d0d4564b`. The updated candidate passes 9/9 tasks with two cached tasks in
+`10.727s`. Publication, discussion resolution, another blocker-permitted exact-
+head review, merge, and exact-main acceptance remain.
 
 A rejected cleanup attempt expanded a nested-shell project variable to empty
 and removed 13 unused volumes from the existing `aster` project. Their Docker
@@ -161,8 +175,8 @@ hosted claim.
 
 ## Next outcome
 
-Finish item75/P14-R18: publish the blocker-boundary remediation, resolve
-discussions `3915666140` and `3915666152`, complete final exact-head review,
+Finish item75/P14-R18: publish the endpoint remediation, resolve discussions
+`3915872033` and `3915872044`, complete the blocker-permitted exact-head review,
 merge, and verify exact main. Do not repeat the accepted source or Docker
 experiments unless a relevant executable, Docker, browser, media, cleanup,
 dependency, or public-command change invalidates them.

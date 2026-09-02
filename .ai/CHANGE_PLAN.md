@@ -175,6 +175,21 @@ verification notes. Do not change executable product behavior.
 - Boundary-remediation candidate passes 9/9 tasks with two cached tasks in
   `12.826s`; documentation, repository memory, formatting, syntax, checksum,
   and diff checks pass.
+- Final exact-head review on `68dda8c` opened blocker discussions `3915872033`
+  and `3915872044`: refuse Docker endpoint/configuration overrides and any
+  non-local active endpoint, pin every Docker/Compose command to the inspected
+  local context, and refuse project-prefixed physical names even without Compose
+  labels before arming teardown. Repeat the invalidated Docker proof on a new
+  literal project; source evidence remains unaffected.
+- Endpoint remediation refuses Docker endpoint/configuration overrides, pins
+  commands to inspected local context `default`, requires Linux containers, and
+  rejects/preserves an unlabeled prefixed fixture volume before teardown is
+  armed. Project `aster-reference-endpoint-20260902` then passes browser 1/1 in
+  `3.9s`, replay, label-and-name cleanup, independent zero residue, and retained-
+  resource comparison. Executed runner SHA-256: `d0d4564b`.
+- Endpoint-remediation candidate passes 9/9 tasks with two cached tasks in
+  `10.727s`; documentation, repository-memory, formatting, syntax, checksum,
+  and diff checks pass.
 - Iteration gate: public bootstrap/version checks, selected focused tests,
   Docker startup/journey/replay/cleanup, `pnpm docs:check`, and `pnpm ai:check`
 - Candidate gate: `pnpm check:changed`

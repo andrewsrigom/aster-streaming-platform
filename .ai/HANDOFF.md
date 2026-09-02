@@ -85,12 +85,26 @@ Close only `reference-fresh-acceptance`:
 - Boundary-remediation candidate checks pass 9/9 tasks with two cached tasks in
   `12.826s`; documentation, repository-memory, formatting, syntax, checksum,
   and diff checks pass.
+- Final review `5091785850` on `68dda8c` opened discussions `3915872033` and
+  `3915872044` for remote Docker access and unlabeled project-prefixed names.
+- The endpoint remediation rejects endpoint/configuration overrides, pins every
+  Docker and Compose command to inspected local Linux context `default`, and
+  checks physical names as well as labels. A hostile `DOCKER_HOST` is refused;
+  an unlabeled prefixed fixture volume is refused and preserved before teardown,
+  then removed by its exact fixture name.
+- Project `aster-reference-endpoint-20260902` passes browser playback 1/1 in
+  `3.9s`, replay, checked teardown, independent zero label-and-prefix residue,
+  and retained-resource comparison. Runner SHA-256 is `d0d4564b`.
+- Endpoint-remediation candidate checks pass 9/9 tasks with two cached tasks in
+  `10.727s`; documentation, repository-memory, formatting, syntax, checksum,
+  and diff checks pass.
 
 ## Exact next actions
 
-1. Publish the boundary remediation and resolve discussions `3915666140` and
-   `3915666152`.
-2. Complete final exact-head review, merge, and verify exact main.
+1. Publish the endpoint remediation and resolve discussions `3915872033` and
+   `3915872044`.
+2. Complete another blocker-permitted exact-head review, merge, and verify exact
+   main.
 
 ## Execution boundary
 

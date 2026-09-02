@@ -1294,7 +1294,24 @@ has SHA-256
 The boundary-remediation candidate passes 9/9 tasks with two cached tasks in
 `12.826s`.
 
+Final review `5091785850` on `68dda8c` opened discussions `3915872033` and
+`3915872044`: the runner did not refuse remote Docker endpoints and its
+label-only preflight could miss an unlabeled physical-name collision. The
+endpoint remediation refuses Docker endpoint/configuration overrides, accepts
+only an inspected local socket and Linux daemon, pins every command to context
+`default`, and checks physical project prefixes alongside labels before arming
+teardown. A hostile `DOCKER_HOST` is refused. An unlabeled prefixed fixture
+volume is refused and preserved, then removed by its exact fixture name.
+
+New project `aster-reference-endpoint-20260902` passes healthy startup, browser
+playback 1/1 in `3.9s`, replay, label-and-prefix cleanup, independent zero
+residue, and retained-resource comparison. The current checked-in runner,
+executed via Bash, has SHA-256
+`d0d4564b8c5ac9b126cbc9a4fc4dfbdaec65d6f9fb03013dc3db0ca46b373d59`.
+The endpoint-remediation candidate passes 9/9 tasks with two cached tasks in
+`10.727s`.
+
 ## Planned evidence
 
-- P14-R18 boundary-remediation publication, final protected confirmation,
-  merge, and exact-main acceptance
+- P14-R18 endpoint-remediation candidate, publication, blocker-permitted
+  protected confirmation, merge, and exact-main acceptance

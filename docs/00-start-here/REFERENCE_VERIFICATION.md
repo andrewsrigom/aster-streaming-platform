@@ -35,18 +35,21 @@ records the exact source and Docker results.
 
 ## Verified Docker reference journey
 
-The accepted boundary-corrected Docker attempt uses Engine `26.0.0`, Compose
-`2.26.1-desktop.1`, and the unique literal project
-`aster-reference-boundary-20260902`.
+The accepted endpoint-corrected Docker attempt uses Engine `26.0.0`, Compose
+`2.26.1-desktop.1`, inspected local Linux context `default`, and the unique
+literal project `aster-reference-endpoint-20260902`.
 
 - Docker context verification includes 24 reviewed paths and excludes 18
   private or generated canaries.
+- Docker endpoint/configuration overrides and non-local endpoints are refused.
+  Every Docker and Compose operation is pinned to the inspected context.
 - Ports `3000`, `4000`, and `9001` are free before startup. Every container,
   network, and volume inventory query must succeed and report an empty exact
-  namespace before teardown is armed.
+  namespace before teardown is armed. Physical project-name prefixes are also
+  checked so missing labels cannot hide a collision.
 - The anonymous Web, Router, Catalog, Playback, PostgreSQL, object-storage, and
   generated-media path becomes healthy.
-- The existing real browser journey passes 1/1 in `5.2s`, playing HLS with
+- The existing real browser journey passes 1/1 in `3.9s`, playing HLS with
   captions and direct media delivery.
 - Repeated startup records `changed:false` for the Catalog seed and
   `generated_hls_reused` for the exact 1,948,485-byte technical fixture.
@@ -56,6 +59,11 @@ The accepted boundary-corrected Docker attempt uses Engine `26.0.0`, Compose
 - Independent post-run queries confirm zero project resources and preserve the
   stopped `aster-broker-1`, `aster_broker-data`, and
   `aster_identity-event-trust` resources.
+
+The safety boundary is exercised separately: a hostile `DOCKER_HOST` is refused
+before Docker access, and an unlabeled project-prefixed fixture volume is
+refused and preserved before teardown is armed. The fixture is then removed by
+its exact synthetic name.
 
 The accepted attempt uses generated technical media, no credentials, no
 external film, and no hosted resource.

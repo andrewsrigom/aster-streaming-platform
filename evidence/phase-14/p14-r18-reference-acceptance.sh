@@ -7,12 +7,34 @@ export ASTER_PLAYABLE_DEMO=true
 export ASTER_ENGAGEMENT_DEMO=true
 
 readonly repository=/tmp/aster-reference-reader-boundary-20260902
-readonly project=aster-reference-boundary-20260902
+readonly project=aster-reference-endpoint-20260902
 
 cd "$repository"
 
+fail() {
+  echo "docker_acceptance_refused=$1" >&2
+  exit 1
+}
+
+if [[ -n "${DOCKER_HOST:-}" || -n "${DOCKER_CONTEXT:-}" || -n "${DOCKER_TLS_VERIFY:-}" || -n "${DOCKER_CERT_PATH:-}" || -n "${DOCKER_CONFIG:-}" ]]; then
+  fail docker_endpoint_override
+fi
+
+context_name="$(docker context show 2>/dev/null)" || fail docker_context_unreadable
+[[ -n "$context_name" ]] || fail docker_context_empty
+
+docker_endpoint="$(docker context inspect --format '{{ (index .Endpoints "docker").Host }}' "$context_name" 2>/dev/null)" || fail docker_endpoint_unreadable
+case "$docker_endpoint" in
+  unix://* | npipe://*) ;;
+  *) fail docker_endpoint_not_local ;;
+esac
+
+docker_local() {
+  docker --context "$context_name" "$@"
+}
+
 playable_compose() {
-  docker compose \
+  docker_local compose \
     --project-name "$project" \
     --file infra/compose/compose.yml \
     --file infra/compose/playable.yml \
@@ -21,15 +43,27 @@ playable_compose() {
 }
 
 project_containers() {
-  docker ps --all --quiet --filter "label=com.docker.compose.project=$project"
+  docker_local ps --all --quiet --filter "label=com.docker.compose.project=$project"
 }
 
 project_networks() {
-  docker network ls --quiet --filter "label=com.docker.compose.project=$project"
+  docker_local network ls --quiet --filter "label=com.docker.compose.project=$project"
 }
 
 project_volumes() {
-  docker volume ls --quiet --filter "label=com.docker.compose.project=$project"
+  docker_local volume ls --quiet --filter "label=com.docker.compose.project=$project"
+}
+
+prefixed_containers() {
+  docker_local container ls --all --quiet --filter "name=^/${project}[-_]"
+}
+
+prefixed_networks() {
+  docker_local network ls --quiet --filter "name=^${project}[-_]"
+}
+
+prefixed_volumes() {
+  docker_local volume ls --quiet --filter "name=^${project}[-_]"
 }
 
 cleanup() {
@@ -45,13 +79,19 @@ cleanup() {
   playable_compose down --volumes --timeout 10
   local down_status=$?
 
-  local containers networks volumes
+  local containers networks volumes prefixed_containers_after prefixed_networks_after prefixed_volumes_after
   containers="$(project_containers)"
   local containers_status=$?
   networks="$(project_networks)"
   local networks_status=$?
   volumes="$(project_volumes)"
   local volumes_status=$?
+  prefixed_containers_after="$(prefixed_containers)"
+  local prefixed_containers_status=$?
+  prefixed_networks_after="$(prefixed_networks)"
+  local prefixed_networks_status=$?
+  prefixed_volumes_after="$(prefixed_volumes)"
+  local prefixed_volumes_status=$?
 
   if ((
     ps_status != 0 ||
@@ -59,12 +99,15 @@ cleanup() {
       down_status != 0 ||
       containers_status != 0 ||
       networks_status != 0 ||
-      volumes_status != 0
+      volumes_status != 0 ||
+      prefixed_containers_status != 0 ||
+      prefixed_networks_status != 0 ||
+      prefixed_volumes_status != 0
   )); then
-    echo "docker_cleanup_inspection_failed ps=$ps_status logs=$logs_status down=$down_status containers=$containers_status networks=$networks_status volumes=$volumes_status"
+    echo "docker_cleanup_inspection_failed ps=$ps_status logs=$logs_status down=$down_status containers=$containers_status networks=$networks_status volumes=$volumes_status prefixed_containers=$prefixed_containers_status prefixed_networks=$prefixed_networks_status prefixed_volumes=$prefixed_volumes_status"
     status=1
-  elif [[ -n "$containers" || -n "$networks" || -n "$volumes" ]]; then
-    echo "docker_cleanup_residue containers=$containers networks=$networks volumes=$volumes"
+  elif [[ -n "$containers" || -n "$networks" || -n "$volumes" || -n "$prefixed_containers_after" || -n "$prefixed_networks_after" || -n "$prefixed_volumes_after" ]]; then
+    echo "docker_cleanup_residue containers=$containers networks=$networks volumes=$volumes prefixed_containers=$prefixed_containers_after prefixed_networks=$prefixed_networks_after prefixed_volumes=$prefixed_volumes_after"
     status=1
   else
     echo "docker_cleanup=ok project=$project containers=0 networks=0 volumes=0"
@@ -74,8 +117,11 @@ cleanup() {
 }
 
 node ./tools/verify-docker-context.mjs
-docker info --format 'docker_server={{.ServerVersion}}'
-docker compose version
+docker_os="$(docker_local info --format '{{.OSType}}' 2>/dev/null)" || fail docker_daemon_unavailable
+[[ "$docker_os" == linux ]] || fail docker_daemon_not_linux
+docker_local info --format 'docker_server={{.ServerVersion}}'
+docker_local compose version
+echo "docker_endpoint=local context=$context_name type=$docker_os"
 
 for port in 3000 4000 9001; do
   if ss -H -ltn "sport = :$port" | grep -q .; then
@@ -91,19 +137,28 @@ preflight_networks="$(project_networks)"
 preflight_networks_status=$?
 preflight_volumes="$(project_volumes)"
 preflight_volumes_status=$?
+preflight_prefixed_containers="$(prefixed_containers)"
+preflight_prefixed_containers_status=$?
+preflight_prefixed_networks="$(prefixed_networks)"
+preflight_prefixed_networks_status=$?
+preflight_prefixed_volumes="$(prefixed_volumes)"
+preflight_prefixed_volumes_status=$?
 set -e
 
 if ((
   preflight_containers_status != 0 ||
     preflight_networks_status != 0 ||
-    preflight_volumes_status != 0
+    preflight_volumes_status != 0 ||
+    preflight_prefixed_containers_status != 0 ||
+    preflight_prefixed_networks_status != 0 ||
+    preflight_prefixed_volumes_status != 0
 )); then
-  echo "docker_preflight_inspection_failed containers=$preflight_containers_status networks=$preflight_networks_status volumes=$preflight_volumes_status"
+  echo "docker_preflight_inspection_failed containers=$preflight_containers_status networks=$preflight_networks_status volumes=$preflight_volumes_status prefixed_containers=$preflight_prefixed_containers_status prefixed_networks=$preflight_prefixed_networks_status prefixed_volumes=$preflight_prefixed_volumes_status"
   exit 1
 fi
 
-if [[ -n "$preflight_containers" || -n "$preflight_networks" || -n "$preflight_volumes" ]]; then
-  echo "docker_preflight_occupied containers=$preflight_containers networks=$preflight_networks volumes=$preflight_volumes"
+if [[ -n "$preflight_containers" || -n "$preflight_networks" || -n "$preflight_volumes" || -n "$preflight_prefixed_containers" || -n "$preflight_prefixed_networks" || -n "$preflight_prefixed_volumes" ]]; then
+  echo "docker_preflight_occupied containers=$preflight_containers networks=$preflight_networks volumes=$preflight_volumes prefixed_containers=$preflight_prefixed_containers prefixed_networks=$preflight_prefixed_networks prefixed_volumes=$preflight_prefixed_volumes"
   exit 1
 fi
 

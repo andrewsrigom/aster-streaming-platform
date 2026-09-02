@@ -321,7 +321,13 @@ are resolved. Blocker-boundary review `5091554514` opened discussions
 absent/empty clone, passes the clean 73-task source gate, checks namespace-query
 statuses before arming cleanup, and passes isolated browser/replay/cleanup with
 zero residue. Candidate checks pass 9/9 tasks in `12.826s`. Publication, final
-review, merge, and exact-main acceptance remain.
+review, merge, and exact-main acceptance remained. Review `5091785850` then
+opened remote-Docker and unlabeled-name blockers `3915872033` and `3915872044`.
+The remediation rejects endpoint overrides, pins inspected local Linux context
+`default`, refuses and preserves an unlabeled prefixed fixture before teardown,
+and passes the new literal Docker journey with independent zero label-and-prefix
+residue. Updated candidate checks pass 9/9 tasks in `10.727s`. Publication,
+exact-head review, merge, and exact-main acceptance remain.
 
 ## Deferred hosted queue
 
