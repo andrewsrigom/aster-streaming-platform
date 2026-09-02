@@ -1093,6 +1093,57 @@ and publish the already-completed evidence checkpoint. The correction updates
 repository memory and this evidence only; product source and the heavyweight
 acceptance remain unchanged.
 
+### P14-R16 Identity, Engagement, and Discovery release boundary
+
+Corrected PR63 head `7d573a6562c77c00903d1a6141aee4ec87c64521`,
+tree `18c0931eca792996922b81d302884db9677eacd2`, passed protected
+workflow `33619298315`. Discussion `3913089979` is resolved and the
+corrected-head confirmation is clean.
+
+PR63 squash main `f7b0aad892a76fafe3f5da5c90c1480b8a6cab1d` retains the
+exact reviewed tree. Exact-main workflow `33620771727` passed every applicable
+job. Item72 is verified, and item73 starts from that exact main commit.
+
+### P14-R16 Router, Web, and tooling activation
+
+Item73 is active on `refactor/router-web-tooling-readability`. Its bounded scope
+is Router demand analysis, the Web player session flow, and the repository
+quality-gate lifecycle. It changes private naming and local control-flow
+structure only; no public contract, schema, event, persistence, cache, media,
+telemetry, dependency, or deployment change is authorized.
+
+### P14-R16 Router, Web, and tooling iteration evidence
+
+Environment: WSL Ubuntu20.04 with pinned Node.js24.19.0 and pnpm11.24.0. The
+workspace install reused all 480 packages and downloaded zero packages.
+
+Before editing, Router demand tests pass 8/8, quality-gate lifecycle tests pass
+8/8, Web source tests pass 119/119, and Web strict typecheck passes. After the
+private naming and control-flow refactor, the same focused checks pass. The
+complete Router suite also passes 26/26 with deterministic five-subgraph
+validation. Changed-file ESLint, Prettier, and architecture validation pass.
+
+Router now names policy validation, demand rejection, list detection/sizing,
+bounded metric accounting, recursive selection cost, and intermediate demand
+phases. Web names playback controls, adapter/progress ownership, one-request
+session admission, GraphQL result translation, local telemetry, recovery, and
+client disposal. Tooling names child-process spawning, one-time settlement,
+hard timeout, graceful termination, forced termination, and final-exit timers.
+
+The affected-scope candidate gate passes 46/46 tasks with zero cached tasks in
+1m22.659s. Exact commands and results are retained in
+[`p14-r16-router-web-tooling-readability.txt`](./p14-r16-router-web-tooling-readability.txt).
+Exact source `4013545`, tree `f8398bb`, repeats the candidate gate 46/46 with
+34 cached tasks in 38.962 seconds.
+The local Docker daemon did not become available, so no local browser pass is
+claimed; protected candidate acceptance must supply the browser/Docker-capable
+check before verification.
+
+PR64 initial review discussion `3913611638` found only stale repository-memory
+resume prose that still asked the next agent to commit the already-completed
+evidence checkpoint. The correction updates repository memory and this evidence
+only; product source and local acceptance remain unchanged.
+
 ## Planned evidence
 
 - P14-R16 remaining owner-scoped refactoring characterization

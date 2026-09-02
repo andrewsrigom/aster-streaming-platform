@@ -61,7 +61,7 @@ const progressMessages = {
   conflict: "Progress changed elsewhere. Recheck before continuing to save.",
 } as const;
 
-function Controls({
+function PlaybackControls({
   session,
   experience,
   onFailure,
@@ -70,63 +70,69 @@ function Controls({
   experience: PlaybackExperience;
   onFailure: (failure: PlayerFailure) => void;
 }) {
-  const video = useRef<HTMLVideoElement>(null);
-  const adapter = useRef<PlaybackAdapter | null>(null);
-  const progress = useRef<ReturnType<typeof attachPlayerEngagement> | null>(null);
-  const store = usePlayerStore();
+  const mediaElementRef = useRef<HTMLVideoElement>(null);
+  const playbackAdapterRef = useRef<PlaybackAdapter | null>(null);
+  const progressReporterRef = useRef<ReturnType<typeof attachPlayerEngagement> | null>(null);
+  const playerStore = usePlayerStore();
   const preferences = useSelector((state: PlayerState) => state.player.preferences);
-  const [mediaState, setMediaState] = useState<PlayerMediaState | null>(null);
+  const [playerMediaState, setPlayerMediaState] = useState<PlayerMediaState | null>(null);
   const [progressState, setProgressState] = useState<PlayerProgressView>({ kind: "checking" });
-  const focusPlay = useCallback((control: HTMLElement | null) => {
+  const focusPlayControl = useCallback((control: HTMLElement | null) => {
     control?.focus();
   }, []);
+
   useEffect(() => {
-    if (!video.current) {
+    if (!mediaElementRef.current) {
       return;
     }
-    const attached = attachPlayback({
-      media: video.current,
+
+    const playbackAttachment = attachPlayback({
+      media: mediaElementRef.current,
       session,
       experience,
-      preferences: store.getState().player.preferences,
-      onState: setMediaState,
+      preferences: playerStore.getState().player.preferences,
+      onState: setPlayerMediaState,
       onFailure,
       onPreferences: (value) => {
-        store.dispatch(playerActions.update(value));
+        playerStore.dispatch(playerActions.update(value));
       },
     });
-    adapter.current = attached;
-    let channel: BroadcastChannel | undefined;
-    let reporting: ReturnType<typeof attachPlayerEngagement> | undefined;
+    playbackAdapterRef.current = playbackAttachment;
+
+    let sessionChangeChannel: BroadcastChannel | undefined;
+    let progressReporting: ReturnType<typeof attachPlayerEngagement> | undefined;
     try {
-      channel = new BroadcastChannel("aster.local-session");
-      reporting = attachPlayerEngagement({
-        media: video.current,
+      sessionChangeChannel = new BroadcastChannel("aster.local-session");
+      progressReporting = attachPlayerEngagement({
+        media: mediaElementRef.current,
         session,
         page: window,
         visibility: document,
-        sessionChanges: channel,
+        sessionChanges: sessionChangeChannel,
         onState: setProgressState,
       });
-      progress.current = reporting;
+      progressReporterRef.current = progressReporting;
     } catch {
       setProgressState({ kind: "unavailable" });
     }
+
     return () => {
-      reporting?.dispose(true);
-      progress.current = null;
-      channel?.close();
-      attached.dispose();
-      adapter.current = null;
+      progressReporting?.dispose(true);
+      progressReporterRef.current = null;
+      sessionChangeChannel?.close();
+      playbackAttachment.dispose();
+      playbackAdapterRef.current = null;
     };
-  }, [session, experience, onFailure, store]);
+  }, [session, experience, onFailure, playerStore]);
+
   useEffect(() => {
-    adapter.current?.setPreferences(preferences);
+    playbackAdapterRef.current?.setPreferences(preferences);
   }, [preferences]);
 
-  const quality = mediaState?.qualities.includes(Number(preferences.quality))
+  const selectedQuality = playerMediaState?.qualities.includes(Number(preferences.quality))
     ? preferences.quality
     : "auto";
+
   return (
     <div className="space-y-4">
       <MediaController
@@ -138,7 +144,7 @@ function Controls({
         aria-label="Video player"
       >
         <video
-          ref={video}
+          ref={mediaElementRef}
           slot="media"
           playsInline
           crossOrigin="anonymous"
@@ -147,7 +153,7 @@ function Controls({
         />
         <MediaLoadingIndicator slot="centered-chrome" noAutohide />
         <MediaControlBar>
-          <MediaPlayButton ref={focusPlay} />
+          <MediaPlayButton ref={focusPlayControl} />
           <MediaSeekBackwardButton seekOffset={10} />
           <MediaSeekForwardButton seekOffset={10} />
           <MediaTimeRange />
@@ -164,18 +170,18 @@ function Controls({
             Quality
             <select
               className={styles["select"]}
-              value={quality}
+              value={selectedQuality}
               onChange={(event) => {
-                store.dispatch(
+                playerStore.dispatch(
                   playerActions.update({
                     quality: event.target.value === "auto" ? "auto" : Number(event.target.value),
                   }),
                 );
               }}
-              disabled={!mediaState?.qualities.length}
+              disabled={!playerMediaState?.qualities.length}
             >
               <option value="auto">Auto</option>
-              {mediaState?.qualities.map((height) => (
+              {playerMediaState?.qualities.map((height) => (
                 <option key={height} value={height}>
                   {height}p
                 </option>
@@ -186,12 +192,14 @@ function Controls({
             Caption track
             <select
               className={styles["select"]}
-              value={mediaState?.captions.find((track) => track.selected)?.index ?? -1}
-              disabled={!mediaState?.captions.length}
-              onChange={(event) => adapter.current?.selectCaption(Number(event.target.value))}
+              value={playerMediaState?.captions.find((track) => track.selected)?.index ?? -1}
+              disabled={!playerMediaState?.captions.length}
+              onChange={(event) =>
+                playbackAdapterRef.current?.selectCaption(Number(event.target.value))
+              }
             >
               <option value={-1}>Off</option>
-              {mediaState?.captions.map((track) => (
+              {playerMediaState?.captions.map((track) => (
                 <option key={track.index} value={track.index}>
                   {track.label}
                 </option>
@@ -210,7 +218,7 @@ function Controls({
           <button
             className={buttonVariants({ variant: "outline" })}
             onClick={() => {
-              progress.current?.resume();
+              progressReporterRef.current?.resume();
             }}
           >
             Resume at {Math.floor(progressState.resumeSeconds / 60)}:
@@ -221,19 +229,19 @@ function Controls({
           <button
             className={buttonVariants({ variant: "outline" })}
             onClick={() => {
-              void progress.current?.refresh();
+              void progressReporterRef.current?.refresh();
             }}
           >
             Recheck saved progress
           </button>
         ) : null}
       </div>
-      {mediaState?.mode === "native" ? (
+      {playerMediaState?.mode === "native" ? (
         <p className="text-sm text-muted-foreground">
           Native HLS: the browser selects video quality automatically.
         </p>
       ) : null}
-      {mediaState && !mediaState.captions.length ? (
+      {playerMediaState && !playerMediaState.captions.length ? (
         <p className="text-sm text-muted-foreground">
           This publication provides no selectable captions.
         </p>
@@ -246,82 +254,114 @@ function Controls({
   );
 }
 
-function SessionPlayer({ titleId, runtime }: { titleId: string; runtime: PlayerClient }) {
-  const inFlight = useRef(false);
-  const experienceRef = useRef<PlaybackExperience | null>(null);
-  const [createSession, { data, loading, reset }] = useMutation(START_PLAYBACK, {
-    client: runtime.client,
-    fetchPolicy: "no-cache",
-  });
-  const [failure, setFailure] = useState<PlayerFailure | null>(null);
-  const [captionWarning, setCaptionWarning] = useState(false);
-  const [report, setReport] = useState<string | null>(null);
-  const [experience, setExperience] = useState<PlaybackExperience | null>(null);
-  const onFailure = useCallback((value: PlayerFailure) => {
-    if (value === "caption") {
-      setCaptionWarning(true);
-    } else {
-      setFailure(value);
+function playbackSessionFailure(resultCode: string | undefined): PlayerFailure | undefined {
+  if (resultCode === "COMPLETED") {
+    return undefined;
+  }
+  if (resultCode === "NOT_PLAYABLE") {
+    return "not-playable";
+  }
+  return "session";
+}
+
+function PlaybackSessionFlow({
+  titleId,
+  playbackClient,
+}: {
+  titleId: string;
+  playbackClient: PlayerClient;
+}) {
+  const sessionRequestInFlight = useRef(false);
+  const playbackExperienceRef = useRef<PlaybackExperience | null>(null);
+  const [createPlaybackSession, { data: sessionResponse, loading, reset }] = useMutation(
+    START_PLAYBACK,
+    {
+      client: playbackClient.client,
+      fetchPolicy: "no-cache",
+    },
+  );
+  const [playbackFailure, setPlaybackFailure] = useState<PlayerFailure | null>(null);
+  const [hasCaptionWarning, setHasCaptionWarning] = useState(false);
+  const [measurementReport, setMeasurementReport] = useState<string | null>(null);
+  const [playbackExperience, setPlaybackExperience] = useState<PlaybackExperience | null>(null);
+  const handlePlaybackFailure = useCallback((failure: PlayerFailure) => {
+    if (failure === "caption") {
+      setHasCaptionWarning(true);
+      return;
     }
+
+    setPlaybackFailure(failure);
   }, []);
+
   useEffect(
     () => () => {
-      experienceRef.current?.dispose();
-      experienceRef.current = null;
+      playbackExperienceRef.current?.dispose();
+      playbackExperienceRef.current = null;
     },
     [],
   );
-  const begin = async () => {
-    if (inFlight.current) {
+
+  const requestPlaybackSession = async () => {
+    if (sessionRequestInFlight.current) {
       return;
     }
-    inFlight.current = true;
+
+    sessionRequestInFlight.current = true;
     reset();
-    setFailure(null);
-    setCaptionWarning(false);
-    setReport(null);
-    experienceRef.current?.dispose();
-    const measurement = createPlaybackExperience();
-    experienceRef.current = measurement;
-    const started = performance.now();
-    setExperience(measurement);
+    setPlaybackFailure(null);
+    setHasCaptionWarning(false);
+    setMeasurementReport(null);
+    playbackExperienceRef.current?.dispose();
+
+    const playbackAttempt = createPlaybackExperience();
+    const sessionRequestStartedAt = performance.now();
+    playbackExperienceRef.current = playbackAttempt;
+    setPlaybackExperience(playbackAttempt);
+
     try {
-      const result = await createSession({ variables: { titleId } });
-      const resultCode = result.data?.createPlaybackSession.code;
-      const completed = resultCode === "COMPLETED";
-      const error: PlayerFailure | undefined = completed
-        ? undefined
-        : resultCode === "NOT_PLAYABLE"
-          ? "not-playable"
-          : "session";
-      measurement.record(completed ? "session_success" : "session_failure", {
-        durationMs: performance.now() - started,
-        ...(error ? { error } : {}),
+      const sessionResult = await createPlaybackSession({ variables: { titleId } });
+      const sessionFailure = playbackSessionFailure(sessionResult.data?.createPlaybackSession.code);
+      playbackAttempt.record(sessionFailure ? "session_failure" : "session_success", {
+        durationMs: performance.now() - sessionRequestStartedAt,
+        ...(sessionFailure ? { error: sessionFailure } : {}),
       });
-      if (!completed) {
-        setFailure(error ?? "session");
+      if (sessionFailure) {
+        setPlaybackFailure(sessionFailure);
       }
     } catch {
-      measurement.record("session_failure", {
-        durationMs: performance.now() - started,
+      playbackAttempt.record("session_failure", {
+        durationMs: performance.now() - sessionRequestStartedAt,
         error: "session",
       });
-      setFailure("session");
+      setPlaybackFailure("session");
     } finally {
-      inFlight.current = false;
+      sessionRequestInFlight.current = false;
     }
   };
-  const session = !loading && !failure ? data?.createPlaybackSession.session : null;
+
+  const activeSession =
+    !loading && !playbackFailure ? sessionResponse?.createPlaybackSession.session : null;
+  let sessionActionLabel = "Start playback";
+  if (loading) {
+    sessionActionLabel = "Checking availability…";
+  } else if (playbackFailure) {
+    sessionActionLabel = "Start a new session";
+  }
+
   return (
     <section aria-label="Playback" className="space-y-5">
-      {session && experience ? (
-        <Controls session={session} experience={experience} onFailure={onFailure} />
+      {activeSession && playbackExperience ? (
+        <PlaybackControls
+          session={activeSession}
+          experience={playbackExperience}
+          onFailure={handlePlaybackFailure}
+        />
       ) : (
         <div className="flex aspect-video flex-col items-center justify-center gap-5 rounded-xl border border-border bg-black p-6 text-center">
           <p className="eyebrow">READY WHEN YOU ARE</p>
-          {failure ? (
+          {playbackFailure ? (
             <p role="alert" className="max-w-lg text-sm">
-              {failureMessage[failure]}
+              {failureMessage[playbackFailure]}
             </p>
           ) : (
             <p className="max-w-lg text-sm text-muted-foreground">
@@ -332,33 +372,29 @@ function SessionPlayer({ titleId, runtime }: { titleId: string; runtime: PlayerC
             className={buttonVariants()}
             disabled={loading}
             onClick={() => {
-              void begin();
+              void requestPlaybackSession();
             }}
           >
-            {loading
-              ? "Checking availability…"
-              : failure
-                ? "Start a new session"
-                : "Start playback"}
+            {sessionActionLabel}
           </button>
         </div>
       )}
-      {captionWarning ? (
+      {hasCaptionWarning ? (
         <p role="status" className="text-sm">
           {failureMessage.caption}
         </p>
       ) : null}
-      {experience ? (
+      {playbackExperience ? (
         <div className="space-y-3">
           <button
             className={buttonVariants({ variant: "outline" })}
             onClick={() => {
-              setReport(
+              setMeasurementReport(
                 JSON.stringify(
                   {
                     policy: playbackTelemetryPolicy,
-                    summary: experience.summary(),
-                    events: experience.snapshot(),
+                    summary: playbackExperience.summary(),
+                    events: playbackExperience.snapshot(),
                   },
                   null,
                   2,
@@ -373,12 +409,12 @@ function SessionPlayer({ titleId, runtime }: { titleId: string; runtime: PlayerC
             stored, and identifiers and media URLs are excluded. Saved viewing progress is separate
             and requires a selected profile.
           </p>
-          {report !== null ? (
+          {measurementReport !== null ? (
             <pre
               aria-label="Local playback measurements"
               className="max-h-64 overflow-auto rounded-lg border border-border p-4 text-xs"
             >
-              {report}
+              {measurementReport}
             </pre>
           ) : null}
         </div>
@@ -388,8 +424,9 @@ function SessionPlayer({ titleId, runtime }: { titleId: string; runtime: PlayerC
 }
 
 export default function Player({ titleId }: { titleId: string }) {
-  const [store] = useState(createPlayerStore);
-  const [runtime, setRuntime] = useState<PlayerClient | null>(null);
+  const [playerStore] = useState(createPlayerStore);
+  const [playbackClient, setPlaybackClient] = useState<PlayerClient | null>(null);
+
   useEffect(() => {
     let preferences = { ...defaultPlayerPreferences };
     try {
@@ -397,25 +434,28 @@ export default function Player({ titleId }: { titleId: string }) {
     } catch {
       /* Storage access may be disabled. */
     }
-    store.dispatch(playerActions.restore(preferences));
-    const unsubscribe = store.subscribe(() => {
+    playerStore.dispatch(playerActions.restore(preferences));
+
+    const unsubscribeFromPreferences = playerStore.subscribe(() => {
       try {
-        writePlayerPreferences(window.localStorage, store.getState().player.preferences);
+        writePlayerPreferences(window.localStorage, playerStore.getState().player.preferences);
       } catch {
         /* Playback does not require storage. */
       }
     });
-    const client = createPlaybackClient();
-    setRuntime(client);
+    const initializedPlaybackClient = createPlaybackClient();
+    setPlaybackClient(initializedPlaybackClient);
+
     return () => {
-      unsubscribe();
-      client.dispose();
+      unsubscribeFromPreferences();
+      initializedPlaybackClient.dispose();
     };
-  }, [store]);
+  }, [playerStore]);
+
   return (
-    <Provider store={store}>
-      {runtime ? (
-        <SessionPlayer key={titleId} titleId={titleId} runtime={runtime} />
+    <Provider store={playerStore}>
+      {playbackClient ? (
+        <PlaybackSessionFlow key={titleId} titleId={titleId} playbackClient={playbackClient} />
       ) : (
         <p role="status">Preparing player…</p>
       )}

@@ -2,66 +2,59 @@
 
 ## Resume point
 
-Phases00–13 and items68–71 are verified. PR62 final head `c03745d`, tree
-`07641d9`, passed protected workflow `33609186840` on attempt 2; all three
-review discussions are resolved. PR62 squash main `34a32c4` retains the exact
-tree, and exact-main workflow `33612201728` passed every applicable job.
+Phases00–13 and items68–72 are verified. PR63 final head `7d573a6`, tree
+`18c0931`, passed protected workflow `33619298315`; its sole review discussion
+is resolved and corrected-head confirmation is clean. PR63 squash main
+`f7b0aad` retains the exact tree, and exact-main workflow `33620771727` passed.
 
-Item72/P14-R16 is active on
-`refactor/identity-engagement-discovery-readability`, worktree
-`/tmp/aster-readability-identity-engagement-discovery`, from that exact main
-commit.
+Item73/P14-R16 is active on `refactor/router-web-tooling-readability`, worktree
+`/tmp/aster-readability-router-web-tooling`, from that exact main commit.
 
 ## Active outcome
 
-Close only the `identity-profile-transaction`, `engagement-progress-write`, and
-`discovery-home-assembly` findings:
+Close only the `router-demand-analysis`, `web-player-session-flow`, and
+`quality-gate-lifecycle` findings:
 
-- name Identity credential/session validation, owner lookup, replay, capacity,
-  mutation, audit, outbox, and receipt phases;
-- name Engagement owner/playback snapshots, dependency settlement, replay,
-  admission, durable-write, and indeterminate-write phases;
-- name Discovery fixed and genre rail assembly, safe fallback, independent
-  selection, per-rail telemetry, and aggregate-result phases;
-- preserve every public status, authorization, expiry, replay, transaction,
-  event, deadline, cancellation, fallback, telemetry, and indeterminate-write
-  behavior.
+- name Router demand rejection, policy validation, list detection, bounded
+  metric accounting, and recursive selection-cost phases;
+- name Web player-control ownership, session-request state, GraphQL result
+  translation, telemetry, recovery, and stale-player prevention;
+- name quality-gate child-process spawning, one-time settlement, timeout,
+  graceful signal propagation, and forced termination;
+- preserve every public contract, limit, policy, session, accessibility,
+  telemetry, timeout, signal, exit-status, and cleanup behavior.
 
 ## Work completed locally
 
-- Restored the required Phase14, owner-specification, ADR, skill, source, and
+- Verified item72 through protected PR, clean confirmation, exact-tree squash,
+  and successful exact-main acceptance.
+- Restored the required Phase14, linked requirement, ADR, skill, source, and
   characterization-test context.
-- Activated item72 from exact verified main and recorded its boundaries,
-  failure modes, gates, repeat triggers, and review stopping rule.
-- The linked pre-edit characterization passes 47/47.
-- Identity now names the authorized transaction, owned-profile lookup,
-  mutation, replay, capacity, durable state, event, and receipt phases.
-- Engagement now names dependency-snapshot freshness, late settlement, replay,
-  admission, Playback context, transaction result, and the uncertain-write
-  boundary.
-- Discovery now names each selection, rail assembly, safe fallback, telemetry,
-  usable result, and aggregate failure phase without numeric indexes.
-- The post-edit characterization passes 47/47. Complete Identity tests pass
-  163/163, Engagement 129/129, and Discovery 110/110. Builds, typechecks,
-  changed-file lint, and architecture validation pass.
-- The affected-scope candidate gate passes 44/44 tasks with 12 cached tasks in
-  1m4.03s.
-- Exact source `6239362`, tree `217aaf6`, repeats the candidate gate 44/44 with
-  33 cached tasks in 39.287 seconds.
-- Evidence head `1e45071` opened PR63 and passed protected workflow
-  `33616377473`, including source quality, owner integrations, the Docker-only
-  demo, Local platform, documentation, security, and the aggregate gate.
-- Initial review found one repository-memory defect: the handoff, current state,
-  and session log still instructed the next agent to create and publish the
-  already-completed evidence checkpoint. This correction changes only those
-  resume instructions and evidence.
+- Activated item73 and recorded its boundaries, failure modes, gates, repeat
+  triggers, and review stopping rule.
+- The pre-edit and post-edit Router demand tests pass 8/8, quality-gate tests
+  pass 8/8, Web source tests pass 119/119, and Web strict typecheck passes.
+- Router now names demand admission phases; Web names player/session ownership
+  and explicit result/recovery phases; tooling names process settlement and the
+  graceful-to-forced termination lifecycle.
+- Complete Router tests pass 26/26. Changed-file lint/format and architecture
+  validation pass.
+- The affected-scope candidate gate passes 46/46 tasks with zero cached tasks
+  in 1m22.659s.
+- Exact source `4013545`, tree `f8398bb`, repeats the candidate gate 46/46 with
+  34 cached tasks in 38.962 seconds.
+- Local Docker Desktop started but its daemon/WSL integration did not become
+  ready. No local browser pass is claimed; protected acceptance must provide it.
+- PR64 initial review discussion `3913611638` found that the handoff, current
+  state, and session log still asked the next agent to commit the
+  already-completed evidence checkpoint. This correction changes only resume
+  prose and evidence.
 
 ## Exact next actions
 
-1. Confirm the repository-memory correction is published and discussion
-   `3913089979` is resolved.
-2. Require corrected exact-head protected acceptance and one confirmation.
-3. Merge only after both pass, then verify exact main.
+1. Require corrected exact-head browser/Docker-capable protected acceptance and
+   one confirmation.
+2. Resolve discussion `3913611638`, merge, and verify exact main.
 
 ## Execution boundary
 
@@ -71,12 +64,11 @@ media-rights claims, public contracts, schemas, events, or abstractions.
 
 ## Heavyweight evidence
 
-Do not repeat Docker, browser, media, PostgreSQL, Redis, or broker evidence
-unless the refactor changes the behavior that evidence measured. The intended
-change is private naming and local structure only.
+Repeat the linked browser playback characterization because the selected Web
+source changes. Do not repeat unrelated PostgreSQL, Redis, broker, media, or
+Docker evidence unless the refactor changes the behavior it measured.
 
 ## Do not do yet
 
-Do not touch Router, Web, tooling, or P14-R17 examples. Newly noticed
-non-blocking readability issues return to the bounded inventory instead of
-widening item72.
+Do not touch P14-R17 examples or reading paths. Newly noticed non-blocking
+readability issues return to the bounded inventory instead of widening item73.

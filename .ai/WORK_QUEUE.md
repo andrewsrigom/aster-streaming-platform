@@ -92,8 +92,8 @@ The latest release is Phase13:
 | 69 | Publish the capability-to-code/test/evidence/operations index | P14-R14 | DONE |
 | 70 | Define readability guardrails and a bounded prioritized findings inventory | P14-R15 | DONE |
 | 71 | Refactor representative Catalog and Playback reading slices | P14-R16 | DONE |
-| 72 | Refactor representative Identity, Engagement and Discovery reading slices | P14-R16 | IN_PROGRESS |
-| 73 | Refactor representative Router, Web and repository-tooling reading slices | P14-R16 | READY |
+| 72 | Refactor representative Identity, Engagement and Discovery reading slices | P14-R16 | DONE |
+| 73 | Refactor representative Router, Web and repository-tooling reading slices | P14-R16 | IN_PROGRESS |
 | 74 | Align rationale comments, executable examples and core-journey reading paths | P14-R17 | READY |
 | 75 | Run fresh-checkout/Docker acceptance and verify the reference track | P14-R18 | READY |
 
@@ -193,7 +193,7 @@ PR62 final head `c03745d`, tree `07641d9`, passed protected workflow
 main `34a32c4` retains the exact tree, and exact-main workflow `33612201728`
 passed every applicable job.
 
-## Item72 — active
+## Item72 — verified
 
 ### Outcome
 
@@ -209,6 +209,31 @@ while preserving all public behavior.
 - Authorization, expiry, replay, capacity, versioning, atomic outbox,
   cancellation, uncertain-commit, fallback, partial-status, and telemetry
   behavior remains unchanged.
+- Linked characterization tests and the affected-scope candidate gate pass.
+- No public contract, schema, event, persistence, cache, media, telemetry, or
+  deployment change is introduced.
+
+PR63 final head `7d573a6`, tree `18c0931`, passed protected workflow
+`33619298315`; its sole review discussion is resolved and corrected-head
+confirmation is clean. PR63 squash main `f7b0aad` retains the exact tree, and
+exact-main workflow `33620771727` passed every applicable job.
+
+## Item73 — active
+
+### Outcome
+
+Make Router demand analysis, the Web player session flow, and the repository
+quality-gate lifecycle readable through explicit domain and process-ownership
+names and visible phases while preserving all public behavior.
+
+### Acceptance
+
+- Private names expose demand-policy validation, list expansion, bounded metric
+  accounting and recursive selection cost.
+- Web names expose playback-control ownership, session-request state, GraphQL
+  result translation, telemetry, recovery, and stale-player prevention.
+- Tooling names expose child-process ownership, one-time settlement, timeout,
+  graceful signal propagation, and forced termination.
 - Linked characterization tests and the affected-scope candidate gate pass.
 - No public contract, schema, event, persistence, cache, media, telemetry, or
   deployment change is introduced.

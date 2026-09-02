@@ -38,7 +38,7 @@ interface QualityGateProcess {
   onError(listener: (error: Error) => void): void;
 }
 
-type StartQualityGate = (
+type SpawnQualityGateProcess = (
   executable: string,
   args: readonly string[],
   options: SpawnOptions,
@@ -82,7 +82,7 @@ type RunTaskkill = (
   options: SpawnSyncOptions,
 ) => TaskkillResult;
 
-function startQualityGate(
+function spawnQualityGateProcess(
   executable: string,
   args: readonly string[],
   options: SpawnOptions,
@@ -200,12 +200,12 @@ export function createQualityGateInvocation(
 
 export async function runQualityGate(
   input = process.argv.slice(2),
-  start: StartQualityGate = startQualityGate,
-  reportError: (message: string) => void = console.error,
-  terminate: TerminateQualityGate = (pid) => terminateQualityGateProcessTree(pid),
+  spawnProcess: SpawnQualityGateProcess = spawnQualityGateProcess,
+  reportQualityGateError: (message: string) => void = console.error,
+  forceTerminateProcessTree: TerminateQualityGate = (pid) => terminateQualityGateProcessTree(pid),
   timeoutMs = QUALITY_GATE_TIMEOUT_MS,
   signalSource: QualityGateSignalSource = processSignalSource,
-  requestTermination: RequestQualityGateTermination = (pid, signal) =>
+  requestGracefulTermination: RequestQualityGateTermination = (pid, signal) =>
     requestQualityGateProcessTreeTermination(pid, signal),
   signalGraceMs = 5_000,
 ): Promise<number> {
@@ -213,15 +213,15 @@ export async function runQualityGate(
   try {
     invocation = createQualityGateInvocation(input);
   } catch {
-    reportError(
+    reportQualityGateError(
       JSON.stringify({ check: "quality-gate", reason: "invalid_arguments", status: "error" }),
     );
     return 2;
   }
 
-  let child: QualityGateProcess;
+  let qualityGateProcess: QualityGateProcess;
   try {
-    child = start(invocation.executable, invocation.args, {
+    qualityGateProcess = spawnProcess(invocation.executable, invocation.args, {
       cwd: repositoryRoot,
       detached: invocation.detached,
       env: { ...process.env, ...invocation.envOverrides },
@@ -229,86 +229,93 @@ export async function runQualityGate(
       windowsHide: true,
     });
   } catch {
-    reportError(
+    reportQualityGateError(
       JSON.stringify({ check: "quality-gate", reason: "execution_failed", status: "error" }),
     );
     return 1;
   }
 
-  return await new Promise<number>((resolveStatus) => {
-    let fallback: NodeJS.Timeout | undefined;
-    let settled = false;
-    let timedOut = false;
+  return await new Promise<number>((resolveExitStatus) => {
+    let forceTerminationTimer: NodeJS.Timeout | undefined;
+    let forcedExitTimer: NodeJS.Timeout | undefined;
+    let qualityGateSettled = false;
+    let qualityGateTimedOut = false;
     let terminationSignal: QualityGateSignal | undefined;
     const signalListeners = new Map<QualityGateSignal, () => void>();
-    const finish = (status: number, reason?: "execution_failed" | "interrupted" | "timeout") => {
-      if (settled) {
+    const settleQualityGate = (
+      status: number,
+      reason?: "execution_failed" | "interrupted" | "timeout",
+    ) => {
+      if (qualityGateSettled) {
         return;
       }
-      settled = true;
-      clearTimeout(timeout);
-      if (fallback) {
-        clearTimeout(fallback);
+      qualityGateSettled = true;
+      clearTimeout(qualityGateTimeout);
+      if (forceTerminationTimer) {
+        clearTimeout(forceTerminationTimer);
+      }
+      if (forcedExitTimer) {
+        clearTimeout(forcedExitTimer);
       }
       for (const [signal, listener] of signalListeners) {
         signalSource.off(signal, listener);
       }
       if (reason) {
-        reportError(JSON.stringify({ check: "quality-gate", reason, status: "error" }));
+        reportQualityGateError(JSON.stringify({ check: "quality-gate", reason, status: "error" }));
       }
-      resolveStatus(status);
+      resolveExitStatus(status);
     };
 
-    const timeout = setTimeout(() => {
-      timedOut = true;
-      if (!terminate(child.pid)) {
-        finish(1, "execution_failed");
+    const qualityGateTimeout = setTimeout(() => {
+      qualityGateTimedOut = true;
+      if (!forceTerminateProcessTree(qualityGateProcess.pid)) {
+        settleQualityGate(1, "execution_failed");
         return;
       }
-      fallback = setTimeout(() => {
-        finish(1, "timeout");
+      forcedExitTimer = setTimeout(() => {
+        settleQualityGate(1, "timeout");
       }, 5_000);
     }, timeoutMs);
 
     for (const signal of ["SIGINT", "SIGTERM"] as const) {
-      const listener = (): void => {
-        if (settled || timedOut || terminationSignal) {
+      const signalListener = (): void => {
+        if (qualityGateSettled || qualityGateTimedOut || terminationSignal) {
           return;
         }
         terminationSignal = signal;
-        clearTimeout(timeout);
-        requestTermination(child.pid, signal);
-        fallback = setTimeout(() => {
-          if (!terminate(child.pid)) {
-            finish(1, "execution_failed");
+        clearTimeout(qualityGateTimeout);
+        requestGracefulTermination(qualityGateProcess.pid, signal);
+        forceTerminationTimer = setTimeout(() => {
+          if (!forceTerminateProcessTree(qualityGateProcess.pid)) {
+            settleQualityGate(1, "execution_failed");
             return;
           }
-          fallback = setTimeout(() => {
-            finish(SIGNAL_EXIT_STATUS[signal], "interrupted");
+          forcedExitTimer = setTimeout(() => {
+            settleQualityGate(SIGNAL_EXIT_STATUS[signal], "interrupted");
           }, 5_000);
         }, signalGraceMs);
       };
-      signalListeners.set(signal, listener);
-      signalSource.on(signal, listener);
+      signalListeners.set(signal, signalListener);
+      signalSource.on(signal, signalListener);
     }
 
-    child.onError(() => {
-      finish(1, "execution_failed");
+    qualityGateProcess.onError(() => {
+      settleQualityGate(1, "execution_failed");
     });
-    child.onClose((code) => {
+    qualityGateProcess.onClose((code) => {
       if (terminationSignal) {
-        finish(SIGNAL_EXIT_STATUS[terminationSignal], "interrupted");
+        settleQualityGate(SIGNAL_EXIT_STATUS[terminationSignal], "interrupted");
         return;
       }
-      if (timedOut) {
-        finish(1, "timeout");
+      if (qualityGateTimedOut) {
+        settleQualityGate(1, "timeout");
         return;
       }
       if (code === null) {
-        finish(1, "execution_failed");
+        settleQualityGate(1, "execution_failed");
         return;
       }
-      finish(code);
+      settleQualityGate(code);
     });
   });
 }

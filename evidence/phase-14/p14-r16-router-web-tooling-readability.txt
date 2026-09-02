@@ -1,0 +1,152 @@
+P14-R16 Router, Web, and tooling readability evidence
+Date: 2026-09-02
+Environment: WSL Ubuntu 20.04; Node.js 24.19.0; pnpm 11.24.0
+Base commit: f7b0aad892a76fafe3f5da5c90c1480b8a6cab1d
+Base tree: 18c0931eca792996922b81d302884db9677eacd2
+Branch: refactor/router-web-tooling-readability
+Worktree: /tmp/aster-readability-router-web-tooling
+
+Scope
+-----
+- apps/router/src/demand.ts
+- apps/web/features/playback/player.tsx
+- tools/run-quality-gate.ts
+- linked characterization and repository-memory/evidence updates
+
+No public GraphQL contract, manifest format, demand limit, player interaction,
+telemetry shape, process timeout, signal, exit status, dependency, persistence,
+media, or deployment change is authorized.
+
+Workspace installation
+----------------------
+Command:
+  pnpm install --offline --frozen-lockfile
+Result:
+  PASS — 480 packages reused, 0 downloaded; lockfile unchanged.
+
+Pre-edit characterization
+-------------------------
+Command:
+  pnpm --filter @aster/router build && node --test apps/router/dist/test/demand.test.js
+Result:
+  PASS — Router demand characterization 8/8.
+
+Command:
+  node --test ./tools/run-quality-gate.test.ts
+Result:
+  PASS — quality-gate lifecycle characterization 8/8.
+
+Command:
+  pnpm --filter @aster/web test
+Result:
+  PASS — Web source characterization 119/119.
+
+Command:
+  pnpm --filter @aster/web typecheck
+Result:
+  PASS — Next.js route generation and strict TypeScript.
+
+The local Docker engine was not available before editing. Docker Desktop was
+started, but its daemon and WSL integration did not become ready. The linked
+Playwright playback suite therefore remains a protected-candidate requirement;
+no browser pass is claimed in this local checkpoint.
+
+Implemented readability changes
+-------------------------------
+Router:
+- names operation runtime-policy construction and authorization-scope growth;
+- names fail-closed demand rejection and positive policy validation;
+- names directive metadata, list detection/sizing, bounded metric increments,
+  safe demand arithmetic, composite/root requirements, and recursive selection
+  cost;
+- names parsed-document, schema-validation, operation-definition, fragment,
+  metric, base-cost, expansion, and nested-cost phases.
+
+Web:
+- names playback controls, media/adapter/progress ownership, preference store,
+  session-change channel, and player media state;
+- names one-request session admission, GraphQL result translation, local
+  playback attempt, active session, accessible action label, failure handling,
+  measurement report, and client disposal;
+- replaces the nested session-failure and button-label expressions with
+  explicit branches while retaining the same values and UI.
+
+Repository tooling:
+- names child-process spawning, one-time gate settlement, hard timeout,
+  graceful termination request, forced termination, and final forced-exit
+  timers;
+- retains the same task selection, arguments, environment, timeout values,
+  signals, process groups, error reasons, and exit statuses.
+
+Post-edit focused verification
+------------------------------
+Command:
+  pnpm --filter @aster/router build && node --test apps/router/dist/test/demand.test.js
+Result:
+  PASS — Router demand characterization 8/8.
+
+Command:
+  pnpm --filter @aster/router test
+Result:
+  PASS — complete Router suite 26/26 plus deterministic five-subgraph check.
+
+Command:
+  node --test ./tools/run-quality-gate.test.ts
+Result:
+  PASS — quality-gate lifecycle characterization 8/8.
+
+Command:
+  pnpm --filter @aster/web test && pnpm --filter @aster/web typecheck
+Result:
+  PASS — Web source characterization 119/119 and strict typecheck.
+
+Command:
+  pnpm exec eslint apps/router/src/demand.ts apps/web/features/playback/player.tsx tools/run-quality-gate.ts
+Result:
+  PASS.
+
+Command:
+  pnpm architecture:check
+Result:
+  PASS — zero violations.
+
+Command:
+  pnpm exec prettier --check apps/router/src/demand.ts apps/web/features/playback/player.tsx tools/run-quality-gate.ts
+Result:
+  PASS.
+
+Affected-scope candidate gate
+-----------------------------
+Command:
+  pnpm check:changed
+Result:
+  PASS — 46/46 tasks, 0 cached, 1m22.659s.
+
+Exact source checkpoint:
+  commit 40135459f03d3bf0ac0b8cc919fbd5a6b62e2ca1
+  tree   f8398bbb2bab6b13cc52bb579f3f1aab76976799
+
+Repeated command:
+  pnpm check:changed
+Repeated result:
+  PASS — 46/46 tasks, 34 cached, 38.962s.
+
+The gate includes affected builds, Router and Web tests/typechecks, workspace
+lint/format/unused-code checks, architecture, documentation, repository memory,
+security, toolchain, CI policy, platform policy, and governance. Protected CI
+must run the Docker/browser-capable acceptance before this item is verified.
+
+Interpretation
+--------------
+The focused and affected local checks preserve the selected source-level and
+contract behavior. Local browser evidence is pending because the host Docker
+daemon did not become available; this limitation does not become a passing
+claim. Protected candidate acceptance, review, merge, and exact-main acceptance
+remain required.
+
+Initial protected review
+------------------------
+PR64 discussion 3913611638 found only stale resume prose that still asked the
+next agent to commit the already-completed evidence checkpoint. The correction
+changes repository memory and evidence only. Product source and the focused and
+affected local results remain unchanged.

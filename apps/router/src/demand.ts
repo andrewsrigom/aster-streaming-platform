@@ -55,7 +55,7 @@ export type OperationRuntimePolicy = Readonly<{
   rateClass: OperationRateClass;
 }>;
 
-const runtimePolicy = (
+const defineOperationRuntimePolicy = (
   authorizationScope: OperationAuthorizationScope,
   rateClass: OperationRateClass = "global",
 ): OperationRuntimePolicy =>
@@ -68,31 +68,31 @@ const runtimePolicy = (
   });
 
 const GRAPHQL_OPERATION_RUNTIME_POLICIES = Object.freeze({
-  Browse: runtimePolicy("public"),
-  ContinueWatching: runtimePolicy("profile"),
-  CreateProfile: runtimePolicy("account", "profile_mutation"),
-  DeleteProfile: runtimePolicy("account", "profile_mutation"),
-  DemoSignIn: runtimePolicy("public"),
-  HomePersonalized: runtimePolicy("profile"),
-  HomePublic: runtimePolicy("public"),
-  PlayerProgress: runtimePolicy("profile"),
-  Profile: runtimePolicy("account"),
-  Profiles: runtimePolicy("account"),
-  ProfileWithEngagement: runtimePolicy("profile"),
-  ProgressHistory: runtimePolicy("profile"),
-  RecordProgress: runtimePolicy("profile", "engagement_progress"),
-  SearchTitles: runtimePolicy("public", "discovery_search"),
-  SelectProfile: runtimePolicy("account", "profile_selection"),
-  SetWatchlist: runtimePolicy("profile", "engagement_watchlist"),
-  SignOut: runtimePolicy("account"),
-  StartPlayback: runtimePolicy("public"),
-  TitleDetail: runtimePolicy("public"),
-  TitlesWithEngagement: runtimePolicy("profile"),
-  UpdateProfile: runtimePolicy("account", "profile_mutation"),
-  Viewer: runtimePolicy("account"),
-  ViewerAndTitle: runtimePolicy("account"),
-  Watchlist: runtimePolicy("profile"),
-  WatchlistMembership: runtimePolicy("profile"),
+  Browse: defineOperationRuntimePolicy("public"),
+  ContinueWatching: defineOperationRuntimePolicy("profile"),
+  CreateProfile: defineOperationRuntimePolicy("account", "profile_mutation"),
+  DeleteProfile: defineOperationRuntimePolicy("account", "profile_mutation"),
+  DemoSignIn: defineOperationRuntimePolicy("public"),
+  HomePersonalized: defineOperationRuntimePolicy("profile"),
+  HomePublic: defineOperationRuntimePolicy("public"),
+  PlayerProgress: defineOperationRuntimePolicy("profile"),
+  Profile: defineOperationRuntimePolicy("account"),
+  Profiles: defineOperationRuntimePolicy("account"),
+  ProfileWithEngagement: defineOperationRuntimePolicy("profile"),
+  ProgressHistory: defineOperationRuntimePolicy("profile"),
+  RecordProgress: defineOperationRuntimePolicy("profile", "engagement_progress"),
+  SearchTitles: defineOperationRuntimePolicy("public", "discovery_search"),
+  SelectProfile: defineOperationRuntimePolicy("account", "profile_selection"),
+  SetWatchlist: defineOperationRuntimePolicy("profile", "engagement_watchlist"),
+  SignOut: defineOperationRuntimePolicy("account"),
+  StartPlayback: defineOperationRuntimePolicy("public"),
+  TitleDetail: defineOperationRuntimePolicy("public"),
+  TitlesWithEngagement: defineOperationRuntimePolicy("profile"),
+  UpdateProfile: defineOperationRuntimePolicy("account", "profile_mutation"),
+  Viewer: defineOperationRuntimePolicy("account"),
+  ViewerAndTitle: defineOperationRuntimePolicy("account"),
+  Watchlist: defineOperationRuntimePolicy("profile"),
+  WatchlistMembership: defineOperationRuntimePolicy("profile"),
 }) satisfies Readonly<Record<string, OperationRuntimePolicy>>;
 
 export function trustedOperationAuthorizationScope(name: string): OperationAuthorizationScope {
@@ -143,7 +143,7 @@ const PROFILE_SCOPED_FIELDS = new Set([
   "Title.progress",
 ]);
 
-function authorizationScope(
+function requiredAuthorizationScope(
   current: OperationAuthorizationScope,
   coordinate: string,
 ): OperationAuthorizationScope {
@@ -197,11 +197,11 @@ type AnalysisState = Readonly<{
   activeFragments: Set<string>;
 }>;
 
-function reject(operationName: string, reason: string): never {
+function rejectDemandAnalysis(operationName: string, reason: string): never {
   throw new Error(`GraphQL demand rejected ${operationName}: ${reason}.`);
 }
 
-function positivePolicy(policy: DemandPolicy): void {
+function validateDemandPolicy(policy: DemandPolicy): void {
   for (const [name, value] of Object.entries(policy)) {
     if (!Number.isSafeInteger(value) || value < 1) {
       throw new Error(`Invalid GraphQL demand policy ${name}.`);
@@ -209,21 +209,21 @@ function positivePolicy(policy: DemandPolicy): void {
   }
 }
 
-function safeAdd(left: number, right: number, operationName: string): number {
+function addDemandValues(left: number, right: number, operationName: string): number {
   const value = left + right;
   return Number.isSafeInteger(value) && value >= 0
     ? value
-    : reject(operationName, "numeric cost overflow");
+    : rejectDemandAnalysis(operationName, "numeric cost overflow");
 }
 
-function safeMultiply(left: number, right: number, operationName: string): number {
+function multiplyDemandValues(left: number, right: number, operationName: string): number {
   const value = left * right;
   return Number.isSafeInteger(value) && value >= 0
     ? value
-    : reject(operationName, "numeric cost overflow");
+    : rejectDemandAnalysis(operationName, "numeric cost overflow");
 }
 
-function directiveArguments(
+function readDemandDirectiveArguments(
   directives: readonly DirectiveNode[] | undefined,
   name: string,
 ): Readonly<Record<string, unknown>> | undefined {
@@ -244,7 +244,7 @@ function directiveArguments(
   );
 }
 
-function metadataField(schema: GraphQLSchema, parentName: string, fieldName: string) {
+function demandMetadataField(schema: GraphQLSchema, parentName: string, fieldName: string) {
   const parent = schema.getType(parentName);
   if (!parent || (!isObjectType(parent) && !isInterfaceType(parent))) {
     return undefined;
@@ -258,14 +258,17 @@ function explicitWeight(
   fieldName: string,
   operationName: string,
 ): number | undefined {
-  const field = metadataField(schema, parentName, fieldName);
-  const argumentsByName = directiveArguments(field?.astNode?.directives, "cost");
+  const field = demandMetadataField(schema, parentName, fieldName);
+  const argumentsByName = readDemandDirectiveArguments(field?.astNode?.directives, "cost");
   if (!argumentsByName) {
     return undefined;
   }
   const weight = argumentsByName["weight"];
   if (!Number.isSafeInteger(weight) || typeof weight !== "number" || weight < 0) {
-    return reject(operationName, `${parentName}.${fieldName} has an invalid cost weight`);
+    return rejectDemandAnalysis(
+      operationName,
+      `${parentName}.${fieldName} has an invalid cost weight`,
+    );
   }
   return weight;
 }
@@ -276,18 +279,18 @@ function explicitTypeWeight(
   operationName: string,
 ): number | undefined {
   const type = schema.getType(typeName);
-  const argumentsByName = directiveArguments(type?.astNode?.directives, "cost");
+  const argumentsByName = readDemandDirectiveArguments(type?.astNode?.directives, "cost");
   if (!argumentsByName) {
     return undefined;
   }
   const weight = argumentsByName["weight"];
   if (!Number.isSafeInteger(weight) || typeof weight !== "number" || weight < 0) {
-    return reject(operationName, `${typeName} has an invalid cost weight`);
+    return rejectDemandAnalysis(operationName, `${typeName} has an invalid cost weight`);
   }
   return weight;
 }
 
-function fieldWeight(
+function resolveFieldWeight(
   state: AnalysisState,
   parentName: string,
   fieldName: string,
@@ -297,11 +300,11 @@ function fieldWeight(
 ): number {
   const weight = explicitWeight(state.supergraph, parentName, fieldName, state.operationName);
   if (root && weight === undefined) {
-    return reject(state.operationName, `${parentName}.${fieldName} requires @cost`);
+    return rejectDemandAnalysis(state.operationName, `${parentName}.${fieldName} requires @cost`);
   }
   const parentWeight = explicitTypeWeight(state.supergraph, parentName, state.operationName);
   if (!root && parentWeight !== undefined && weight === undefined) {
-    return reject(state.operationName, `${parentName}.${fieldName} requires @cost`);
+    return rejectDemandAnalysis(state.operationName, `${parentName}.${fieldName} requires @cost`);
   }
   return (
     weight ??
@@ -310,7 +313,7 @@ function fieldWeight(
   );
 }
 
-function listType(type: GraphQLOutputType): boolean {
+function isListOutputType(type: GraphQLOutputType): boolean {
   const nullable = isNonNullType(type) ? type.ofType : type;
   return isListType(nullable);
 }
@@ -321,11 +324,18 @@ type ListMetadata = Readonly<{
   slicingArguments: readonly string[];
 }>;
 
-function listMetadata(state: AnalysisState, parentName: string, fieldName: string): ListMetadata {
-  const field = metadataField(state.supergraph, parentName, fieldName);
-  const argumentsByName = directiveArguments(field?.astNode?.directives, "listSize");
-  if (!field || !listType(field.type) || !argumentsByName) {
-    return reject(state.operationName, `${parentName}.${fieldName} requires direct @listSize`);
+function readListMetadata(
+  state: AnalysisState,
+  parentName: string,
+  fieldName: string,
+): ListMetadata {
+  const field = demandMetadataField(state.supergraph, parentName, fieldName);
+  const argumentsByName = readDemandDirectiveArguments(field?.astNode?.directives, "listSize");
+  if (!field || !isListOutputType(field.type) || !argumentsByName) {
+    return rejectDemandAnalysis(
+      state.operationName,
+      `${parentName}.${fieldName} requires direct @listSize`,
+    );
   }
   const assumedSize = argumentsByName["assumedSize"];
   const slicingArguments = argumentsByName["slicingArguments"] ?? [];
@@ -345,7 +355,10 @@ function listMetadata(state: AnalysisState, parentName: string, fieldName: strin
     typeof requireOneSlicingArgument !== "boolean" ||
     sizedFields !== undefined
   ) {
-    return reject(state.operationName, `${parentName}.${fieldName} has invalid list metadata`);
+    return rejectDemandAnalysis(
+      state.operationName,
+      `${parentName}.${fieldName} has invalid list metadata`,
+    );
   }
   return Object.freeze({
     assumedSize,
@@ -354,7 +367,11 @@ function listMetadata(state: AnalysisState, parentName: string, fieldName: strin
   });
 }
 
-function literalSliceSize(node: FieldNode, metadata: ListMetadata, operationName: string): number {
+function resolveLiteralSliceSize(
+  node: FieldNode,
+  metadata: ListMetadata,
+  operationName: string,
+): number {
   const supplied = metadata.slicingArguments.filter((name) =>
     node.arguments?.some((candidate) => candidate.name.value === name),
   );
@@ -363,7 +380,7 @@ function literalSliceSize(node: FieldNode, metadata: ListMetadata, operationName
     metadata.slicingArguments.length > 0 &&
     supplied.length !== 1
   ) {
-    return reject(operationName, "exactly one slicing argument is required");
+    return rejectDemandAnalysis(operationName, "exactly one slicing argument is required");
   }
   const sizes: number[] = [];
   for (const name of metadata.slicingArguments) {
@@ -383,25 +400,25 @@ function literalSliceSize(node: FieldNode, metadata: ListMetadata, operationName
       continue;
     }
     if (!Number.isSafeInteger(value) || value < 1 || value > metadata.assumedSize) {
-      return reject(operationName, `literal ${name} exceeds its owner list maximum`);
+      return rejectDemandAnalysis(operationName, `literal ${name} exceeds its owner list maximum`);
     }
     sizes.push(value);
   }
   return sizes.length === 0 ? metadata.assumedSize : Math.max(...sizes);
 }
 
-function count(
+function incrementBoundedMetric(
   state: AnalysisState,
   name: keyof Pick<MutableMetrics, "aliases" | "rootFields" | "selections">,
   maximum: keyof Pick<DemandPolicy, "maximumAliases" | "maximumRootFields" | "maximumSelections">,
 ): void {
-  state.metrics[name] = safeAdd(state.metrics[name], 1, state.operationName);
+  state.metrics[name] = addDemandValues(state.metrics[name], 1, state.operationName);
   if (state.metrics[name] > state.policy[maximum]) {
-    reject(state.operationName, `${maximum} exceeded`);
+    rejectDemandAnalysis(state.operationName, `${maximum} exceeded`);
   }
 }
 
-function compositeType(
+function requireCompositeType(
   state: AnalysisState,
   typeName: string,
   context: string,
@@ -409,138 +426,191 @@ function compositeType(
   const type = state.api.getType(typeName);
   return type && isCompositeType(type)
     ? type
-    : reject(state.operationName, `${context} has no composite type`);
+    : rejectDemandAnalysis(state.operationName, `${context} has no composite type`);
 }
 
-function selectionCost(
+function calculateSelectionSetCost(
   state: AnalysisState,
-  parent: GraphQLCompositeType,
+  parentType: GraphQLCompositeType,
   selectionSet: SelectionSetNode,
-  depth: number,
-  expansion: number,
+  parentDepth: number,
+  parentListExpansion: number,
 ): number {
-  let total = 0;
+  let selectionSetCost = 0;
+
   for (const selection of selectionSet.selections) {
     if (selection.kind === Kind.INLINE_FRAGMENT) {
-      const fragmentParent = selection.typeCondition
-        ? compositeType(state, selection.typeCondition.name.value, "inline fragment")
-        : parent;
-      total = safeAdd(
-        total,
-        selectionCost(state, fragmentParent, selection.selectionSet, depth, expansion),
+      const fragmentParentType = selection.typeCondition
+        ? requireCompositeType(state, selection.typeCondition.name.value, "inline fragment")
+        : parentType;
+      selectionSetCost = addDemandValues(
+        selectionSetCost,
+        calculateSelectionSetCost(
+          state,
+          fragmentParentType,
+          selection.selectionSet,
+          parentDepth,
+          parentListExpansion,
+        ),
         state.operationName,
       );
       continue;
     }
+
     if (selection.kind === Kind.FRAGMENT_SPREAD) {
-      const name = selection.name.value;
-      const fragment = state.fragments.get(name);
-      if (!fragment || state.activeFragments.has(name) || state.activeFragments.size >= 32) {
-        reject(state.operationName, `fragment ${name} is missing, cyclic or excessive`);
+      const fragmentName = selection.name.value;
+      const fragment = state.fragments.get(fragmentName);
+      if (
+        !fragment ||
+        state.activeFragments.has(fragmentName) ||
+        state.activeFragments.size >= 32
+      ) {
+        rejectDemandAnalysis(
+          state.operationName,
+          `fragment ${fragmentName} is missing, cyclic or excessive`,
+        );
       }
-      state.activeFragments.add(name);
+      state.activeFragments.add(fragmentName);
       try {
-        total = safeAdd(
-          total,
-          selectionCost(
+        selectionSetCost = addDemandValues(
+          selectionSetCost,
+          calculateSelectionSetCost(
             state,
-            compositeType(state, fragment.typeCondition.name.value, `fragment ${name}`),
+            requireCompositeType(
+              state,
+              fragment.typeCondition.name.value,
+              `fragment ${fragmentName}`,
+            ),
             fragment.selectionSet,
-            depth,
-            expansion,
+            parentDepth,
+            parentListExpansion,
           ),
           state.operationName,
         );
       } finally {
-        state.activeFragments.delete(name);
+        state.activeFragments.delete(fragmentName);
       }
       continue;
     }
 
-    count(state, "selections", "maximumSelections");
+    incrementBoundedMetric(state, "selections", "maximumSelections");
     if (selection.alias) {
-      count(state, "aliases", "maximumAliases");
+      incrementBoundedMetric(state, "aliases", "maximumAliases");
     }
-    if (depth === 0) {
-      count(state, "rootFields", "maximumRootFields");
+    if (parentDepth === 0) {
+      incrementBoundedMetric(state, "rootFields", "maximumRootFields");
     }
-    const fieldDepth = depth + 1;
+
+    const fieldDepth = parentDepth + 1;
     state.metrics.depth = Math.max(state.metrics.depth, fieldDepth);
     if (fieldDepth > state.policy.maximumDepth) {
-      reject(state.operationName, "maximumDepth exceeded");
+      rejectDemandAnalysis(state.operationName, "maximumDepth exceeded");
     }
     if (selection.name.value === "__typename") {
       continue;
     }
-    if (!isObjectType(parent) && !isInterfaceType(parent)) {
-      reject(state.operationName, `${parent.name}.${selection.name.value} is not selectable`);
+
+    if (!isObjectType(parentType) && !isInterfaceType(parentType)) {
+      rejectDemandAnalysis(
+        state.operationName,
+        `${parentType.name}.${selection.name.value} is not selectable`,
+      );
     }
-    const field = parent.getFields()[selection.name.value];
-    if (!field) {
-      reject(state.operationName, `${parent.name}.${selection.name.value} is unknown`);
+
+    const selectedField = parentType.getFields()[selection.name.value];
+    if (!selectedField) {
+      rejectDemandAnalysis(
+        state.operationName,
+        `${parentType.name}.${selection.name.value} is unknown`,
+      );
     }
-    state.metrics.authorizationScope = authorizationScope(
+
+    state.metrics.authorizationScope = requiredAuthorizationScope(
       state.metrics.authorizationScope,
-      `${parent.name}.${selection.name.value}`,
+      `${parentType.name}.${selection.name.value}`,
     );
-    const namedReturn = getNamedType(field.type);
-    const returnsComposite = isCompositeType(namedReturn);
-    const weight = fieldWeight(
+
+    const returnType = getNamedType(selectedField.type);
+    const returnsCompositeType = isCompositeType(returnType);
+    const selectedFieldWeight = resolveFieldWeight(
       state,
-      parent.name,
+      parentType.name,
       selection.name.value,
-      namedReturn.name,
-      returnsComposite,
-      depth === 0,
+      returnType.name,
+      returnsCompositeType,
+      parentDepth === 0,
     );
-    const metadata = listType(field.type)
-      ? listMetadata(state, parent.name, selection.name.value)
+    const selectedListMetadata = isListOutputType(selectedField.type)
+      ? readListMetadata(state, parentType.name, selection.name.value)
       : undefined;
-    const size = metadata ? literalSliceSize(selection, metadata, state.operationName) : 1;
-    const nextExpansion = safeMultiply(expansion, size, state.operationName);
-    state.metrics.listExpansion = Math.max(state.metrics.listExpansion, nextExpansion);
-    if (nextExpansion > state.policy.maximumListExpansion) {
-      reject(state.operationName, "maximumListExpansion exceeded");
+    const selectedListSize = selectedListMetadata
+      ? resolveLiteralSliceSize(selection, selectedListMetadata, state.operationName)
+      : 1;
+    const fieldListExpansion = multiplyDemandValues(
+      parentListExpansion,
+      selectedListSize,
+      state.operationName,
+    );
+    state.metrics.listExpansion = Math.max(state.metrics.listExpansion, fieldListExpansion);
+    if (fieldListExpansion > state.policy.maximumListExpansion) {
+      rejectDemandAnalysis(state.operationName, "maximumListExpansion exceeded");
     }
-    let children = 0;
+
+    let nestedSelectionCost = 0;
     if (selection.selectionSet) {
-      if (!returnsComposite) {
-        reject(
+      if (!returnsCompositeType) {
+        rejectDemandAnalysis(
           state.operationName,
-          `${parent.name}.${selection.name.value} cannot have selections`,
+          `${parentType.name}.${selection.name.value} cannot have selections`,
         );
       }
-      children = selectionCost(
+      nestedSelectionCost = calculateSelectionSetCost(
         state,
-        namedReturn,
+        returnType,
         selection.selectionSet,
         fieldDepth,
-        nextExpansion,
+        fieldListExpansion,
       );
-    } else if (returnsComposite) {
-      reject(state.operationName, `${parent.name}.${selection.name.value} requires selections`);
+    } else if (returnsCompositeType) {
+      rejectDemandAnalysis(
+        state.operationName,
+        `${parentType.name}.${selection.name.value} requires selections`,
+      );
     }
-    const unit = safeAdd(weight, children, state.operationName);
-    total = safeAdd(total, safeMultiply(size, unit, state.operationName), state.operationName);
-    if (total > state.policy.maximumCost) {
-      reject(state.operationName, "maximumCost exceeded");
+
+    const singleItemCost = addDemandValues(
+      selectedFieldWeight,
+      nestedSelectionCost,
+      state.operationName,
+    );
+    selectionSetCost = addDemandValues(
+      selectionSetCost,
+      multiplyDemandValues(selectedListSize, singleItemCost, state.operationName),
+      state.operationName,
+    );
+    if (selectionSetCost > state.policy.maximumCost) {
+      rejectDemandAnalysis(state.operationName, "maximumCost exceeded");
     }
   }
-  return total;
+
+  return selectionSetCost;
 }
 
-function rootType(
+function requireOperationRootType(
   schema: GraphQLSchema,
   definition: OperationDefinitionNode,
   operationName: string,
 ): GraphQLCompositeType {
-  const root =
+  const operationRootType =
     definition.operation === OperationTypeNode.QUERY
       ? schema.getQueryType()
       : definition.operation === OperationTypeNode.MUTATION
         ? schema.getMutationType()
         : schema.getSubscriptionType();
-  return root ?? reject(operationName, `${definition.operation} root is unavailable`);
+  return (
+    operationRootType ??
+    rejectDemandAnalysis(operationName, `${definition.operation} root is unavailable`)
+  );
 }
 
 export function analyzeOperationDemand(
@@ -549,8 +619,9 @@ export function analyzeOperationDemand(
   operation: DemandOperation,
   policy: DemandPolicy = GRAPHQL_DEMAND_POLICY,
 ): OperationDemandAnalysis {
-  positivePolicy(policy);
-  const encodedRequestBytes = Buffer.byteLength(
+  validateDemandPolicy(policy);
+
+  const requestEnvelopeBytes = Buffer.byteLength(
     JSON.stringify({
       operationName: operation.name,
       query: operation.body,
@@ -559,49 +630,56 @@ export function analyzeOperationDemand(
     "utf8",
   );
   if (
-    encodedRequestBytes > MAXIMUM_REQUEST_BYTES ||
+    requestEnvelopeBytes > MAXIMUM_REQUEST_BYTES ||
     !/^[a-f0-9]{64}$/u.test(operation.id) ||
     createHash("sha256").update(operation.body).digest("hex") !== operation.id
   ) {
-    return reject(
+    return rejectDemandAnalysis(
       operation.name,
       "encoded request exceeds the Router body limit or hash is invalid",
     );
   }
-  let source: DocumentNode;
+  let parsedDocument: DocumentNode;
   try {
-    source = parse(operation.body, { maxTokens: MAXIMUM_PARSER_TOKENS });
+    parsedDocument = parse(operation.body, { maxTokens: MAXIMUM_PARSER_TOKENS });
   } catch {
-    return reject(operation.name, "body exceeds parser token limit or is malformed");
+    return rejectDemandAnalysis(operation.name, "body exceeds parser token limit or is malformed");
   }
-  const validation = validate(api, source, undefined, { maxErrors: 10 });
-  if (validation.length > 0) {
-    return reject(operation.name, "body is incompatible with the public schema");
+
+  const schemaValidationErrors = validate(api, parsedDocument, undefined, { maxErrors: 10 });
+  if (schemaValidationErrors.length > 0) {
+    return rejectDemandAnalysis(operation.name, "body is incompatible with the public schema");
   }
-  const definitions = source.definitions.filter(
+
+  const operationDefinitions = parsedDocument.definitions.filter(
     (definition): definition is OperationDefinitionNode =>
       definition.kind === Kind.OPERATION_DEFINITION,
   );
-  const fragmentDefinitions = source.definitions.filter(
+  const fragmentDefinitions = parsedDocument.definitions.filter(
     (definition): definition is FragmentDefinitionNode =>
       definition.kind === Kind.FRAGMENT_DEFINITION,
   );
-  const definition = definitions[0];
+  const operationDefinition = operationDefinitions[0];
   if (
-    definitions.length !== 1 ||
-    !definition?.name ||
-    definition.name.value !== operation.name ||
-    definition.operation !== operation.type ||
-    source.definitions.length !== definitions.length + fragmentDefinitions.length ||
+    operationDefinitions.length !== 1 ||
+    !operationDefinition?.name ||
+    operationDefinition.name.value !== operation.name ||
+    operationDefinition.operation !== operation.type ||
+    parsedDocument.definitions.length !==
+      operationDefinitions.length + fragmentDefinitions.length ||
     fragmentDefinitions.length > 32
   ) {
-    return reject(operation.name, "body identity or definition set is invalid");
+    return rejectDemandAnalysis(operation.name, "body identity or definition set is invalid");
   }
-  const fragments = new Map(fragmentDefinitions.map((fragment) => [fragment.name.value, fragment]));
-  if (fragments.size !== fragmentDefinitions.length) {
-    return reject(operation.name, "fragment names are not unique");
+
+  const fragmentsByName = new Map(
+    fragmentDefinitions.map((fragment) => [fragment.name.value, fragment]),
+  );
+  if (fragmentsByName.size !== fragmentDefinitions.length) {
+    return rejectDemandAnalysis(operation.name, "fragment names are not unique");
   }
-  const metrics: MutableMetrics = {
+
+  const demandMetrics: MutableMetrics = {
     aliases: 0,
     authorizationScope: "public",
     depth: 0,
@@ -609,34 +687,42 @@ export function analyzeOperationDemand(
     rootFields: 0,
     selections: 0,
   };
-  const state: AnalysisState = {
+  const analysisState: AnalysisState = {
     api,
     supergraph,
-    fragments,
-    metrics,
+    fragments: fragmentsByName,
+    metrics: demandMetrics,
     operationName: operation.name,
     policy,
     activeFragments: new Set(),
   };
-  const operationBase = definition.operation === OperationTypeNode.MUTATION ? 10 : 0;
-  const cost = safeAdd(
-    operationBase,
-    selectionCost(state, rootType(api, definition, operation.name), definition.selectionSet, 0, 1),
+
+  const operationBaseCost = operationDefinition.operation === OperationTypeNode.MUTATION ? 10 : 0;
+  const operationCost = addDemandValues(
+    operationBaseCost,
+    calculateSelectionSetCost(
+      analysisState,
+      requireOperationRootType(api, operationDefinition, operation.name),
+      operationDefinition.selectionSet,
+      0,
+      1,
+    ),
     operation.name,
   );
-  if (cost > policy.maximumCost) {
-    return reject(operation.name, "maximumCost exceeded");
+  if (operationCost > policy.maximumCost) {
+    return rejectDemandAnalysis(operation.name, "maximumCost exceeded");
   }
+
   return Object.freeze({
-    aliases: metrics.aliases,
-    authorizationScope: metrics.authorizationScope,
-    cost,
-    depth: metrics.depth,
+    aliases: demandMetrics.aliases,
+    authorizationScope: demandMetrics.authorizationScope,
+    cost: operationCost,
+    depth: demandMetrics.depth,
     id: operation.id,
-    listExpansion: metrics.listExpansion,
+    listExpansion: demandMetrics.listExpansion,
     name: operation.name,
-    rootFields: metrics.rootFields,
-    selections: metrics.selections,
+    rootFields: demandMetrics.rootFields,
+    selections: demandMetrics.selections,
     type: operation.type,
   });
 }
@@ -664,7 +750,7 @@ export function createOperationDemandManifest(
       "GraphQL runtime policy requires every exact operation name and no stale entry.",
     );
   }
-  const expectedRateClass = (name: string): OperationRateClass => {
+  const expectedOperationRateClass = (name: string): OperationRateClass => {
     if (["CreateProfile", "DeleteProfile", "UpdateProfile"].includes(name)) {
       return "profile_mutation";
     }
@@ -693,11 +779,14 @@ export function createOperationDemandManifest(
         runtime.cacheControl !== "no-store" ||
         runtime.executionDeadlineMs !== 3_000 ||
         runtime.maximumConcurrentRequests !== 8 ||
-        runtime.rateClass !== expectedRateClass(operation.name) ||
+        runtime.rateClass !== expectedOperationRateClass(operation.name) ||
         Object.keys(runtime).toSorted().join(",") !==
           "authorizationScope,cacheControl,executionDeadlineMs,maximumConcurrentRequests,rateClass"
       ) {
-        return reject(operation.name, "runtime authorization, rate or cache scope is invalid");
+        return rejectDemandAnalysis(
+          operation.name,
+          "runtime authorization, rate or cache scope is invalid",
+        );
       }
       return Object.freeze({ ...analysis, ...(runtime as OperationRuntimePolicy) });
     })
