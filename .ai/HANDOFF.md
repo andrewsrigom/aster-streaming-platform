@@ -36,15 +36,20 @@ Close only the `catalog-command-flow` and `playback-session-outcome` findings:
   and architecture validation pass.
 - Source `ef9e866`, tree `2c48e62`, passes the affected-scope candidate gate
   43/43 with 10 cached tasks in 62.095 seconds.
+- PR62 protected workflow `33605355037` passes every applicable job.
+- Initial review findings `3911927401` and `3911927407` concern evidence only.
+  The stale P14-R15 planned entry is removed and exact commands plus raw output
+  now live in `evidence/phase-14/p14-r16-readability.txt`.
+- The post-remediation affected gate passes 43/43 with 32 cached in 40 seconds.
 - No public contract, data, event, cache, media, telemetry, dependency, or
   deployment behavior changed.
 
 ## Exact next actions
 
-1. Commit and publish this evidence checkpoint.
-2. Complete one initial review and one confirmation on the bounded candidate.
-3. Merge after exact-head protected checks pass, verify exact main, then activate
-   item72.
+1. Finish the documentation-only checks, commit and publish the review
+   remediation, and resolve both discussions.
+2. Complete the single confirmation review and exact-head protected checks.
+3. Merge, verify exact main, then activate item72.
 
 ## Execution boundary
 

@@ -1,0 +1,161 @@
+P14-R16 Catalog and Playback readability evidence
+Recorded: 2026-09-02
+Environment: WSL Ubuntu 20.04; Node.js 24.19.0; pnpm 11.24.0
+Base commit: 3858bcb7299d10fbcb361a65c2907885966d0d4f
+Source checkpoint: ef9e866b1a2d04cc5a8a15c4e5e6519897f7317a
+Evidence checkpoint before review remediation: 0e2d15eea91b8d8012d68d8004c060e4669043db
+
+The commands below ran from the repository root with this pinned PATH:
+
+export PATH=/mnt/c/Users/andre/.cache/aster-node-24.19.0:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+BASELINE LINKED CHARACTERIZATION
+
+The baseline command ran in the clean main worktree at the base commit named
+above. The post-refactor command ran unchanged in the item71 worktree.
+
+Command:
+pnpm exec turbo run build --filter=@aster/catalog... --filter=@aster/playback... && node --test services/catalog/dist/test/catalog-workflow.test.js services/playback/dist/test/create-session.test.js
+
+Baseline raw result:
+• turbo 2.10.12
+• Packages in scope: @aster/broker-kafka, @aster/catalog, @aster/event-delivery, @aster/http-express, @aster/object-storage-s3, @aster/playback, @aster/postgres, @aster/redis, @aster/runtime, @aster/telemetry
+• Running build in 10 packages
+• Remote caching disabled
+Tasks:    10 successful, 10 total
+Cached:    2 cached, 10 total
+Time:      6.921s
+✔ editorial journey writes immutable review, attributed metadata and versioned publication/retirement events
+✔ invalid or throwing trace context cannot change a durable Catalog event
+✔ missing/copied/foreign/viewer authority cannot enter a transaction; expiry/revocation fail closed
+✔ explicit local activation rejects hosted mode, missing opt-in and unbounded time
+✔ exact replay preserves response and audit; changed input, actor, version or command conflicts
+✔ unresolved review, expired rights and foreign/unattested media never publish
+✔ receipt and outbox capacity reserve takedown, which is atomic with cancellation and failures
+✔ metadata canonicalizes locale fallback, bounds collections and rejects forged approval fields
+✔ artwork receives its own operator review and cannot silently substitute a different source
+✔ session creation reads current Catalog once before one acknowledged owner write
+✔ invalid input, missing/stale/invalid Catalog and dependency failure never write sessions
+✔ cancelled reads settle even for an uncooperative adapter; late success cannot start a write
+✔ the two-second application deadline settles an owner that never responds
+✔ capacity and uncertain write outcomes are not retried or reported as success
+✔ expiry during an acknowledged store operation is not returned as a usable session
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2119.39378
+Process exit: 0
+
+Post-refactor raw result:
+• turbo 2.10.12
+• Packages in scope: @aster/broker-kafka, @aster/catalog, @aster/event-delivery, @aster/http-express, @aster/object-storage-s3, @aster/playback, @aster/postgres, @aster/redis, @aster/runtime, @aster/telemetry
+• Running build in 10 packages
+• Remote caching disabled
+Tasks:    10 successful, 10 total
+Cached:    10 cached, 10 total
+Time:      25ms FULL TURBO
+✔ editorial journey writes immutable review, attributed metadata and versioned publication/retirement events
+✔ invalid or throwing trace context cannot change a durable Catalog event
+✔ missing/copied/foreign/viewer authority cannot enter a transaction; expiry/revocation fail closed
+✔ explicit local activation rejects hosted mode, missing opt-in and unbounded time
+✔ exact replay preserves response and audit; changed input, actor, version or command conflicts
+✔ unresolved review, expired rights and foreign/unattested media never publish
+✔ receipt and outbox capacity reserve takedown, which is atomic with cancellation and failures
+✔ metadata canonicalizes locale fallback, bounds collections and rejects forged approval fields
+✔ artwork receives its own operator review and cannot silently substitute a different source
+✔ session creation reads current Catalog once before one acknowledged owner write
+✔ invalid input, missing/stale/invalid Catalog and dependency failure never write sessions
+✔ cancelled reads settle even for an uncooperative adapter; late success cannot start a write
+✔ the two-second application deadline settles an owner that never responds
+✔ capacity and uncertain write outcomes are not retried or reported as success
+✔ expiry during an acknowledged store operation is not returned as a usable session
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2114.880598
+Process exit: 0
+
+COMPLETE AFFECTED PACKAGES
+
+Command:
+node --test --test-reporter=dot services/catalog/dist/test/*.test.js
+
+Raw result (each dot is one passing test):
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+.........
+Result: 249/249 tests pass. Process exit: 0. Elapsed: 6.258s.
+
+Command:
+node --test --test-reporter=dot services/playback/dist/test/*.test.js
+
+Raw result (each dot is one passing test):
+....................
+....................
+..
+Result: 42/42 tests pass. Process exit: 0. Elapsed: 5.055s.
+
+STATIC CHECKS
+
+Command:
+pnpm --filter @aster/catalog typecheck && pnpm --filter @aster/playback typecheck
+
+Raw result:
+$ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+$ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+Process exit: 0. Elapsed: 11.466s.
+
+Command:
+pnpm exec eslint services/catalog/src/application/commands.ts services/playback/src/application/create-session.ts
+
+Raw result: no diagnostics. Process exit: 0. Elapsed: 6.744s.
+
+Command:
+pnpm architecture:check
+
+Raw result:
+$ node ./tools/verify-architecture.ts
+{"check":"architecture","status":"ok","violations":0}
+Process exit: 0. Elapsed: 4.164s.
+
+CANDIDATE GATE
+
+Command:
+pnpm check:changed
+
+Selected raw validator output:
+{"check":"toolchain","status":"ok","node":"24.19.0","pnpm":"11.24.0"}
+{"check":"documentation","status":"ok","documents":251,"headings":2915,"links":1704,"statusClaims":4,"violations":0}
+{"check":"capability-index","status":"ok","rows":11,"violations":0}
+{"check":"ai-state","status":"ok","files":10,"queueItems":75,"sessionEntries":65,"activeRequirement":"P14-R16","targetRequirement":"P14-R16","violations":[]}
+{"check":"secrets","status":"ok","mode":"all","findings":0}
+{"check":"architecture","status":"ok","violations":0}
+All matched files use Prettier code style!
+Tasks:    43 successful, 43 total
+Cached:    32 cached, 43 total
+Time:      40s
+Process exit: 0.
+
+This run includes the review-remediation files except this appended result. The
+appended transcript is documentation-only, so documentation, repository-memory,
+format, diff, and changed-scope checks are repeated before publication. The
+earlier source checkpoint was also independently repeated by protected workflow
+33605355037, where every applicable job passed.

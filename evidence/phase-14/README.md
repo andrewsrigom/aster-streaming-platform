@@ -1006,6 +1006,11 @@ failure, and expiry-after-acknowledgement checks. No heavyweight experiment is
 repeated because no adapter, transaction order, public contract, runtime, or
 media behavior changed.
 
+The exact local invocations and their raw console output are retained in
+[`p14-r16-readability.txt`](./p14-r16-readability.txt). That transcript includes
+the linked characterization command, complete affected-package checks, static
+checks, and the final affected-scope candidate gate.
+
 Source checkpoint `ef9e866b1a2d04cc5a8a15c4e5e6519897f7317a`, tree
 `2c48e62c7f498121942fa42d2ae743cbe5562501`, passes `pnpm check:changed`:
 43/43 tasks pass with 10 cached tasks in 62.095 seconds. The gate includes both
@@ -1015,9 +1020,17 @@ documentation, repository memory, security, toolchain, CI policy, and governance
 checks. No Docker, browser, media, PostgreSQL, Redis, or broker experiment is
 repeated for this private naming and local-structure change.
 
+Protected PR62 workflow `33605355037` passes every applicable job, including
+source quality, complete Catalog and Playback tests, real platform integration,
+the Docker-only playable demo, Local platform, documentation, security, and the
+required aggregate. The initial review found two evidence-index defects only:
+completed P14-R15 still appeared under planned evidence, and item71 lacked an
+exact reproducible command transcript. Both are corrected together. The
+post-remediation affected gate passes 43/43 tasks with 32 cached in 40 seconds;
+confirmation review and exact-head protected checks remain.
+
 ## Planned evidence
 
-- P14-R15 readability guardrails and findings inventory
-- P14-R16 owner-scoped refactoring characterization
+- P14-R16 remaining owner-scoped refactoring characterization
 - P14-R17 examples and reading-path verification
 - P14-R18 fresh-checkout and Docker reference verification

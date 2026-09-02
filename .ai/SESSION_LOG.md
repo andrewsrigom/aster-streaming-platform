@@ -22,6 +22,10 @@ full snapshot through the archival checkpoint remains in
   event, receipt, and revalidation phases.
 - Renamed Playback dependency settlement and session-write state, and replaced
   the nested failure expression with explicit typed outcomes.
+- Published PR62. Protected workflow `33605355037` passes every applicable job.
+- Initial review findings `3911927401` and `3911927407` identify evidence-index
+  defects only. Removed completed P14-R15 from planned evidence and added an
+  exact command/raw-output transcript for item71.
 
 ### Evidence
 
@@ -34,11 +38,13 @@ full snapshot through the archival checkpoint remains in
   builds/typechecks, changed-file lint, and architecture validation pass.
 - Source `ef9e866`, tree `2c48e62`, passes the affected-scope gate 43/43 with 10
   cached tasks in 62.095 seconds.
+- The evidence-remediation affected gate passes 43/43 with 32 cached tasks in 40
+  seconds.
 
 ### Next action
 
-Publish the exact evidenced candidate, complete one review and one confirmation,
-merge, and verify exact main before activating item72.
+Publish the review remediation, resolve both discussions, complete one
+confirmation, merge, and verify exact main before activating item72.
 
 ## 2026-09-02 — Readability inventory initial review corrected
 

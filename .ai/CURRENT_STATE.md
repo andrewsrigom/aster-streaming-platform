@@ -57,7 +57,12 @@ complete Catalog package passes 249 tests, Playback passes 42 tests, both
 affected builds and typechecks pass, changed-file lint passes, and architecture
 validation reports zero violations. Source `ef9e866`, tree `2c48e62`, passes
 the affected-scope candidate gate 43/43 with 10 cached tasks in 62.095 seconds.
-Protected publication, review, merge, and exact-main acceptance remain.
+Protected PR62 workflow `33605355037` passes every applicable job. Initial
+review found two evidence defects, both corrected together: the planned-evidence
+list no longer includes completed P14-R15, and exact commands plus raw output are
+retained in `evidence/phase-14/p14-r16-readability.txt`. The remediation gate
+passes 43/43 with 32 cached in 40 seconds. Confirmation, merge, and exact-main
+acceptance remain.
 
 ## Ordered reference-quality runway
 

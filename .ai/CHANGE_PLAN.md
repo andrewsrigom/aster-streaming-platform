@@ -123,15 +123,18 @@ checks, event payloads, and telemetry remain unchanged.
 
 ## Evidence
 
-- Commands: pinned install; focused Catalog/Playback builds and tests;
-  formatting, lint, typecheck, architecture, documentation, repository-memory,
-  and changed-scope checks
-- Raw artifact path: `evidence/phase-14/README.md`
+- Commands: the exact pinned-environment invocations are recorded beside their
+  console output in `evidence/phase-14/p14-r16-readability.txt`; they cover the
+  linked characterization, complete Catalog/Playback tests, builds, typechecks,
+  changed-file lint, architecture validation, and `pnpm check:changed`
+- Raw artifact path: `evidence/phase-14/p14-r16-readability.txt`
 - Acceptance result: linked characterization passes 15/15 before and after the
   refactor; complete Catalog tests pass 249/249 and Playback tests pass 42/42;
   both builds/typechecks, changed-file lint, and architecture validation pass.
   Source `ef9e866`, tree `2c48e62`, passes the affected-scope candidate gate
-  43/43 with 10 cached tasks in 62.095 seconds
+  43/43 with 10 cached tasks in 62.095 seconds. Protected workflow `33605355037`
+  passes every applicable job. After correcting the initial review's two
+  evidence findings, the affected gate passes 43/43 with 32 cached in 40 seconds
 - Iteration gate: affected package build/typecheck plus the two linked
   characterization files
 - Candidate gate: `pnpm check:changed`
