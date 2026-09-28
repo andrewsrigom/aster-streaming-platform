@@ -14,7 +14,7 @@
     "yauzl": "3.4.0"
   },
   "devDependencies": {
-    "@types/node": "24.13.3",
+    "@types/node": "26.6.2",
     "@types/yauzl": "3.4.0",
     "typescript": "6.0.3"
   }
