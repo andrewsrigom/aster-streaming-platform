@@ -19,7 +19,7 @@
     "@aster/engagement": "workspace:*",
     "@aster/identity": "workspace:*",
     "@aster/playback": "workspace:*",
-    "@types/node": "24.13.3",
+    "@types/node": "26.6.5",
     "graphql": "16.14.2",
     "typescript": "6.0.3"
   }
